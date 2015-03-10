@@ -1,7 +1,7 @@
 {
   "name": "vtex",
   "version": "0.1.0",
-  "description": "CLI tool for creating and managing VTEX stores and apps",
+  "description": "CLI tool for creating and managing VTEX apps",
   "bin": {
     "vtex": "lib/vtex.js",
     "vtex-login": "lib/vtex-login.js",
