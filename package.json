@@ -1,0 +1,47 @@
+{
+  "name": "vtex",
+  "version": "0.1.0",
+  "description": "CLI tool for creating and managing VTEX stores and apps",
+  "bin": {
+    "vtex": "lib/vtex.js",
+    "vtex-login": "lib/vtex-login.js",
+    "vtex-logout": "lib/vtex-logout.js",
+    "vtex-watch": "lib/vtex-watch.js",
+    "vtex-publish": "lib/vtex-publish.js"
+  },
+  "scripts": {
+    "start": "node lib/toolbelt.js",
+    "watch": "node_modules/.bin/babel src/ --out-dir lib/ --watch",
+    "prepublish": "npm test && node_modules/.bin/babel src/ --out-dir lib",
+    "test": "node_modules/.bin/mocha --compilers es6:babel/register",
+    "test-watch": "node_modules/.bin/mocha --compilers es6:babel/register --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vtex/toolbelt.git"
+  },
+  "keywords": [
+    "CLI",
+    "releasy",
+    "release",
+    "semver"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vtex/toolbelt/issues"
+  },
+  "dependencies": {
+    "commander": "~2.7.0",
+    "prompt": "~0.2.14",
+    "q": "~1.2.0",
+    "semver": "~4.3.1",
+    "shelljs": "~0.3.0"
+  },
+  "preferGlobal": true,
+  "devDependencies": {
+    "babel": "^4.7.7",
+    "chai": "^2.1.1",
+    "mocha": "^2.2.1",
+    "sinon": "~1.13.0"
+  }
+}
