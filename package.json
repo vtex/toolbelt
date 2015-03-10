@@ -10,11 +10,11 @@
     "vtex-publish": "lib/vtex-publish.js"
   },
   "scripts": {
-    "start": "node lib/toolbelt.js",
-    "watch": "node_modules/.bin/babel src/ --out-dir lib/ --watch",
-    "prepublish": "npm test && node_modules/.bin/babel src/ --out-dir lib",
-    "test": "node_modules/.bin/mocha --compilers es6:babel/register",
-    "test-watch": "node_modules/.bin/mocha --compilers es6:babel/register --watch"
+    "start": "node lib/vtex.js",
+    "watch": "babel src/ --out-dir lib/ --watch",
+    "prepublish": "npm test && babel src/ --out-dir lib",
+    "test": "mocha --compilers es6:babel/register",
+    "test-watch": "mocha --compilers es6:babel/register --watch"
   },
   "repository": {
     "type": "git",
@@ -41,7 +41,6 @@
   "devDependencies": {
     "babel": "^4.7.7",
     "chai": "^2.1.1",
-    "mocha": "^2.2.1",
-    "sinon": "~1.13.0"
+    "mocha": "^2.2.1"
   }
 }
