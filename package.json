@@ -11,10 +11,10 @@
   },
   "scripts": {
     "start": "node lib/vtex.js",
-    "watch": "babel src/ --out-dir lib/ --watch",
-    "prepublish": "npm test && babel src/ --out-dir lib",
-    "test": "mocha --compilers es6:babel/register",
-    "test-watch": "mocha --compilers es6:babel/register --watch"
+    "watch": "coffee --output lib --compile --watch --bare --no-header src",
+    "prepublish": "npm test && coffee --bare --no-header --output lib --compile src",
+    "test": "mocha --compilers coffee:coffee-script/register",
+    "test-watch": "mocha --compilers coffee:coffee-script/register --watch"
   },
   "repository": {
     "type": "git",
@@ -34,12 +34,13 @@
     "commander": "~2.7.0",
     "prompt": "~0.2.14",
     "q": "~1.2.0",
+    "request": "^2.53.0",
     "semver": "~4.3.1",
     "shelljs": "~0.3.0"
   },
   "preferGlobal": true,
   "devDependencies": {
-    "babel": "^4.7.7",
+    "coffee-script": "1.9.0",
     "chai": "^2.1.1",
     "mocha": "^2.2.1"
   }
