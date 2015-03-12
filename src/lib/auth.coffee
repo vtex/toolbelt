@@ -2,24 +2,22 @@ path = require 'path'
 fs = require 'fs'
 Q = require 'Q'
 request = require 'request'
-prompt = require('prompt')
+prompt = require 'prompt'
 
 class AuthenticationService
   constructor: ->
   login: =>
-    @askCredentials().then (data) =>
-      @saveCredentials(data).then () => data
-      .catch (error) => console.log error
+    @askCredentials()
+    .then(@saveCredentials)
     .catch (error) =>
-      console.log error
+      throw new Error error
 
   getValidCredentials: =>
-    @getCurrentCredentials()
-      .then (credentials) =>
-        if credentials == null or !isTokenValid credentials
-          @login().then(data) -> data
-        else
-          return credentials
+    @getCurrentCredentials().then (credentials) =>
+      if credentials == null or !@isTokenValid credentials
+        @login()
+      else
+        return credentials
 
   askCredentials: =>
     deferred = Q.defer()
@@ -38,15 +36,15 @@ class AuthenticationService
     prompt.delimiter = ''
 
     prompt.start()
-    console.log "Please log in with your VTEX credentials."
+    console.log 'Please log in with your VTEX credentials.', '\n'
 
     prompt.get options, (err, result) =>
-      console.log "Login failed. Please try again." if err
+      console.log 'Login failed. Please try again.' if err
       if result.login and result.password
         @getAuthenticationToken(result.login, result.password).then (token) =>
             deferred.resolve { email: result.login, token: token }
           .catch (error) =>
-            console.log error
+            deferred.reject error
       else
         deferred.reject result
 
@@ -69,10 +67,10 @@ class AuthenticationService
 
         try
           auth = JSON.parse(body)
-          if auth.authStatus != "Success" then deferred.reject  "Authentication has failed with status #{auth.authStatus}"
+          if auth.authStatus != "Success" then deferred.reject "Authentication has failed with status #{auth.authStatus}".red
           deferred.resolve auth.authCookie.Value
         catch
-          deferred.reject "Invalid JSON while authenticating with VTEX ID"
+          deferred.reject "Invalid JSON while authenticating with VTEX ID".red
     deferred.promise
 
   getCurrentCredentials: =>
@@ -105,6 +103,7 @@ class AuthenticationService
   saveCredentials: (credentials) =>
     content = JSON.stringify credentials, null, 2
     Q.nfcall(fs.writeFile, @getCredentialsPath(), content)
+    credentials
 
   deleteCredentials: () =>
     Q.nfcall(fs.unlink, @getCredentialsPath())

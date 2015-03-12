@@ -1,5 +1,6 @@
 expect = require('chai').expect
-auth = require('../src/lib/auth')
+auth = require '../src/lib/auth'
+
 describe 'auth service', ->
   it 'should exist', (done) ->
     expect(auth).to.be.ok

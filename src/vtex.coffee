@@ -1,6 +1,7 @@
 `#!/usr/bin/env node`
-program = require('commander')
-pkg = require('../package.json')
+program = require 'commander'
+pkg = require '../package.json'
+
 program.version(pkg.version)
   .command('login', 'login to VTEX')
   .command('logout', 'logout')
