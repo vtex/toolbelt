@@ -1,11 +1,9 @@
-require 'shelljs/global'
 path = require 'path'
 fs = require 'fs'
 auth = require './auth'
 request = require 'request'
-Q = require 'Q'
 chokidar = require 'chokidar'
-glob = require 'glob'
+fileManager = require './fileManager'
 
 class Watcher
   ChangeAction: {
@@ -21,9 +19,10 @@ class Watcher
     root = process.cwd()
     usePolling = (process.platform is 'win32') ? false
 
-    @getIgnoredPatterns().then((ignoredPatterns) =>
+    fileManager.listFiles().then((result) =>
+
       watcher = chokidar.watch root, persistent: true, usePolling: usePolling, ignoreInitial: true,
-      ignored: (filePath) -> /(^[.#]|(?:__|~)$)/.test path.basename(filePath), ignoredPatterns
+      ignored: (filePath) -> /(^[.#]|(?:__|~)$)/.test path.basename(filePath), result.ignore
 
       watcher
       .on('add', @onAdded)
@@ -36,9 +35,8 @@ class Watcher
         console.log '\n', "File changes from app","#{@app}".green, '\n'
         console.log '\n', 'Waiting for changes...', '\n'
 
-        glob "**", nodir: true, ignore: ignoredPatterns, (er, files) =>
-          @changes[path.resolve(root,file)] = @ChangeAction.Save for file in files
-          @debounce(true)
+        @changes[path.resolve(root,file)] = @ChangeAction.Save for file in result.files
+        @debounce(true)
       )
     )
 
@@ -120,16 +118,5 @@ class Watcher
       if response.statusCode is 200 then console.log '\n','...Files uploaded'
       else
         console.error 'Status:', response.statusCode
-
-  getIgnoredPatterns: =>
-    @readVtexIgnore().then((vtexIgnore) =>
-      lines = vtexIgnore.match(/[^\r\n]+/g)
-      lines.filter((line) => line.charAt(0) != '#' and line != '').join("|")
-    ).catch((e) => return [])
-
-  readVtexIgnore: =>
-    ignoreFile = path.resolve process.cwd(), '.vtexignore'
-    file = Q.nfcall(fs.readFile, ignoreFile, "utf8").catch(null)
-    return file
 
 module.exports = Watcher
