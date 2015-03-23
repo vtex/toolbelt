@@ -42,9 +42,9 @@ class AuthenticationService
       console.log 'Login failed. Please try again.' if err
       if result.login and result.password
         @getAuthenticationToken(result.login, result.password).then (token) =>
-            deferred.resolve { email: result.login, token: token }
-          .catch (error) =>
-            deferred.reject error
+          deferred.resolve {email: result.login, token: token}
+        .catch (error) =>
+          deferred.reject error
       else
         deferred.reject result
 
@@ -75,8 +75,8 @@ class AuthenticationService
 
   getCurrentCredentials: =>
     credentials = Q.nfcall(fs.readFile, @getCredentialsPath(), "utf8")
-      .then(JSON.parse)
-      .catch () => null
+    .then(JSON.parse)
+    .catch () => null
     return credentials
 
   isTokenValid: (credentials) =>
@@ -130,9 +130,9 @@ class AuthenticationService
   getCredentialsPath: =>
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
     path.resolve(home, 'credentials.json')
-    
+
 auth = new AuthenticationService()
-    
+
 module.exports =
   login: auth.login
   logout: auth.deleteCredentials

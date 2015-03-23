@@ -13,7 +13,7 @@ class FileManager
     deferred = Q.defer()
     @getIgnoredPatterns().then((ignoredPatterns) =>
       glob "**", nodir: true, ignore: ignoredPatterns, (er, files) =>
-        deferred.resolve { files: files, ignore: ignoredPatterns }
+        deferred.resolve {files: files, ignore: ignoredPatterns}
     )
     deferred.promise
 
@@ -29,32 +29,31 @@ class FileManager
     return file
 
   compressFiles: (app, version) =>
+    @listFiles().then((result) =>
+      zipPath = @getZipFilePath(app, version)
 
-     @listFiles().then( (result) =>
-       zipPath = @getZipFilePath(app, version)
+      if !test('-e', @temporaryZipFolder) then mkdir '-p', @temporaryZipFolder
 
-       if !test('-e', @temporaryZipFolder) then mkdir '-p', @temporaryZipFolder
+      deferred = Q.defer()
+      archive = archiver 'zip'
+      output = fs.createWriteStream(zipPath)
+      archive.pipe output
 
-       deferred = Q.defer()
-       archive = archiver 'zip'
-       output = fs.createWriteStream(zipPath)
-       archive.pipe output
+      archive.append(fs.createReadStream(path.resolve(process.cwd(), file)), {name: file}) for file in result.files
+      archive.finalize()
 
-       archive.append(fs.createReadStream(path.resolve(process.cwd(), file)), { name: file }) for file in result.files
-       archive.finalize()
+      output.on 'close', ->
+        console.log archive.pointer() + ' total bytes'
+        deferred.resolve archive.pointer()
 
-       output.on 'close', ->
-         console.log archive.pointer() + ' total bytes'
-         deferred.resolve archive.pointer()
+      archive.on 'error', (err) ->
+        deferred.reject err
 
-       archive.on 'error', (err) ->
-         deferred.reject err
-
-       deferred.promise
-     )
+      deferred.promise
+    )
 
   getZipFilePath: (app, version) =>
-   return path.resolve module.filename, "../../temporary/#{app}-#{version}.zip"
+    return path.resolve module.filename, "../../temporary/#{app}-#{version}.zip"
 
   removeZipFile: (app, version) =>
     rm('-rf', @getZipFilePath(app, version))

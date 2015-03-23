@@ -1,4 +1,3 @@
-`#!/usr/bin/env node`
 program = require 'commander'
 pkg = require '../package.json'
 metadata = require './lib/meta'

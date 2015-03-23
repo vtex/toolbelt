@@ -3,12 +3,12 @@ fs = require 'fs'
 auth = require './auth'
 request = require 'request'
 chokidar = require 'chokidar'
-fileManager = require './fileManager'
+fileManager = require './file-manager'
 
 class Watcher
   ChangeAction: {
-    Save : "save",
-    Remove : "remove"
+    Save: "save",
+    Remove: "remove"
   }
   changes: {}
   lastBatch: 0
@@ -20,7 +20,6 @@ class Watcher
     usePolling = (process.platform is 'win32') ? false
 
     fileManager.listFiles().then((result) =>
-
       watcher = chokidar.watch root, persistent: true, usePolling: usePolling, ignoreInitial: true,
       ignored: (filePath) -> /(^[.#]|(?:__|~)$)/.test path.basename(filePath), result.ignore
 
@@ -29,13 +28,13 @@ class Watcher
       .on('addDir', @onDirAdded)
       .on('change', @onChanged)
       .on('unlink', @onUnlinked)
-      .on('unlinkDir',@onDirUnlinked)
-      .on('error', (error) => )
+      .on('unlinkDir', @onDirUnlinked)
+      .on('error', (error) =>)
       .on('ready', =>
-        console.log '\n', "File changes from app","#{@app}".green, '\n'
+        console.log '\n', "File changes from app", "#{@app}".green, '\n'
         console.log '\n', 'Waiting for changes...', '\n'
 
-        @changes[path.resolve(root,file)] = @ChangeAction.Save for file in result.files
+        @changes[path.resolve(root, file)] = @ChangeAction.Save for file in result.files
         @debounce(true)
       )
     )
@@ -47,11 +46,11 @@ class Watcher
   onDirAdded: (dirPath) =>
 
   onChanged: (filePath) =>
-    @changes[filePath] =  @ChangeAction.Save
+    @changes[filePath] = @ChangeAction.Save
     @debounce()
 
   onUnlinked: (filePath) =>
-    @changes[filePath] =  @ChangeAction.Remove
+    @changes[filePath] = @ChangeAction.Remove
     @debounce()
 
   onDirUnlinked: (filePath) =>
@@ -97,10 +96,10 @@ class Watcher
       method: 'POST'
       json: batchChanges
       headers: {
-        Authorization : 'token ' + @credentials.token
-        'Accept' : "application/vnd.vtex.gallery.v0+json"
-        'Content-Type' : "application/json"
-        'x-vtex-accept-snapshot' : false
+        Authorization: 'token ' + @credentials.token
+        'Accept': "application/vnd.vtex.gallery.v0+json"
+        'Content-Type': "application/json"
+        'x-vtex-accept-snapshot': false
       }
 
     options.url += "?resync=true" if refresh
@@ -115,7 +114,7 @@ class Watcher
 
 
     request options, (error, response) =>
-      if response.statusCode is 200 then console.log '\n','...Files uploaded'
+      if response.statusCode is 200 then console.log '\n', '...Files uploaded'
       else
         console.error 'Status:', response.statusCode
 
