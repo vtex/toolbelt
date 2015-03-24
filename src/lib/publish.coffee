@@ -1,7 +1,6 @@
 request = require 'request'
 fs = require 'fs'
 path = require 'path'
-Q = require 'Q'
 fileManager = require './file-manager'
 
 class AppPublisher

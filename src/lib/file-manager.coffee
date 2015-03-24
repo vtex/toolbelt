@@ -1,6 +1,6 @@
 require 'shelljs/global'
 path = require 'path'
-Q = require 'Q'
+Q = require 'q'
 glob = require 'glob'
 fs = require 'fs'
 archiver = require 'archiver'
