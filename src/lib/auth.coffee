@@ -1,6 +1,6 @@
 path = require 'path'
 fs = require 'fs'
-Q = require 'Q'
+Q = require 'q'
 request = require 'request'
 prompt = require 'prompt'
 
