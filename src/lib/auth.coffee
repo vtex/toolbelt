@@ -14,10 +14,9 @@ class AuthenticationService
 
   getValidCredentials: =>
     @getCurrentCredentials().then (credentials) =>
-      if credentials == null or !@isTokenValid credentials
-        @login()
-      else
-        return credentials
+      @isTokenValid(credentials).then((validToken) =>
+        if !validToken then @login() else return credentials
+      )
 
   askCredentials: =>
     deferred = Q.defer()
@@ -76,11 +75,12 @@ class AuthenticationService
   getCurrentCredentials: =>
     credentials = Q.nfcall(fs.readFile, @getCredentialsPath(), "utf8")
     .then(JSON.parse)
-    .catch () => null
+    .catch () => {}
     return credentials
 
   isTokenValid: (credentials) =>
     deferred = Q.defer()
+
     requestOptions =
       uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authenticated/user?authToken=#{encodeURIComponent(credentials.token)}"
 
@@ -91,10 +91,11 @@ class AuthenticationService
         deferred.reject "Invalid status code #{response.statusCode}"
 
       try
-        deferred.resolve false if body?
+        vtexIdUser = JSON.parse(body)
+        return deferred.resolve false if vtexIdUser is null
 
-        user = JSON.parse(body).User
-        deferred.resolve true if user?.User is credentials.email
+        user = vtexIdUser.user
+        return deferred.resolve true if user != null and user is credentials.email
       catch error
         deferred.reject 'Invalid JSON while getting token from VTEX ID'
 

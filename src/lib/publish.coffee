@@ -18,7 +18,7 @@ class AppPublisher
         ]
 
       options =
-        url: "http://api.beta.vtex.com/gallery/apps"
+        url: "http://gallery.vtexlocal.com.br/#{owner}/apps"
         method: 'POST'
         formData: formData
         headers: {
@@ -28,7 +28,7 @@ class AppPublisher
         }
 
       request options, (error, response) =>
-        fileManager.removeZipFile(app, version)
+        #fileManager.removeZipFile(app, version)
         if response.statusCode is 200 then console.log '\n', "App \'#{app}\' version \'#{version}\' was successfully published"
         else
           body = JSON.parse response.body
