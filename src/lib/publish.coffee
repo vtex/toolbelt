@@ -18,7 +18,7 @@ class AppPublisher
         ]
 
       options =
-        url: "http://gallery.vtexlocal.com.br/#{owner}/apps"
+        url: "http://api.beta.vtex.com/#{owner}/apps"
         method: 'POST'
         formData: formData
         headers: {

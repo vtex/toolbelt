@@ -92,7 +92,7 @@ class Watcher
 
   sendChanges: (batchChanges, refresh) =>
     options =
-      url: "http://api.beta.vtex.com/gallery/sandbox/#{@app}/changes"
+      url: "http://api.beta.vtex.com/#{@owner}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'POST'
       json: batchChanges
       headers: {
@@ -101,6 +101,8 @@ class Watcher
         'Content-Type': "application/json"
         'x-vtex-accept-snapshot': false
       }
+
+    console.log options.url
 
     options.url += "?resync=true" if refresh
 
@@ -114,6 +116,7 @@ class Watcher
 
 
     request options, (error, response) =>
+      console.log response.body
       if response.statusCode is 200 then console.log '\n', '...Files uploaded'
       else
         console.error 'Status:', response.statusCode
