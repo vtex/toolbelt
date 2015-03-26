@@ -43,7 +43,7 @@ class FileManager
       archive.finalize()
 
       output.on 'close', ->
-        console.log archive.pointer() + ' total bytes'
+        console.log '\n', archive.pointer() + ' total bytes. Publishing...'
         deferred.resolve archive.pointer()
 
       archive.on 'error', (err) ->

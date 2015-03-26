@@ -12,12 +12,12 @@ class MetadataFile
     .catch((error) -> throw new Error (error.message.red))
 
   validateMetadata: (meta) =>
-    if not meta['name']? then throw new Error "Field \"name\" should be set in meta.json file"
-    if not meta['version']? then throw new Error "Field \"version\" should be set in meta.json file"
-    if not meta['owner']? then throw new Error "Field \"owner\" should be set in meta.json file"
+    if not meta['name']? then throw new Error 'Field \"name\" should be set in meta.json file'
+    if not meta['version']? then throw new Error 'Field \"version\" should be set in meta.json file'
+    if not meta['owner']? then throw new Error 'Field \"owner\" should be set in meta.json file'
+    unless meta['owner'].match(/^[\w_-]+$/) then throw new Error 'Field \"owner\" may contain only letters, numbers, underscores and hyphens'
 
-    regex = /^(\d+)\.(\d+)\.(\d+)(-.*)?$/
-    if !(meta['version'].match(regex)) then throw Error 'The version format is invalid'
+    if !(meta['version'].match(/^(\d+)\.(\d+)\.(\d+)(-.*)?$/)) then throw Error 'The version format is invalid'
 
     return meta
 

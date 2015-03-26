@@ -28,11 +28,11 @@ class AppPublisher
         }
 
       request options, (error, response) =>
-        #fileManager.removeZipFile(app, version)
+        fileManager.removeZipFile(app, version)
         if response.statusCode is 200 then console.log '\n', "App \'#{app}\' version \'#{version}\' was successfully published"
         else
           body = JSON.parse response.body
-          console.error '\n', "Failed to publish app with status code #{response.statusCode}: \'#{body.message}\`".red
+          console.error '\n', "Failed to publish app with status code #{response.statusCode}: \'#{body.message}\'".red
     )
 
 appPublisher = new AppPublisher()

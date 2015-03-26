@@ -102,8 +102,6 @@ class Watcher
         'x-vtex-accept-snapshot': false
       }
 
-    console.log options.url
-
     options.url += "?resync=true" if refresh
 
     for change in batchChanges
@@ -114,9 +112,7 @@ class Watcher
       else
         console.log "#{change.action.grey} #{change.path}"
 
-
     request options, (error, response) =>
-      console.log response.body
       if response.statusCode is 200 then console.log '\n', '...Files uploaded'
       else
         console.error 'Status:', response.statusCode
