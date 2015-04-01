@@ -7,3 +7,8 @@ program.version(pkg.version)
   .command('publish', 'publish this app to VTEX Gallery')
   .command('watch [sandbox]', 'start a development sandbox')
   .parse process.argv
+
+# Show help if no command was specified
+args = process.argv.slice(2)
+if !args.length
+  program.outputHelp()
