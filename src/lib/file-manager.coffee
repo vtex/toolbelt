@@ -20,7 +20,8 @@ class FileManager
   getIgnoredPatterns: =>
     @readVtexIgnore().then((vtexIgnore) =>
       lines = vtexIgnore.match(/[^\r\n]+/g)
-      lines.filter((line) => line.charAt(0) != '#' and line != '').join("|")
+      ignored = lines.filter((line) => line.charAt(0) != '#' and line != '')
+      ignored.map((item) => if item.substr(-1) is "/" then item += "**" else item)
     ).catch((e) => return [])
 
   readVtexIgnore: =>
