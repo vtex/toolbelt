@@ -10,6 +10,13 @@ Then install VTEX Toolbelt globally:
 ```sh
 npm install -g vtex
 ```
+# Livereload
+
+Add to your layout the script:
+
+```sh
+  <script src="http://localhost:35729/livereload.js?snipver=1"></script>
+```
 
 # Developing an app
 
