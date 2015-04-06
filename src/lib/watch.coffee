@@ -4,6 +4,7 @@ auth = require './auth'
 request = require 'request'
 chokidar = require 'chokidar'
 fileManager = require './file-manager'
+tinylr = require 'tiny-lr'
 
 class Watcher
   ChangeAction: {
@@ -14,6 +15,8 @@ class Watcher
   lastBatch: 0
 
   constructor: (@app, @owner, @sandbox, @credentials) ->
+    @lr = tinylr()
+    @lr.listen(35729)
 
   watch: =>
     root = process.cwd()
@@ -113,8 +116,14 @@ class Watcher
         console.log "#{change.action.grey} #{change.path}"
 
     request options, (error, response) =>
-      if response.statusCode is 200 then console.log '\n', '...Files uploaded'
+      if response.statusCode is 200
+        @changesSentSuccessfuly(batchChanges)
       else
         console.error 'Status:', response.statusCode
+
+  changesSentSuccessfuly: (batchChanges) =>
+    paths = batchChanges.map (change) -> change.path
+    console.log '\n', '...Files uploaded'
+    tinylr.changed paths...
 
 module.exports = Watcher
