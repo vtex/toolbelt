@@ -1,18 +1,18 @@
+Q = require 'q'
 request = require 'request'
 fs = require 'fs'
 path = require 'path'
 fileManager = require './file-manager'
-chalk = require 'chalk'
 
 class AppPublisher
-  constructor: ->
   publish: (app, version, owner, credentials) =>
     console.log "Publishing", "#{app}", "#{version}"
     @pushApp(app, version, owner, credentials)
 
   pushApp: (app, version, owner, credentials) =>
-
+    console.log "Compressing files...".grey
     fileManager.compressFiles(app, version).then =>
+      deferred = Q.defer()
       formData =
         attachments: [
             fs.createReadStream(fileManager.getZipFilePath(app, version))
@@ -28,13 +28,20 @@ class AppPublisher
           'x-vtex-accept-snapshot' : false
         }
 
-      request options, (error, response) =>
+      console.log "Sending files...".grey
+      request(options, (error, response) =>
+        if error
+          return deferred.reject(error)
+
         fileManager.removeZipFile(app, version)
-        if response.statusCode is 200 or response.statusCode is 201
-          console.log chalk.green("\n App "+chalk.italic(app)+" version "+chalk.bold(version)+" was successfully published!")
+
+        if response.statusCode in [200, 201]
+          deferred.resolve({app: app, version: version})
         else
-          body = JSON.parse response.body
-          console.error '\n', "Failed to publish app with status code #{response.statusCode}: \'#{body.message}\'".red
+          deferred.reject({status: response.statusCode, body: response.body})
+      )
+
+      deferred.promise
 
 appPublisher = new AppPublisher()
 module.exports =

@@ -1,12 +1,25 @@
+Q = require 'q'
 program = require 'commander'
 pkg = require '../package.json'
 metadata = require './lib/meta'
 publisher = require './lib/publish'
 auth = require './lib/auth'
+chalk = require 'chalk'
 
 program.version(pkg.version).parse process.argv
 
-auth.getValidCredentials().then((credentials) ->
+Q.all([
+  auth.getValidCredentials()
   metadata.getAppMetadata()
-  .then((meta) -> publisher.publish(meta.name, meta.version, meta.owner, credentials))
-).catch((error) => console.log error.message)
+]).spread((credentials, meta) ->
+  name = meta.name
+  version = meta.version
+  owner = meta.owner
+
+  publisher.publish(name, version, owner, credentials)
+).then((app) ->
+  console.log chalk.green("\n App "+chalk.italic(app.app)+" version "+chalk.bold(app.version)+" was successfully published!")
+).catch((error) ->
+  console.error '\n', "Failed to publish app".red
+  console.error error
+)
