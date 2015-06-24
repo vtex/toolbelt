@@ -40,4 +40,4 @@ For this to work make sure this requirements are filled:
 
 # Publishing an app
 
-To publish your VTEX app to VTEX Gallery, just type `vtex publish`. The app will be published under the owner name.
+To publish your VTEX app to VTEX Gallery, just type `vtex publish`. The app will be published under the vendor name.

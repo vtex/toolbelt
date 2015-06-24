@@ -15,7 +15,7 @@ class Watcher
   changes: {}
   lastBatch: 0
 
-  constructor: (@app, @owner, @sandbox, @credentials) ->
+  constructor: (@app, @vendor, @sandbox, @credentials) ->
     @lr = tinylr()
     @lr.listen(35729)
 
@@ -104,7 +104,7 @@ class Watcher
 
   sendChanges: (batchChanges, refresh) =>
     options =
-      url: "http://api.beta.vtex.com/#{@owner}/sandboxes/#{@sandbox}/#{@app}/files"
+      url: "http://api.beta.vtex.com/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'POST'
       json: batchChanges
       headers: {
