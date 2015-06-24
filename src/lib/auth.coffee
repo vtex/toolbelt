@@ -103,7 +103,15 @@ class AuthenticationService
 
   saveCredentials: (credentials) =>
     content = JSON.stringify credentials, null, 2
-    Q.nfcall(fs.writeFile, @getCredentialsPath(), content)
+    credentialsPath = path.dirname(@getCredentialsPath())
+    writeCredentials = (err) =>
+      folderExist = err and err.code is 'EEXIST'
+      if not err or folderExist
+        Q.nfcall(fs.writeFile, @getCredentialsPath(), content)
+      else
+        throw err
+
+    Q.nfcall(fs.mkdir, credentialsPath).finally(writeCredentials)
     credentials
 
   deleteCredentials: () =>
