@@ -1,3 +1,4 @@
+Q = require 'q'
 path = require 'path'
 fs = require 'fs'
 auth = require './auth'
@@ -21,10 +22,15 @@ class Watcher
   watch: =>
     root = process.cwd()
     usePolling = (process.platform is 'win32') ? false
+    fileManager.listFiles().then (result) =>
+      deferred = Q.defer()
 
-    fileManager.listFiles().then((result) =>
-      watcher = chokidar.watch root, persistent: true, usePolling: usePolling, ignoreInitial: true,
-      ignored: (filePath) -> /(^[.#]|(?:__|~)$)/.test path.basename(filePath), result.ignore
+      watcher = chokidar.watch(root, {
+        persistent: true,
+        usePolling: usePolling,
+        ignoreInitial: true,
+        ignored: ((filePath) -> /(^[.#]|(?:__|~)$)/.test path.basename(filePath), result.ignore)
+      })
 
       watcher
       .on('add', @onAdded)
@@ -32,15 +38,15 @@ class Watcher
       .on('change', @onChanged)
       .on('unlink', @onUnlinked)
       .on('unlinkDir', @onDirUnlinked)
-      .on('error', (error) =>)
+      .on('error', (error) =>
+        deferred.reject(error)
+      )
       .on('ready', =>
-        console.log '\n', "File changes from app", "#{@app}".green, '\n'
-        console.log '\n', 'Waiting for changes...', '\n'
-
         @changes[path.resolve(root, file)] = @ChangeAction.Save for file in result.files
         @debounce(true)
+        deferred.resolve({app: @app})
       )
-    )
+      deferred.promise
 
   onAdded: (filePath) =>
     @changes[filePath] = @ChangeAction.Save
@@ -60,7 +66,7 @@ class Watcher
     @changes[filePath] = @ChangeAction.Remove
     @debounce()
 
-  debounce: (resync)=>
+  debounce: (resync) =>
     thisBatch = ++@lastBatch
     setTimeout((() => @trySendBatch(thisBatch, resync)), 200)
 
@@ -115,15 +121,24 @@ class Watcher
       else
         console.log "#{change.action.grey} #{change.path}"
 
-    request options, (error, response) =>
+    request options, (error, response, body) =>
       if response.statusCode is 200
         @changesSentSuccessfuly(batchChanges)
       else
-        console.error 'Status:', response.statusCode
+        @changeSendError(error, response)
 
   changesSentSuccessfuly: (batchChanges) =>
     paths = batchChanges.map (change) -> change.path
-    console.log '\n', '...Files uploaded'
+    console.log '\n... files uploaded'.green
     tinylr.changed paths...
+
+  changeSendError: (error, response) =>
+    console.error 'Error sending files'.red
+    if error
+      console.error error
+    if response
+      console.error 'Status:', response.statusCode
+      console.error 'Headers:', response.headers
+      console.error 'Body:', response.body
 
 module.exports = Watcher
