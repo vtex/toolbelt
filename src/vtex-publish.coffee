@@ -18,8 +18,8 @@ Q.all([
 
   publisher.publish(name, version, owner, credentials)
 ).then((app) ->
-  console.log chalk.green("\n App "+chalk.italic(app.app)+" version "+chalk.bold(app.version)+" was successfully published!")
+  console.log chalk.green("\nApp "+chalk.italic(app.app)+" version "+chalk.bold(app.version)+" was successfully published!")
 ).catch((error) ->
-  console.error '\n', "Failed to publish app".red
+  console.error "\nFailed to publish app".red
   console.error error
 )
