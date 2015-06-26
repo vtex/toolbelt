@@ -6,6 +6,7 @@ request = require 'request'
 chokidar = require 'chokidar'
 fileManager = require './file-manager'
 tinylr = require 'tiny-lr'
+crypto = require 'crypto'
 
 class Watcher
   ChangeAction: {
@@ -142,4 +143,31 @@ class Watcher
       console.error 'Headers:', response.headers
       console.error 'Body:', response.body
 
+  getSandboxFiles: =>
+    options =
+      url: "http://api.beta.vtex.com/#{@owner}/sandboxes/#{@sandbox}/#{@app}/files"
+      method: 'GET'
+      headers: {
+        Authorization: 'token ' + @credentials.token
+        'Accept': "application/vnd.vtex.gallery.v0+json"
+        'Content-Type': "application/json"
+        'x-vtex-accept-snapshot': false
+      }
+
+    Q.nfcall(request, options).then (data) =>
+      response = data[0]
+      if response.statusCode is 200
+        return JSON.parse(response.body)
+      else
+        console.error 'Status:', response.statusCode
+
+  generateFilesHash: (files) =>
+    root = process.cwd()
+    readAndHash = (filePath) -> Q.nfcall(fs.readFile, path.resolve(root, filePath)).then (content) ->
+      hashedContent = crypto.createHash('md5').update(content, 'binary').digest('hex')
+      return { path: filePath, hash: hashedContent }
+
+    return (readAndHash(file) for file in files)
+
 module.exports = Watcher
+
