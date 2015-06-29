@@ -103,7 +103,15 @@ class AuthenticationService
 
   saveCredentials: (credentials) =>
     content = JSON.stringify credentials, null, 2
-    Q.nfcall(fs.writeFile, @getCredentialsPath(), content)
+    credentialsPath = path.dirname(@getCredentialsPath())
+    writeCredentials = (err) =>
+      folderExist = err and err.code is 'EEXIST'
+      if not err or folderExist
+        Q.nfcall(fs.writeFile, @getCredentialsPath(), content)
+      else
+        throw err
+
+    Q.nfcall(fs.mkdir, credentialsPath).finally(writeCredentials)
     credentials
 
   deleteCredentials: () =>
@@ -130,7 +138,7 @@ class AuthenticationService
 
   getCredentialsPath: =>
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
-    path.resolve(home, 'credentials.json')
+    path.resolve(home, '.vtex/credentials.json')
 
 auth = new AuthenticationService()
 
@@ -139,3 +147,4 @@ module.exports =
   logout: auth.deleteCredentials
   getValidCredentials: auth.getValidCredentials
   askCredentials: auth.askCredentials
+
