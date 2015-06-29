@@ -25,8 +25,10 @@ class FileManager
     ).catch((e) => return [])
 
   readVtexIgnore: =>
-    ignoreFile = path.resolve process.cwd(), '.vtexignore'
-    file = Q.nfcall(fs.readFile, ignoreFile, "utf8").catch(null)
+    ignoreFile = (file) -> path.resolve process.cwd(), file
+    readIgnore = (ignore) -> Q.nfcall(fs.readFile, ignore, "utf8")
+    file = readIgnore(ignoreFile('.vtexignore'))
+            .catch -> readIgnore(ignoreFile('.gitignore'))
     return file
 
   compressFiles: (app, version) =>
