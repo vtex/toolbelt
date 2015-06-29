@@ -25,11 +25,14 @@ class Watcher
     fileManager.listFiles().then (result) =>
       deferred = Q.defer()
 
+      result.ignore[i] = path.join(root, ignore) for ignore, i in result.ignore
+      result.ignore.push /(^[.#]|(?:__|~)$)/
+
       watcher = chokidar.watch(root, {
         persistent: true,
         usePolling: usePolling,
         ignoreInitial: true,
-        ignored: ((filePath) -> /(^[.#]|(?:__|~)$)/.test path.basename(filePath), result.ignore)
+        ignored: result.ignore
       })
 
       watcher
