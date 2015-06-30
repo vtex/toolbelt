@@ -44,16 +44,14 @@ class Watcher
         deferred.reject(error)
       )
       .on('ready', =>
-        console.log '\n', "File changes from app", "#{@app}".green, '\n'
-        console.log '\n', 'Waiting for changes...', '\n'
-
-        fileHashPromiseArray = Q.all(@generateFilesHash(result.files))
-        Q.all([fileHashPromiseArray, @getSandboxFiles()]).spread (localFiles, sandboxFiles) =>
+        localFiles = []
+        Q.all(@generateFilesHash(result.files)).done((data) -> localFiles = data)
+        @getSandboxFiles().done (sandboxFiles) =>
           for localFile in localFiles
-            hashCompare = localFile.hash is sandboxFiles[localFile.path].hash
-            console.log hashCompare
+            hashCompare = localFile.hash is sandboxFiles[localFile.path].hash if sandboxFiles?
+            validFile = hashCompare or not sandboxFiles?
             rootLocalFile = path.resolve(root, localFile.path)
-            @changes[rootLocalFile] = if hashCompare then @ChangeAction.Save else @ChangeAction.Remove
+            @changes[rootLocalFile] = if validFile then @ChangeAction.Save else @ChangeAction.Remove
 
           @debounce(true)
           deferred.resolve({app: @app})
