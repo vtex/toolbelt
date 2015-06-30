@@ -155,7 +155,7 @@ class Watcher
 
   getSandboxFiles: =>
     options =
-      url: "http://api.beta.vtex.com/#{@owner}/sandboxes/#{@sandbox}/#{@app}/files"
+      url: "http://api.beta.vtex.com/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'GET'
       headers: {
         Authorization: 'token ' + @credentials.token
@@ -168,6 +168,8 @@ class Watcher
       response = data[0]
       if response.statusCode is 200
         return JSON.parse(response.body)
+      else if response.statusCode is 404
+        return undefined
       else
         console.error 'Status:', response.statusCode
 
