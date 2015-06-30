@@ -19,9 +19,9 @@ Q.all([
   metadata.getAppMetadata()
 ]).spread((credentials, meta) ->
   name = meta.name
-  owner = meta.owner
+  vendor = meta.vendor
 
-  watcher = new Watcher(name, owner, program.args[0], credentials)
+  watcher = new Watcher(name, vendor, program.args[0], credentials)
   watcher.watch()
 ).then((app) ->
   console.log chalk.green("\nWatching "+chalk.italic(app.app))

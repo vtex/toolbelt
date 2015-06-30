@@ -14,8 +14,8 @@ class MetadataFile
   validateMetadata: (meta) =>
     if not meta['name']? then throw new Error 'Field \"name\" should be set in meta.json file'
     if not meta['version']? then throw new Error 'Field \"version\" should be set in meta.json file'
-    if not meta['owner']? then throw new Error 'Field \"owner\" should be set in meta.json file'
-    unless meta['owner'].match(/^[\w_-]+$/) then throw new Error 'Field \"owner\" may contain only letters, numbers, underscores and hyphens'
+    if not meta['vendor']? then throw new Error 'Field \"vendor\" should be set in meta.json file'
+    unless meta['vendor'].match(/^[\w_-]+$/) then throw new Error 'Field \"vendor\" may contain only letters, numbers, underscores and hyphens'
 
     if !(meta['version'].match(/^(\d+)\.(\d+)\.(\d+)(-.*)?$/)) then throw Error 'The version format is invalid'
 

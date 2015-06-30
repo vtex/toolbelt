@@ -5,11 +5,11 @@ path = require 'path'
 fileManager = require './file-manager'
 
 class AppPublisher
-  publish: (app, version, owner, credentials) =>
+  publish: (app, version, vendor, credentials) =>
     console.log "Publishing", "#{app}", "#{version}"
-    @pushApp(app, version, owner, credentials)
+    @pushApp(app, version, vendor, credentials)
 
-  pushApp: (app, version, owner, credentials) =>
+  pushApp: (app, version, vendor, credentials) =>
     console.log "Compressing files...".grey
     fileManager.compressFiles(app, version).then =>
       deferred = Q.defer()
@@ -19,7 +19,7 @@ class AppPublisher
         ]
 
       options =
-        url: "http://api.beta.vtex.com/#{owner}/apps"
+        url: "http://api.beta.vtex.com/#{vendor}/apps"
         method: 'POST'
         formData: formData
         headers: {

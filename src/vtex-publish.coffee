@@ -14,9 +14,9 @@ Q.all([
 ]).spread((credentials, meta) ->
   name = meta.name
   version = meta.version
-  owner = meta.owner
+  vendor = meta.vendor
 
-  publisher.publish(name, version, owner, credentials)
+  publisher.publish(name, version, vendor, credentials)
 ).then((app) ->
   console.log chalk.green("\nApp "+chalk.italic(app.app)+" version "+chalk.bold(app.version)+" was successfully published!")
 ).catch((error) ->
