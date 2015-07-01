@@ -44,9 +44,8 @@ class Watcher
         deferred.reject(error)
       )
       .on('ready', =>
-        localFiles = []
-        Q.all(@generateFilesHash(result.files)).done((data) -> localFiles = data)
-        @getSandboxFiles().done (sandboxFiles) =>
+        localFiles = Q.all(@generateFilesHash(result.files))
+        Q.all([localFiles, @getSandboxFiles()]).spread (localFiles, sandboxFiles) =>
           for localFile in localFiles
             hashCompare = localFile.hash is sandboxFiles[localFile.path].hash if sandboxFiles?
             validFile = hashCompare or not sandboxFiles?
