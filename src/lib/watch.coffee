@@ -44,13 +44,10 @@ class Watcher
         deferred.reject(error)
       )
       .on('ready', =>
-        localFiles = Q.all(@generateFilesHash(result.files))
-        Q.all([localFiles, @getSandboxFiles()]).spread (localFiles, sandboxFiles) =>
-          for localFile in localFiles
-            hashCompare = localFile.hash is sandboxFiles[localFile.path].hash if sandboxFiles?
-            validFile = hashCompare or not sandboxFiles?
-            rootLocalFile = path.resolve(root, localFile.path)
-            @changes[rootLocalFile] = if validFile then @ChangeAction.Save else @ChangeAction.Remove
+        @getFilesChanges(result.files).done (filesChanges) =>
+          for filePath, changeAction of filesChanges
+            rootFilePath = path.resolve(root, filePath)
+            @changes[rootFilePath] = changeAction
 
           @debounce(true)
           deferred.resolve({app: @app})
