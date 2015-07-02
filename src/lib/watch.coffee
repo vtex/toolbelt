@@ -185,5 +185,29 @@ class Watcher
     filesPromise = (readAndHash(file) for file in files)
     return Q.all(filesPromise).then(mapFiles)
 
+  getFilesChanges: (files) =>
+    passToChanges = (filesToLoop, filesToCompare = undefined) =>
+      changes = {}
+      for file of filesToLoop
+        if filesToCompare is undefined
+          changes[file] = @ChangeAction.Save
+        else
+          if not filesToCompare[file]?
+            changes[file] = @ChangeAction.Remove
+          else
+            hashCompare = filesToCompare[file].hash isnt filesToLoop[file].hash
+            delete filesToCompare[file]
+            if hashCompare then changes[file] = @ChangeAction.Save
+
+      compareKeys = Object.keys(filesToCompare).length unless filesToCompare is undefined
+      if compareKeys > 0
+        for file of filesToCompare
+          changes[file] = @ChangeAction.Save
+
+      return changes
+
+    Q.all([@generateFilesHash(files), @getSandboxFiles()]).spread (localFiles, sandboxFiles) =>
+      if sandboxFiles? then passToChanges(sandboxFiles, localFiles) else passToChanges(localFiles)
+
 module.exports = Watcher
 
