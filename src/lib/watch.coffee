@@ -176,7 +176,14 @@ class Watcher
       hashedContent = crypto.createHash('md5').update(content, 'binary').digest('hex')
       return { path: filePath, hash: hashedContent }
 
-    return (readAndHash(file) for file in files)
+    mapFiles = (filesArr) ->
+      filesAndHash = {}
+      for file in filesArr
+        filesAndHash[file.path] = { hash: file.hash }
+      return filesAndHash
+
+    filesPromise = (readAndHash(file) for file in files)
+    return Q.all(filesPromise).then(mapFiles)
 
 module.exports = Watcher
 
