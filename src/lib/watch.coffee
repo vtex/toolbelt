@@ -193,10 +193,12 @@ class Watcher
             changes[file] = @ChangeAction.Remove
           else
             hashCompare = filesToCompare[file].hash isnt filesToLoop[file].hash
+            # Delete prop to later see if there's any left after comparison
             delete filesToCompare[file]
             if hashCompare then changes[file] = @ChangeAction.Save
 
       compareKeys = Object.keys(filesToCompare).length unless filesToCompare is undefined
+      # If there's files left, this means we should upload them
       if compareKeys > 0
         for file of filesToCompare
           changes[file] = @ChangeAction.Save
