@@ -24,15 +24,13 @@ class Watcher
     usePolling = (process.platform is 'win32') ? false
     fileManager.listFiles().then (result) =>
       deferred = Q.defer()
-
-      result.ignore[i] = path.join(root, ignore) for ignore, i in result.ignore
-      result.ignore.push /(^[.#]|(?:__|~)$)/
+      ignore = (path.join(root, ignorePath) for ignorePath in result.ignore)
 
       watcher = chokidar.watch(root, {
         persistent: true,
         usePolling: usePolling,
         ignoreInitial: true,
-        ignored: result.ignore
+        ignored: ignore
       })
 
       watcher
