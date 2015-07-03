@@ -7,6 +7,7 @@ chokidar = require 'chokidar'
 fileManager = require './file-manager'
 tinylr = require 'tiny-lr'
 crypto = require 'crypto'
+net = require 'net'
 
 class Watcher
   ChangeAction: {
@@ -15,6 +16,7 @@ class Watcher
   }
   changes: {}
   lastBatch: 0
+  lrPortInUse: false
 
   constructor: (@app, @vendor, @sandbox, @credentials) ->
     @lr = tinylr()
@@ -208,6 +210,16 @@ class Watcher
 
     Q.all([@generateFilesHash(files), @getSandboxFiles()]).spread (localFiles, sandboxFiles) =>
       if sandboxFiles? then passToChanges(sandboxFiles, localFiles) else passToChanges(localFiles)
+
+  lrRun: (port) =>
+    testPort = net.createServer()
+      .once('error', (err) => @lrPortInUse = true if err.code is 'EADDRINUSE')
+      .once('listening', =>
+        testPort.close()
+        @lr = tinylr()
+        @lr.listen(port)
+      )
+      .listen(port)
 
 module.exports = Watcher
 
