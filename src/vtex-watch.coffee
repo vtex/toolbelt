@@ -5,6 +5,7 @@ auth = require './lib/auth'
 Watcher = require './lib/watch'
 metadata = require './lib/meta'
 chalk = require 'chalk'
+vtexsay = require 'vtexsay'
 
 program.version(pkg.version).parse process.argv
 
@@ -24,7 +25,7 @@ Q.all([
   watcher = new Watcher(name, vendor, program.args[0], credentials)
   watcher.watch()
 ).then((app) ->
-  console.log chalk.green("\nWatching "+chalk.italic(app.app))
+  console.log vtexsay("Welcome to the VTEX Toolbelt!"), chalk.green("\n\nWatching "+chalk.italic(app.app))
 ).catch((error) ->
   console.error "\nFailed to start watch".red
   console.error error

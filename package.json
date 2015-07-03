@@ -41,7 +41,8 @@
     "request": "^2.53.0",
     "semver": "~4.3.1",
     "shelljs": "~0.3.0",
-    "tiny-lr": "^0.1.5"
+    "tiny-lr": "^0.1.5",
+    "vtexsay": "^1.0.3"
   },
   "preferGlobal": true,
   "devDependencies": {

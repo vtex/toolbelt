@@ -132,7 +132,7 @@ class Watcher
 
   changesSentSuccessfuly: (batchChanges) =>
     paths = batchChanges.map (change) -> change.path
-    console.log '\n... files uploaded'.green
+    console.log '\n... files uploaded\n'.green
     tinylr.changed paths...
 
   changeSendError: (error, response) =>
