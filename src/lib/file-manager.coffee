@@ -12,6 +12,7 @@ class FileManager
   listFiles: =>
     deferred = Q.defer()
     @getIgnoredPatterns().then((ignoredPatterns) =>
+      ignoredPatterns.push('**/.*', '**/*__', '**/*~')
       glob "**", nodir: true, ignore: ignoredPatterns, (er, files) =>
         deferred.resolve {files: files, ignore: ignoredPatterns}
     )
