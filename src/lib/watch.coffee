@@ -6,6 +6,7 @@ request = require 'request'
 chokidar = require 'chokidar'
 fileManager = require './file-manager'
 tinylr = require 'tiny-lr'
+crypto = require 'crypto'
 
 class Watcher
   ChangeAction: {
@@ -43,9 +44,13 @@ class Watcher
         deferred.reject(error)
       )
       .on('ready', =>
-        @changes[path.resolve(root, file)] = @ChangeAction.Save for file in result.files
-        @debounce(true)
-        deferred.resolve({app: @app})
+        @getFilesChanges(result.files).done (filesChanges) =>
+          for filePath, changeAction of filesChanges
+            rootFilePath = path.resolve(root, filePath)
+            @changes[rootFilePath] = changeAction
+
+          @debounce(true)
+          deferred.resolve({app: @app})
       )
       deferred.promise
 
@@ -142,4 +147,67 @@ class Watcher
       console.error 'Headers:', response.headers
       console.error 'Body:', response.body
 
+  getSandboxFiles: =>
+    options =
+      url: "http://api.beta.vtex.com/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
+      method: 'GET'
+      headers: {
+        Authorization: 'token ' + @credentials.token
+        'Accept': "application/vnd.vtex.gallery.v0+json"
+        'Content-Type': "application/json"
+        'x-vtex-accept-snapshot': false
+      }
+
+    Q.nfcall(request, options).then (data) =>
+      response = data[0]
+      if response.statusCode is 200
+        return JSON.parse(response.body)
+      else if response.statusCode is 404
+        return undefined
+      else
+        console.error 'Status:', response.statusCode
+
+  generateFilesHash: (files) =>
+    root = process.cwd()
+    readAndHash = (filePath) -> Q.nfcall(fs.readFile, path.resolve(root, filePath)).then (content) ->
+      hashedContent = crypto.createHash('md5').update(content, 'binary').digest('hex')
+      return { path: filePath, hash: hashedContent }
+
+    mapFiles = (filesArr) ->
+      filesAndHash = {}
+      for file in filesArr
+        filesAndHash[file.path] = { hash: file.hash }
+      return filesAndHash
+
+    filesPromise = (readAndHash(file) for file in files)
+    return Q.all(filesPromise).then(mapFiles)
+
+  getFilesChanges: (files) =>
+    passToChanges = (filesToLoop, filesToCompare) =>
+      changes = {}
+      filesToCompareExists = filesToCompare isnt undefined
+      for file of filesToLoop
+        if not filesToCompareExists
+          changes[file] = @ChangeAction.Save
+        else
+          if not filesToCompare[file]?
+            changes[file] = @ChangeAction.Remove
+          else
+            hashCompare = filesToCompare[file].hash isnt filesToLoop[file].hash
+            # Delete prop to later see if there's any left after comparison
+            delete filesToCompare[file]
+            if hashCompare then changes[file] = @ChangeAction.Save
+
+      compareKeys = Object.keys(filesToCompare).length unless not filesToCompareExists
+      # If there's files left, this means we should upload them
+      if compareKeys > 0
+        for file of filesToCompare
+          changes[file] = @ChangeAction.Save
+
+      return changes
+
+    Q.all([@generateFilesHash(files), @getSandboxFiles()]).spread (localFiles, sandboxFiles) =>
+      if sandboxFiles? then passToChanges(sandboxFiles, localFiles) else passToChanges(localFiles)
+
 module.exports = Watcher
+
