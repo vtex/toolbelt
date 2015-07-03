@@ -7,6 +7,7 @@ chokidar = require 'chokidar'
 fileManager = require './file-manager'
 tinylr = require 'tiny-lr'
 crypto = require 'crypto'
+net = require 'net'
 
 class Watcher
   ChangeAction: {
@@ -15,10 +16,10 @@ class Watcher
   }
   changes: {}
   lastBatch: 0
+  lrPortInUse: false
 
   constructor: (@app, @vendor, @sandbox, @credentials) ->
-    @lr = tinylr()
-    @lr.listen(35729)
+    @lrRun(35729)
 
   watch: =>
     root = process.cwd()
@@ -136,7 +137,14 @@ class Watcher
   changesSentSuccessfuly: (batchChanges) =>
     paths = batchChanges.map (change) -> change.path
     console.log '\n... files uploaded\n'.green
-    tinylr.changed paths...
+    options =
+      url: "http://localhost:35729/changed"
+      method: 'POST'
+      json: { files: paths }
+
+    request options, (error,response) =>
+      if response.statusCode isnt 200
+        @changeSendError(error, response)
 
   changeSendError: (error, response) =>
     console.error 'Error sending files'.red
@@ -208,6 +216,16 @@ class Watcher
 
     Q.all([@generateFilesHash(files), @getSandboxFiles()]).spread (localFiles, sandboxFiles) =>
       if sandboxFiles? then passToChanges(sandboxFiles, localFiles) else passToChanges(localFiles)
+
+  lrRun: (port) =>
+    testPort = net.createServer()
+      .once('error', (err) => @lrPortInUse = true if err.code is 'EADDRINUSE')
+      .once('listening', =>
+        testPort.close()
+        @lr = tinylr()
+        @lr.listen(port)
+      )
+      .listen(port)
 
 module.exports = Watcher
 
