@@ -19,8 +19,7 @@ class Watcher
   lrPortInUse: false
 
   constructor: (@app, @vendor, @sandbox, @credentials) ->
-    @lr = tinylr()
-    @lr.listen(35729)
+    @lrRun(35729)
 
   watch: =>
     root = process.cwd()
@@ -138,7 +137,14 @@ class Watcher
   changesSentSuccessfuly: (batchChanges) =>
     paths = batchChanges.map (change) -> change.path
     console.log '\n... files uploaded\n'.green
-    tinylr.changed paths...
+    options =
+      url: "http://localhost:35729/changed"
+      method: 'POST'
+      json: { files: paths }
+
+    request options, (error,response) =>
+      if response.statusCode isnt 200
+        @changeSendError(error, response)
 
   changeSendError: (error, response) =>
     console.error 'Error sending files'.red
