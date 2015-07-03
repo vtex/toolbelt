@@ -183,10 +183,11 @@ class Watcher
     return Q.all(filesPromise).then(mapFiles)
 
   getFilesChanges: (files) =>
-    passToChanges = (filesToLoop, filesToCompare = undefined) =>
+    passToChanges = (filesToLoop, filesToCompare) =>
       changes = {}
+      filesToCompareExists = filesToCompare isnt undefined
       for file of filesToLoop
-        if filesToCompare is undefined
+        if not filesToCompareExists
           changes[file] = @ChangeAction.Save
         else
           if not filesToCompare[file]?
@@ -197,7 +198,7 @@ class Watcher
             delete filesToCompare[file]
             if hashCompare then changes[file] = @ChangeAction.Save
 
-      compareKeys = Object.keys(filesToCompare).length unless filesToCompare is undefined
+      compareKeys = Object.keys(filesToCompare).length unless not filesToCompareExists
       # If there's files left, this means we should upload them
       if compareKeys > 0
         for file of filesToCompare
