@@ -6,9 +6,9 @@ Watcher = require './lib/watch'
 metadata = require './lib/meta'
 chalk = require 'chalk'
 vtexsay = require 'vtexsay'
+webpack = require 'webpack'
 
 program.version(pkg.version).parse process.argv
-
 unless program.args.length
   throw Error "Sandbox name is required. Use vtex watch <sandbox>".red
 
@@ -21,6 +21,10 @@ Q.all([
 ]).spread((credentials, meta) ->
   name = meta.name
   vendor = meta.vendor
+
+  if program.rawArgs[program.rawArgs.length - 1] is '-w'
+    config = require process.cwd() + '/webpack.config.js'
+    webpack(config).watch({}, ->)
 
   watcher = new Watcher(name, vendor, program.args[0], credentials)
   watcher.watch()
