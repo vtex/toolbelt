@@ -136,7 +136,8 @@ class Watcher
 
   changesSentSuccessfuly: (batchChanges) =>
     paths = batchChanges.map (change) -> change.path
-    console.log '\n... files uploaded\n'.green
+    if paths.length > 0
+      console.log '\n... files uploaded\n'.green
     options =
       url: "http://localhost:35729/changed"
       method: 'POST'
