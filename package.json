@@ -7,7 +7,8 @@
     "vtex-login": "lib/vtex-login.js",
     "vtex-logout": "lib/vtex-logout.js",
     "vtex-watch": "lib/vtex-watch.js",
-    "vtex-publish": "lib/vtex-publish.js"
+    "vtex-publish": "lib/vtex-publish.js",
+    "vtex-webpack": "lib/vtex-webpack.js"
   },
   "scripts": {
     "start": "node lib/vtex.js",
