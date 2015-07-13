@@ -6,6 +6,7 @@ program.version(pkg.version)
   .command('logout', 'clear local authentication credentials')
   .command('publish', 'publish this app to VTEX Gallery')
   .command('watch [sandbox]', 'start a development sandbox')
+  .command('webpack [sandbox]', 'start a development sandbox and webpack')
   .parse process.argv
 
 # Show help if no command was specified
@@ -21,3 +22,4 @@ for command in program.commands
 
 if not foundCommand
   console.log 'vtex: \''+args+'\' is not a command. See \'vtex help\'. \n'
+
