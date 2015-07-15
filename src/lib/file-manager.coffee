@@ -32,6 +32,11 @@ class FileManager
             .catch -> readIgnore(ignoreFile('.gitignore'))
     return file
 
+  readVtexRc: =>
+    vtexRc = path.resolve(process.cwd(), '.vtexrc')
+    file = Q.nfcall(fs.readFile, vtexRc, "utf8")
+    return file
+
   compressFiles: (app, version) =>
     @listFiles().then((result) =>
       zipPath = @getZipFilePath(app, version)
