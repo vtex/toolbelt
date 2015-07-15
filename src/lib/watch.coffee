@@ -163,11 +163,11 @@ class Watcher
 
   getSandboxFiles: =>
     options =
-      url: "http://api.beta.vtex.com/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
+      url: @endpoint + "/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'GET'
       headers: {
         Authorization: 'token ' + @credentials.token
-        'Accept': "application/vnd.vtex.gallery.v0+json"
+        'Accept': @acceptHeader
         'Content-Type': "application/json"
         'x-vtex-accept-snapshot': false
       }
