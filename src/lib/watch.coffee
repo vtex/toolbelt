@@ -28,6 +28,8 @@ class Watcher
     usePolling = (process.platform is 'win32') ? false
     fileManager.listFiles().then (result) =>
       deferred = Q.defer()
+      @endpoint = result.endpoint if result.endpoint
+      @acceptHeader = result.header if result.header
       ignore = (path.join(root, ignorePath) for ignorePath in result.ignore)
 
       watcher = chokidar.watch(root, {
