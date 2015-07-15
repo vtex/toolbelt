@@ -25,6 +25,18 @@ class FileManager
       ignored.map((item) => if item.substr(-1) is "/" then item += "**" else item)
     ).catch((e) => return [])
 
+  getRequestConfig: =>
+    @readVtexRc().then((vtexRc) =>
+      lines = vtexRc.match(/[^\r\n]+/g)
+      config = lines.filter((line) => line.charAt(0) != '#' and line != '')
+      configObj = {}
+      for prop in config
+        confKey = /^(\w*)=?/.exec(prop)[1]
+        confVal = /"(.*)"/.exec(prop)[1]
+        configObj[confKey] = confVal
+      return configObj
+    ).catch((e) => return [])
+
   readVtexIgnore: =>
     ignoreFile = (file) -> path.resolve process.cwd(), file
     readIgnore = (ignore) -> Q.nfcall(fs.readFile, ignore, "utf8")
