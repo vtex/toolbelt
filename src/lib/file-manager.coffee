@@ -37,7 +37,7 @@ class FileManager
       configObj = {}
       for prop in config
         confKey = /^(\w*)=?/.exec(prop)[1]
-        confVal = /"(.*)"/.exec(prop)[1]
+        confVal = /"(.*)"/.exec(prop)[1].replace(/\/$/, '')
         configObj[confKey] = confVal
       return configObj
     ).catch((e) => return [])
