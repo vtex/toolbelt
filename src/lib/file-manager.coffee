@@ -11,10 +11,15 @@ class FileManager
 
   listFiles: =>
     deferred = Q.defer()
-    @getIgnoredPatterns().then((ignoredPatterns) =>
+    Q.all([@getIgnoredPatterns(), @getRequestConfig()]).spread((ignoredPatterns, requestConfig) =>
       ignoredPatterns.push('**/.*', '**/*__', '**/*~')
       glob "**", nodir: true, ignore: ignoredPatterns, (er, files) =>
-        deferred.resolve {files: files, ignore: ignoredPatterns}
+        deferred.resolve({
+          files: files
+          ignore: ignoredPatterns
+          endpoint: requestConfig.GalleryEndpoint
+          header: requestConfig.AcceptHeader
+        })
     )
     deferred.promise
 
