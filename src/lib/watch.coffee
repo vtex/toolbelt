@@ -19,6 +19,8 @@ class Watcher
   lrPortInUse: false
 
   constructor: (@app, @vendor, @sandbox, @credentials) ->
+    @endpoint = "http://api.beta.vtex.com/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
+    @acceptHeader = "application/vnd.vtex.gallery.v0+json"
     @lrRun(35729)
 
   watch: =>
@@ -108,12 +110,12 @@ class Watcher
 
   sendChanges: (batchChanges, refresh) =>
     options =
-      url: "http://api.beta.vtex.com/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
+      url: @endpoint
       method: 'POST'
       json: batchChanges
       headers: {
         Authorization: 'token ' + @credentials.token
-        'Accept': "application/vnd.vtex.gallery.v0+json"
+        'Accept': @acceptHeader
         'Content-Type': "application/json"
         'x-vtex-accept-snapshot': false
       }
