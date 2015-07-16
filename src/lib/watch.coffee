@@ -19,6 +19,8 @@ class Watcher
   lrPortInUse: false
 
   constructor: (@app, @vendor, @sandbox, @credentials) ->
+    @endpoint = "http://api.beta.vtex.com/"
+    @acceptHeader = "application/vnd.vtex.gallery.v0+json"
     @lrRun(35729)
 
   watch: =>
@@ -26,6 +28,8 @@ class Watcher
     usePolling = (process.platform is 'win32') ? false
     fileManager.listFiles().then (result) =>
       deferred = Q.defer()
+      @endpoint = result.endpoint if result.endpoint
+      @acceptHeader = result.header if result.header
       ignore = (path.join(root, ignorePath) for ignorePath in result.ignore)
 
       watcher = chokidar.watch(root, {
@@ -108,12 +112,12 @@ class Watcher
 
   sendChanges: (batchChanges, refresh) =>
     options =
-      url: "http://api.beta.vtex.com/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
+      url: @endpoint + "/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'POST'
       json: batchChanges
       headers: {
         Authorization: 'token ' + @credentials.token
-        'Accept': "application/vnd.vtex.gallery.v0+json"
+        'Accept': @acceptHeader
         'Content-Type': "application/json"
         'x-vtex-accept-snapshot': false
       }
@@ -159,11 +163,11 @@ class Watcher
 
   getSandboxFiles: =>
     options =
-      url: "http://api.beta.vtex.com/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
+      url: @endpoint + "/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'GET'
       headers: {
         Authorization: 'token ' + @credentials.token
-        'Accept': "application/vnd.vtex.gallery.v0+json"
+        'Accept': @acceptHeader
         'Content-Type': "application/json"
         'x-vtex-accept-snapshot': false
       }
