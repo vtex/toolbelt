@@ -19,7 +19,7 @@ class Watcher
   lrPortInUse: false
 
   constructor: (@app, @vendor, @sandbox, @credentials) ->
-    @endpoint = "http://api.beta.vtex.com/"
+    @endpoint = "http://api.beta.vtex.com"
     @acceptHeader = "application/vnd.vtex.gallery.v0+json"
     @lrRun(35729)
 
