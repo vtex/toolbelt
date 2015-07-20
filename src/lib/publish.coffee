@@ -11,20 +11,24 @@ class AppPublisher
 
   pushApp: (app, version, vendor, credentials) =>
     console.log "Compressing files...".grey
-    fileManager.compressFiles(app, version).then =>
+    vtexRc = fileManager.getRequestConfig()
+    compressedFiles = fileManager.compressFiles(app, version)
+    Q.all([compressedFiles, vtexRc]).spread (zipFile, config) =>
       deferred = Q.defer()
+      url = config.GalleryEndpoint or "http://api.beta.vtex.com"
+      acceptHeader = config.AcceptHeader or "application/vnd.vtex.gallery.v0+json"
       formData =
         attachments: [
             fs.createReadStream(fileManager.getZipFilePath(app, version))
         ]
 
       options =
-        url: "http://api.beta.vtex.com/#{vendor}/apps"
+        url: "#{url}/#{vendor}/apps"
         method: 'POST'
         formData: formData
         headers: {
           Authorization : 'token ' + credentials.token
-          'Accept' : "application/vnd.vtex.gallery.v0+json"
+          'Accept' : acceptHeader
           'x-vtex-accept-snapshot' : false
         }
 
