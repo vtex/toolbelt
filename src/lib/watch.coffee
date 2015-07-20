@@ -112,7 +112,7 @@ class Watcher
 
   sendChanges: (batchChanges, refresh) =>
     options =
-      url: @endpoint + "/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
+      url: "#{@endpoint}/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'POST'
       json: batchChanges
       headers: {
@@ -163,7 +163,7 @@ class Watcher
 
   getSandboxFiles: =>
     options =
-      url: @endpoint + "/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
+      url: "#{@endpoint}/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'GET'
       headers: {
         Authorization: 'token ' + @credentials.token
