@@ -90,3 +90,5 @@ module.exports =
   getZipFilePath: fileManager.getZipFilePath
   compressFiles: fileManager.compressFiles
   removeZipFile: fileManager.removeZipFile
+  getRequestConfig: fileManager.getRequestConfig
+
