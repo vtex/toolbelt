@@ -11,41 +11,40 @@ class AppPublisher
 
   pushApp: (app, version, vendor, credentials) =>
     console.log "Compressing files...".grey
-    vtexRc = fileManager.getRequestConfig()
-    compressedFiles = fileManager.compressFiles(app, version)
-    Q.all([compressedFiles, vtexRc]).spread (zipFile, config) =>
-      deferred = Q.defer()
-      url = config.GalleryEndpoint or "http://api.beta.vtex.com"
-      acceptHeader = config.AcceptHeader or "application/vnd.vtex.gallery.v0+json"
-      formData =
-        attachments: [
+    fileManager.compressFiles(app, version).then =>
+      fileManager.getRequestConfig().then (config) =>
+        deferred = Q.defer()
+        url = config.GalleryEndpoint or "http://api.beta.vtex.com"
+        acceptHeader = config.AcceptHeader or "application/vnd.vtex.gallery.v0+json"
+        formData =
+          attachments: [
             fs.createReadStream(fileManager.getZipFilePath(app, version))
-        ]
+          ]
 
-      options =
-        url: "#{url}/#{vendor}/apps"
-        method: 'POST'
-        formData: formData
-        headers: {
-          Authorization : 'token ' + credentials.token
-          'Accept' : acceptHeader
-          'x-vtex-accept-snapshot' : false
-        }
+        options =
+          url: "#{url}/#{vendor}/apps"
+          method: 'POST'
+          formData: formData
+          headers: {
+            Authorization : 'token ' + credentials.token
+            'Accept' : acceptHeader
+            'x-vtex-accept-snapshot' : false
+          }
 
-      console.log "Sending files...".grey
-      request(options, (error, response) =>
-        if error
-          return deferred.reject(error)
+        console.log "Sending files...".grey
+        request(options, (error, response) =>
+          if error
+            return deferred.reject(error)
 
-        fileManager.removeZipFile(app, version)
+          fileManager.removeZipFile(app, version)
 
-        if response.statusCode in [200, 201]
-          deferred.resolve({app: app, version: version})
-        else
-          deferred.reject({status: response.statusCode, body: response.body})
-      )
+          if response.statusCode in [200, 201]
+            deferred.resolve({app: app, version: version})
+          else
+            deferred.reject({status: response.statusCode, body: response.body})
+        )
 
-      deferred.promise
+        deferred.promise
 
 appPublisher = new AppPublisher()
 module.exports =
