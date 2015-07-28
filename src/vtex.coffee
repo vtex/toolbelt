@@ -47,4 +47,12 @@ run = (args) ->
     process.exit(1)
   )
 
+if options.login
+  run(['./vtex-login.js'])
+else if options.logout
+  run(['./vtex-logout.js'])
+else if options.publish
+  run(['./vtex-publish.js'])
+else if options.watch
+  run(['./vtex-watch.js'])
 
