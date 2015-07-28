@@ -1,5 +1,7 @@
 program = require 'commander'
+docopt = require('docopt').docopt
 pkg = require '../package.json'
+spawn = require('child_process').spawn
 
 program.version(pkg.version)
   .command('login', 'log in with your VTEX credentials')
