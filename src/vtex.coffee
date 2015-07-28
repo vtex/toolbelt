@@ -1,27 +1,34 @@
-program = require 'commander'
 docopt = require('docopt').docopt
 pkg = require '../package.json'
 spawn = require('child_process').spawn
 
-program.version(pkg.version)
-  .command('login', 'log in with your VTEX credentials')
-  .command('logout', 'clear local authentication credentials')
-  .command('publish', 'publish this app to VTEX Gallery')
-  .command('watch [sandbox]', 'start a development sandbox')
-  .command('webpack [sandbox]', 'start a development sandbox and webpack')
-  .parse process.argv
+doc = """
+  VTEX Toolbelt
 
-# Show help if no command was specified
-args = process.argv.slice(2)
-if !args.length
-  program.outputHelp()
+  Usage:
+    vtex login
+    vtex logout
+    vtex publish
+    vtex watch [-ws] <sandbox>
+    vtex -h | --help
+    vtex -v | --version
 
-# Give feedback when user types an unkown command
-foundCommand = false
-for command in program.commands
-  if command._name in args
-    foundCommand = true
+  Commands:
+    login          Log in with your VTEX credentials
+    logout         Clear local authentication credentials
+    publish        Publish this app to VTEX Gallery
+    watch          Start a development sandbox
 
-if not foundCommand
-  console.log 'vtex: \''+args+'\' is not a command. See \'vtex help\'. \n'
+  Options:
+    -h --help      Show this screen
+    -v --version   Show version
+    -w             Start with webpack
+    -s             Start with webpack-dev-server
+
+  Arguments:
+    <sandbox>      The sandbox name you wish to work on
+"""
+
+options = docopt(doc, version: pkg.version)
+
 
