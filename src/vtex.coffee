@@ -31,4 +31,20 @@ doc = """
 
 options = docopt(doc, version: pkg.version)
 
+run = (args) ->
+  if process.platform isnt 'win32'
+    proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] })
+  else
+    proc = spawn(process.execPath, args, { stdio: 'inherit'})
+
+  proc.on('close', process.exit.bind(process))
+  proc.on('error', (err) ->
+    if err.code == "ENOENT"
+      console.error('\n  %s(1) does not exist, try --help\n', bin)
+    else if err.code == "EACCES"
+      console.error('\n  %s(1) not executable. try chmod or run with root\n', bin)
+
+    process.exit(1)
+  )
+
 
