@@ -30,6 +30,7 @@ doc = """
 """
 
 options = docopt(doc, version: pkg.version)
+
 command = ""
 argv = []
 run = (argv) ->
@@ -40,7 +41,7 @@ run = (argv) ->
   if process.platform isnt 'win32'
     proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] })
   else
-    proc = spawn(process.execPath, args, { stdio: 'inherit'})
+    proc = spawn(process.execPath, args, { stdio: 'inherit' })
 
   proc.on('close', process.exit.bind(process))
   proc.on('error', (err) ->
