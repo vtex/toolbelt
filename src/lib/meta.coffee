@@ -11,7 +11,7 @@ class MetadataFile
     .then(@validateMetadata)
     .catch((error) -> throw new Error (error.message.red))
 
-  validateMetadata: (meta) =>
+  validateMetadata: (meta) ->
     if not meta['name']? then throw new Error 'Field \"name\" should be set in meta.json file'
     if not meta['version']? then throw new Error 'Field \"version\" should be set in meta.json file'
     if not meta['vendor']? then throw new Error 'Field \"vendor\" should be set in meta.json file'
@@ -21,12 +21,13 @@ class MetadataFile
 
     return meta
 
-  readAppMetadata: =>
+  readAppMetadata: ->
     metaPath = path.resolve process.cwd(), 'meta.json'
-    meta = Q.nfcall(fs.readFile, metaPath, "utf8").catch( => throw new Error "Couldn't find meta.json file.")
+    meta = Q.nfcall(fs.readFile, metaPath, "utf8").catch( -> throw new Error "Couldn't find meta.json file.")
     return meta
 
 meta = new MetadataFile()
 
 module.exports =
   getAppMetadata: meta.getAppMetadata
+
