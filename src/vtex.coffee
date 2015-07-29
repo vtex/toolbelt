@@ -53,11 +53,22 @@ run = (argv) ->
   )
 
 if options.login
-  run(['./vtex-login.js'])
+  command = "vtex-login"
 else if options.logout
-  run(['./vtex-logout.js'])
+  command = "vtex-logout"
 else if options.publish
-  run(['./vtex-publish.js'])
-else if options.watch
-  run(['./vtex-watch.js'])
+  command = "vtex-publish"
+else
+  if options['-w'] or options['-s']
+    command = "vtex-webpack"
+  else
+    command = "vtex-watch"
+
+  argv = [
+    options['-w'],
+    options['-s'],
+    options['<sandbox>']
+  ]
+
+run(argv)
 
