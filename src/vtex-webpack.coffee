@@ -11,10 +11,11 @@ vtexwatch.then(->
   if process.argv[process.argv.length - 2] is 'true'
     process.env['NODE_ENV'] = 'hot'
     options = config.devServer
+    port = if options.port? then options.port else 8080
     host = if options.host? then options.host else 'localhost'
 
     setTimeout(->
-      new WebpackDevServer(compiler, options).listen(options.port, host, (err) ->
+      new WebpackDevServer(compiler, options).listen(port, host, (err) ->
         if err then throw err
 
         protocol = if options.https? then 'https' else 'http'
