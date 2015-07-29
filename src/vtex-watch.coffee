@@ -1,17 +1,11 @@
 Q = require 'q'
-program = require 'commander'
-pkg = require '../package.json'
 auth = require './lib/auth'
 Watcher = require './lib/watch'
 metadata = require './lib/meta'
 chalk = require 'chalk'
 vtexsay = require 'vtexsay'
 
-program.version(pkg.version).parse process.argv
-unless program.args.length
-  throw Error "Sandbox name is required. Use vtex watch <sandbox>".red
-
-unless program.args[0].match(/^[\w_-]+$/)
+if not process.argv[process.argv.length - 1].match(/^[\w_-]+$/)
   throw Error 'Sandbox may contain only letters, numbers, underscores and hyphens'.red
 
 promise = Q.all([
@@ -21,7 +15,7 @@ promise = Q.all([
   name = meta.name
   vendor = meta.vendor
 
-  watcher = new Watcher(name, vendor, program.args[0], credentials)
+  watcher = new Watcher(name, vendor, process.argv[process.argv.length - 1], credentials)
   watcher.watch()
 ).then((app) ->
   console.log vtexsay("Welcome to the VTEX Toolbelt!"), chalk.green("\n\nWatching "+chalk.italic(app.app)+"\n")
@@ -31,3 +25,4 @@ promise = Q.all([
 )
 
 module.exports = promise
+
