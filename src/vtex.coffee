@@ -1,6 +1,7 @@
 docopt = require('docopt').docopt
 pkg = require '../package.json'
 spawn = require('child_process').spawn
+path = require 'path'
 
 doc = """
   Usage:
@@ -29,8 +30,13 @@ doc = """
 """
 
 options = docopt(doc, version: pkg.version)
+command = ""
+argv = []
+run = (argv) ->
+  baseDir = path.dirname(process.argv[1])
+  args = ["#{baseDir}/#{command}"]
+  args.push(arg) for arg in argv
 
-run = (args) ->
   if process.platform isnt 'win32'
     proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] })
   else
