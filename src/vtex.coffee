@@ -3,13 +3,11 @@ pkg = require '../package.json'
 spawn = require('child_process').spawn
 
 doc = """
-  VTEX Toolbelt
-
   Usage:
     vtex login
     vtex logout
     vtex publish
-    vtex watch [-ws] <sandbox>
+    vtex watch [-w | -s] <sandbox>
     vtex -h | --help
     vtex -v | --version
 
@@ -26,7 +24,8 @@ doc = """
     -s             Start with webpack-dev-server
 
   Arguments:
-    <sandbox>      The sandbox name you wish to work on
+    sandbox        The name of the sandbox you wish to work on
+
 """
 
 options = docopt(doc, version: pkg.version)
