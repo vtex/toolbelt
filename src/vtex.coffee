@@ -8,24 +8,24 @@ doc = """
     vtex login
     vtex logout
     vtex publish
-    vtex watch [-w | -s] <sandbox>
-    vtex -h | --help
-    vtex -v | --version
+    vtex watch [--webpack | --server] <sandbox>
+    vtex --help
+    vtex --version
 
   Commands:
-    login          Log in with your VTEX credentials
-    logout         Clear local authentication credentials
-    publish        Publish this app to VTEX Gallery
-    watch          Start a development sandbox
+    login         Log in with your VTEX credentials
+    logout        Clear local authentication credentials
+    publish       Publish this app to VTEX Gallery
+    watch         Start a development sandbox
 
   Options:
-    -h --help      Show this screen
-    -v --version   Show version
-    -w             Start with webpack
-    -s             Start with webpack-dev-server
+    -h --help     Show this screen
+    -v --version  Show version
+    -w --webpack  Start with webpack
+    -s --server   Start with webpack-dev-server
 
   Arguments:
-    sandbox        The name of the sandbox you wish to work on
+    sandbox       The name of the sandbox you wish to work on
 
 """
 
@@ -34,7 +34,7 @@ options = docopt(doc, version: pkg.version)
 command = ""
 argv = []
 childEnv = Object.create(process.env)
-run = (argv) ->
+run = () ->
   baseDir = path.dirname(process.argv[1])
   args = ["#{baseDir}/#{command}"]
   args.push(arg) for arg in argv
@@ -61,17 +61,17 @@ else if options.logout
 else if options.publish
   command = "vtex-publish"
 else
-  if options['-w'] or options['-s']
+  if options['--webpack'] or options['--server']
     command = "vtex-webpack"
-    childEnv['NODE_ENV'] = 'hot' if options['-s']
+    childEnv['NODE_ENV'] = 'hot' if options['--server']
   else
     command = "vtex-watch"
 
   argv = [
-    options['-w'],
-    options['-s'],
+    options['--webpack'],
+    options['--server'],
     options['<sandbox>']
   ]
 
-run(argv)
+run()
 
