@@ -15,7 +15,6 @@ vtexwatch.then(->
   compiler = webpack(config)
 
   if server is 'true'
-    process.env['NODE_ENV'] = 'hot'
     options = config.devServer
     port = if options.port? then options.port else 8080
     host = if options.host? then options.host else 'localhost'
