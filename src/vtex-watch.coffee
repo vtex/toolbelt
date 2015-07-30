@@ -5,7 +5,10 @@ metadata = require './lib/meta'
 chalk = require 'chalk'
 vtexsay = require 'vtexsay'
 
-if not process.argv[process.argv.length - 1].match(/^[\w_-]+$/)
+SANDBOX_INDEX = process.argv.length - 1
+sandbox = process.argv[SANDBOX_INDEX]
+
+unless sandbox.match(/^[\w_-]+$/)
   throw Error 'Sandbox may contain only letters, numbers, underscores and hyphens'.red
 
 promise = Q.all([
@@ -15,7 +18,7 @@ promise = Q.all([
   name = meta.name
   vendor = meta.vendor
 
-  watcher = new Watcher(name, vendor, process.argv[process.argv.length - 1], credentials)
+  watcher = new Watcher(name, vendor, sandbox, credentials)
   watcher.watch()
 ).then((app) ->
   console.log vtexsay("Welcome to the VTEX Toolbelt!"), chalk.green("\n\nWatching "+chalk.italic(app.app)+"\n")
