@@ -51,8 +51,9 @@ vtexwatch.then(->
     testPort = net.createServer()
       .once('error', (err) ->
         if err.code is 'EADDRINUSE'
-          console.log "Server port #{port} already in use".red
-          process.exit()
+          console.log chalk.red.bold("ERROR:") + " Server port #{port} already in use"
+          console.log "(maybe another `vtex watch -s` is running?)"
+          process.exit(1)
       )
       .once('listening', ->
         testPort.close()
@@ -76,4 +77,3 @@ vtexwatch.then(->
       )
     , DELAY_TIME)
 )
-
