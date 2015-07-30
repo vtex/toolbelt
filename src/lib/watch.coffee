@@ -45,7 +45,7 @@ class Watcher
       .on('change', @onChanged)
       .on('unlink', @onUnlinked)
       .on('unlinkDir', @onDirUnlinked)
-      .on('error', (error) =>
+      .on('error', (error) ->
         deferred.reject(error)
       )
       .on('ready', =>
@@ -63,7 +63,7 @@ class Watcher
     @changes[filePath] = @ChangeAction.Save
     @debounce()
 
-  onDirAdded: (dirPath) =>
+  onDirAdded: (dirPath) ->
 
   onChanged: (filePath) =>
     @changes[filePath] = @ChangeAction.Save
@@ -152,7 +152,7 @@ class Watcher
       if response.statusCode isnt 200
         @changeSendError(error, response)
 
-  changeSendError: (error, response) =>
+  changeSendError: (error, response) ->
     console.error 'Error sending files'.red
     if error
       console.error error
@@ -172,7 +172,7 @@ class Watcher
         'x-vtex-accept-snapshot': false
       }
 
-    Q.nfcall(request, options).then (data) =>
+    Q.nfcall(request, options).then (data) ->
       response = data[0]
       if response.statusCode is 200
         return JSON.parse(response.body)
@@ -181,7 +181,7 @@ class Watcher
       else
         console.error 'Status:', response.statusCode
 
-  generateFilesHash: (files) =>
+  generateFilesHash: (files) ->
     root = process.cwd()
     readAndHash = (filePath) -> Q.nfcall(fs.readFile, path.resolve(root, filePath)).then (content) ->
       hashedContent = crypto.createHash('md5').update(content, 'binary').digest('hex')
@@ -220,7 +220,7 @@ class Watcher
 
       return changes
 
-    Q.all([@generateFilesHash(files), @getSandboxFiles()]).spread (localFiles, sandboxFiles) =>
+    Q.all([@generateFilesHash(files), @getSandboxFiles()]).spread (localFiles, sandboxFiles) ->
       if sandboxFiles? then passToChanges(sandboxFiles, localFiles) else passToChanges(localFiles)
 
   lrRun: (port) =>

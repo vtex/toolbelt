@@ -9,10 +9,10 @@ class AppPublisher
     console.log "Publishing", "#{app}", "#{version}"
     @pushApp(app, version, vendor, credentials)
 
-  pushApp: (app, version, vendor, credentials) =>
+  pushApp: (app, version, vendor, credentials) ->
     console.log "Compressing files...".grey
-    fileManager.compressFiles(app, version).then =>
-      fileManager.getRequestConfig().then (config) =>
+    fileManager.compressFiles(app, version).then ->
+      fileManager.getRequestConfig().then (config) ->
         deferred = Q.defer()
         url = config.GalleryEndpoint or "http://api.beta.vtex.com"
         acceptHeader = config.AcceptHeader or "application/vnd.vtex.gallery.v0+json"
@@ -32,7 +32,7 @@ class AppPublisher
           }
 
         console.log "Sending files...".grey
-        request(options, (error, response) =>
+        request(options, (error, response) ->
           if error
             return deferred.reject(error)
 
@@ -49,3 +49,4 @@ class AppPublisher
 appPublisher = new AppPublisher()
 module.exports =
   publish: appPublisher.publish
+

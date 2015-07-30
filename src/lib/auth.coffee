@@ -9,7 +9,7 @@ class AuthenticationService
   login: =>
     @askCredentials()
     .then(@saveCredentials)
-    .catch (error) =>
+    .catch (error) ->
       throw new Error error
 
   getValidCredentials: =>
@@ -40,9 +40,9 @@ class AuthenticationService
     prompt.get options, (err, result) =>
       console.log 'Login failed. Please try again.' if err
       if result.login and result.password
-        @getAuthenticationToken(result.login, result.password).then (token) =>
+        @getAuthenticationToken(result.login, result.password).then (token) ->
           deferred.resolve {email: result.login, token: token}
-        .catch (error) =>
+        .catch (error) ->
           deferred.reject error
       else
         deferred.reject result
@@ -51,14 +51,14 @@ class AuthenticationService
 
   getAuthenticationToken: (email, password) =>
     deferred = Q.defer()
-    @getTemporaryToken().then (token) =>
+    @getTemporaryToken().then (token) ->
       requestOptions =
         uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authentication/classic/validate" +
           "?authenticationToken=#{encodeURIComponent(token)}" +
           "&login=#{encodeURIComponent(email)}" +
           "&password=#{encodeURIComponent(password)}"
 
-      request requestOptions, (error, response, body) =>
+      request requestOptions, (error, response, body) ->
         if error then deferred.reject error
         if response.statusCode isnt 200
           console.log JSON.parse(body).error
@@ -75,16 +75,16 @@ class AuthenticationService
   getCurrentCredentials: =>
     credentials = Q.nfcall(fs.readFile, @getCredentialsPath(), "utf8")
     .then(JSON.parse)
-    .catch () => {}
+    .catch () -> {}
     return credentials
 
-  isTokenValid: (credentials) =>
+  isTokenValid: (credentials) ->
     deferred = Q.defer()
 
     requestOptions =
       uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authenticated/user?authToken=#{encodeURIComponent(credentials.token)}"
 
-    request requestOptions, (error, response, body) =>
+    request requestOptions, (error, response, body) ->
       deferred.reject error if error
       if response.statusCode isnt 200
         console.log JSON.parse(body).error
@@ -117,12 +117,12 @@ class AuthenticationService
   deleteCredentials: () =>
     Q.nfcall(fs.unlink, @getCredentialsPath())
 
-  getTemporaryToken: =>
+  getTemporaryToken: ->
     deferred = Q.defer()
     requestOptions =
       uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start"
 
-    request requestOptions, (error, response, body) =>
+    request requestOptions, (error, response, body) ->
       if error then deferred.reject error
       if response.statusCode isnt 200
         console.log JSON.parse(body).error
@@ -136,7 +136,7 @@ class AuthenticationService
 
     deferred.promise
 
-  getCredentialsPath: =>
+  getCredentialsPath: ->
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
     path.resolve(home, '.vtex/credentials.json')
 
