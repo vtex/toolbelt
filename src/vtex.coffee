@@ -33,15 +33,16 @@ options = docopt(doc, version: pkg.version)
 
 command = ""
 argv = []
+childEnv = Object.create(process.env)
 run = (argv) ->
   baseDir = path.dirname(process.argv[1])
   args = ["#{baseDir}/#{command}"]
   args.push(arg) for arg in argv
 
   if process.platform isnt 'win32'
-    proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2] })
+    proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2], env: childEnv })
   else
-    proc = spawn(process.execPath, args, { stdio: 'inherit' })
+    proc = spawn(process.execPath, args, { stdio: 'inherit', env: childEnv })
 
   proc.on('close', process.exit.bind(process))
   proc.on('error', (err) ->
@@ -62,6 +63,7 @@ else if options.publish
 else
   if options['-w'] or options['-s']
     command = "vtex-webpack"
+    childEnv['NODE_ENV'] = 'hot' if options['-s']
   else
     command = "vtex-watch"
 
