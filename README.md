@@ -41,3 +41,22 @@ For this to work make sure this requirements are filled:
 # Publishing an app
 
 To publish your VTEX app to VTEX Gallery, just type `vtex publish`. The app will be published under the vendor name.
+
+# Troubleshooting
+
+If an error of this sort occurs:
+
+```
+ERROR in ./src/components/MyComponent.jsx
+Module not found: Error: Cannot resolve module 'react/lib/ReactMount' in /home/username/projects/mycomponent/src/components
+ @ ./src/components/MyComponent.jsx 1:350-381
+```
+
+Add `ReactMount` to your webpack.config externals:
+
+```js
+externals: {
+  'react/lib/ReactMount': 'ReactMount',
+  'react': 'React'
+},
+```
