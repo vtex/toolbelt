@@ -60,3 +60,20 @@ externals: {
   'react': 'React'
 },
 ```
+
+If you have multiple entry points, you should include `webpack/hot/only-dev-server` on each entry, like so:
+
+```js
+  entry: hot ? {
+    '.':
+      [
+        'webpack-dev-server/client?http://0.0.0.0:3000',
+        'webpack/hot/only-dev-server',
+        './src/' + pkg.name + '.jsx'
+      ],
+    editor:
+      [
+        'webpack/hot/only-dev-server',
+        './src/' + pkg.name + '-editor.jsx'
+      ]
+```
