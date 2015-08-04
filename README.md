@@ -44,6 +44,8 @@ To publish your VTEX app to VTEX Gallery, just type `vtex publish`. The app will
 
 # Troubleshooting
 
+### Cannot resolve module 'react/lib/ReactMount'
+
 If an error of this sort occurs:
 
 ```
@@ -60,6 +62,8 @@ externals: {
   'react': 'React'
 },
 ```
+
+### Multiple entry points not hot reloading
 
 If you have multiple entry points, you should include `webpack/hot/only-dev-server` on each entry, like so:
 
