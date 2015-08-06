@@ -1,12 +1,9 @@
 Q = require 'q'
-program = require 'commander'
 pkg = require '../package.json'
 metadata = require './lib/meta'
 publisher = require './lib/publish'
 auth = require './lib/auth'
 chalk = require 'chalk'
-
-program.version(pkg.version).parse process.argv
 
 Q.all([
   auth.getValidCredentials()
