@@ -19,10 +19,10 @@ npm install -g vtex
 
 ## Warming up
 
-Remember that your project need to meet some requirements to work:
+Remember that your project needs to meet some requirements to work:
 
 1. You need to have a VTEX ID credential in order to send the files to the sandbox or publish an app
-2. Your app must have a proper `meta.json`
+2. Your app must have a proper `meta.json`, here's an example:
 
     ```javascript
     {
@@ -34,7 +34,8 @@ Remember that your project need to meet some requirements to work:
 
 4. You must properly set `vtex_sandbox` cookie
 
-    > The sandbox is used to test your apps that aren't published yet. You'll use a sandbox only if you're a VTEX apps developer.
+    > The sandbox is used to test your apps that aren't published yet.
+    > You'll use a sandbox only if you're a VTEX apps developer.
     
     The sandbox it's a alternative version of an app that only you see under development.
     
@@ -167,7 +168,8 @@ Unfortunately to access the URL normally, you need to comment or delete the line
 
 The VTEX Ignore it's a file that you can put on the root of your project, naming it `.vtexignore`.
 
-This files tells `watch` which files he shouldn't send to the server. If no `.vtexignore` is found, it fallbacks to the [.gitignore](http://git-scm.com/docs/gitignore) file.
+This files tells `watch` which files he shouldn't send to the server.
+If no `.vtexignore` is found, it fallbacks to the [.gitignore](http://git-scm.com/docs/gitignore) file.
 
 # Publish
 
