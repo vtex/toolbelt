@@ -48,11 +48,12 @@ Remember that your project need to meet some requirements to work:
     ---|---
     vtex_sandbox|vtex/mysandbox=myapp
 
-# Developping an app
+## Developping an app
 
 > If you need help with the structure of your project or you just don't want to spend the time with this tinkering, you can use our [generator](https://open.spotify.com/track/5mCprFWOqe0jB96v9RhLBo)!
 
 On the root of your project, run the `vtex watch <sandbox-name>`.
+
 That should do it! The VTEX Toolbelt watcher will be monitoring your files and send them to the VTEX Gallery as soon as you edit them.
 
 For more information on the commands, options and other configs, you can seek more information below!
@@ -74,6 +75,13 @@ vtex watch <sandbox-name>
 You are free to set any name you want in the `sandbox-name` parameter, as long as it contains only letters, numbers, underscores and hyphens.
 
 VTEX Toolbelt will upload all your app files to the sandbox specified and will be watching for any changes you make to them.
+
+There's other forms of use too, if you use the options:
+
+Option|Alias
+---|---
+`vtex watch --webpack <sandbox-name>`|`vtex watch -w <sandbox-name>`
+`vtex watch --server <sandbox-name>`|`vtex watch -s <sandbox-name>`
 
 ## Webpack
 
@@ -152,6 +160,14 @@ For more on that, you can see [this](http://webpack.github.io/docs/webpack-dev-s
 That should do it! Remember to open the URL that you defined with the port configured in your webpack.config file.
 
 Unfortunately to access the URL normally, you need to comment or delete the line added in your hosts file.
+
+# VTEX Ignore
+
+
+
+# VTEX RC
+
+
 
 # Publish
 
