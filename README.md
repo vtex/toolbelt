@@ -62,7 +62,9 @@ For more information on the commands, options and other configs, you can seek mo
 
 # Auth
 
+You can use `vtex login` to login with yout VTEX ID credentials or `vtex logout` if you're already logged in and want to change credentials.
 
+Note that `watch` and `publish` implicitly checks if you're logged, and if you're not, it asks your credentials before proceeding.
 
 # Watch
 
@@ -163,11 +165,9 @@ Unfortunately to access the URL normally, you need to comment or delete the line
 
 # VTEX Ignore
 
+The VTEX Ignore it's a file that you can put on the root of your project, naming it `.vtexignore`.
 
-
-# VTEX RC
-
-
+This files tells `watch` which files he shouldn't send to the server. If no `.vtexignore` is found, it fallbacks to the [.gitignore](http://git-scm.com/docs/gitignore) file.
 
 # Publish
 
