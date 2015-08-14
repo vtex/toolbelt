@@ -26,9 +26,9 @@ Remember that your project need to meet some requirements to work:
 
     ```javascript
     {
-    “name”: “app-name”,
-    “version”: “0.2.0”,
-    “vendor: : “vtex”
+        “name”: “app-name”,
+        “version”: “0.2.0”,
+        “vendor: : “vtex”
     }
     ```
 
@@ -40,7 +40,7 @@ Remember that your project need to meet some requirements to work:
     
     We need to tell to Storefront that we'll use a new sandbox. We do that by defining a special cookie on the browser, with the name `vtex_sandbox` and the value `vtex/mysandbox=myapp`.
     
-    In order to do that, we can use a browser extension that eases the manipulation of cookies. If you use Chrome, we recommend the [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn?utm_source=chrome-app-launcher-info-dialog). To create a new cookiem open the Developer Tools and click on the Cookies tab. Then you can click with the right mouse button and choose the "Add New Cookie".
+    In order to do that, we can use a browser extension that eases the manipulation of cookies. If you use Chrome, we recommend the [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn?utm_source=chrome-app-launcher-info-dialog). To create a new cookie open the Developer Tools and click on the Cookies tab. Then you can click with the right mouse button and choose the "Add New Cookie".
     
     Edit this cookie with the following properties:
     
@@ -50,7 +50,14 @@ Remember that your project need to meet some requirements to work:
 
 # Developping an app
 
+> If you need help with the structure of your project or you just don't want to spend the time with this tinkering, you can use our [generator](https://open.spotify.com/track/5mCprFWOqe0jB96v9RhLBo)!
 
+On the root of your project, run the `vtex watch <sandbox-name>`.
+That should do it! The VTEX Toolbelt watcher will be monitoring your files and send them to the VTEX Gallery as soon as you edit them.
+
+For more information on the commands, options and other configs, you can seek more information below!
+
+---
 
 # Auth
 
