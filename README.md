@@ -24,31 +24,33 @@ Remember that your project need to meet some requirements to work:
 1. You need to have a VTEX ID credential in order to send the files to the sandbox or publish an app
 2. Your app must have a proper `meta.json`
 
-```javascript
-{
+    ```javascript
+    {
     “name”: “app-name”,
     “version”: “0.2.0”,
     “vendor: : “vtex”
-}
-```
+    }
+    ```
 
 4. You must properly set `vtex_sandbox` cookie
 
-> A sandbox é usada para testar apps que não estão publicadas. Você irá usar uma sandbox apenas se você é um desenvolvedor de apps VTEX
+    > The sandbox is used to test your apps that aren't published yet. You'll use a sandbox only if you're a VTEX apps developer.
+    
+    The sandbox it's a alternative version of an app that only you see under development.
+    
+    We need to tell to Storefront that we'll use a new sandbox. We do that by defining a special cookie on the browser, with the name `vtex_sandbox` and the value `vtex/mysandbox=myapp`.
+    
+    In order to do that, we can use a browser extension that eases the manipulation of cookies. If you use Chrome, we recommend the [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn?utm_source=chrome-app-launcher-info-dialog). To create a new cookiem open the Developer Tools and click on the Cookies tab. Then you can click with the right mouse button and choose the "Add New Cookie".
+    
+    Edit this cookie with the following properties:
+    
+    Name|Value
+    ---|---
+    vtex_sandbox|vtex/mysandbox=myapp
 
-A sandbox é como uma versão alternativa de uma app que só você vê durante desenvolvimento.
+# Developping an app
 
-Precisamos indicar para o Storefront que **iremos utilizar** uma nova sandbox. Neste exemplo, usaremos o nome `minhasandbox`, mas você pode escolher o nome que quiser.
 
-Faremos isso definindo um **cookie especial no seu browser**, com o nome `vtex_sandbox` e o valor `vtex/minhasandbox=dreamstore-theme`.
-
-Para isso, baixe uma extensão do navegador que possibilite a alteração dos cookies. Recomendamos o [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn?utm_source=chrome-app-launcher-info-dialog). Para criar um novo cookie, abra o Developer Tools e clique na aba Cookies. Clique com o botão direito do mouse e escolha "Add New Cookie".
-
-Edite esse cookie colocando as seguintes propriedades:
-
-Nome|Valor
----|---
-vtex_sandbox|vtex/minhasandbox=minhaapp
 
 # Auth
 
