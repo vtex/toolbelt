@@ -130,7 +130,7 @@ Append to the end of your file the following:
 127.0.0.1      <name-of-your-store>.beta.myvtex.com
 ```
 
-127.0.0.1 is your localhost. It may vary from OS to OS.
+127.0.0.1 is your localhost. It may vary from on different machines.
 
 ## Add this snippet to your Webpack entry point
 
