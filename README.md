@@ -49,7 +49,7 @@ Remember that your project needs to meet some requirements to work:
     ---|---
     vtex_sandbox|vtex/mysandbox=myapp
 
-## Developping an app
+## Developing an app
 
 > If you need help with the structure of your project or you just don't want to spend the time with this tinkering, you can use our [generator](https://open.spotify.com/track/5mCprFWOqe0jB96v9RhLBo)!
 
@@ -141,6 +141,7 @@ Append to the end of your file the following:
 // Enable react hot loading with external React
 if (module.hot) {
   window.RootInstanceProvider = require('react-hot-loader/Injection').RootInstanceProvider;
+}
 ```
 
 For more on that matter, see [this](https://github.com/gaearon/react-hot-loader/tree/master/docs#usage-with-external-react).
@@ -151,10 +152,23 @@ You need to add to your webpack.config.js file the options that Webpack Dev Serv
 
 ```javascript
 devServer: {
-    contentBase: "./build",
-    noInfo: true,
+    publicPath: publicPath,
+    port: 3000,
     hot: true,
-    inline: true
+    inline: true,
+    stats: {
+        assets: false,
+        colors: true,
+        version: true,
+        hash: false,
+        timings: true,
+        chunks: true,
+        chunkModules: false
+    },
+    historyApiFallback: true,
+    proxy: {
+        '*': 'http://janus-edge.vtex.com.br/'
+    }
 }
 ```
 
