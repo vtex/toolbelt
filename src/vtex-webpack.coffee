@@ -72,4 +72,14 @@ vtexwatch
 
           console.log stats.toString(outputOptions) + '\n'
       , DELAY_TIME
+  .catch (err) ->
+    if err.code is 'MODULE_NOT_FOUND'
+      pkgName = chalk.yellow err.toString().match(/'(.*)'/)[1]
+
+      if pkgName.indexOf('webpack.config.js') isnt -1
+        console.log chalk.bold.yellow 'webpack.config.js not found'
+      else
+        console.log chalk.red.bold err.toString()
+        console.log "Did you installed #{pkgName}?"
+    process.exit()
 
