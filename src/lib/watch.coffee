@@ -133,7 +133,7 @@ class Watcher
         console.log "#{change.action.grey} #{change.path}"
 
     request options, (error, response, body) =>
-      if response.statusCode is 200
+      if not error and response.statusCode is 200
         @changesSentSuccessfuly(batchChanges)
       else
         @changeSendError(error, response)
