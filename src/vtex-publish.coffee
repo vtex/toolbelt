@@ -17,7 +17,7 @@ Q.all([
 ).then((app) ->
   console.log chalk.green("\nApp "+chalk.italic(app.app)+" version "+chalk.bold(app.version)+" was successfully published!")
 ).catch((error) ->
-  errorBody = JSON.parse(error.body)
+  errorMsg = JSON.parse(error.body).message or error
   console.error "\nFailed to publish app".red
-  console.error errorBody.message.bold.red
+  console.error errorMsg.bold.red
 )
