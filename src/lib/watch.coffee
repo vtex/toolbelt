@@ -148,8 +148,8 @@ class Watcher
       method: 'POST'
       json: { files: paths }
 
-    request options, (error,response) =>
-      if response.statusCode isnt 200
+    request options, (error, response) =>
+      if error or response.statusCode isnt 200
         @changeSendError(error, response)
 
   changeSendError: (error, response) ->
