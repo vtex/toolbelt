@@ -24,7 +24,12 @@ promise = Q.all([
   console.log vtexsay("Welcome to the VTEX Toolbelt!"), chalk.green("\n\nWatching "+chalk.italic(app.app)+"\n")
 ).catch((error) ->
   console.error "\nFailed to start watch".red
-  console.error error
+  if error.code is 'ENOTFOUND'
+    console.log "Address #{error.hostname} not found".red +
+                '\nAre you online?'.yellow
+  else
+    console.log error
+  process.exit()
 )
 
 module.exports = promise
