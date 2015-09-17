@@ -51,16 +51,17 @@ class AuthenticationService
 
   getAuthenticationToken: (email, password) =>
     deferred = Q.defer()
-    @getTemporaryToken().then (token) ->
+    @getTemporaryToken().then (token) =>
       requestOptions =
         uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authentication/classic/validate" +
           "?authenticationToken=#{encodeURIComponent(token)}" +
           "&login=#{encodeURIComponent(email)}" +
           "&password=#{encodeURIComponent(password)}"
 
-      request requestOptions, (error, response, body) ->
-        if error then deferred.reject error
-        if response.statusCode isnt 200
+      request requestOptions, (error, response, body) =>
+        if error
+          @logErrorAndExit error
+        else if response.statusCode isnt 200
           console.log JSON.parse(body).error
           deferred.reject "Invalid status code #{response.statusCode}"
 
@@ -78,15 +79,16 @@ class AuthenticationService
     .catch () -> {}
     return credentials
 
-  isTokenValid: (credentials) ->
+  isTokenValid: (credentials) =>
     deferred = Q.defer()
 
     requestOptions =
       uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authenticated/user?authToken=#{encodeURIComponent(credentials.token)}"
 
-    request requestOptions, (error, response, body) ->
-      deferred.reject error if error
-      if response.statusCode isnt 200
+    request requestOptions, (error, response, body) =>
+      if error
+        @logErrorAndExit error
+      else if response.statusCode isnt 200
         console.log JSON.parse(body).error
         deferred.reject "Invalid status code #{response.statusCode}"
 
@@ -117,14 +119,15 @@ class AuthenticationService
   deleteCredentials: () =>
     Q.nfcall(fs.unlink, @getCredentialsPath())
 
-  getTemporaryToken: ->
+  getTemporaryToken: =>
     deferred = Q.defer()
     requestOptions =
       uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start"
 
-    request requestOptions, (error, response, body) ->
-      if error then deferred.reject error
-      if response.statusCode isnt 200
+    request requestOptions, (error, response, body) =>
+      if error
+        @logErrorAndExit error
+      else if response.statusCode isnt 200
         console.log JSON.parse(body).error
         deferred.reject "Invalid status code #{response.statusCode}"
 
@@ -139,6 +142,14 @@ class AuthenticationService
   getCredentialsPath: ->
     home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
     path.resolve(home, '.vtex/credentials.json')
+
+  logErrorAndExit: (error) ->
+    if error.code is 'ENOTFOUND'
+      console.log "Address #{error.hostname} not found".red +
+                  '\nAre you online?'.yellow
+    else
+      console.log error
+    process.exit()
 
 auth = new AuthenticationService()
 
