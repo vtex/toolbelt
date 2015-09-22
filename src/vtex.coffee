@@ -22,7 +22,7 @@ doc = """
     -h --help     Show this screen
     -v --version  Show version
     -w --webpack  Start with webpack
-    -s --server   Start with webpack-dev-server
+    -s --server   Start with dev server
 
   Arguments:
     sandbox       The name of the sandbox you wish to work on
