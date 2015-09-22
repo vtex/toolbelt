@@ -29,30 +29,26 @@ doc = """
 
 """
 
-options = docopt(doc, version: pkg.version)
+options = docopt doc, version: pkg.version
 
-command = ""
-argv = []
-childEnv = Object.create(process.env)
-run = () ->
-  baseDir = path.dirname(process.argv[1])
+run = (command, argv = []) ->
+  baseDir = path.dirname process.argv[1]
   args = ["#{baseDir}/#{command}"]
-  args.push(arg) for arg in argv
+  args.push arg for arg in argv
 
   if process.platform isnt 'win32'
-    proc = spawn('node', args, { stdio: 'inherit', customFds: [0, 1, 2], env: childEnv })
+    proc = spawn 'node', args, { stdio: 'inherit', customFds: [0, 1, 2] }
   else
-    proc = spawn(process.execPath, args, { stdio: 'inherit', env: childEnv })
+    proc = spawn process.execPath, args, { stdio: 'inherit' }
 
-  proc.on('close', process.exit.bind(process))
-  proc.on('error', (err) ->
+  proc.on 'close', process.exit.bind(process)
+  proc.on 'error', (err) ->
     if err.code == "ENOENT"
-      console.error('\n  %s(1) does not exist, try --help\n', bin)
+      console.error '\n  %s(1) does not exist, try --help\n', bin
     else if err.code == "EACCES"
-      console.error('\n  %s(1) not executable. try chmod or run with root\n', bin)
+      console.error '\n  %s(1) not executable. try chmod or run with root\n', bin
 
-    process.exit(1)
-  )
+    process.exit 1
 
 if options.login
   command = "vtex-login"
@@ -73,5 +69,5 @@ else
     options['<sandbox>']
   ]
 
-run()
+run(command, argv)
 
