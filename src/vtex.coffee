@@ -57,11 +57,7 @@ else if options.logout
 else if options.publish
   command = "vtex-publish"
 else
-  if options['--webpack'] or options['--server']
-    command = "vtex-webpack"
-    childEnv['NODE_ENV'] = 'hot' if options['--server']
-  else
-    command = "vtex-watch"
+  command = "vtex-watch"
 
   argv = [
     options['--webpack'],
