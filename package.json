@@ -7,8 +7,7 @@
     "vtex-login": "lib/vtex-login.js",
     "vtex-logout": "lib/vtex-logout.js",
     "vtex-watch": "lib/vtex-watch.js",
-    "vtex-publish": "lib/vtex-publish.js",
-    "vtex-webpack": "lib/vtex-webpack.js"
+    "vtex-publish": "lib/vtex-publish.js"
   },
   "scripts": {
     "start": "node lib/vtex.js",
@@ -36,7 +35,9 @@
     "chalk": "^1.0.0",
     "chokidar": "^1.0.0-rc4",
     "docopt": "^0.6.2",
+    "express": "^4.13.3",
     "glob": "^5.0.3",
+    "http-proxy": "^1.11.2",
     "node-libs-browser": "^0.5.2",
     "prompt": "~0.2.14",
     "q": "~1.2.0",
@@ -47,7 +48,9 @@
     "tiny-lr": "^0.1.5",
     "vtexsay": "^1.0.3",
     "webpack": "^1.10.1",
-    "webpack-dev-server": "^1.10.1"
+    "webpack-dev-middleware": "^1.2.0",
+    "webpack-dev-server": "^1.10.1",
+    "webpack-hot-middleware": "^2.2.0"
   },
   "preferGlobal": true,
   "devDependencies": {
