@@ -10,7 +10,7 @@ Last but not least, the VTEX Toolbelt server now uses the new [react-transform](
 
 Instead of using `webpack-dev-server	`, we're using an `express` server with `webpack-hot-middleware` and `webpack-dev-middleware`. Note that `webpack-dev-middleware` doesn't write anything on disk and handles everything in memory, so don't freak out if you see your `assets` folder sitting there all alone.
 
-This assumes some pre-configuration on the project to work properly (see Hot Module Replacement section on README). Besides, it's a world of new possibilities and probably makes it easier to make the dreamy multiple app hot reload that we all want!
+This assumes some pre-configuration on the project to work properly (see [Hot Module Replacement](https://github.com/vtex/toolbelt#hot-module-replacement) section on README). Besides, it's a world of new possibilities and probably makes it easier to make the dreamy multiple app hot reload that we all want!
 
 On this release two main issues are fulfilled (actually, one is partially done):
 
