@@ -14,5 +14,5 @@ This assumes some pre-configuration on the project to work properly (see [Hot Mo
 
 On this release two main issues are fulfilled (actually, one is partially done):
 
-- #44 (this is the partially one)
-- #35
+- [`#44`](https://github.com/vtex/toolbelt/issues/44) (this is the partially one)
+- [`#35`](https://github.com/vtex/toolbelt/issues/35)
