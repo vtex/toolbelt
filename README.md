@@ -108,11 +108,7 @@ As Dev Server uses Webpack, you also need a webpack.config.js file on the root o
 vtex watch --server <sandbox-name>
 ```
 
-You need to call it this way if you want to enable [Hot Module Replacement](http://webpack.github.io/docs/hot-module-replacement-with-webpack.html).
-
-When firing up the VTEX Toolbelt this way, use the following URL:
-
-`<name-of-your-store>.local.myvtex.com:3000`
+You need to call it this way if you want to enable [Hot Module Replacement](http://webpack.github.io/docs/hot-module-replacement-with-webpack.html), see below for more information on how to configure your project for this.
 
 
 # Livereload
@@ -122,6 +118,45 @@ Add to your layout the following script:
 ```html
 <script src="http://localhost:35729/livereload.js?snipver=1"></script>
 ```
+
+# Hot Module Replacement
+
+First things first, you need to use [babel](https://babeljs.io/). Then, there's a few packages you need to install:
+
+- [babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform)
+- [react-transform-hmr](https://github.com/gaearon/react-transform-hmr)
+- [react-transform-catch-errors](https://github.com/gaearon/react-transform-catch-errors) (actually, this one is opcional)
+
+You can install them using `npm i <package-name> --save-dev` on the root folder of your project (the `--save-dev` adds that package to the `devDependencies` of your `package.json`).
+
+After that, create a `.babelrc` file on the root folder of your project with the following:
+
+```json
+{
+  "stage": 0,
+  "env": {
+    "development": {
+      "plugins": ["react-transform"],
+      "extra": {
+        "react-transform": {
+          "transforms": [{
+            "transform": "react-transform-hmr",
+            "imports": ["react"],
+            "locals": ["module"]
+          }, {
+            "transform": "react-transform-catch-errors",
+            "imports": ["react", "redbox-react"]
+          }]
+        }
+      }
+    }
+  }
+}
+```
+
+Presto! Everything is configured and ready to use. Remember to use the following URL while running `vtex watch -s <sandbox-name>`:
+
+`<store-name>.local.myvtex.com:3000`
 
 
 # VTEX Ignore
