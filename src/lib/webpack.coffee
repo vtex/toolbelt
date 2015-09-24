@@ -11,13 +11,13 @@ class WebpackOption
       @config = require process.cwd() + '/webpack.config.js'
     catch err
       if err.code is 'MODULE_NOT_FOUND'
-        pkgName = chalk.yellow err.toString().match(/'(.*)'/)[1]
+        pkgName = err.toString().match(/'(.*)'/)[1]
 
         if pkgName.indexOf('webpack.config.js') isnt -1
-          console.log chalk.bold.yellow 'webpack.config.js not found'
+          console.log 'webpack.config.js not found'.bold.yellow
         else
-          console.log chalk.red.bold err.toString()
-          console.log "Did you installed #{pkgName}?"
+          console.log err.toString().bold.red
+          console.log "Did you installed #{pkgName.yellow}?"
 
       process.exit 1
 
@@ -25,24 +25,33 @@ class WebpackOption
     @DELAY_TIME = 2000
 
   startDevServer: =>
-    proxy = new httpProxy.createProxyServer()
-    app = express()
-    app.use require('webpack-dev-middleware')(@compiler,
-      noInfo: true
-      publicPath: @config.output.publicPath
-    )
-    app.use require('webpack-hot-middleware')(@compiler)
+    runDevServer = =>
+      setTimeout =>
+        proxy = new httpProxy.createProxyServer()
+        app = express()
+        app.use require('webpack-dev-middleware')(@compiler,
+          quiet: true
+          publicPath: @config.output.publicPath
+        )
+        app.use require('webpack-hot-middleware')(@compiler)
 
-    if @config.proxy
-      paths = Object.keys @config.proxy
-      paths.forEach (path) =>
-        if typeof @config.proxy[path] is 'string'
-          proxyOptions = {target: @config.proxy[path], ws: true}
-        else
-          proxyOptions = @config.proxy[path]
+        if @config.proxy
+          paths = Object.keys @config.proxy
+          paths.forEach (path) =>
+            if typeof @config.proxy[path] is 'string'
+              proxyOptions = {target: @config.proxy[path], ws: true}
+            else
+              proxyOptions = @config.proxy[path]
 
-        app.all path, (req, res) ->
-          proxy.web(req, res, proxyOptions)
+            app.all path, (req, res) ->
+              proxy.web(req, res, proxyOptions)
+
+        app.listen 3000, 'localhost', (err) =>
+          if err
+            console.log err
+            return
+          console.log 'Listening at http://localhost:3000'
+      , @DELAY_TIME
 
     testPort = net.createServer()
       .once 'error', (err) ->
@@ -52,11 +61,7 @@ class WebpackOption
           process.exit 1
       .once 'listening', ->
         testPort.close()
-        app.listen 3000, 'localhost', (err) ->
-          if err
-            console.log err
-            return
-          console.log 'Listening at http://localhost:3000'
+        runDevServer()
       .listen 3000
 
   startWebpack: =>
