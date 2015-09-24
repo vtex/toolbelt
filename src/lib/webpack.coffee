@@ -30,21 +30,37 @@ class WebpackOption
         proxy = new httpProxy.createProxyServer()
         app = express()
         app.use require('webpack-dev-middleware')(@compiler,
-          quiet: true
+          noInfo: true
           publicPath: @config.output.publicPath
         )
         app.use require('webpack-hot-middleware')(@compiler)
 
         if @config.proxy
-          paths = Object.keys @config.proxy
-          paths.forEach (path) =>
-            if typeof @config.proxy[path] is 'string'
-              proxyOptions = {target: @config.proxy[path], ws: true}
-            else
-              proxyOptions = @config.proxy[path]
+          if !Array.isArray @config.proxy
+            @config.proxy = Object.keys(@config.proxy).map (path) =>
+              if typeof @config.proxy[path] is 'string'
+                proxyOptions = path: path, target: @config.proxy[path]
+              else
+                proxyOptions = @config.proxy[path]
+                proxyOptions.path = path
 
-            app.all path, (req, res) ->
-              proxy.web(req, res, proxyOptions)
+              proxyOptions
+
+          @config.proxy.forEach (proxyOptions) ->
+            app.all proxyOptions.path, (req, res) ->
+              if typeof proxyOptions.rewrite is 'function'
+                proxyOptions.rewrite req, proxyOptions
+
+              if proxyOptions.host
+                req.headers.host = proxyOptions.host
+
+              proxy.web req, res, proxyOptions, (err) =>
+                msg = "cannot proxy to #{proxyOptions.target} (#{err.message})"
+                res.statusCode = 502
+                res.end()
+
+              if proxyOptions.configure
+                proxyOptions.configure proxy
 
         app.listen 3000, 'localhost', (err) =>
           if err
@@ -56,7 +72,7 @@ class WebpackOption
     testPort = net.createServer()
       .once 'error', (err) ->
         if err.code is 'EADDRINUSE'
-          console.log chalk.red.bold("ERROR:") + " Server port #{port} already in use"
+          console.log "#{'ERROR:'.bold.red} Server port #{port} already in use"
           console.log "(maybe another `vtex watch -s` is running?)"
           process.exit 1
       .once 'listening', ->
