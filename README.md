@@ -52,7 +52,7 @@ Remember that your project needs to meet some requirements to work:
 
 ## Developing an app
 
-> If you need help with the structure of your project or you just don't want to spend the time with this tinkering, you can use our [generator](https://open.spotify.com/track/5mCprFWOqe0jB96v9RhLBo)!
+> If you need help with the structure of your project or you just don't want to spend the time with this tinkering, you can use our [generator](https://github.com/vtex/generator-vtex)!
 
 On the root of your project, run the `vtex watch <sandbox-name>`.
 
