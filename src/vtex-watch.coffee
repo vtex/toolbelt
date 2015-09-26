@@ -2,7 +2,7 @@ Q = require 'q'
 auth = require './lib/auth'
 Watcher = require './lib/watch'
 metadata = require './lib/meta'
-webpackOption = require './lib/webpack'
+WebpackRunner = require './lib/webpack'
 chalk = require 'chalk'
 vtexsay = require 'vtexsay'
 
@@ -13,6 +13,7 @@ WEBPACK_INDEX = process.argv.length - 3
 sandbox = process.argv[SANDBOX_INDEX]
 serverFlag = process.argv[SERVER_INDEX]
 webpackFlag = process.argv[WEBPACK_INDEX]
+isFlagActive = webpackFlag is 'true' or serverFlag is 'true'
 
 unless sandbox.match /^[\w_-]+$/
   throw Error 'Sandbox may contain only letters, numbers, underscores and hyphens'.red
@@ -28,10 +29,13 @@ promise = Q.all [auth.getValidCredentials(), metadata.getAppMetadata()]
   console.log vtexsay("Welcome to the VTEX Toolbelt!"),
               chalk.green("\n\nWatching " + chalk.italic(app.app) + "\n")
 .then () ->
-  if webpackFlag is 'true'
-    webpackOption.startWebpack()
-  else if serverFlag is 'true'
-    webpackOption.startDevServer()
+  if isFlagActive
+    webpackRunner = new WebpackRunner()
+
+    if webpackFlag is 'true'
+      webpackRunner.startWebpack()
+    else if serverFlag is 'true'
+      webpackRunner.startDevServer()
 .catch (error) ->
   console.error "\nFailed to start watch".red
 
