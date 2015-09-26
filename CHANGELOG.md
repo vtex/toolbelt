@@ -1,3 +1,13 @@
+### v0.9.1 (2015-09-26)
+
+Nothing big here, just fixes some issue with the `watch` command when running with no flags.
+
+It was supposed to not require the `webpack.config.js` file, but the `webpack` class was returning an instantiated class, so the constructor would run requiring the file before checking if any of the flags were true.
+
+- [`#50`](https://github.com/vtex/toolbelt/issues/50)
+
+---
+
 ### v0.9.0 (2015-09-24)
 
 Let's kick the dust off and start with the good stuff!
