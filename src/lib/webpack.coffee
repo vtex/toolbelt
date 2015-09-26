@@ -5,7 +5,7 @@ path = require 'path'
 net = require 'net'
 chalk = require 'chalk'
 
-class WebpackOption
+class WebpackRunner
   constructor: ->
     try
       @config = require process.cwd() + '/webpack.config.js'
@@ -96,5 +96,5 @@ class WebpackOption
         console.log stats.toString(outputOptions) + '\n'
     , @DELAY_TIME
 
-module.exports = new WebpackOption
+module.exports = WebpackRunner
 
