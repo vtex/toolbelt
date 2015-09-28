@@ -1,3 +1,22 @@
+### v0.9.2 (2015-09-28)
+
+Hello again, fellas.
+
+Today we have a round of the good ol' fixes.
+
+Users of the `npm@3` version will be glad to know that the dependencies issues were handled. `tiny-lr` got updated and everything is now beautifully working. Also, removed `grunt-coffeelint` for having peer dependencies issues too.
+
+I hope that people get a little less confused when running the toolbelt when he doesn't need to send anything to the sandbox servers. Why? Well, we got a new message just for that case :)
+
+And, for the finale, the toolbelt will warn you properly when the port of the server is occupied. I think that shows good manners, exploding the way it used before doesn't show you have good loving parents!
+
+- [`#43`](https://github.com/vtex/toolbelt/issues/43)
+- [`#49`](https://github.com/vtex/toolbelt/issues/49)
+- [`#51`](https://github.com/vtex/toolbelt/issues/51)
+- [`#53`](https://github.com/vtex/toolbelt/issues/53)
+
+---
+
 ### v0.9.1 (2015-09-26)
 
 Nothing big here, just fixes some issue with the `watch` command when running with no flags.
