@@ -26,7 +26,7 @@ module.exports = (grunt) ->
     watch:
       coffee:
         files: ['src/**/*.coffee']
-        tasks: ['coffeelint', 'coffee', 'copy']
+        tasks: ['coffee', 'copy']
       grunt:
         files: ['Gruntfile.coffee']
 
