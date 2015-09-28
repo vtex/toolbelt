@@ -23,26 +23,16 @@ module.exports = (grunt) ->
           dest: "lib"
         ]
 
-    coffeelint:
-      options:
-        "max_line_length":
-          level: "ignore"
-        "no_unnecessary_fat_arrows":
-          level: "ignore"
-
-      main:
-        src: ['src/**/*.coffee']
-
     watch:
       coffee:
         files: ['src/**/*.coffee']
-        tasks: ['coffeelint', 'coffee', 'copy']
+        tasks: ['coffee', 'copy']
       grunt:
         files: ['Gruntfile.coffee']
 
   tasks =
   # Building block tasks
-    build: ['coffeelint', 'coffee', 'copy']
+    build: ['coffee', 'copy']
   # Development tasks
     default: ['build', 'watch']
 
