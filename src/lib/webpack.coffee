@@ -73,8 +73,8 @@ class WebpackRunner
           console.log "Listening at http://localhost:#{port}"
         .on 'error', (err) ->
           if err.code is 'EADDRINUSE'
-            console.log "#{'ERROR:'.bold.red} Server port #{port} already in use"
-            console.log "(maybe another `vtex watch -s` is running?)"
+            console.log "Server port #{port} already in use".red
+            console.log '(maybe another `vtex watch -s` is running?)'.yellow
             process.exit 1
     , @DELAY_TIME
 
