@@ -25,60 +25,58 @@ class WebpackRunner
     @DELAY_TIME = 2000
 
   startDevServer: =>
-    runDevServer = =>
-      setTimeout =>
-        proxy = new httpProxy.createProxyServer()
-        app = express()
-        app.use require('webpack-dev-middleware')(@compiler,
-          noInfo: true
-          publicPath: @config.output.publicPath
-        )
-        app.use require('webpack-hot-middleware')(@compiler)
+    port = 3000
 
-        if @config.proxy
-          if !Array.isArray @config.proxy
-            @config.proxy = Object.keys(@config.proxy).map (path) =>
-              if typeof @config.proxy[path] is 'string'
-                proxyOptions = path: path, target: @config.proxy[path]
-              else
-                proxyOptions = @config.proxy[path]
-                proxyOptions.path = path
+    setTimeout =>
+      proxy = new httpProxy.createProxyServer()
+      app = express()
+      app.use require('webpack-dev-middleware')(@compiler,
+        noInfo: true
+        publicPath: @config.output.publicPath
+      )
+      app.use require('webpack-hot-middleware')(@compiler)
 
-              proxyOptions
+      if @config.proxy
+        if !Array.isArray @config.proxy
+          @config.proxy = Object.keys(@config.proxy).map (path) =>
+            if typeof @config.proxy[path] is 'string'
+              proxyOptions = path: path, target: @config.proxy[path]
+            else
+              proxyOptions = @config.proxy[path]
+              proxyOptions.path = path
 
-          @config.proxy.forEach (proxyOptions) ->
-            app.all proxyOptions.path, (req, res) ->
-              if typeof proxyOptions.rewrite is 'function'
-                proxyOptions.rewrite req, proxyOptions
+            proxyOptions
 
-              if proxyOptions.host
-                req.headers.host = proxyOptions.host
+        @config.proxy.forEach (proxyOptions) ->
+          app.all proxyOptions.path, (req, res) ->
+            if typeof proxyOptions.rewrite is 'function'
+              proxyOptions.rewrite req, proxyOptions
 
-              proxy.web req, res, proxyOptions, (err) =>
-                msg = "cannot proxy to #{proxyOptions.target} (#{err.message})"
-                res.statusCode = 502
-                res.end()
+            if proxyOptions.host
+              req.headers.host = proxyOptions.host
 
-              if proxyOptions.configure
-                proxyOptions.configure proxy
+            proxy.web req, res, proxyOptions, (err) ->
+              msg = "cannot proxy to #{proxyOptions.target} (#{err.message})"
+              res.statusCode = 502
+              res.end()
 
-        app.listen 3000, 'localhost', (err) =>
+            if proxyOptions.configure
+              proxyOptions.configure proxy
+
+
+      app
+        .listen port, 'localhost', (err) ->
           if err
             console.log err
             return
-          console.log 'Listening at http://localhost:3000'
-      , @DELAY_TIME
 
-    testPort = net.createServer()
-      .once 'error', (err) ->
-        if err.code is 'EADDRINUSE'
-          console.log "#{'ERROR:'.bold.red} Server port #{port} already in use"
-          console.log "(maybe another `vtex watch -s` is running?)"
-          process.exit 1
-      .once 'listening', ->
-        testPort.close()
-        runDevServer()
-      .listen 3000
+          console.log "Listening at http://localhost:#{port}"
+        .on 'error', (err) ->
+          if err.code is 'EADDRINUSE'
+            console.log "Server port #{port} already in use".red
+            console.log '(maybe another `vtex watch -s` is running?)'.yellow
+            process.exit 1
+    , @DELAY_TIME
 
   startWebpack: =>
     setTimeout =>
