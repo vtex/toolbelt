@@ -21,8 +21,6 @@ And, for the finale, the toolbelt will warn you properly when the port of the se
 
 Nothing big here, just fixes some issue with the `watch` command when running with no flags.
 
-It was supposed to not require the `webpack.config.js` file, but the `webpack` class was returning an instantiated class, so the constructor would run requiring the file before checking if any of the flags were true.
-
 - [`#50`](https://github.com/vtex/toolbelt/issues/50)
 
 ---
