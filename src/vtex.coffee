@@ -31,39 +31,48 @@ doc = """
 
 options = docopt doc, version: pkg.version
 
-run = (command, argv = []) ->
+run = (command, argv = [], env = '') ->
   baseDir = path.dirname process.argv[1]
   args = ["#{baseDir}/#{command}"]
   args.push arg for arg in argv
+  childEnv = Object.create process.env
+  childEnv[env] = 'true' if env isnt ''
 
   if process.platform isnt 'win32'
-    proc = spawn 'node', args, { stdio: 'inherit', customFds: [0, 1, 2] }
+    spawnOpts =
+      stdio: 'inherit'
+      customFds: [0, 1, 2]
+      env: childEnv
+    proc = spawn 'node', args, spawnOpts
   else
-    proc = spawn process.execPath, args, { stdio: 'inherit' }
+    spawnOpts =
+      stdio: 'inherit'
+      env: childEnv
+    proc = spawn process.execPath, args, spawnOpts
 
   proc.on 'close', process.exit.bind(process)
   proc.on 'error', (err) ->
-    if err.code == "ENOENT"
-      console.error '\n  %s(1) does not exist, try --help\n', bin
-    else if err.code == "EACCES"
-      console.error '\n  %s(1) not executable. try chmod or run with root\n', bin
+    if err.code == 'ENOENT'
+      console.error '\n %s(1) does not exist, try --help\n', bin
+    else if err.code == 'EACCES'
+      console.error '\n %s(1) not executable. try chmod or run with root\n', bin
 
     process.exit 1
 
 if options.login
-  command = "vtex-login"
+  command = 'vtex-login'
 else if options.logout
-  command = "vtex-logout"
+  command = 'vtex-logout'
 else if options.publish
-  command = "vtex-publish"
+  command = 'vtex-publish'
 else
-  command = "vtex-watch"
-
+  command = 'vtex-watch'
+  env = 'HOT' if options['--server']
   argv = [
     options['--webpack'],
     options['--server'],
     options['<sandbox>']
   ]
 
-run(command, argv)
+run(command, argv, env)
 
