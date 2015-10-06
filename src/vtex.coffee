@@ -66,8 +66,8 @@ else if options.logout
 else if options.publish
   command = 'vtex-publish'
 else
-  command = "vtex-watch"
-
+  command = 'vtex-watch'
+  env = 'HOT' if options['--server']
   argv = [
     options['--webpack'],
     options['--server'],
