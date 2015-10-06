@@ -1,3 +1,13 @@
+### v0.9.3 (2015-10-06)
+
+Just a small patch.
+
+Now, server sets an environment variable called `HOT` (dayum yeah).
+
+- [`#55`](https://github.com/vtex/toolbelt/issues/55)
+
+---
+
 ### v0.9.2 (2015-09-28)
 
 Hello again, fellas.
