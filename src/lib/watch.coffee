@@ -8,6 +8,7 @@ fileManager = require './file-manager'
 tinylr = require 'tiny-lr'
 crypto = require 'crypto'
 net = require 'net'
+signalR = require 'signalr-client'
 
 class Watcher
   ChangeAction: {
@@ -18,14 +19,16 @@ class Watcher
   lastBatch: 0
   lrPortInUse: false
 
-  constructor: (@app, @vendor, @sandbox, @credentials) ->
+  constructor: (@app, @vendor, @credentials) ->
     @endpoint = "http://api.beta.vtex.com"
     @acceptHeader = "application/vnd.vtex.gallery.v0+json"
+    @sandbox = "sb_#{@credentials.email}"
     @lrRun(35729)
 
   watch: =>
     root = process.cwd()
     usePolling = (process.platform is 'win32') ? false
+    @connectToSignalR()
     fileManager.listFiles().then (result) =>
       deferred = Q.defer()
       @endpoint = result.endpoint if result.endpoint
@@ -246,5 +249,36 @@ class Watcher
         @lr.listen(port)
       )
       .listen(port)
+
+
+  createWorkspace: =>
+    options =
+      url: "#{@endpoint}/#{@credentials.account}/workspaces"
+      method: 'POST'
+      headers:
+        Authorization: 'token ' + @credentials.token
+        Accept: @acceptHeader
+        'Content-Type': 'application/json'
+      json:
+        name: "sb_#{@credentials.email}"
+
+    request options, (error, response) =>
+      if error or response.statusCode isnt 200
+        console.log error
+
+  connectToSignalR: =>
+    client = new signalR.client 'http://workspaces.beta.vtex.com:8089/signalr', ['SandboxStateHub'], 2, true
+
+    client.headers['Authorization'] = "token #{@credentials.token}"
+    client.headers['Accept'] = 'application/vnd.vtex.gallery.v0+json'
+    client.headers['x-vtex-app'] = "#{@vendor}.#{@app}"
+    client.headers['x-vtex-account'] = @credentials.account
+    client.headers['x-vtex-user'] = @credentials.email
+
+    client.on 'SandboxStateHub', 'Abort', () ->
+      console.log 'ABORT CONNECTION'
+      client.end()
+
+    client.start()
 
 module.exports = Watcher
