@@ -8,7 +8,7 @@ doc = """
     vtex login
     vtex logout
     vtex publish
-    vtex watch [--webpack | --server] <sandbox>
+    vtex watch [--webpack | --server]
     vtex --help
     vtex --version
 
@@ -23,9 +23,6 @@ doc = """
     -v --version  Show version
     -w --webpack  Start with webpack
     -s --server   Start with dev server
-
-  Arguments:
-    sandbox       The name of the sandbox you wish to work on
 
 """
 
@@ -70,8 +67,7 @@ else
   env = 'HOT' if options['--server']
   argv = [
     options['--webpack'],
-    options['--server'],
-    options['<sandbox>']
+    options['--server']
   ]
 
 run(command, argv, env)

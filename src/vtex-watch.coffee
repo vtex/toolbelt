@@ -6,24 +6,19 @@ WebpackRunner = require './lib/webpack'
 chalk = require 'chalk'
 vtexsay = require 'vtexsay'
 
-SANDBOX_INDEX = process.argv.length - 1
-SERVER_INDEX = process.argv.length - 2
-WEBPACK_INDEX = process.argv.length - 3
+SERVER_INDEX = process.argv.length - 1
+WEBPACK_INDEX = process.argv.length - 2
 
-sandbox = process.argv[SANDBOX_INDEX]
 serverFlag = process.argv[SERVER_INDEX]
 webpackFlag = process.argv[WEBPACK_INDEX]
 isFlagActive = webpackFlag is 'true' or serverFlag is 'true'
 
-unless sandbox.match /^[\w_-]+$/
-  throw Error 'Sandbox may contain only letters, numbers, underscores and hyphens'.red
-
-promise = Q.all [auth.getValidCredentials(), metadata.getAppMetadata()]
+Q.all [auth.getValidCredentials(), metadata.getAppMetadata()]
 .spread (credentials, meta) ->
   name = meta.name
   vendor = meta.vendor
 
-  watcher = new Watcher name, vendor, sandbox, credentials
+  watcher = new Watcher name, vendor, credentials
   watcher.watch()
 .then (app) ->
   console.log vtexsay("Welcome to the VTEX Toolbelt!"),
