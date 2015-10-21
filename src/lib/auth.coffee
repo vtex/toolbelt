@@ -5,10 +5,9 @@ request = require 'request'
 prompt = require 'prompt'
 
 class AuthenticationService
-  constructor: ->
   login: =>
     @askCredentials()
-    .then(@saveCredentials)
+    .then @saveCredentials
     .catch (error) ->
       throw new Error error
 
@@ -22,6 +21,9 @@ class AuthenticationService
     deferred = Q.defer()
     options =
       properties:
+        account:
+          message: 'account'
+          required: true
         login:
           format: 'email'
           message: 'Must be a valid email'
@@ -41,7 +43,10 @@ class AuthenticationService
       console.log 'Login failed. Please try again.' if err
       if result.login and result.password
         @getAuthenticationToken(result.login, result.password).then (token) ->
-          deferred.resolve {email: result.login, token: token}
+          deferred.resolve
+            email: result.login
+            token: token
+            account: result.account
         .catch (error) ->
           deferred.reject error
       else
