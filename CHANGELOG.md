@@ -1,3 +1,11 @@
+### v0.9.4 (2015-10-22)
+
+Update changes log to include warnings from server response.
+
+- [`#60`](https://github.com/vtex/toolbelt/issues/60)
+
+---
+
 ### v0.9.3 (2015-10-06)
 
 Just a small patch.
