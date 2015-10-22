@@ -162,6 +162,10 @@ class Watcher
       else
         console.log "#{change.action.grey} #{change.path}"
 
+      if batchChanges.warnings
+        for warning in batchChanges.warnings
+          console.log "  " + warning.yellow
+
   changeSendError: (error, response) ->
     console.error 'Error sending files'.red
     if error
