@@ -124,21 +124,20 @@ class Watcher
 
     options.url += "?resync=true" if refresh
 
-    for change in batchChanges
-      if change.action is 'save'
-        console.log 'U'.yellow + " #{change.path}"
-      else if change.action is 'remove'
-        console.log 'D'.red + " #{change.path}"
-      else
-        console.log "#{change.action.grey} #{change.path}"
+    if refresh
+      console.log 'Synchronizing...'.blue
+    else
+      console.log 'Changes detected, uploading...'.blue
 
     request options, (error, response, body) =>
       if not error and response.statusCode is 200
-        @changesSentSuccessfuly(batchChanges)
+        @changesSentSuccessfuly(response.body)
       else
         @changeSendError(error, response)
 
   changesSentSuccessfuly: (batchChanges) =>
+    @logResponse batchChanges
+
     paths = batchChanges.map (change) -> change.path
     if paths.length > 0
       console.log '\n... files uploaded\n'.green
@@ -153,6 +152,15 @@ class Watcher
     request options, (error, response) =>
       if error or response.statusCode isnt 200
         @changeSendError(error, response)
+
+  logResponse: (batchChanges) ->
+    for change in batchChanges
+      if change.action is 'save'
+        console.log 'U'.yellow + " #{change.path}"
+      else if change.action is 'remove'
+        console.log 'D'.red + " #{change.path}"
+      else
+        console.log "#{change.action.grey} #{change.path}"
 
   changeSendError: (error, response) ->
     console.error 'Error sending files'.red
@@ -236,4 +244,3 @@ class Watcher
       .listen(port)
 
 module.exports = Watcher
-
