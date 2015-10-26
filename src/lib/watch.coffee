@@ -278,6 +278,10 @@ class Watcher
       console.log 'ABORT CONNECTION'
       client.end()
 
+    client.serviceHandlers.connected = (conn) ->
+      return true
+
     client.start()
 
 module.exports = Watcher
+
