@@ -267,10 +267,9 @@ class Watcher
         console.log error
 
   connectToSignalR: =>
-    client = new signalR.client 'http://workspaces.beta.vtex.com:8089/signalr', ['SandboxStateHub'], 2, true
+    client = new signalR.client 'http://workspaces.beta.vtex.com/signalr', ['SandboxStateHub'], 2, true
 
     client.headers['Authorization'] = "token #{@credentials.token}"
-    client.headers['Accept'] = 'application/vnd.vtex.gallery.v0+json'
     client.headers['x-vtex-app'] = "#{@vendor}.#{@app}"
     client.headers['x-vtex-account'] = @credentials.account
     client.headers['x-vtex-user'] = @credentials.email
