@@ -141,12 +141,21 @@ class Watcher
 
   changesSentSuccessfuly: (batchChanges) =>
     @logResponse batchChanges
-
     paths = batchChanges.map (change) -> change.path
+    linkMsg = 'Your URL: '.green
+
     if paths.length > 0
       console.log '\n... files uploaded\n'.green
     else
       console.log '\nEverything is up to date\n'.green
+
+    if @isServerSet is 'true'
+      linkMsg += "http://#{@credentials.account}.local.myvtex.com:3000/".blue.underline
+    else
+      linkMsg += "http://#{@credentials.account}.beta.myvtex.com/".blue.underline
+
+    linkMsg += "?workspace=#{@sandbox}\n".blue.underline
+    console.log linkMsg
 
     options =
       url: "http://localhost:35729/changed"
@@ -282,8 +291,8 @@ class Watcher
     client.headers['x-vtex-account'] = @credentials.account
     client.headers['x-vtex-user'] = @credentials.email
 
-    client.on 'SandboxStateHub', 'Abort', () ->
-      console.log 'ABORT CONNECTION'
+    client.on 'SandboxStateHub', 'Abort', (msg) ->
+      console.log msg if msg
       client.end()
 
     client.serviceHandlers.connected = (conn) ->
