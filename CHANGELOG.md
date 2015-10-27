@@ -16,7 +16,7 @@ All we ask in return is that when you log in you inform us the account you wish 
 
 I know you're excited, yeah, gimme a hug homie <3
 
-- [`#62`](https://github.com/vtex/toolbelt/issues/62)
+- [`#58`](https://github.com/vtex/toolbelt/issues/58)
 - [`#48`](https://github.com/vtex/toolbelt/issues/48) (closed due to deprecation)
 
 ---
