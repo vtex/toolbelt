@@ -292,7 +292,7 @@ class Watcher
     client.headers['x-vtex-user'] = @credentials.email
 
     client.on 'SandboxStateHub', 'Abort', (msg) ->
-      console.log msg if msg
+      console.log msg
       client.end()
 
     client.serviceHandlers.connected = (conn) ->
