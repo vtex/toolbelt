@@ -18,7 +18,7 @@ Q.all [auth.getValidCredentials(), metadata.getAppMetadata()]
   name = meta.name
   vendor = meta.vendor
 
-  watcher = new Watcher name, vendor, credentials
+  watcher = new Watcher name, vendor, credentials, serverFlag
   watcher.watch()
 .then (app) ->
   console.log vtexsay("Welcome to the VTEX Toolbelt!"),
