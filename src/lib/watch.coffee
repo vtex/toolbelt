@@ -8,6 +8,7 @@ fileManager = require './file-manager'
 tinylr = require 'tiny-lr'
 crypto = require 'crypto'
 net = require 'net'
+signalR = require 'signalr-client'
 
 class Watcher
   ChangeAction: {
@@ -18,14 +19,17 @@ class Watcher
   lastBatch: 0
   lrPortInUse: false
 
-  constructor: (@app, @vendor, @sandbox, @credentials) ->
+  constructor: (@app, @vendor, @credentials, @isServerSet) ->
     @endpoint = "http://api.beta.vtex.com"
     @acceptHeader = "application/vnd.vtex.gallery.v0+json"
+    @sandbox = @credentials.email
     @lrRun(35729)
 
   watch: =>
     root = process.cwd()
     usePolling = (process.platform is 'win32') ? false
+    @createWorkspace().then =>
+      @connectToSignalR()
     fileManager.listFiles().then (result) =>
       deferred = Q.defer()
       @endpoint = result.endpoint if result.endpoint
@@ -137,12 +141,21 @@ class Watcher
 
   changesSentSuccessfuly: (batchChanges) =>
     @logResponse batchChanges
-
     paths = batchChanges.map (change) -> change.path
+    linkMsg = 'Your URL: '.green
+
     if paths.length > 0
       console.log '\n... files uploaded\n'.green
     else
       console.log '\nEverything is up to date\n'.green
+
+    if @isServerSet is 'true'
+      linkMsg += "http://#{@credentials.account}.local.myvtex.com:3000/".blue.underline
+    else
+      linkMsg += "http://#{@credentials.account}.beta.myvtex.com/".blue.underline
+
+    linkMsg += "?workspace=sb_#{@sandbox}\n".blue.underline
+    console.log linkMsg
 
     options =
       url: "http://localhost:35729/changed"
@@ -247,4 +260,45 @@ class Watcher
       )
       .listen(port)
 
+
+  createWorkspace: =>
+    deferred = Q.defer()
+    options =
+      url: "#{@endpoint}/#{@credentials.account}/workspaces"
+      method: 'POST'
+      headers:
+        Authorization: 'token ' + @credentials.token
+        Accept: @acceptHeader
+        'Content-Type': 'application/json'
+      json:
+        name: "sb_#{@credentials.email}"
+
+    request options, (error, response) ->
+      if error or response.statusCode not in [200, 409]
+        deferred.reject()
+        console.log error
+        process.exit 1
+
+      deferred.resolve()
+
+    deferred.promise
+
+  connectToSignalR: =>
+    client = new signalR.client 'http://workspaces.beta.vtex.com/signalr', ['SandboxStateHub'], 2, true
+
+    client.headers['Authorization'] = "token #{@credentials.token}"
+    client.headers['x-vtex-app'] = "#{@vendor}.#{@app}"
+    client.headers['x-vtex-account'] = @credentials.account
+    client.headers['x-vtex-user'] = @credentials.email
+
+    client.on 'SandboxStateHub', 'Abort', (msg) ->
+      console.log msg
+      client.end()
+
+    client.serviceHandlers.connected = (conn) ->
+      return true
+
+    client.start()
+
 module.exports = Watcher
+
