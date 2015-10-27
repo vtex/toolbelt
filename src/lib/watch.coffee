@@ -154,7 +154,7 @@ class Watcher
     else
       linkMsg += "http://#{@credentials.account}.beta.myvtex.com/".blue.underline
 
-    linkMsg += "?workspace=#{@sandbox}\n".blue.underline
+    linkMsg += "?workspace=sb_#{@sandbox}\n".blue.underline
     console.log linkMsg
 
     options =
