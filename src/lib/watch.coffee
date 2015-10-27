@@ -22,7 +22,7 @@ class Watcher
   constructor: (@app, @vendor, @credentials, @isServerSet) ->
     @endpoint = "http://api.beta.vtex.com"
     @acceptHeader = "application/vnd.vtex.gallery.v0+json"
-    @sandbox = "sb_#{@credentials.email}"
+    @sandbox = @credentials.email
     @lrRun(35729)
 
   watch: =>
