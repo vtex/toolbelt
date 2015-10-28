@@ -1,3 +1,9 @@
+### v0.10.1 (2015-10-28)
+
+Fix signalr-client dependency.
+
+---
+
 ### v0.10.0 (2015-10-27)
 
 Hello, fellow developers!
