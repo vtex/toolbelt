@@ -49,6 +49,14 @@ For more information on the commands, options and other configs, you can seek mo
 
 You can use `vtex login` to login with yout VTEX ID credentials or `vtex logout` if you're already logged in and want to change credentials.
 
+When logging in, you will be asked for **3** things:
+
+- The `account` name of the store you wish to work on
+- Your VTEX ID `e-mail`
+- Your VTEX ID `password`
+
+If you wish to work on another `account`, logout and login again with that `account`.
+
 Note that `watch` and `publish` implicitly checks if you're logged, and if you're not, it asks your credentials before proceeding.
 
 
