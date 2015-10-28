@@ -22,7 +22,7 @@ npm install -g vtex
 
 Remember that your project needs to meet some requirements to work:
 
-1. You need to have a VTEX ID credential in order to send the files to the sandbox or publish an app
+1. You need to have a VTEX ID credential in order to send the files to the developer environment or publish an app
 2. Your app must have a proper `meta.json`, here's an example:
 
     ```javascript
@@ -33,28 +33,11 @@ Remember that your project needs to meet some requirements to work:
     }
     ```
 
-4. You must properly set `vtex_sandbox` cookie
-
-    > The sandbox is used to test your apps that aren't published yet.
-    > You'll use a sandbox only if you're a VTEX apps developer.
-    
-    The sandbox it's a alternative version of an app that only you see under development.
-    
-    We need to tell to Storefront that we'll use a new sandbox. We do that by defining a special cookie on the browser, with the name `vtex_sandbox` and the value `vtex/mysandbox=myapp`.
-    
-    In order to do that, we can use a browser extension that eases the manipulation of cookies. If you use Chrome, we recommend the [Cookie Inspector](https://chrome.google.com/webstore/detail/cookie-inspector/jgbbilmfbammlbbhmmgaagdkbkepnijn?utm_source=chrome-app-launcher-info-dialog). To create a new cookie open the Developer Tools and click on the Cookies tab. Then you can click with the right mouse button and choose the "Add New Cookie".
-    
-    Edit this cookie with the following properties:
-    
-    Name|Value
-    ---|---
-    vtex_sandbox|vtex/mysandbox=myapp
-
 ## Developing an app
 
 > If you need help with the structure of your project or you just don't want to spend the time with this tinkering, you can use our [generator](https://github.com/vtex/generator-vtex)!
 
-On the root of your project, run the `vtex watch <sandbox-name>`.
+On the root of your project, run the `vtex watch` and click or copy the URL provided by the VTEX Toolbelt.
 
 That should do it! The VTEX Toolbelt watcher will be monitoring your files and send them to the VTEX Gallery as soon as you edit them.
 
@@ -74,19 +57,17 @@ Note that `watch` and `publish` implicitly checks if you're logged, and if you'r
 To develop an app locally, open the directory where your VTEX app is and then type:
 
 ```sh
-vtex watch <sandbox-name>
+vtex watch
 ```
 
-You are free to set any name you want in the `sandbox-name` parameter, as long as it contains only letters, numbers, underscores and hyphens.
-
-VTEX Toolbelt will upload all your app files to the sandbox specified and will be watching for any changes you make to them.
+VTEX Toolbelt will upload all your app files to the developer environment, print an URL for your use and will be watching for any changes you make to the files.
 
 There's other forms of use too, if you use the options:
 
 Option|Alias
 ---|---
-`vtex watch --webpack <sandbox-name>`|`vtex watch -w <sandbox-name>`
-`vtex watch --server <sandbox-name>`|`vtex watch -s <sandbox-name>`
+`vtex watch --webpack`|`vtex watch -w`
+`vtex watch --server`|`vtex watch -s`
 
 ## Webpack
 
@@ -95,7 +76,7 @@ You can run the VTEX Toolbelt watcher in parallel with the [Webpack](http://webp
 Make sure that you have a well configured and working [webpack.config.js](http://webpack.github.io/docs/tutorials/getting-started/#config-file) on the root of your project.
 
 ```sh
-vtex watch --webpack <sandbox-name>
+vtex watch --webpack
 ```
 
 ## Dev Server
@@ -105,7 +86,7 @@ You can also run the VTEX Toolbelt watcher in parallel with the Dev Server watch
 As Dev Server uses Webpack, you also need a webpack.config.js file on the root of yout project.
 
 ```sh
-vtex watch --server <sandbox-name>
+vtex watch --server
 ```
 
 You need to call it this way if you want to enable [Hot Module Replacement](http://webpack.github.io/docs/hot-module-replacement-with-webpack.html), see below for more information on how to configure your project for this.
@@ -154,9 +135,7 @@ After that, create a `.babelrc` file on the root folder of your project with the
 }
 ```
 
-Presto! Everything is configured and ready to use. Remember to use the following URL while running `vtex watch -s <sandbox-name>`:
-
-`<store-name>.local.myvtex.com:3000`
+Presto! Everything is configured and ready to use.
 
 
 # VTEX Ignore
