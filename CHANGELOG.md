@@ -1,3 +1,9 @@
+### v0.10.2 (2015-10-28)
+
+Fix login message when using Ctrl + C to exit the prompt and moar error messages.
+
+---
+
 ### v0.10.1 (2015-10-28)
 
 Fix signalr-client dependency.
