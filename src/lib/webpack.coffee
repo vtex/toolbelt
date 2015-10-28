@@ -18,6 +18,9 @@ class WebpackRunner
         else
           console.log err.toString().bold.red
           console.log "Did you installed #{pkgName.yellow}?"
+      else
+        console.error 'Error while trying to read ' + process.cwd() + '/webpack.config.js'
+        console.error err
 
       process.exit 1
 
@@ -76,6 +79,9 @@ class WebpackRunner
             console.log "Server port #{port} already in use".red
             console.log '(maybe another `vtex watch -s` is running?)'.yellow
             process.exit 1
+          else if err
+            console.log 'Error while trying to start a server'
+            console.log err
     , @DELAY_TIME
 
   startWebpack: =>
@@ -95,4 +101,3 @@ class WebpackRunner
     , @DELAY_TIME
 
 module.exports = WebpackRunner
-
