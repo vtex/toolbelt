@@ -14,13 +14,15 @@ Ok... maybe not that much. Let me explain:
 
 The cookies for the `sandbox` and `workspace` pretty much still exists, **BUT**, we've created a good and ol' barrel of abstraction on top of it so you don't have to worry anymore.
 
-Now we have a convention for setting those cookies. We will create a workspace with the the name `sb_<your-vtex-developer-email>` and on that workspace you'll have a sandbox with the name `<your-vtex-developer-email>`.
+Now we have a convention for setting those cookies. We will create a workspace with the the name `sb_<your-vtex-developer-email>` and on that workspace you'll have a sandbox with the name `<your-vtex-developer-email>`. Because of that, you don't need to type the `sandbox` as an argument of `watch` anymore!
 
 You will access those by simply putting a querystring on the link you use for development, for example: `storename.beta.myvtex.com/?workspace=sb_mydeveloperemail@whut.com`.
 
 All we ask in return is that when you log in you inform us the account you wish to be logged (yeah, only one account at a time).
 
 I know you're excited, yeah, gimme a hug homie <3
+
+**TL;DR:** You don't need to type the sandbox name on `watch` or set the cookies anymore.
 
 - [`#58`](https://github.com/vtex/toolbelt/issues/58)
 - [`#48`](https://github.com/vtex/toolbelt/issues/48) (closed due to deprecation)
