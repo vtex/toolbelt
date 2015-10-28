@@ -2,6 +2,14 @@
 
 CLI tool for developing VTEX apps.
 
+---
+
+### Hey you, long user of the VTEX Toolbelt!
+
+We've made **pretty big changes** on the **0.10.0** version, please get a look **[here](https://github.com/vtex/toolbelt/releases/tag/v0.10.0)** to get updated!
+
+---
+
 
 # Getting started
 
