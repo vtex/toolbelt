@@ -24,6 +24,18 @@ I know you're excited, yeah, gimme a hug homie <3
 
 **TL;DR:** You don't need to type the sandbox name on `watch` or set the cookies anymore.
 
+# !!!
+
+---
+
+**First big important note:** If you have any credentials cached, please `logout` and `login` again.
+
+**Second big important note:** Delete the previous `vtex_workspace` and `vtex_sandbox` cookies that you have setted before.
+
+---
+
+# !!!
+
 - [`#58`](https://github.com/vtex/toolbelt/issues/58)
 - [`#48`](https://github.com/vtex/toolbelt/issues/48) (closed due to deprecation)
 
