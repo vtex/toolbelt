@@ -40,8 +40,8 @@ class AuthenticationService
     console.log 'Please log in with your VTEX credentials.', '\n'
 
     prompt.get options, (err, result) =>
-      console.log 'Login failed. Please try again.' if err
-      if result.login and result.password
+      if err then console.log '\nLogin failed. Please try again.'
+      if result and result.login and result.password
         @getAuthenticationToken(result.login, result.password).then (token) ->
           deferred.resolve
             email: result.login
@@ -163,4 +163,3 @@ module.exports =
   logout: auth.deleteCredentials
   getValidCredentials: auth.getValidCredentials
   askCredentials: auth.askCredentials
-
