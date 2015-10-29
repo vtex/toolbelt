@@ -1,3 +1,11 @@
+### v0.10.3 (2015-10-29)
+
+Fix disconnection issue when exiting by Ctrl + C and workspace creation request.
+
+- [`#69`](https://github.com/vtex/toolbelt/issues/69)
+
+---
+
 ### v0.10.2 (2015-10-28)
 
 Fix login message when using Ctrl + C to exit the prompt and moar error messages.
