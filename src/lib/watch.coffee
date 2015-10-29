@@ -274,7 +274,7 @@ class Watcher
         name: "sb_#{@credentials.email}"
 
     request options, (error, response) ->
-      if error or response.statusCode not in [200, 409]
+      if error or response.statusCode not in [200, 201, 409]
         deferred.reject()
         console.log error
         process.exit 1
