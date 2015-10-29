@@ -298,6 +298,18 @@ class Watcher
     client.serviceHandlers.connected = (conn) ->
       return true
 
+    if process.platform is 'win32'
+      rl = require('readline').createInterface
+        input: process.stdin,
+        output: process.stdout
+
+      rl.on 'SIGINT', ->
+        process.emit 'SIGINT'
+
+    process.on 'SIGINT', ->
+      client.end()
+      process.exit()
+
     client.start()
 
 module.exports = Watcher
