@@ -298,7 +298,26 @@ class Watcher
     client.serviceHandlers.connected = (conn) ->
       return true
 
+    if process.platform is 'win32'
+      rl = require('readline').createInterface
+        input: process.stdin,
+        output: process.stdout
+
+      rl.on 'SIGINT', ->
+        process.emit 'SIGINT'
+
+    process.on 'SIGINT', =>
+      client.end()
+      @exitAfterDisconnection client
+
     client.start()
+
+  exitAfterDisconnection: (client, counter = 0) =>
+    if client.state.desc is 'disconnected' or counter is 10
+      process.exit()
+    else
+      if counter is 0 then console.log '\nExiting...'
+      setTimeout @exitAfterDisconnection, 300, client, counter + 1
 
 module.exports = Watcher
 
