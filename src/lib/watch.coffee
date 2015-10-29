@@ -306,11 +306,18 @@ class Watcher
       rl.on 'SIGINT', ->
         process.emit 'SIGINT'
 
-    process.on 'SIGINT', ->
+    process.on 'SIGINT', =>
       client.end()
-      process.exit()
+      @exitAfterDisconnection client
 
     client.start()
+
+  exitAfterDisconnection: (client, counter = 0) =>
+    if client.state.desc is 'disconnected' or counter is 10
+      process.exit()
+    else
+      if counter is 0 then console.log '\nExiting...'
+      setTimeout @exitAfterDisconnection, 300, client, counter + 1
 
 module.exports = Watcher
 
