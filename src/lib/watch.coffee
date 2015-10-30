@@ -175,8 +175,8 @@ class Watcher
       else
         console.log "#{change.action.grey} #{change.path}"
 
-      if batchChanges.warnings
-        for warning in batchChanges.warnings
+      if change.warnings
+        for warning in change.warnings
           console.log "  " + warning.yellow
 
   changeSendError: (error, response) ->
@@ -320,4 +320,3 @@ class Watcher
       setTimeout @exitAfterDisconnection, 300, client, counter + 1
 
 module.exports = Watcher
-
