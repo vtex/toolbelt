@@ -1,0 +1,13 @@
+language: node_js
+
+node_js:
+- '0.12'
+
+before_install: npm install -g grunt-cli && chmod +x create-npmrc.sh
+
+deploy:
+  provider: script
+  script: ./create-npmrc.sh && npm publish
+  on:
+    tags: true
+    branch: master
