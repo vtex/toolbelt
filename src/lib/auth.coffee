@@ -22,7 +22,8 @@ class AuthenticationService
     options =
       properties:
         account:
-          message: 'account'
+          pattern: /^[\w\-]+$/
+          message: 'Must not contain spaces'
           required: true
         login:
           format: 'email'
