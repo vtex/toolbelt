@@ -11,19 +11,18 @@ net = require 'net'
 signalR = require 'signalr-client'
 
 class Watcher
-  ChangeAction: {
-    Save: "save",
-    Remove: "remove"
-  }
+  ChangeAction:
+    Save: 'save'
+    Remove: 'remove'
   changes: {}
   lastBatch: 0
   lrPortInUse: false
 
   constructor: (@app, @vendor, @credentials, @isServerSet) ->
-    @endpoint = "http://api.beta.vtex.com"
-    @acceptHeader = "application/vnd.vtex.gallery.v0+json"
+    @endpoint = 'http://api.beta.vtex.com'
+    @acceptHeader = 'application/vnd.vtex.gallery.v0+json'
     @sandbox = @credentials.email
-    @lrRun(35729)
+    @lrRun 35729
 
   watch: =>
     root = process.cwd()
@@ -34,33 +33,31 @@ class Watcher
       deferred = Q.defer()
       @endpoint = result.endpoint if result.endpoint
       @acceptHeader = result.header if result.header
-      ignore = (path.join(root, ignorePath) for ignorePath in result.ignore)
+      ignore = (path.join root, ignorePath for ignorePath in result.ignore)
 
-      watcher = chokidar.watch(root, {
-        persistent: true,
-        usePolling: usePolling,
-        ignoreInitial: true,
+      watcher = chokidar.watch root,
+        persistent: true
+        usePolling: usePolling
+        ignoreInitial: true
         ignored: ignore
-      })
 
       watcher
-      .on('add', @onAdded)
-      .on('addDir', @onDirAdded)
-      .on('change', @onChanged)
-      .on('unlink', @onUnlinked)
-      .on('unlinkDir', @onDirUnlinked)
-      .on('error', (error) ->
-        deferred.reject(error)
-      )
-      .on('ready', =>
+      .on 'add', @onAdded
+      .on 'addDir', @onDirAdded
+      .on 'change', @onChanged
+      .on 'unlink', @onUnlinked
+      .on 'unlinkDir', @onDirUnlinked
+      .on 'error', (error) ->
+        deferred.reject error
+      .on 'ready', =>
         @getFilesChanges(result.files).done (filesChanges) =>
           for filePath, changeAction of filesChanges
-            rootFilePath = path.resolve(root, filePath)
+            rootFilePath = path.resolve root, filePath
             @changes[rootFilePath] = changeAction
 
-          @debounce(true)
-          deferred.resolve({app: @app})
-      )
+          @debounce true
+          deferred.resolve { app: @app }
+
       deferred.promise
 
   onAdded: (filePath) =>
@@ -83,7 +80,7 @@ class Watcher
 
   debounce: (resync) =>
     thisBatch = ++@lastBatch
-    setTimeout((() => @trySendBatch(thisBatch, resync)), 200)
+    setTimeout ( => @trySendBatch thisBatch, resync ), 200
 
   getChanges: (batch) =>
     root = path.resolve ''
@@ -91,14 +88,15 @@ class Watcher
       if item.action is @ChangeAction.Save
         try
           data = fs.readFileSync item.path
-          item.content = data.toString('base64')
+          item.content = data.toString 'base64'
           item.encoding = 'base64'
         catch e
           item.action = @ChangeAction.Remove
 
-      item.path = item.path.substring(root.length + 1).replace(/\\/g, '/')
+      item.path = item.path.substring(root.length + 1).replace /\\/g, '/'
 
-    batch.filter (item) => item.action is @ChangeAction.Save || item.action is @ChangeAction.Remove
+    batch.filter (item) =>
+      item.action is @ChangeAction.Save or item.action is @ChangeAction.Remove
 
   trySendBatch: (thisBatch, resync) =>
     return unless thisBatch is @lastBatch
@@ -109,24 +107,23 @@ class Watcher
 
     @changes = {}
     @lastBatch = 0
-    batchChanges = @getChanges(batch)
+    batchChanges = @getChanges batch
 
     refresh = (resync?) ? false
-    @sendChanges(batchChanges, refresh)
+    @sendChanges batchChanges, refresh
 
   sendChanges: (batchChanges, refresh) =>
     options =
       url: "#{@endpoint}/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'POST'
       json: batchChanges
-      headers: {
-        Authorization: 'token ' + @credentials.token
-        'Accept': @acceptHeader
-        'Content-Type': "application/json"
+      headers:
+        Authorization: "token #{@credentials.token}"
+        Accept: @acceptHeader
+        'Content-Type': 'application/json'
         'x-vtex-accept-snapshot': false
-      }
 
-    options.url += "?resync=true" if refresh
+    options.url += '?resync=true' if refresh
 
     if refresh
       console.log 'Synchronizing...'.blue
@@ -135,9 +132,9 @@ class Watcher
 
     request options, (error, response, body) =>
       if not error and response.statusCode is 200
-        @changesSentSuccessfuly(response.body)
+        @changesSentSuccessfuly response.body
       else
-        @changeSendError(error, response)
+        @changeSendError error, response
 
   changesSentSuccessfuly: (batchChanges) =>
     @logResponse batchChanges
@@ -158,13 +155,13 @@ class Watcher
     console.log linkMsg
 
     options =
-      url: "http://localhost:35729/changed"
+      url: 'http://localhost:35729/changed'
       method: 'POST'
       json: { files: paths }
 
     request options, (error, response) =>
       if error or response.statusCode isnt 200
-        @changeSendError(error, response)
+        @changeSendError error, response
 
   logResponse: (batchChanges) ->
     for change in batchChanges
@@ -177,10 +174,11 @@ class Watcher
 
       if change.warnings
         for warning in change.warnings
-          console.log "  " + warning.yellow
+          console.log "  #{warning.yellow}"
 
   changeSendError: (error, response) ->
     console.error 'Error sending files'.red
+
     if error
       console.error error
     if response
@@ -192,17 +190,16 @@ class Watcher
     options =
       url: "#{@endpoint}/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'GET'
-      headers: {
-        Authorization: 'token ' + @credentials.token
-        'Accept': @acceptHeader
-        'Content-Type': "application/json"
+      headers:
+        Authorization: "token #{@credentials.token}"
+        Accept: @acceptHeader
+        'Content-Type': 'application/json'
         'x-vtex-accept-snapshot': false
-      }
 
     Q.nfcall(request, options).then (data) ->
       response = data[0]
       if response.statusCode is 200
-        return JSON.parse(response.body)
+        return JSON.parse response.body
       else if response.statusCode is 404
         return undefined
       else
@@ -210,9 +207,10 @@ class Watcher
 
   generateFilesHash: (files) ->
     root = process.cwd()
-    readAndHash = (filePath) -> Q.nfcall(fs.readFile, path.resolve(root, filePath)).then (content) ->
-      hashedContent = crypto.createHash('md5').update(content, 'binary').digest('hex')
-      return { path: filePath, hash: hashedContent }
+    readAndHash = (filePath) ->
+      Q.nfcall(fs.readFile, path.resolve(root, filePath)).then (content) ->
+        hashedContent = crypto.createHash('md5').update(content, 'binary').digest 'hex'
+        return { path: filePath, hash: hashedContent }
 
     mapFiles = (filesArr) ->
       filesAndHash = {}
@@ -220,8 +218,8 @@ class Watcher
         filesAndHash[file.path] = { hash: file.hash }
       return filesAndHash
 
-    filesPromise = (readAndHash(file) for file in files)
-    return Q.all(filesPromise).then(mapFiles)
+    filesPromise = (readAndHash file for file in files)
+    return Q.all(filesPromise).then mapFiles
 
   getFilesChanges: (files) =>
     passToChanges = (filesToLoop, filesToCompare) =>
@@ -248,18 +246,16 @@ class Watcher
       return changes
 
     Q.all([@generateFilesHash(files), @getSandboxFiles()]).spread (localFiles, sandboxFiles) ->
-      if sandboxFiles? then passToChanges(sandboxFiles, localFiles) else passToChanges(localFiles)
+      if sandboxFiles? then passToChanges sandboxFiles, localFiles else passToChanges localFiles
 
   lrRun: (port) =>
     testPort = net.createServer()
-      .once('error', (err) => @lrPortInUse = true if err.code is 'EADDRINUSE')
-      .once('listening', =>
+      .once 'error', (err) => @lrPortInUse = true if err.code is 'EADDRINUSE'
+      .once 'listening', =>
         testPort.close()
         @lr = tinylr()
-        @lr.listen(port)
-      )
-      .listen(port)
-
+        @lr.listen port
+      .listen port
 
   createWorkspace: =>
     deferred = Q.defer()
@@ -320,3 +316,4 @@ class Watcher
       setTimeout @exitAfterDisconnection, 300, client, counter + 1
 
 module.exports = Watcher
+
