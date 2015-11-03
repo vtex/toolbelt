@@ -27,8 +27,7 @@ class Watcher
   watch: =>
     root = process.cwd()
     usePolling = (process.platform is 'win32') ? false
-    @createWorkspace().then =>
-      @connectToSignalR()
+    @connectToSignalR()
     fileManager.listFiles().then (result) =>
       deferred = Q.defer()
       @endpoint = result.endpoint if result.endpoint
@@ -256,28 +255,6 @@ class Watcher
         @lr = tinylr()
         @lr.listen port
       .listen port
-
-  createWorkspace: =>
-    deferred = Q.defer()
-    options =
-      url: "#{@endpoint}/#{@credentials.account}/workspaces"
-      method: 'POST'
-      headers:
-        Authorization: 'token ' + @credentials.token
-        Accept: @acceptHeader
-        'Content-Type': 'application/json'
-      json:
-        name: "sb_#{@credentials.email}"
-
-    request options, (error, response) ->
-      if error or response.statusCode not in [200, 201, 409]
-        deferred.reject()
-        console.log error
-        process.exit 1
-
-      deferred.resolve()
-
-    deferred.promise
 
   connectToSignalR: =>
     client = new signalR.client 'http://workspaces.beta.vtex.com/signalr', ['SandboxStateHub'], 2, true

@@ -7,6 +7,7 @@ prompt = require 'prompt'
 class AuthenticationService
   login: =>
     @askCredentials()
+    .then @createWorkspace
     .then @saveCredentials
     .catch (error) ->
       throw new Error error
@@ -156,6 +157,28 @@ class AuthenticationService
       console.log error
 
     process.exit 1
+
+  createWorkspace: (credentials) ->
+    deferred = Q.defer()
+    options =
+      url: "http://api.beta.vtex.com/#{credentials.account}/workspaces"
+      method: 'POST'
+      headers:
+        Authorization: "token #{credentials.token}"
+        Accept: 'application/vnd.vtex.gallery.v0+json'
+        'Content-Type': 'application/json'
+      json:
+        name: "sb_#{credentials.email}"
+
+    request options, (error, response) ->
+      if error or response.statusCode not in [200, 201, 409]
+        deferred.reject()
+        console.log error or response.body.message
+        process.exit 1
+
+      deferred.resolve credentials
+
+    deferred.promise
 
 auth = new AuthenticationService()
 
