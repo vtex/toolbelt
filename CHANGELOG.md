@@ -1,3 +1,9 @@
+### v0.10.4 (2015-10-30)
+
+Fix location of warnings in sandbox changes.
+
+---
+
 ### v0.10.3 (2015-10-29)
 
 Fix disconnection issue when exiting by Ctrl + C and workspace creation request.
