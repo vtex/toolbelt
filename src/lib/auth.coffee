@@ -7,22 +7,23 @@ prompt = require 'prompt'
 class AuthenticationService
   login: =>
     @askCredentials()
+    .then @createWorkspace
     .then @saveCredentials
     .catch (error) ->
       throw new Error error
 
   getValidCredentials: =>
     @getCurrentCredentials().then (credentials) =>
-      @isTokenValid(credentials).then((validToken) =>
+      @isTokenValid(credentials).then (validToken) =>
         if !validToken then @login() else return credentials
-      )
 
   askCredentials: =>
     deferred = Q.defer()
     options =
       properties:
         account:
-          message: 'account'
+          pattern: /^[\w\-]+$/
+          message: 'Must not contain spaces'
           required: true
         login:
           format: 'email'
@@ -71,22 +72,23 @@ class AuthenticationService
           deferred.reject "Invalid status code #{response.statusCode}"
 
         try
-          auth = JSON.parse(body)
-          if auth.authStatus != "Success" then deferred.reject "Authentication has failed with status #{auth.authStatus}".red
+          auth = JSON.parse body
+          if auth.authStatus isnt 'Success' then deferred.reject "Authentication has failed with status #{auth.authStatus}".red
           deferred.resolve auth.authCookie.Value
         catch
-          deferred.reject "Invalid JSON while authenticating with VTEX ID".red
+          deferred.reject 'Invalid JSON while authenticating with VTEX ID'.red
+
     deferred.promise
 
   getCurrentCredentials: =>
-    credentials = Q.nfcall(fs.readFile, @getCredentialsPath(), "utf8")
-    .then(JSON.parse)
-    .catch () -> {}
+    credentials = Q.nfcall fs.readFile, @getCredentialsPath(), 'utf8'
+    .then JSON.parse
+    .catch -> {}
+
     return credentials
 
   isTokenValid: (credentials) =>
     deferred = Q.defer()
-
     requestOptions =
       uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authenticated/user?authToken=#{encodeURIComponent(credentials.token)}"
 
@@ -98,11 +100,11 @@ class AuthenticationService
         deferred.reject "Invalid status code #{response.statusCode}"
 
       try
-        vtexIdUser = JSON.parse(body)
+        vtexIdUser = JSON.parse body
         return deferred.resolve false if vtexIdUser is null
 
         user = vtexIdUser.user
-        return deferred.resolve true if user != null and user is credentials.email
+        return deferred.resolve true if user isnt null and user is credentials.email
       catch error
         deferred.reject 'Invalid JSON while getting token from VTEX ID'
 
@@ -110,24 +112,24 @@ class AuthenticationService
 
   saveCredentials: (credentials) =>
     content = JSON.stringify credentials, null, 2
-    credentialsPath = path.dirname(@getCredentialsPath())
+    credentialsPath = path.dirname @getCredentialsPath()
     writeCredentials = (err) =>
       folderExist = err and err.code is 'EEXIST'
       if not err or folderExist
-        Q.nfcall(fs.writeFile, @getCredentialsPath(), content)
+        Q.nfcall fs.writeFile, @getCredentialsPath(), content
       else
         throw err
 
-    Q.nfcall(fs.mkdir, credentialsPath).finally(writeCredentials)
+    Q.nfcall(fs.mkdir, credentialsPath).finally writeCredentials
     credentials
 
   deleteCredentials: () =>
-    Q.nfcall(fs.unlink, @getCredentialsPath())
+    Q.nfcall fs.unlink, @getCredentialsPath()
 
   getTemporaryToken: =>
     deferred = Q.defer()
     requestOptions =
-      uri: "https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start"
+      uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start'
 
     request requestOptions, (error, response, body) =>
       if error
@@ -145,8 +147,8 @@ class AuthenticationService
     deferred.promise
 
   getCredentialsPath: ->
-    home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
-    path.resolve(home, '.vtex/credentials.json')
+    home = process.env.HOME or process.env.HOMEPATH or process.env.USERPROFILE
+    path.resolve home, '.vtex/credentials.json'
 
   logErrorAndExit: (error) ->
     if error.code is 'ENOTFOUND'
@@ -154,7 +156,30 @@ class AuthenticationService
                   '\nAre you online?'.yellow
     else
       console.log error
-    process.exit()
+
+    process.exit 1
+
+  createWorkspace: (credentials) ->
+    deferred = Q.defer()
+    options =
+      url: "http://api.beta.vtex.com/#{credentials.account}/workspaces"
+      method: 'POST'
+      headers:
+        Authorization: "token #{credentials.token}"
+        Accept: 'application/vnd.vtex.gallery.v0+json'
+        'Content-Type': 'application/json'
+      json:
+        name: "sb_#{credentials.email}"
+
+    request options, (error, response) ->
+      if error or response.statusCode not in [200, 201, 409]
+        deferred.reject()
+        console.log error or response.body.message
+        process.exit 1
+
+      deferred.resolve credentials
+
+    deferred.promise
 
 auth = new AuthenticationService()
 
@@ -163,3 +188,4 @@ module.exports =
   logout: auth.deleteCredentials
   getValidCredentials: auth.getValidCredentials
   askCredentials: auth.askCredentials
+
