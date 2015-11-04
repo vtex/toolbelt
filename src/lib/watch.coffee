@@ -19,7 +19,7 @@ class Watcher
 
   constructor: (@app, @vendor, @credentials, @isServerSet) ->
     @endpoint = 'http://api.beta.vtex.com'
-    @acceptHeader = 'application/vnd.vtex.gallery.v0+json'
+    @acceptHeader = 'application/vnd.vtex.workspaces.v0+json'
     @sandbox = @credentials.email
     @workspace = "sb_#{@credentials.email}"
     @lrRun 35729
@@ -271,7 +271,7 @@ class Watcher
   activateSandbox: =>
     deferred = Q.defer()
     options =
-      url: "http://workspaces.vtexlocal.com.br/#{@credentials.account}/workspaces/#{@workspace}/" +
+      url: "#{@endpoint}/#{@credentials.account}/workspaces/#{@workspace}/" +
            "sandboxes/#{@vendor}/#{@credentials.email}/apps/#{@app}"
       method: 'PUT'
       headers:
@@ -292,7 +292,7 @@ class Watcher
 
   deactivateSandbox: =>
     options =
-      url: "http://workspaces.vtexlocal.com.br/#{@credentials.account}/workspaces/#{@workspace}/" +
+      url: "#{@endpoint}/#{@credentials.account}/workspaces/#{@workspace}/" +
            "sandboxes/#{@vendor}/#{@credentials.email}/apps/#{@app}"
       method: 'DELETE'
       headers:
