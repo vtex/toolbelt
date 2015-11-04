@@ -38,7 +38,10 @@ class AuthenticationService
     prompt.delimiter = ''
 
     prompt.start()
-    console.log 'Please log in with your VTEX credentials.', '\n'
+    console.log 'Please log in with your VTEX credentials:\n'.green +
+                'account  - The store account you want to be developing on\n' +
+                'login    - Your VTEX registered email\n' +
+                'password - Your VTEX registered password\n'
 
     prompt.get options, (err, result) =>
       if err then console.log '\nLogin failed. Please try again.'
