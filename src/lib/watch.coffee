@@ -8,7 +8,6 @@ fileManager = require './file-manager'
 tinylr = require 'tiny-lr'
 crypto = require 'crypto'
 net = require 'net'
-signalR = require 'signalr-client'
 
 class Watcher
   ChangeAction:
