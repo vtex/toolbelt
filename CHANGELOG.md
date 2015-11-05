@@ -1,3 +1,15 @@
+### v0.11.0 (2015-11-05)
+
+On this update we changed the way we tell Storefront that you're watching a new app!
+Instead of WebSockets, we now use HTTP for keep alive, not as elegant but made a few bugs disappear.
+
+We also added a message on `vtex login` to make the prompts less ambiguous. Still on the login, there's now a validation on the `account` prompt! It should be alphanumeric with only dashes `-` as a special character.
+
+- [`#73`](https://github.com/vtex/toolbelt/issues/73)
+- [`#72`](https://github.com/vtex/toolbelt/issues/72)
+
+---
+
 ### v0.10.4 (2015-10-30)
 
 Fix location of warnings in sandbox changes.
