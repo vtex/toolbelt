@@ -280,7 +280,7 @@ class Watcher
         'Content-Type': 'application/json'
 
     request options, (error, response) ->
-      if error or response.statusCode isnt 204
+      if error or response.statusCode isnt 200
         deferred.reject()
         console.log error or response.body.message
         process.exit 1
