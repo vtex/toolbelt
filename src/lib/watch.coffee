@@ -8,7 +8,6 @@ fileManager = require './file-manager'
 tinylr = require 'tiny-lr'
 crypto = require 'crypto'
 net = require 'net'
-signalR = require 'signalr-client'
 
 class Watcher
   ChangeAction:
@@ -20,14 +19,27 @@ class Watcher
 
   constructor: (@app, @vendor, @credentials, @isServerSet) ->
     @endpoint = 'http://api.beta.vtex.com'
-    @acceptHeader = 'application/vnd.vtex.gallery.v0+json'
+    @acceptHeader = 'application/vnd.vtex.workspaces.v0+json'
     @sandbox = @credentials.email
+    @workspace = "sb_#{@credentials.email}"
     @lrRun 35729
+
+    if process.platform is 'win32'
+      rl = require('readline').createInterface
+        input: process.stdin
+        output: process.stdout
+
+      rl.on 'SIGINT', ->
+        process.emit 'SIGINT'
+
+    process.on 'SIGINT', =>
+      console.log '\nExiting...'
+      @deactivateSandbox()
 
   watch: =>
     root = process.cwd()
     usePolling = (process.platform is 'win32') ? false
-    @connectToSignalR()
+    @activateSandbox()
     fileManager.listFiles().then (result) =>
       deferred = Q.defer()
       @endpoint = result.endpoint if result.endpoint
@@ -256,41 +268,43 @@ class Watcher
         @lr.listen port
       .listen port
 
-  connectToSignalR: =>
-    client = new signalR.client 'http://workspaces.beta.vtex.com/signalr', ['SandboxStateHub'], 2, true
+  activateSandbox: =>
+    deferred = Q.defer()
+    options =
+      url: "#{@endpoint}/#{@credentials.account}/workspaces/#{@workspace}/" +
+           "sandboxes/#{@vendor}/#{@credentials.email}/apps/#{@app}"
+      method: 'PUT'
+      headers:
+        Authorization: "token #{@credentials.token}"
+        Accept: @acceptHeader
+        'Content-Type': 'application/json'
 
-    client.headers['Authorization'] = "token #{@credentials.token}"
-    client.headers['x-vtex-app'] = "#{@vendor}.#{@app}"
-    client.headers['x-vtex-account'] = @credentials.account
-    client.headers['x-vtex-user'] = @credentials.email
+    request options, (error, response) ->
+      if error or response.statusCode isnt 200
+        deferred.reject()
+        console.log error or response.body.message
+        process.exit 1
 
-    client.on 'SandboxStateHub', 'Abort', (msg) ->
-      console.log msg
-      client.end()
+      deferred.resolve()
 
-    client.serviceHandlers.connected = (conn) ->
-      return true
+    setTimeout @activateSandbox, 30000
+    deferred.promise
 
-    if process.platform is 'win32'
-      rl = require('readline').createInterface
-        input: process.stdin,
-        output: process.stdout
+  deactivateSandbox: =>
+    options =
+      url: "#{@endpoint}/#{@credentials.account}/workspaces/#{@workspace}/" +
+           "sandboxes/#{@vendor}/#{@credentials.email}/apps/#{@app}"
+      method: 'DELETE'
+      headers:
+        Authorization: "token #{@credentials.token}"
+        Accept: @acceptHeader
+        'Content-Type': 'application/json'
 
-      rl.on 'SIGINT', ->
-        process.emit 'SIGINT'
+    request options, (error, response) ->
+      if error or response.statusCode isnt 204
+        console.log error or response.body.message
 
-    process.on 'SIGINT', =>
-      client.end()
-      @exitAfterDisconnection client
-
-    client.start()
-
-  exitAfterDisconnection: (client, counter = 0) =>
-    if client.state.desc is 'disconnected' or counter is 10
-      process.exit()
-    else
-      if counter is 0 then console.log '\nExiting...'
-      setTimeout @exitAfterDisconnection, 300, client, counter + 1
+      process.exit 1
 
 module.exports = Watcher
 

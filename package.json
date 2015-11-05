@@ -49,8 +49,7 @@
     "vtexsay": "^1.0.3",
     "webpack": "^1.12.2",
     "webpack-dev-middleware": "^1.2.0",
-    "webpack-hot-middleware": "^2.4.1",
-    "signalr-client": "0.0.16"
+    "webpack-hot-middleware": "^2.4.1"
   },
   "preferGlobal": true,
   "devDependencies": {
