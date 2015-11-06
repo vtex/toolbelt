@@ -1,6 +1,6 @@
 ### v0.12.0 (2015-11-06)
 
-Add special auth method for `@vtex.com` or `vtex.com.br` e-mails.
+Add special auth method for `@vtex.com` or `@vtex.com.br` e-mails.
 
 ---
 
