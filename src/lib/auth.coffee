@@ -29,10 +29,6 @@ class AuthenticationService
           format: 'email'
           message: 'Must be a valid email'
           required: true
-        password:
-          hidden: true
-          message: 'password (typing will be hidden)'
-          required: true
 
     prompt.message = '> '
     prompt.delimiter = ''
@@ -45,14 +41,30 @@ class AuthenticationService
 
     prompt.get options, (err, result) =>
       if err then console.log '\nLogin failed. Please try again.'
-      if result and result.login and result.password
-        @getAuthenticationToken(result.login, result.password).then (token) ->
-          deferred.resolve
-            email: result.login
-            token: token
-            account: result.account
-        .catch (error) ->
-          deferred.reject error
+      if result and result.login and result.account
+        if result.login.indexOf('@vtex.com') isnt -1
+          console.log '\nWe sent you an e-mail with your code, please use it!'
+
+          @sendCodeToEmail(result.login).then (token) =>
+            startToken = token
+            @getAccessKey().then (code) =>
+              @getEmailAuthenticationToken(result.login, startToken, code)
+              .then (token) ->
+                deferred.resolve
+                  email: result.login
+                  token: token
+                  account: result.account
+              .catch (error) ->
+                deferred.reject error
+        else
+          @getAccessKey().then (password) =>
+            @getAuthenticationToken(result.login, password).then (token) ->
+              deferred.resolve
+                email: result.login
+                token: token
+                account: result.account
+            .catch (error) ->
+              deferred.reject error
       else
         deferred.reject result
 
@@ -181,6 +193,75 @@ class AuthenticationService
         process.exit 1
 
       deferred.resolve credentials
+
+    deferred.promise
+
+  sendCodeToEmail: (email) =>
+    deferred = Q.defer()
+    @getTemporaryToken().then (token) ->
+      options =
+        url:
+          'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/' +
+          "send?authenticationToken=#{token}&email=#{email}"
+        method: 'GET'
+
+      request options, (error, response) ->
+        if error or response.statusCode isnt 200
+          deferred.reject()
+          console.log error or response.body.message
+          process.exit 1
+
+        deferred.resolve token
+
+    deferred.promise
+
+  getAccessKey: () ->
+    deferred = Q.defer()
+    options =
+      properties:
+        password:
+          hidden: true
+          message: 'password (typing will be hidden)'
+          required: true
+
+    prompt.message = '> '
+    prompt.delimiter = ''
+
+    prompt.start()
+
+    prompt.get options, (err, result) =>
+      if err then console.log '\nLogin failed. Please try again.'
+      if result and result.password
+        deferred.resolve result.password
+      else
+        deferred.reject
+
+    deferred.promise
+
+  getEmailAuthenticationToken: (email, token, code) ->
+    deferred = Q.defer()
+    options =
+      url:
+        'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/' +
+        "validate?&login=#{email}&accesskey=#{code}" +
+        "&authenticationToken=#{token}"
+      method: 'GET'
+
+    request options, (error, response, body) ->
+      if error or response.statusCode isnt 200
+        deferred.reject()
+        console.log error or response.body.message
+        process.exit 1
+
+      try
+        auth = JSON.parse body
+
+        if auth.authStatus isnt 'Success'
+          deferred.reject "Authentication has failed with status #{auth.authStatus}".red
+
+        deferred.resolve auth.authCookie.Value
+      catch
+        deferred.reject 'Invalid JSON while authenticating with VTEX ID'.red
 
     deferred.promise
 
