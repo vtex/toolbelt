@@ -1,3 +1,9 @@
+### v0.12.0 (2015-11-06)
+
+Add special auth method for `@vtex.com` or `vtex.com.br` e-mails.
+
+---
+
 ### v0.11.0 (2015-11-05)
 
 On this update we changed the way we tell Storefront that you're watching a new app!
