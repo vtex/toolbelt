@@ -43,11 +43,12 @@ class AuthenticationService
       if err then console.log '\nLogin failed. Please try again.'
       if result and result.login and result.account
         if result.login.indexOf('@vtex.com') isnt -1
-          console.log '\nWe sent you an e-mail with your code, please use it!'
+          console.log '\nWe sent you an e-mail with your access token, please use it!'
 
           @sendCodeToEmail(result.login).then (token) =>
             startToken = token
-            @getAccessKey().then (code) =>
+            isUsingToken = true
+            @getAccessKey(isUsingToken).then (code) =>
               @getEmailAuthenticationToken(result.login, startToken, code)
               .then (token) ->
                 deferred.resolve
@@ -215,7 +216,7 @@ class AuthenticationService
 
     deferred.promise
 
-  getAccessKey: () ->
+  getAccessKey: (isUsingToken = false) ->
     deferred = Q.defer()
     options =
       properties:
@@ -223,6 +224,10 @@ class AuthenticationService
           hidden: true
           message: 'password (typing will be hidden)'
           required: true
+
+    if isUsingToken
+      options.properties.password.hidden = false
+      options.properties.password.message = 'access token'
 
     prompt.message = '> '
     prompt.delimiter = ''
@@ -272,4 +277,3 @@ module.exports =
   logout: auth.deleteCredentials
   getValidCredentials: auth.getValidCredentials
   askCredentials: auth.askCredentials
-
