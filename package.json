@@ -3,18 +3,19 @@
   "version": "0.13.0",
   "description": "CLI tool for creating and managing VTEX apps",
   "bin": {
-    "vtex": "lib/vtex.js",
-    "vtex-login": "lib/vtex-login.js",
-    "vtex-logout": "lib/vtex-logout.js",
-    "vtex-watch": "lib/vtex-watch.js",
-    "vtex-publish": "lib/vtex-publish.js"
+    "vtex": "bin/vtex.js",
+    "vtex-login": "bin/vtex-login.js",
+    "vtex-logout": "bin/vtex-logout.js",
+    "vtex-watch": "bin/vtex-watch.js",
+    "vtex-publish": "bin/vtex-publish.js"
   },
   "scripts": {
-    "start": "node lib/vtex.js",
-    "watch": "grunt",
-    "prepublish": "npm test && grunt build",
-    "test": "mocha --compilers coffee:coffee-script/register",
-    "test-watch": "mocha --compilers coffee:coffee-script/register --watch"
+    "start": "node bin/vtex.js",
+    "watch": "babel src --out-dir bin --watch",
+    "lint": "eslint src",
+    "compile": "babel src --out-dir .",
+    "prepublish": "npm test && npm run compile",
+    "test": "mocha --compilers js:babel-core/register"
   },
   "repository": {
     "type": "git",
@@ -53,12 +54,15 @@
   },
   "preferGlobal": true,
   "devDependencies": {
+    "babel-cli": "^6.1.18",
+    "babel-core": "^6.1.21",
+    "babel-eslint": "^4.1.5",
+    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-stage-0": "^6.1.18",
     "chai": "^3.3.0",
-    "coffee-script": "^1.10.0",
-    "grunt": "^0.4.5",
-    "grunt-contrib-coffee": "^0.13.0",
-    "grunt-contrib-copy": "^0.8.1",
-    "grunt-contrib-watch": "^0.6.1",
+    "eslint": "^1.9.0",
+    "eslint-config-vtex": "^2.0.0",
+    "eslint-plugin-react": "^3.9.0",
     "mocha": "^2.3.3"
   }
 }
