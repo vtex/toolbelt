@@ -13,7 +13,16 @@ Q.all([auth.getValidCredentials(), getAppMetadata()])
 }).then((app) => {
   return console.log(chalk.green('\nApp ' + chalk.italic(app.app) + ' version ' + chalk.bold(app.version) + ' was successfully published!'));
 }).catch((error) => {
-  const errorMsg = JSON.parse(error.body).message || error;
-  console.error('\nFailed to publish app'.red);
-  console.error(errorMsg.bold.red);
+  console.error('\nFailed to publish app\n'.bold.red);
+
+  const errorObj = JSON.parse(error.body);
+  if (errorObj.message) {
+    console.error('Error: ' + errorObj.message);
+  } else {
+    console.error('Error:' + error);
+  }
+  if (errorObj.details) {
+    console.error('Details:');
+    console.error(JSON.stringify(errorObj.details, null, 2));
+  }
 });
