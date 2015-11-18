@@ -56,11 +56,12 @@ class AuthenticationService {
 
       if (result && result.login && result.account) {
         if (result.login.indexOf('@vtex.com') !== -1) {
-          console.log('\nWe sent you an e-mail with your code, please use it!');
+          console.log('\nWe sent you an e-mail with your access token, please use it!');
 
           this.sendCodeToEmail(result.login).then((token) => {
             let startToken = token;
-            this.getAccessKey().then((code) => {
+            let isUsingToken = true;
+            this.getAccessKey(isUsingToken).then((code) => {
               this.getEmailAuthenticationToken(result.login, startToken, code).then((token) => {
                 deferred.resolve({
                   email: result.login,
@@ -276,7 +277,7 @@ class AuthenticationService {
     return deferred.promise;
   }
 
-  getAccessKey = () => {
+  getAccessKey = (isUsingToken = false) => {
     let deferred = Q.defer();
     let options = {
       properties: {
@@ -287,6 +288,12 @@ class AuthenticationService {
         }
       }
     };
+
+    if (isUsingToken) {
+      options.properties.password.hidden = false;
+      options.properties.password.message = 'access token';
+    }
+
     prompt.message = '> ';
     prompt.delimiter = '';
     prompt.start();
