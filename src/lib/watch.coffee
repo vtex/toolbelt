@@ -124,10 +124,15 @@ class Watcher
     @sendChanges batchChanges, refresh
 
   sendChanges: (batchChanges, refresh) =>
+    galleryObj =
+      account: @credentials.account
+      state: @workspace
+      changes: batchChanges
+
     options =
       url: "#{@endpoint}/#{@vendor}/sandboxes/#{@sandbox}/#{@app}/files"
       method: 'POST'
-      json: batchChanges
+      json: galleryObj
       headers:
         Authorization: "token #{@credentials.token}"
         Accept: @acceptHeader
