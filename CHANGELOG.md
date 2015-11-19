@@ -1,3 +1,13 @@
+### v0.13.0 (2015-11-19)
+
+#### BREAKING CHANGE, PLEASE UPDATE
+
+It updates the JSON we send to the gallery! Just that :)
+
+- [`#82`](https://github.com/vtex/toolbelt/issues/82)
+
+---
+
 ### v0.12.0 (2015-11-06)
 
 Add special auth method for `@vtex.com` or `@vtex.com.br` e-mails.
