@@ -1,5 +1,7 @@
 # VTEX Toolbelt
 
+[![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt)
+
 CLI tool for developing VTEX apps.
 
 ---
