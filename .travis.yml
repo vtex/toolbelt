@@ -1,13 +1,17 @@
+sudo: false
 language: node_js
 
 node_js:
-- '0.12'
+- 4
 
-before_install: npm install -g grunt-cli && chmod +x create-npmrc.sh
+before_install: npm install -g grunt-cli
 
 deploy:
-  provider: script
-  script: ./create-npmrc.sh && npm publish
+  provider: npm
+  email: breno+npm@vtex.com.br
   on:
     tags: true
     branch: master
+    repo: vtex/toolbelt
+  api_key:
+    secure: Kxz4qEBfQvKCzbmOPpQo7thwSLMBr9ukSprR0G8koEsJqgA1+WJtEAnzMQ0rdpq0WyE4Mc1NsC3eSSuY6X7uqMFSKDQxvAZ532CKN+X7gF+ByS9C/+jXI3TSpx8kKaAKMlRpC1REqx9uZsGkbv5pV/2apgRQYKJ5DgwBrI38cJU=
