@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 
-import auth from '../lib/auth';
+import { login } from '../lib/auth';
 
-auth.login().then((data) => {
+function showSuccessMessage(data) {
   console.log('\n', ('Logged in as ' + data.email).green);
-}).catch((error) => {
+}
+
+function handleError(error) {
   console.log(error.message);
-});
+}
+
+login()
+.then(showSuccessMessage)
+.catch(handleError);

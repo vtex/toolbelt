@@ -30,7 +30,10 @@ function validateMetadata(meta) {
 }
 
 export function getAppMetadata() {
-  return readAppMetadata().then(JSON.parse).then(validateMetadata).catch(function(error) {
-    throw new Error(error.message.red);
-  });
+  return readAppMetadata()
+    .then(JSON.parse)
+    .then(validateMetadata)
+    .catch(function(error) {
+      throw new Error(error.message.red);
+    });
 }

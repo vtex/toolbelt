@@ -1,12 +1,18 @@
 #!/usr/bin/env node
 
-import auth from '../lib/auth';
+import { logout } from '../lib/auth';
 
-auth.logout().then(() => {
+function showSuccessMessage() {
   console.log('Local credentials cleared.');
-}).catch((error) => {
+}
+
+function handleError(error) {
   if (error.code === 'ENOENT') {
     return console.log('You\'re already logged out');
   }
   return console.log(error(console.log(error)));
-});
+}
+
+logout()
+.then(showSuccessMessage)
+.catch(handleError);

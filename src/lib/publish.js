@@ -1,19 +1,19 @@
 import Q from 'q';
 import request from 'request';
 import fs from 'fs';
-import fileManager from './file-manager';
+import { compressFiles, getRequestConfig, getZipFilePath, removeZipFile } from './file-manager';
 
 function pushApp(app, version, vendor, credentials) {
   console.log('Compressing files...'.grey);
 
-  return fileManager.compressFiles(app, version).then(() => {
-    return fileManager.getRequestConfig().then((config) => {
+  return compressFiles(app, version).then(() => {
+    return getRequestConfig().then((config) => {
       let deferred = Q.defer();
 
       const url = config.GalleryEndpoint || 'http://api.beta.vtex.com';
       const acceptHeader = config.AcceptHeader || 'application/vnd.vtex.gallery.v0+json';
       let formData = {
-        attachments: [fs.createReadStream(fileManager.getZipFilePath(app, version))]
+        attachments: [fs.createReadStream(getZipFilePath(app, version))]
       };
       let options = {
         url: url + '/' + vendor + '/apps',
@@ -30,7 +30,7 @@ function pushApp(app, version, vendor, credentials) {
       request(options, (error, response) => {
         if (error) return deferred.reject(error);
 
-        fileManager.removeZipFile(app, version);
+        removeZipFile(app, version);
 
         let statusCode = response.statusCode;
         if (statusCode === 200 || statusCode === 201) {

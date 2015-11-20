@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import Q from 'q';
-import auth from '../lib/auth';
+import { getValidCredentials } from '../lib/auth';
 import Watcher from '../lib/watch';
 import { getAppMetadata } from '../lib/meta';
 import WebpackRunner from '../lib/webpack';
@@ -15,16 +15,19 @@ const serverFlag = process.argv[SERVER_INDEX];
 const webpackFlag = process.argv[WEBPACK_INDEX];
 const isFlagActive = webpackFlag === 'true' || serverFlag === 'true';
 
-Q.all([auth.getValidCredentials(), getAppMetadata()])
-.spread((credentials, meta) => {
+function runWatcher(credentials, meta) {
   const { name, vendor } = meta;
 
   const watcher = new Watcher(name, vendor, credentials, serverFlag);
   return watcher.watch();
-}).then((app) => {
-  console.log(vtexsay('Welcome to the VTEX Toolbelt!'),
+}
+
+function showWelcomeMessage(app) {
+  console.log(vtexsay('Welcome to pop VTEX Toolbelt!'),
               chalk.green(`\n\nWatching ${chalk.italic(app.app)} \n`));
-}).then(() => {
+}
+
+function runWebpack() {
   if (isFlagActive) {
     let webpackRunner = new WebpackRunner();
     if (webpackFlag === 'true') {
@@ -33,7 +36,9 @@ Q.all([auth.getValidCredentials(), getAppMetadata()])
       return webpackRunner.startDevServer();
     }
   }
-}).catch((error) => {
+}
+
+function handleError(error) {
   console.error('\nFailed to start watch'.red);
   if (error.code === 'ENOTFOUND') {
     console.log((`Address ${error.hostname} not found`).red + '\nAre you online?'.yellow);
@@ -41,4 +46,12 @@ Q.all([auth.getValidCredentials(), getAppMetadata()])
     console.log(error);
   }
   return process.exit(1);
-});
+}
+
+Q.all([getValidCredentials(), getAppMetadata()])
+.spread(runWatcher)
+.then(showWelcomeMessage)
+.then(() => {
+  return runWebpack();
+})
+.catch(handleError);

@@ -30,7 +30,7 @@ const doc = `
 
 const options = docopt(doc, { version: pkg.version });
 
-let run = (command, argv = [], env = '') => {
+function run(command, argv = [], env = '') {
   const baseDir = path.dirname(process.argv[1]);
   let args = [baseDir + '/' + command];
 
@@ -68,7 +68,7 @@ let run = (command, argv = [], env = '') => {
     }
     return process.exit(1);
   });
-};
+}
 
 let command, argv, env;
 if (options.login) {

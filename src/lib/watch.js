@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import request from 'request';
 import chokidar from 'chokidar';
-import fileManager from './file-manager';
+import { listFiles } from './file-manager';
 import tinylr from 'tiny-lr';
 import crypto from 'crypto';
 import net from 'net';
@@ -51,7 +51,7 @@ class Watcher {
     let usePolling = (ref = process.platform === 'win32') != null ? ref : false;
     this.activateSandbox();
 
-    return fileManager.listFiles().then((result) => {
+    return listFiles().then((result) => {
       let deferred = Q.defer();
 
       if (result.endpoint) this.endpoint = result.endpoint;
