@@ -69,10 +69,11 @@ export function askPassword(result) {
 
 function vtexUserAuth(result) {
   let deferred = Q.defer();
-  console.log('\nWe sent you an e-mail with your code, please use it!');
+  console.log('\nWe sent you an e-mail with your access token, please use it!');
 
   sendCodeToEmail(result.login).then((startToken) => {
-    getAccessKey().then((code) => {
+    const isUsingToken = true;
+    getAccessKey(isUsingToken).then((code) => {
       getEmailAuthenticationToken(result.login, startToken, code)
       .then(deferred.resolve)
       .catch(deferred.reject);
@@ -187,7 +188,7 @@ function sendCodeToEmail(email) {
   return deferred.promise;
 }
 
-function getAccessKey() {
+function getAccessKey(isUsingToken = false) {
   let deferred = Q.defer();
   let options = {
     properties: {
@@ -198,6 +199,12 @@ function getAccessKey() {
       }
     }
   };
+
+  if (isUsingToken) {
+    options.properties.password.hidden = false;
+    options.properties.password.message = 'access token';
+  }
+
   prompt.message = '> ';
   prompt.delimiter = '';
   prompt.start();
