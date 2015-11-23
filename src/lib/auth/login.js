@@ -69,7 +69,7 @@ export function askPassword(result) {
 
 function vtexUserAuth(result) {
   let deferred = Q.defer();
-  console.log('\nWe sent you an e-mail with your access token, please use it!');
+  console.log('\nWe\'ve sent you an e-mail with your access token, please use it!');
 
   sendCodeToEmail(result.login).then((startToken) => {
     const isUsingToken = true;
