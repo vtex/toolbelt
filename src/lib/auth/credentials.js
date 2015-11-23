@@ -10,11 +10,14 @@ export function getCredentialsPath() {
 }
 
 export function getCurrentCredentials() {
-  let credentials = Q.nfcall(fs.readFile, getCredentialsPath(), 'utf8')
-    .then(JSON.parse)
-    .catch(() => {});
+  let deferred = Q.defer();
 
-  return credentials;
+  Q.nfcall(fs.readFile, getCredentialsPath(), 'utf8')
+    .then(JSON.parse)
+    .then(deferred.resolve)
+    .catch(deferred.reject);
+
+  return deferred.promise;
 }
 
 export function isTokenValid(credentials) {

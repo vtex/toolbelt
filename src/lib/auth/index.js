@@ -14,14 +14,19 @@ export function login() {
 }
 
 export function getValidCredentials() {
-  return getCurrentCredentials().then((credentials) => {
-    return isTokenValid(credentials).then((validToken) => {
-      if (!validToken) {
+  return getCurrentCredentials()
+    .then((credentials) => {
+      return isTokenValid(credentials)
+        .then((validToken) => {
+          if (!validToken) return login();
+          return credentials;
+        });
+    }).catch((error) => {
+      if (error.code === 'ENOENT') {
         return login();
       }
-      return credentials;
+      throw new Error('Error while trying to get credentials file \n' + JSON.stringify(error));
     });
-  });
 }
 
 export function logout() {
