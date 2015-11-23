@@ -8,9 +8,11 @@ function showSuccessMessage() {
 
 function handleError(error) {
   if (error.code === 'ENOENT') {
-    return console.log('You\'re already logged out');
+    console.error('You\'re already logged out');
+  } else {
+    console.error(error);
   }
-  return console.log(error(console.log(error)));
+  process.exit(1);
 }
 
 logout()

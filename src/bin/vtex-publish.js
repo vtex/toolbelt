@@ -19,6 +19,8 @@ function handleError(error) {
   const errorMsg = JSON.parse(error.body).message || error;
   console.error('\nFailed to publish app'.red);
   console.error(errorMsg.bold.red);
+
+  process.exit(1);
 }
 
 Q.all([getValidCredentials(), getAppMetadata()])
