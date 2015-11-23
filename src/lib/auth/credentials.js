@@ -2,6 +2,7 @@ import path from 'path';
 import request from 'request';
 import Q from 'q';
 import fs from 'fs';
+import { getErrorMessage } from './utils';
 
 export function getCredentialsPath() {
   const home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
@@ -23,11 +24,8 @@ export function isTokenValid(credentials) {
   };
 
   request(requestOptions, (error, response, body) => {
-    if (error) {
-      logErrorAndExit(error);
-    } else if (response.statusCode !== 200) {
-      console.log(JSON.parse(body).error);
-      deferred.reject('Invalid status code ' + response.statusCode);
+    if (error || response.statusCode !== 200 || response.statusCode >= 400) {
+      return deferred.reject(getErrorMessage(error, response, 'authenticating'));
     }
 
     try {
@@ -45,14 +43,4 @@ export function isTokenValid(credentials) {
   });
 
   return deferred.promise;
-}
-
-function logErrorAndExit(error) {
-  if (error.code === 'ENOTFOUND') {
-    console.log(('Address ' + error.hostname + ' not found').red + '\nAre you online?'.yellow);
-  } else {
-    console.log(error);
-  }
-
-  return process.exit(1);
 }

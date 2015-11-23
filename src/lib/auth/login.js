@@ -3,6 +3,7 @@ import request from 'request';
 import Q from 'q';
 import fs from 'fs';
 import prompt from 'prompt';
+import { getErrorMessage } from './utils';
 import { getCredentialsPath } from './credentials';
 
 export function askCredentials() {
@@ -88,12 +89,10 @@ export function createWorkspace(credentials) {
   };
 
   request(options, (error, response) => {
-    var ref;
-    if (error || ((ref = response.statusCode) !== 200 && ref !== 201 && ref !== 409)) {
-      deferred.reject();
-      console.log(error || response.body.message);
-      process.exit(1);
+    if (error || response.statusCode !== 200 || response.statusCode >= 400) {
+      return deferred.reject(getErrorMessage(error, response, 'creating workspace'));
     }
+
     return deferred.resolve(credentials);
   });
 
@@ -127,11 +126,8 @@ function getAuthenticationToken(email, password) {
     };
 
     request(requestOptions, (error, response, body) => {
-      if (error) {
-        logErrorAndExit(error);
-      } else if (response.statusCode !== 200) {
-        console.log(JSON.parse(body).error);
-        deferred.reject('Invalid status code ' + response.statusCode);
+      if (error || response.statusCode !== 200 || response.statusCode >= 400) {
+        return deferred.reject(getErrorMessage(error, response, 'authenticating'));
       }
 
       try {
@@ -159,11 +155,10 @@ function sendCodeToEmail(email) {
     };
 
     request(options, (error, response) => {
-      if (error || response.statusCode !== 200) {
-        deferred.reject();
-        console.log(error || response.body.message);
-        process.exit(1);
+      if (error || response.statusCode !== 200 || response.statusCode >= 400) {
+        return deferred.reject(getErrorMessage(error, response, 'sending access token'));
       }
+
       deferred.resolve(token);
     });
   });
@@ -207,11 +202,10 @@ function getEmailAuthenticationToken(email, token, code) {
   };
 
   request(options, (error, response, body) => {
-    if (error || response.statusCode !== 200) {
-      deferred.reject();
-      console.log(error || response.body.message);
-      process.exit(1);
+    if (error || response.statusCode !== 200 || response.statusCode >= 400) {
+      return deferred.reject(getErrorMessage(error, response, 'authenticating'));
     }
+
     try {
       let auth = JSON.parse(body);
       if (auth.authStatus !== 'Success') {
@@ -233,11 +227,8 @@ function getTemporaryToken() {
   };
 
   request(requestOptions, (error, response, body) => {
-    if (error) {
-      logErrorAndExit(error);
-    } else if (response.statusCode !== 200) {
-      console.log(JSON.parse(body).error);
-      deferred.reject('Invalid status code ' + response.statusCode);
+    if (error || response.statusCode !== 200 || response.statusCode >= 400) {
+      return deferred.reject(getErrorMessage(error, response, 'authenticating'));
     }
 
     try {

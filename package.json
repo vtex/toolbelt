@@ -38,6 +38,7 @@
     "express": "^4.13.3",
     "glob": "^5.0.15",
     "http-proxy": "^1.11.2",
+    "http-status-name": "^2.0.0",
     "node-libs-browser": "^0.5.3",
     "prompt": "~0.2.14",
     "q": "^1.4.1",

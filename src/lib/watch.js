@@ -407,10 +407,9 @@ class Watcher {
 
     request(options, (error, response) => {
       if (error || response.statusCode !== 200) {
-        deferred.reject();
-        console.log(error || response.body.message);
-        process.exit(1);
+        return deferred.reject(error || response.body.message);
       }
+
       return deferred.resolve();
     });
 
