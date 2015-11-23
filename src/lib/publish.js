@@ -32,8 +32,7 @@ function pushApp(app, version, vendor, credentials) {
 
         removeZipFile(app, version);
 
-        let statusCode = response.statusCode;
-        if (statusCode === 200 || statusCode === 201) {
+        if (response.statusCode === 200 || response.statusCode === 201) {
           deferred.resolve({
             app: app,
             version: version
