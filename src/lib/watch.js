@@ -195,10 +195,10 @@ class Watcher {
     }
 
     return request(options, (error, response) => {
-      if (!error && response.statusCode === 200) {
-        return this.changesSentSuccessfuly(response.body);
+      if (error || response.statusCode !== 200 || response.statusCode >= 400) {
+        return this.changeSendError(error, response);
       }
-      return this.changeSendError(error, response);
+      return this.changesSentSuccessfuly(response.body);
     });
   }
 
