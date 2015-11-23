@@ -111,7 +111,7 @@ export function createWorkspace(credentials) {
   };
 
   request(options, (error, response) => {
-    if (error || response.statusCode !== 200 || response.statusCode >= 400) {
+    if (error || !(response.statusCode === 201 || response.statusCode === 409)) {
       return deferred.reject(getErrorMessage(error, response, 'creating workspace'));
     }
 
