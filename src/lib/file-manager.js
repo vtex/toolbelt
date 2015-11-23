@@ -121,5 +121,5 @@ export function getZipFilePath(app, version) {
 }
 
 export function removeZipFile(app, version) {
-  return rm('-rf', this.getZipFilePath(app, version));
+  return rm('-rf', getZipFilePath(app, version));
 }
