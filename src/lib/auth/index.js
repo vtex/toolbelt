@@ -1,10 +1,11 @@
 import Q from 'q';
 import fs from 'fs';
-import { askCredentials, createWorkspace, saveCredentials} from './login';
+import { askAccountAndLogin, askPassword, createWorkspace, saveCredentials } from './login';
 import { getCredentialsPath, getCurrentCredentials, isTokenValid } from './credentials';
 
 export function login() {
-  return askCredentials()
+  return askAccountAndLogin()
+    .then(askPassword)
     .then(createWorkspace)
     .then(saveCredentials)
     .catch((error) => {

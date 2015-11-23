@@ -6,7 +6,7 @@ import prompt from 'prompt';
 import { getErrorMessage } from './utils';
 import { getCredentialsPath } from './credentials';
 
-export function askCredentials() {
+export function askAccountAndLogin() {
   let deferred = Q.defer();
   let options = {
     properties: {
@@ -32,42 +32,63 @@ export function askCredentials() {
               'password - Your VTEX registered password\n');
 
   prompt.get(options, (err, result) => {
-    if (err) console.log('\nLogin failed. Please try again.');
-
-    if (result && result.login && result.account) {
-      if (result.login.indexOf('@vtex.com') !== -1) {
-        console.log('\nWe sent you an e-mail with your code, please use it!');
-
-        sendCodeToEmail(result.login).then((token) => {
-          let startToken = token;
-          getAccessKey().then((code) => {
-            getEmailAuthenticationToken(result.login, startToken, code).then((token) => {
-              deferred.resolve({
-                email: result.login,
-                token: token,
-                account: result.account
-              });
-            }).catch(function(error) {
-              deferred.reject(error);
-            });
-          });
-        });
-      } else {
-        getAccessKey().then((password) => {
-          getAuthenticationToken(result.login, password).then((token) => {
-            return deferred.resolve({
-              email: result.login,
-              token: token,
-              account: result.account
-            });
-          }).catch((error) => {
-            deferred.reject(error);
-          });
-        });
-      }
-    } else {
-      return deferred.reject(result);
+    if (err || !(result && result.login && result.account)) {
+      console.log('\nLogin failed. Please try again.');
+      return deferred.reject(err);
     }
+
+    return deferred.resolve(result);
+  });
+
+  return deferred.promise;
+}
+
+export function askPassword(result) {
+  let deferred = Q.defer();
+
+  if (result.login.indexOf('@vtex.com') !== -1) {
+    vtexUserAuth(result).then((token) => {
+      return deferred.resolve({
+        email: result.login,
+        token: token,
+        account: result.account
+      });
+    });
+  } else {
+    userAuth(result).then((token) => {
+      return deferred.resolve({
+        email: result.login,
+        token: token,
+        account: result.account
+      });
+    });
+  }
+
+  return deferred.promise;
+}
+
+function vtexUserAuth(result) {
+  let deferred = Q.defer();
+  console.log('\nWe sent you an e-mail with your code, please use it!');
+
+  sendCodeToEmail(result.login).then((startToken) => {
+    getAccessKey().then((code) => {
+      getEmailAuthenticationToken(result.login, startToken, code)
+      .then(deferred.resolve)
+      .catch(deferred.reject);
+    });
+  });
+
+  return deferred.promise;
+}
+
+function userAuth(result) {
+  let deferred = Q.defer();
+
+  getAccessKey().then((password) => {
+    getAuthenticationToken(result.login, password)
+    .then(deferred.resolve)
+    .catch(deferred.reject);
   });
 
   return deferred.promise;
