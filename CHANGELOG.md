@@ -1,3 +1,17 @@
+### v0.13.1 (2015-12-09)
+
+We dumped CoffeeScript in favor of ES6! Since all the code was deleted and written in ES6, you may encounter some issues, if you do, please open an issue.
+
+Improvements:
+- Improve error handling
+- Show publish error details
+
+Fixes:
+- Fix grammar in some messages
+- [`#73`](https://github.com/vtex/toolbelt/issues/73)
+
+---
+
 ### v0.13.0 (2015-11-19)
 
 #### BREAKING CHANGE, PLEASE UPDATE
