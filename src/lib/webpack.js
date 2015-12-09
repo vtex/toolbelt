@@ -13,7 +13,7 @@ class WebpackRunner {
           console.log('webpack.config.js not found'.bold.yellow);
         } else {
           console.log(err.toString().bold.red);
-          console.log('Did you installed ' + pkgName.yellow + '?');
+          console.log('Did you install ' + pkgName.yellow + '?');
         }
       } else {
         console.error('Error while trying to read ' + process.cwd() + '/webpack.config.js');
