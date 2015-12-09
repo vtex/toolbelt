@@ -37,9 +37,9 @@ Remember that your project needs to meet some requirements to work:
 
     ```javascript
     {
-        “name”: “app-name”,
-        “version”: “0.2.0”,
-        “vendor: : “vtex”
+      "name": "app-name",
+      "version": "0.2.0",
+      "vendor": "vtex"
     }
     ```
 
