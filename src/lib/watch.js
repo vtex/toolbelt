@@ -30,7 +30,7 @@ class Watcher {
     this.lrRun(35729);
 
     if (process.platform === 'win32') {
-      rl = require('readline').createInterface({
+      let rl = require('readline').createInterface({
         input: process.stdin,
         output: process.stdout
       });
