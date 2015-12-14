@@ -1,3 +1,9 @@
+### v0.13.2 (2015-12-14)
+
+Fix undeclared `rl` var on windows.
+
+---
+
 ### v0.13.1 (2015-12-09)
 
 We dumped CoffeeScript in favor of ES6! Since all the code was deleted and written in ES6, you may encounter some issues, if you do, please open an issue.
