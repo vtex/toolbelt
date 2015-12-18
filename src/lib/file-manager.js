@@ -12,8 +12,14 @@ export function listFiles() {
 
   Q.all([getIgnoredPatterns(), getRequestConfig()])
   .spread((ignoredPatterns, requestConfig) => {
+    const defaultIgnore = [
+      'node_modules/**/*',
+      '.git/**/*',
+      'package.json'
+    ];
+    ignoredPatterns = ignoredPatterns.concat(defaultIgnore);
     ignoredPatterns.push('**/.*', '**/*__', '**/*~');
-    glob('**', { nodir: true, ignore: ignoredPatterns}, (er, files) => {
+    glob('**', { nodir: true, ignore: ignoredPatterns }, (er, files) => {
       deferred.resolve({
         files: files,
         ignore: ignoredPatterns,
