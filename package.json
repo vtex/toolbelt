@@ -13,7 +13,6 @@
     "start": "babel src --out-dir . --watch",
     "lint": "eslint src",
     "compile": "babel src --out-dir .",
-    "prepublish": "npm run compile",
     "test": "mocha --compilers js:babel-core/register"
   },
   "repository": {
