@@ -31,12 +31,12 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "archiver": "^0.15.1",
+    "archiver": "^0.20.0",
     "chalk": "^1.1.1",
     "chokidar": "^1.2.0",
     "docopt": "^0.6.2",
     "express": "^4.13.3",
-    "glob": "^5.0.15",
+    "glob": "^6.0.1",
     "http-proxy": "^1.11.2",
     "http-status-name": "^2.0.0",
     "node-libs-browser": "^0.5.3",
