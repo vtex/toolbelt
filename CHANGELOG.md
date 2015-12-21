@@ -1,3 +1,7 @@
+### v0.14.0 (2015-12-21)
+
+`node_modules`, `package.json` and `.git` are ignored by default.
+
 ### v0.13.2 (2015-12-14)
 
 Fix undeclared `rl` var on windows.
