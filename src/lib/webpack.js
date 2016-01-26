@@ -25,7 +25,7 @@ class WebpackRunner {
 
     this.compiler = webpack(this.config);
     this.DELAY_TIME = 2000;
-  }
+  };
 
   startDevServer = () => {
     let port = 3000;
@@ -97,7 +97,7 @@ class WebpackRunner {
           }
         });
     }, this.DELAY_TIME);
-  }
+  };
 
   startWebpack = () => {
     setTimeout(() => {
@@ -114,7 +114,7 @@ class WebpackRunner {
         console.log(stats.toString(outputOptions) + '\n');
       });
     }, this.DELAY_TIME);
-  }
+  };
 }
 
 export default WebpackRunner;
