@@ -10,7 +10,7 @@ const doc = `
     vtex login
     vtex logout
     vtex publish
-    vtex watch [--webpack | --server]
+    vtex watch [--webpack | --server] [--changes]
     vtex --help
     vtex --version
 
@@ -25,6 +25,7 @@ const doc = `
     -v --version  Show version
     -w --webpack  Start with webpack
     -s --server   Start with dev server
+    -c --changes  Start with changes mode
 
 `;
 
@@ -82,7 +83,7 @@ if (options.login) {
   if (options['--server']) {
     env = 'HOT';
   }
-  argv = [options['--webpack'], options['--server']];
+  argv = [options['--webpack'], options['--server'], options['--changes']];
 }
 
 run(command, argv, env);

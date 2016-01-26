@@ -8,17 +8,20 @@ import WebpackRunner from '../lib/webpack';
 import chalk from 'chalk';
 import vtexsay from 'vtexsay';
 
-const SERVER_INDEX = process.argv.length - 1;
-const WEBPACK_INDEX = process.argv.length - 2;
+const SERVER_INDEX = process.argv.length - 2;
+const WEBPACK_INDEX = process.argv.length - 3;
+const MIGRATE_CHANGES = process.argv.length - 1;
 
 const serverFlag = process.argv[SERVER_INDEX];
 const webpackFlag = process.argv[WEBPACK_INDEX];
+const migrateChagesFlag = process.argv[MIGRATE_CHANGES];
+
 const isFlagActive = webpackFlag === 'true' || serverFlag === 'true';
+const isMigrateSet = migrateChagesFlag === 'true';
 
 function runWatcher(credentials, meta) {
   const { name, vendor } = meta;
-
-  const watcher = new Watcher(name, vendor, credentials, serverFlag);
+  const watcher = new Watcher(name, vendor, credentials, serverFlag, isMigrateSet);
   return watcher.watch();
 }
 

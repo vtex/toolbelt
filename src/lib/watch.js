@@ -7,9 +7,21 @@ import { listFiles } from './file-manager';
 import tinylr from 'tiny-lr';
 import crypto from 'crypto';
 import net from 'net';
+import shell from 'shelljs';
+import {
+  getSandboxFiles,
+  passToChanges,
+  generateFilesHash } from './file-hash-generator';
+import {
+  buildSetUpChanges,
+  filterSourceChanges,
+  filterSourceFiles,
+  isRouteFile,
+  isComponentFile,
+  isAreaFile } from './changes-migrator';
 
-class Watcher {
-  constructor(app, vendor, credentials, isServerSet) {
+export default class Watcher {
+  constructor(app, vendor, credentials, isServerSet, isMigrateSet) {
     this.ChangeAction = {
       Save: 'save',
       Remove: 'remove'
@@ -22,6 +34,8 @@ class Watcher {
     this.vendor = vendor;
     this.credentials = credentials;
     this.isServerSet = isServerSet;
+    this.isMigrateSet = isMigrateSet;
+    this.token = credentials.token;
 
     this.endpoint = 'http://api.beta.vtex.com';
     this.acceptHeader = 'application/vnd.vtex.workspaces.v0+json';
@@ -43,7 +57,7 @@ class Watcher {
       console.log('\nExiting...');
       return this.deactivateSandbox();
     });
-  }
+  };
 
   watch = () => {
     let ref;
@@ -83,7 +97,6 @@ class Watcher {
               let rootFilePath = path.resolve(root, filePath);
               this.changes[rootFilePath] = changeAction;
             }
-
             this.debounce(true);
             deferred.resolve({ app: this.app });
           });
@@ -91,59 +104,69 @@ class Watcher {
 
       return deferred.promise;
     });
-  }
+  };
 
   onAdded = (filePath) => {
     this.changes[filePath] = this.ChangeAction.Save;
     return this.debounce();
-  }
+  };
 
-  onDirAdded = () => {}
+  onDirAdded = () => {};
 
   onChanged = (filePath) => {
     this.changes[filePath] = this.ChangeAction.Save;
     return this.debounce();
-  }
+  };
 
   onUnlinked = (filePath) => {
     this.changes[filePath] = this.ChangeAction.Remove;
     return this.debounce();
-  }
+  };
 
   onDirUnlinked = (filePath) => {
     this.changes[filePath] = this.ChangeAction.Remove;
     return this.debounce();
-  }
+  };
 
   debounce = (resync) => {
     let thisBatch = ++this.lastBatch;
     return setTimeout(() => {
       return this.trySendBatch(thisBatch, resync);
     }, 200);
-  }
+  };
 
   getChanges = (batch) => {
-    let data, i, item, len;
-    let root = path.resolve('');
+    let buildSourceChanges = (sourceChanges) => {
+      let root = path.resolve('');
+      let data, i, item, len;
 
-    for (i = 0, len = batch.length; i < len; i++) {
-      item = batch[i];
-      if (item.action === this.ChangeAction.Save) {
-        try {
-          data = fs.readFileSync(item.path);
-          item.content = data.toString('base64');
-          item.encoding = 'base64';
-        } catch (err) {
-          item.action = this.ChangeAction.Remove;
+      for (i = 0, len = sourceChanges.length; i < len; i++) {
+        item = sourceChanges[i];
+        if (item.action === this.ChangeAction.Save) {
+          try {
+            data = fs.readFileSync(item.path);
+            item.content = data.toString('base64');
+            item.encoding = 'base64';
+          } catch (err) {
+            item.action = this.ChangeAction.Remove;
+          }
         }
+        item.path = item.path.substring(root.length + 1).replace(/\\/g, '/');
       }
-      item.path = item.path.substring(root.length + 1).replace(/\\/g, '/');
-    }
+      return sourceChanges.filter((item) => {
+        return item.action === this.ChangeAction.Save ||
+               item.action === this.ChangeAction.Remove;
+      });
+    };
 
-    return batch.filter((item) => {
-      return item.action === this.ChangeAction.Save || item.action === this.ChangeAction.Remove;
-    });
-  }
+    let buildMigrateChanges = (batch) => {
+      return buildSetUpChanges(this).then((setUpChanges) => {
+        return buildSourceChanges(filterSourceChanges(batch)).concat(setUpChanges);
+      });
+    };
+
+    return this.isMigrateSet ? buildMigrateChanges(batch) : buildSourceChanges(batch);
+  };
 
   trySendBatch = (thisBatch, resync) => {
     if (thisBatch !== this.lastBatch) return;
@@ -161,13 +184,15 @@ class Watcher {
 
     this.changes = {};
     this.lastBatch = 0;
-    let batchChanges = this.getChanges(batch);
-    let refresh = resync ? false : true;
 
-    return this.sendChanges(batchChanges, refresh);
-  }
+    return Q.all([this.getChanges(batch)]).spread((batchChanges) => {
+      let refresh = resync ? false : true;
+      return this.sendChanges(batchChanges, refresh);
+    }).done();
+  };
 
   sendChanges = (batchChanges, refresh) => {
+
     const galleryObj = {
       account: this.credentials.account,
       state: this.workspace,
@@ -200,7 +225,7 @@ class Watcher {
       }
       return this.changesSentSuccessfuly(response.body);
     });
-  }
+  };
 
   changesSentSuccessfuly = (batchChanges) => {
     this.logResponse(batchChanges);
@@ -237,7 +262,7 @@ class Watcher {
         return this.changeSendError(error, response);
       }
     });
-  }
+  };
 
   logResponse = (batchChanges) => {
     let results = [];
@@ -261,7 +286,7 @@ class Watcher {
     });
 
     return results;
-  }
+  };
 
   changeSendError = (error, response) => {
     console.error('Error sending files'.red);
@@ -272,107 +297,28 @@ class Watcher {
       console.error('Headers:', response.headers);
       return console.error('Body:', response.body);
     }
-  }
-
-  getSandboxFiles = () => {
-    let options = {
-      url: this.endpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files',
-      method: 'GET',
-      headers: {
-        Authorization: 'token ' + this.credentials.token,
-        Accept: this.acceptHeader,
-        'Content-Type': 'application/json',
-        'x-vtex-accept-snapshot': false
-      }
-    };
-
-    return Q.nfcall(request, options).then((data) => {
-      let response = data[0];
-      if (response.statusCode === 200) {
-        return JSON.parse(response.body);
-      } else if (response.statusCode === 404) {
-        return void 0;
-      }
-      return console.error('Status:', response.statusCode);
-    });
-  }
-
-  generateFilesHash = (files) => {
-    let root = process.cwd();
-
-    let readAndHash = (filePath) => {
-      return Q.nfcall(fs.readFile, path.resolve(root, filePath)).then((content) => {
-        let hashedContent = crypto.createHash('md5').update(content, 'binary').digest('hex');
-        return {
-          path: filePath,
-          hash: hashedContent
-        };
-      });
-    };
-
-    let mapFiles = (filesArr) => {
-      let filesAndHash = {};
-
-      filesArr.forEach((file) => {
-        filesAndHash[file.path] = {
-          hash: file.hash
-        };
-      });
-
-      return filesAndHash;
-    };
-
-    let filesPromise = [];
-    files.forEach((file) => {
-      filesPromise.push(readAndHash(file));
-    });
-
-    return Q.all(filesPromise).then(mapFiles);
-  }
+  };
 
   getFilesChanges = (files) => {
-    let passToChanges = (filesToLoop, filesToCompare) => {
-      let changes = {};
-      let filesToCompareExists = filesToCompare !== void 0;
-
-      for (let file in filesToLoop) {
-        if (!filesToCompareExists) {
-          changes[file] = this.ChangeAction.Save;
-        } else {
-          if (filesToCompare[file] == null) {
-            changes[file] = this.ChangeAction.Remove;
-          } else {
-            let hashCompare = filesToCompare[file].hash !== filesToLoop[file].hash;
-            delete filesToCompare[file];
-            if (hashCompare) {
-              changes[file] = this.ChangeAction.Save;
-            }
-          }
+    let sourceFiles = filterSourceFiles(files);
+    let filterSandboxFiles = (sandboxFiles) => {
+      let filesToCompare = {};
+      Object.keys(sandboxFiles).forEach((file) => {
+        if (!isRouteFile(file) && !isAreaFile(file) && !isComponentFile(file)) {
+            filesToCompare[file] = sandboxFiles[file];
         }
-      }
-
-      let compareKeys;
-      if (!!filesToCompareExists) {
-        compareKeys = Object.keys(filesToCompare).length;
-      }
-
-      if (compareKeys > 0) {
-        for (let file in filesToCompare) {
-          changes[file] = this.ChangeAction.Save;
-        }
-      }
-
-      return changes;
+      });
+      return filesToCompare;
     };
 
-    return Q.all([this.generateFilesHash(files), this.getSandboxFiles()])
-    .spread((localFiles, sandboxFiles) => {
-      if (sandboxFiles != null) {
-        return passToChanges(sandboxFiles, localFiles);
-      }
-      return passToChanges(localFiles);
-    });
-  }
+    return Q.all([generateFilesHash(sourceFiles), getSandboxFiles(this)])
+      .spread((localFiles, sandboxFiles) => {
+        let remoteFiles = this.isMigrateSet ? filterSandboxFiles(sandboxFiles) : sandboxFiles;
+        return sandboxFiles != null
+          ? passToChanges(remoteFiles, localFiles)
+          : passToChanges(localFiles);
+      });
+  };
 
   lrRun = (port) => {
     let testPort = net.createServer();
@@ -391,7 +337,7 @@ class Watcher {
       .listen(port);
 
     return testPort;
-  }
+  };
 
   activateSandbox = () => {
     let deferred = Q.defer();
@@ -415,7 +361,7 @@ class Watcher {
 
     setTimeout(this.activateSandbox, 30000);
     return deferred.promise;
-  }
+  };
 
   deactivateSandbox = () => {
     let options = {
@@ -434,7 +380,5 @@ class Watcher {
       }
       return process.exit(1);
     });
-  }
+  };
 }
-
-export default Watcher;
