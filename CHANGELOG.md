@@ -1,6 +1,14 @@
+### v0.14.1 (2016-01-01)
+
+Update some deps and fix login error with start token.
+
+---
+
 ### v0.14.0 (2015-12-21)
 
 `node_modules`, `package.json` and `.git` are ignored by default.
+
+---
 
 ### v0.13.2 (2015-12-14)
 
