@@ -251,7 +251,7 @@ function getEmailAuthenticationToken(email, token, code) {
 function getTemporaryToken() {
   let deferred = Q.defer();
   let requestOptions = {
-    uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start'
+    uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start?callbackUrl='
   };
 
   request(requestOptions, (error, response, body) => {
