@@ -39,7 +39,7 @@
     "http-proxy": "^1.11.2",
     "http-status-name": "^2.0.0",
     "node-libs-browser": "^1.0.0",
-    "prompt": "~0.2.14",
+    "prompt": "~1.0.0",
     "q": "^1.4.1",
     "request": "^2.64.0",
     "semver": "^5.0.3",
