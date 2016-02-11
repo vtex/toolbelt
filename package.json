@@ -43,7 +43,7 @@
     "q": "^1.4.1",
     "request": "^2.64.0",
     "semver": "^5.0.3",
-    "shelljs": "^0.5.3",
+    "shelljs": "^0.6.0",
     "supports-color": "^3.1.1",
     "tiny-lr": "^0.2.0",
     "vtexsay": "^1.0.3",
