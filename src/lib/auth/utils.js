@@ -4,7 +4,7 @@ import chalk from 'chalk';
 export function getErrorMessage(error, response, action) {
   if (error) {
     if (error.code === 'ENOTFOUND') {
-      return (chalk.red('Address ' + error.hostname + ' not found') + chalk.yellow('\nAre you online?');
+      return (chalk.red('Address ' + error.hostname + ' not found') + chalk.yellow('\nAre you online?'));
     }
     return error;
   }
