@@ -23,7 +23,8 @@ export function listFiles() {
       deferred.resolve({
         files: files,
         ignore: ignoredPatterns,
-        endpoint: requestConfig.GalleryEndpoint,
+        appsEndpoint: requestConfig.AppsEndpoint,
+        workspacesEndpoint: requestConfig.WorkspacesEndpoint,
         header: requestConfig.AcceptHeader
       });
     });
