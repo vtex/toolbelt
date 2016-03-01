@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import Q from 'q';
+import chalk from 'chalk';
 
 function readAppMetadata() {
   const metaPath = path.resolve(process.cwd(), 'meta.json');
@@ -34,6 +35,6 @@ export function getAppMetadata() {
     .then(JSON.parse)
     .then(validateMetadata)
     .catch(function(error) {
-      throw new Error(error.message.red);
+      throw new Error(chalk.red(error.message));
     });
 }

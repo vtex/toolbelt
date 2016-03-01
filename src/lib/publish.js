@@ -2,9 +2,10 @@ import Q from 'q';
 import request from 'request';
 import fs from 'fs';
 import { compressFiles, getRequestConfig, getZipFilePath, removeZipFile } from './file-manager';
+import chalk from 'chalk';
 
 function pushApp(app, version, vendor, credentials) {
-  console.log('Compressing files...'.grey);
+  console.log(chalk.grey('Compressing files...'));
 
   return compressFiles(app, version).then(() => {
     return getRequestConfig().then((config) => {
@@ -26,7 +27,7 @@ function pushApp(app, version, vendor, credentials) {
         }
       };
 
-      console.log('Sending files...'.grey);
+      console.log(chalk.grey('Sending files...'));
       request(options, (error, response) => {
         if (error) return deferred.reject(error);
 

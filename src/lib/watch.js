@@ -7,6 +7,7 @@ import { listFiles } from './file-manager';
 import tinylr from 'tiny-lr';
 import crypto from 'crypto';
 import net from 'net';
+import chalk from 'chalk';
 
 class Watcher {
   constructor(app, vendor, credentials, isServerSet) {
@@ -189,9 +190,9 @@ class Watcher {
     if (refresh) options.url += '?resync=true';
 
     if (refresh) {
-      console.log('Synchronizing...'.blue);
+      console.log(chalk.blue('Synchronizing...'));
     } else {
-      console.log('Changes detected, uploading...'.blue);
+      console.log(chalk.blue('Changes detected, uploading...'));
     }
 
     return request(options, (error, response) => {
@@ -208,21 +209,21 @@ class Watcher {
       return change.path;
     });
 
-    let linkMsg = 'Your URL: '.green;
+    let linkMsg = chalk.green('Your URL: ');
 
     if (paths.length > 0) {
-      console.log('\n... files uploaded\n'.green);
+      console.log(chalk.green('\n... files uploaded\n'));
     } else {
-      console.log('\nEverything is up to date\n'.green);
+      console.log(chalk.green('\nEverything is up to date\n'));
     }
 
     if (this.isServerSet === 'true') {
-      linkMsg += ('http://' + this.credentials.account + '.local.myvtex.com:3000/').blue.underline;
+      linkMsg += chalk.blue.underline('http://' + this.credentials.account + '.local.myvtex.com:3000/');
     } else {
-      linkMsg += ('http://' + this.credentials.account + '.beta.myvtex.com/').blue.underline;
+      linkMsg += chalk.blue.underline('http://' + this.credentials.account + '.beta.myvtex.com/');
     }
 
-    linkMsg += ('?workspace=sb_' + this.sandbox + '\n').blue.underline;
+    linkMsg += chalk.blue.underline('?workspace=sb_' + this.sandbox + '\n');
     console.log(linkMsg);
 
     let options = {
@@ -244,16 +245,16 @@ class Watcher {
 
     batchChanges.forEach((change) => {
       if (change.action === 'save') {
-        console.log('U'.yellow + (' ' + change.path));
+        console.log(chalk.yellow('U') + (' ' + change.path));
       } else if (change.action === 'remove') {
-        console.log('D'.red + (' ' + change.path));
+        console.log(chalk.red('D') + (' ' + change.path));
       } else {
-        console.log(change.action.grey + ' ' + change.path);
+        console.log(chalk.grey(change.action) + ' ' + change.path);
       }
 
       if (change.warnings) {
         change.warnings.forEach((warning) => {
-          results.push(console.log('  ' + warning.yellow));
+          results.push(console.log('  ' + chalk.yellow(warning)));
         });
       } else {
         results.push(void 0);
@@ -264,7 +265,7 @@ class Watcher {
   }
 
   changeSendError = (error, response) => {
-    console.error('Error sending files'.red);
+    console.error(chalk.red('Error sending files'));
     if (error) console.error(error);
 
     if (response) {

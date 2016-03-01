@@ -39,9 +39,9 @@ function runWebpack() {
 }
 
 function handleError(error) {
-  console.error('\nFailed to start watch'.red);
+  console.error(chalk.red('\nFailed to start watch'));
   if (error.code === 'ENOTFOUND') {
-    console.log((`Address ${error.hostname} not found`).red + '\nAre you online?'.yellow);
+    console.log(chalk.red(`Address ${error.hostname} not found`) + chalk.yellow('\nAre you online?'));
   } else {
     console.log(error);
   }

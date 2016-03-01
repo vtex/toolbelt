@@ -1,6 +1,7 @@
 import webpack from 'webpack';
 import express from 'express';
 import httpProxy from 'http-proxy';
+import chalk from 'chalk';
 
 class WebpackRunner {
   constructor() {
@@ -10,10 +11,10 @@ class WebpackRunner {
       if (err.code === 'MODULE_NOT_FOUND') {
         let pkgName = err.toString().match(/'(.*)'/)[1];
         if (pkgName.indexOf('webpack.config.js') !== -1) {
-          console.log('webpack.config.js not found'.bold.yellow);
+          console.log(chalk.bold.yellow('webpack.config.js not found'));
         } else {
-          console.log(err.toString().bold.red);
-          console.log('Did you install ' + pkgName.yellow + '?');
+          console.log(chalk.bold.red(err.toString()));
+          console.log('Did you install ' + chalk.yellow(pkgName) + '?');
         }
       } else {
         console.error('Error while trying to read ' + process.cwd() + '/webpack.config.js');
@@ -88,8 +89,8 @@ class WebpackRunner {
         })
         .on('error', (err) => {
           if (err.code === 'EADDRINUSE') {
-            console.log(('Server port ' + port + ' already in use').red);
-            console.log('(maybe another `vtex watch -s` is running?)'.yellow);
+            console.log(chalk.red('Server port ' + port + ' already in use'));
+            console.log(chalk.yellow('(maybe another `vtex watch -s` is running?)'));
             return process.exit(1);
           } else if (err) {
             console.log('Error while trying to start a server');

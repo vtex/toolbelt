@@ -1,9 +1,10 @@
 import httpStatusName from 'http-status-name';
+import chalk from 'chalk';
 
 export function getErrorMessage(error, response, action) {
   if (error) {
     if (error.code === 'ENOTFOUND') {
-      return ('Address ' + error.hostname + ' not found').red + '\nAre you online?'.yellow;
+      return (chalk.red('Address ' + error.hostname + ' not found') + chalk.yellow('\nAre you online?');
     }
     return error;
   }
