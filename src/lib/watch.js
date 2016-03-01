@@ -24,7 +24,8 @@ class Watcher {
     this.credentials = credentials;
     this.isServerSet = isServerSet;
 
-    this.endpoint = 'http://api.beta.vtex.com';
+    this.appsEndpoint = 'http://apps.vtex.com';
+    this.workspacesEndpoint = 'http://workspaces.vtex.com';
     this.acceptHeader = 'application/vnd.vtex.workspaces.v0+json';
     this.sandbox = this.credentials.email;
     this.workspace = 'sb_' + this.credentials.email;
@@ -55,7 +56,8 @@ class Watcher {
     return listFiles().then((result) => {
       let deferred = Q.defer();
 
-      if (result.endpoint) this.endpoint = result.endpoint;
+      if (result.appsEndpoint) this.appsEndpoint = result.appsEndpoint;
+      if (result.workspacesEndpoint) this.workspacesEndpoint = result.workspacesEndpoint;
       if (result.header) this.acceptHeader = result.header;
 
       let ignore = [];
@@ -176,7 +178,7 @@ class Watcher {
     };
 
     let options = {
-      url: this.endpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files',
+      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files',
       method: 'POST',
       json: galleryObj,
       headers: {
@@ -277,7 +279,7 @@ class Watcher {
 
   getSandboxFiles = () => {
     let options = {
-      url: this.endpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files',
+      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files',
       method: 'GET',
       headers: {
         Authorization: 'token ' + this.credentials.token,
@@ -397,7 +399,7 @@ class Watcher {
   activateSandbox = () => {
     let deferred = Q.defer();
     let options = {
-      url: (this.endpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/') + ('sandboxes/' + this.vendor + '/' + this.credentials.email + '/apps/' + this.app),
+      url: (this.workspacesEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/') + ('sandboxes/' + this.vendor + '/' + this.credentials.email + '/apps/' + this.app),
       method: 'PUT',
       headers: {
         Authorization: 'token ' + this.credentials.token,
@@ -420,7 +422,7 @@ class Watcher {
 
   deactivateSandbox = () => {
     let options = {
-      url: (this.endpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/') + ('sandboxes/' + this.vendor + '/' + this.credentials.email + '/apps/' + this.app),
+      url: (this.workspacesEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/') + ('sandboxes/' + this.vendor + '/' + this.credentials.email + '/apps/' + this.app),
       method: 'DELETE',
       headers: {
         Authorization: 'token ' + this.credentials.token,

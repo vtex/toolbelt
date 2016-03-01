@@ -11,7 +11,7 @@ function pushApp(app, version, vendor, credentials) {
     return getRequestConfig().then((config) => {
       let deferred = Q.defer();
 
-      const url = config.GalleryEndpoint || 'http://api.beta.vtex.com';
+      const url = config.AppsEndpoint || 'http://apps.vtex.com';
       const acceptHeader = config.AcceptHeader || 'application/vnd.vtex.gallery.v0+json';
       let formData = {
         attachments: [fs.createReadStream(getZipFilePath(app, version))]
