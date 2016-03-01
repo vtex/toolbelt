@@ -5,6 +5,7 @@ import fs from 'fs';
 import prompt from 'prompt';
 import { getErrorMessage } from './utils';
 import { getCredentialsPath } from './credentials';
+import chalk from 'chalk';
 
 export function askAccountAndLogin() {
   let deferred = Q.defer();
@@ -26,7 +27,7 @@ export function askAccountAndLogin() {
   prompt.delimiter = '';
 
   prompt.start();
-  console.log('Please log in with your VTEX credentials:\n'.green +
+  console.log(chalk.green('Please log in with your VTEX credentials:\n') +
               'account  - The store account you want to be developing on\n' +
               'login    - Your VTEX registered email\n' +
               'password - Your VTEX registered password\n');
@@ -155,11 +156,11 @@ function getAuthenticationToken(email, password) {
       try {
         let auth = JSON.parse(body);
         if (auth.authStatus !== 'Success') {
-          deferred.reject(('Authentication has failed with status ' + auth.authStatus).red);
+          deferred.reject(chalk.red('Authentication has failed with status ' + auth.authStatus));
         }
         deferred.resolve(auth.authCookie.Value);
       } catch (_error) {
-        deferred.reject('Invalid JSON while authenticating with VTEX ID'.red);
+        deferred.reject(chalk.red('Invalid JSON while authenticating with VTEX ID'));
       }
     });
   });
@@ -237,11 +238,11 @@ function getEmailAuthenticationToken(email, token, code) {
     try {
       let auth = JSON.parse(body);
       if (auth.authStatus !== 'Success') {
-        deferred.reject(('Authentication has failed with status ' + auth.authStatus).red);
+        deferred.reject(chalk.red('Authentication has failed with status ' + auth.authStatus));
       }
       return deferred.resolve(auth.authCookie.Value);
     } catch (_error) {
-      return deferred.reject('Invalid JSON while authenticating with VTEX ID'.red);
+      return deferred.reject(chalk.red('Invalid JSON while authenticating with VTEX ID'));
     }
   });
 

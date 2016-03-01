@@ -16,7 +16,7 @@ function showSuccessMessage(app) {
 }
 
 function handleError(error) {
-  console.error('\nFailed to publish app\n'.bold.red);
+  console.error(chalk.bold.red('\nFailed to publish app\n'));
 
   const errorObj = JSON.parse(error.body);
   if (errorObj.message) {
