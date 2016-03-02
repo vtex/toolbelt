@@ -407,7 +407,7 @@ class Watcher {
         'Content-Type': 'application/json'
       },
       body: {
-        ttl: 30000
+        ttl: 30
       }
     };
 
