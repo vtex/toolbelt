@@ -1,3 +1,30 @@
+### v0.15.1 (2016-03-01)
+
+Fixes:
+- [Fix unbalanced parentheses](https://github.com/vtex/toolbelt/commit/8eb49411895d1b639f2e4b0e7d7408cfc3714bed)
+
+---
+
+### v0.15.0 (2016-03-01)
+
+Breaks:
+- `.vtexrc` instead of using `GalleryEndpoint` now uses `AppsEndpoint` and `WorkspacesEndpoint`
+
+Fixes:
+- [Fix chalk usage](https://github.com/vtex/toolbelt/commit/fb974d345f5480fb5879ce7971c3f6fa3e34d3d2)
+- [Use stable gallery endpoints](https://github.com/vtex/toolbelt/commit/abe9b41f04c644e9e5ca3ca6211a01b88b78ee45)
+ 
+Updates deps:
+- shelljs -> 0.6.0
+- glob -> 7.0.0
+- node-libs-browser -> 1.0.0
+- prompt -> 1.0.0
+- eslint -> 2.0.0
+- babel-eslint -> 5.0.0
+- eslint-plugin-react -> 4.1.0
+
+---
+
 ### v0.14.1 (2016-01-01)
 
 Update some deps and fix login error with start token.
