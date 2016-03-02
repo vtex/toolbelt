@@ -399,12 +399,15 @@ class Watcher {
   activateSandbox = () => {
     let deferred = Q.defer();
     let options = {
-      url: (this.workspacesEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/') + ('sandboxes/' + this.vendor + '/' + this.credentials.email + '/apps/' + this.app),
+      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/ttl/' + this.credentials.account + '/' + this.workspace,
       method: 'PUT',
       headers: {
         Authorization: 'token ' + this.credentials.token,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json'
+      },
+      body: {
+        ttl: 30000
       }
     };
 
@@ -422,7 +425,7 @@ class Watcher {
 
   deactivateSandbox = () => {
     let options = {
-      url: (this.workspacesEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/') + ('sandboxes/' + this.vendor + '/' + this.credentials.email + '/apps/' + this.app),
+      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/ttl/' + this.credentials.account + '/' + this.workspace,
       method: 'DELETE',
       headers: {
         Authorization: 'token ' + this.credentials.token,
