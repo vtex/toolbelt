@@ -10,7 +10,7 @@
     "vtex-publish": "bin/vtex-publish.js"
   },
   "scripts": {
-    "start": "babel src --out-dir . --watch",
+    "start": "babel src --out-dir . --source-maps --watch",
     "lint": "eslint src",
     "compile": "babel src --out-dir .",
     "test": "mocha --compilers js:babel-core/register"
