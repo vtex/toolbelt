@@ -279,7 +279,7 @@ class Watcher {
 
   getSandboxFiles = () => {
     let options = {
-      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files',
+      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files?list=true&_from=1&_to=1000',
       method: 'GET',
       headers: {
         Authorization: 'token ' + this.credentials.token,
@@ -291,11 +291,16 @@ class Watcher {
 
     return Q.nfcall(request, options).then((data) => {
       let response = data[0];
+
       if (response.statusCode === 200) {
-        return JSON.parse(response.body);
+        return JSON.parse(response.body).data.reduce((acc, file) => {
+          acc[file.path] = { hash: file.hash };
+          return acc;
+        }, {});
       } else if (response.statusCode === 404) {
         return void 0;
       }
+
       return console.error('Status:', response.statusCode);
     });
   }
@@ -406,9 +411,7 @@ class Watcher {
         Accept: this.acceptHeader,
         'Content-Type': 'application/json'
       },
-      body: {
-        ttl: 30
-      }
+      json: { ttl: 30 }
     };
 
     request(options, (error, response) => {
