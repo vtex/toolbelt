@@ -4,30 +4,30 @@ import Q from 'q';
 import chalk from 'chalk';
 
 function readAppMetadata() {
-  const metaPath = path.resolve(process.cwd(), 'meta.json');
-  const meta = Q.nfcall(fs.readFile, metaPath, 'utf8')['catch'](function() {
-    throw new Error('Couldn\'t find meta.json file.');
+  const manifestPath = path.resolve(process.cwd(), 'manifest.json');
+  const manifest = Q.nfcall(fs.readFile, manifestPath, 'utf8')['catch'](function() {
+    throw new Error('Couldn\'t find manifest.json file.');
   });
-  return meta;
+  return manifest;
 }
 
-function validateMetadata(meta) {
-  if (meta['name'] == null) {
-    throw new Error('Field \'name\' should be set in meta.json file');
+function validateMetadata(manifest) {
+  if (manifest['name'] == null) {
+    throw new Error('Field \'name\' should be set in manifest.json file');
   }
-  if (meta['version'] == null) {
-    throw new Error('Field \'version\' should be set in meta.json file');
+  if (manifest['version'] == null) {
+    throw new Error('Field \'version\' should be set in manifest.json file');
   }
-  if (meta['vendor'] == null) {
-    throw new Error('Field \'vendor\' should be set in meta.json file');
+  if (manifest['vendor'] == null) {
+    throw new Error('Field \'vendor\' should be set in manifest.json file');
   }
-  if (!meta['vendor'].match(/^[\w_-]+$/)) {
+  if (!manifest['vendor'].match(/^[\w_-]+$/)) {
     throw new Error('Field \'vendor\' may contain only letters, numbers, underscores and hyphens');
   }
-  if (!(meta['version'].match(/^(\d+)\.(\d+)\.(\d+)(-.*)?$/))) {
+  if (!(manifest['version'].match(/^(\d+)\.(\d+)\.(\d+)(-.*)?$/))) {
     throw Error('The version format is invalid');
   }
-  return meta;
+  return manifest;
 }
 
 export function getAppMetadata() {
