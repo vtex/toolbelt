@@ -4,4 +4,6 @@ npm-debug.log
 lib/**/*.js
 lib/temporary/
 bin/
+lib/
+.tern-project
 !src/bin/
