@@ -33,7 +33,7 @@ npm install -g vtex
 Remember that your project needs to meet some requirements to work:
 
 1. You need to have a VTEX ID credential in order to send the files to the developer environment or publish an app
-2. Your app must have a proper `meta.json`, here's an example:
+2. Your app must have a proper `manifest.json`, here's an example:
 
     ```javascript
     {
