@@ -411,7 +411,7 @@ class Watcher {
         Accept: this.acceptHeader,
         'Content-Type': 'application/json'
       },
-      json: { ttl: 30 }
+      json: { ttl: 35 }
     };
 
     request(options, (error, response) => {
