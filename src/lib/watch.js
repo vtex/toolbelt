@@ -404,7 +404,7 @@ class Watcher {
   activateSandbox = () => {
     let deferred = Q.defer();
     let options = {
-      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/ttl/' + this.credentials.account + '/' + this.workspace,
+      url: this.appsEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/sandboxes/' + this.vendor + '/' + this.sandbox + '/' + this.app,
       method: 'PUT',
       headers: {
         Authorization: 'token ' + this.credentials.token,
@@ -428,7 +428,7 @@ class Watcher {
 
   deactivateSandbox = () => {
     let options = {
-      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/ttl/' + this.credentials.account + '/' + this.workspace,
+      url: this.appsEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/sandboxes/' + this.vendor + '/' + this.sandbox + '/' + this.app,
       method: 'DELETE',
       headers: {
         Authorization: 'token ' + this.credentials.token,
