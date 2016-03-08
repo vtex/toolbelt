@@ -23,9 +23,9 @@ export function listFiles() {
       deferred.resolve({
         files: files,
         ignore: ignoredPatterns,
-        appsEndpoint: requestConfig.AppsEndpoint,
-        workspacesEndpoint: requestConfig.WorkspacesEndpoint,
-        header: requestConfig.AcceptHeader
+        appsEndpoint: requestConfig.appsEndpoint,
+        workspacesEndpoint: requestConfig.workspacesEndpoint,
+        header: requestConfig.acceptHeader
       });
     });
   });
@@ -52,19 +52,7 @@ function getIgnoredPatterns() {
 
 export function getRequestConfig() {
   return readVtexRc().then((vtexRc) => {
-    let lines = vtexRc.match(/[^\r\n]+/g);
-    let config = lines.filter(function(line) {
-      return line.charAt(0) !== '#' && line !== '';
-    });
-
-    let configObj = {};
-    config.forEach((prop) => {
-      let confKey = /^(\w*)=?/.exec(prop)[1];
-      let confVal = /'(.*)'/.exec(prop)[1].replace(/\/$/, '');
-      configObj[confKey] = confVal;
-    });
-
-    return configObj;
+    return JSON.parse(vtexRc);
   }).catch(() => {
     return [];
   });
