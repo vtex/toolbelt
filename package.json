@@ -10,8 +10,8 @@
     "vtex-publish": "bin/vtex-publish.js"
   },
   "scripts": {
-    "start": "rm -rf bin lib && babel src --out-dir . --watch",
-    "dev": "babel src --out-dir . --source-maps --watch",
+    "start": "babel src --out-dir . --source-maps --watch",
+    "build": "rm -rf bin lib && babel src --out-dir .",
     "lint": "eslint src",
     "compile": "babel src --out-dir .",
     "test": "mocha --compilers js:babel-core/register"
