@@ -173,7 +173,7 @@ class Watcher {
   sendChanges = (batchChanges, refresh) => {
     const galleryObj = {
       account: this.credentials.account,
-      state: this.workspace,
+      workspace: this.workspace,
       changes: batchChanges
     };
 
