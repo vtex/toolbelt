@@ -48,7 +48,7 @@
     "tiny-lr": "^0.2.0",
     "vtexsay": "^1.0.3",
     "webpack": "^1.12.10",
-    "webpack-dev-middleware": "^1.2.0",
+    "webpack-dev-middleware": "^1.6.1",
     "webpack-hot-middleware": "^2.4.1"
   },
   "preferGlobal": true,
