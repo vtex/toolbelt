@@ -1,3 +1,19 @@
+### v0.16.0 (2016-04-14)
+
+Breaks:
+- From `meta.json` to `manifest.json`
+- `.vtexrc` is now a JSON file
+
+Updates:
+- `eslint-config-vtex` to v3.0.1
+- `archiver` to v1.0.0
+- `babel-eslint` to v6.0.2
+
+Fixes:
+- `babel-eslint` dependency version
+
+---
+
 ### v0.15.1 (2016-03-01)
 
 Fixes:
