@@ -15,8 +15,8 @@ const serverFlag = process.argv[SERVER_INDEX];
 const webpackFlag = process.argv[WEBPACK_INDEX];
 const isFlagActive = webpackFlag === 'true' || serverFlag === 'true';
 
-function runWatcher(credentials, meta) {
-  const { name, vendor } = meta;
+function runWatcher(credentials, manifest) {
+  const { name, vendor } = manifest;
 
   const watcher = new Watcher(name, vendor, credentials, serverFlag);
   return watcher.watch();
