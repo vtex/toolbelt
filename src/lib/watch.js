@@ -88,7 +88,7 @@ class Watcher {
             }
 
             this.debounce(true);
-            deferred.resolve({ app: this.app });
+            deferred.resolve();
           });
         });
 
