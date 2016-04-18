@@ -4,6 +4,7 @@ import { docopt } from 'docopt';
 import pkg from '../package.json';
 import { spawn } from 'child_process';
 import path from 'path';
+import updateNotifier from 'update-notifier';
 
 const doc = `
   Usage:
@@ -83,6 +84,15 @@ if (options.login) {
     env = 'HOT';
   }
   argv = [options['--webpack'], options['--server']];
+}
+
+const notifier = updateNotifier({
+  pkg,
+  updateCheckInterval: 0
+});
+
+if (notifier.update) {
+  notifier.notify({ defer: false });
 }
 
 run(command, argv, env);
