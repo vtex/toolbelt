@@ -4,7 +4,7 @@ import httpProxy from 'http-proxy';
 import chalk from 'chalk';
 
 class WebpackRunner {
-  constructor() {
+  constructor(vendor, credentials) {
     try {
       this.config = require(process.cwd() + '/webpack.config.js');
     } catch (err) {
