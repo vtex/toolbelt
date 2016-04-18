@@ -24,6 +24,9 @@ class WebpackRunner {
       process.exit(1);
     }
 
+    const sandboxPublicPath =
+      this.config.output.publicPath.replace(`/${vendor}/`, `/${vendor}~${credentials.email}/`);
+    this.config.output.publicPath = sandboxPublicPath;
     this.compiler = webpack(this.config);
     this.DELAY_TIME = 2000;
   }
