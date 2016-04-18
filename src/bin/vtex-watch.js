@@ -24,12 +24,12 @@ function runWatcher(credentials, manifest) {
 
 function showWelcomeMessage(app) {
   console.log(vtexsay('Welcome to pop VTEX Toolbelt!'),
-              chalk.green(`\n\nWatching ${chalk.italic(app.app)} \n`));
+              chalk.green(`\n\nWatching ${chalk.italic(app)} \n`));
 }
 
-function runWebpack() {
+function runWebpack(credentials, manifest) {
   if (isFlagActive) {
-    let webpackRunner = new WebpackRunner();
+    let webpackRunner = new WebpackRunner(manifest.vendor, credentials);
     if (webpackFlag === 'true') {
       return webpackRunner.startWebpack();
     } else if (serverFlag === 'true') {
@@ -49,9 +49,15 @@ function handleError(error) {
 }
 
 Q.all([getValidCredentials(), getAppMetadata()])
-.spread(runWatcher)
-.then(showWelcomeMessage)
-.then(() => {
-  return runWebpack();
+.spread((credentials, manifest) => {
+  runWatcher(credentials, manifest);
+  return { credentials, manifest};
+})
+.then(({ credentials, manifest }) => {
+  showWelcomeMessage(manifest.name);
+  return { credentials, manifest };
+})
+.then(({ credentials, manifest }) => {
+  return runWebpack(credentials, manifest);
 })
 .catch(handleError);
