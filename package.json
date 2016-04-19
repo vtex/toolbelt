@@ -10,8 +10,9 @@
     "vtex-publish": "bin/vtex-publish.js"
   },
   "scripts": {
-    "start": "babel src --out-dir . --source-maps --watch",
-    "build": "rm -rf bin lib && babel src --out-dir .",
+    "start": "npm run permitexe && babel src --out-dir . --source-maps --watch",
+    "build": "rm -rf bin lib && npm run permitexe && babel src --out-dir .",
+    "permitexe": "chmod +x ./src/**/*",
     "lint": "eslint src",
     "compile": "babel src --out-dir .",
     "test": "mocha --compilers js:babel-core/register"
