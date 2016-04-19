@@ -1,3 +1,21 @@
+### v0.17.1 (2016-04-18)
+
+Fixes:
+- `update-notifier` missing dependency
+
+---
+
+### v0.17.0 (2016-04-18)
+
+Features:
+- Add `update-notifier`
+
+Updates:
+- `eslint-plugin-react` to v5.0.1
+- Add the sandbox name on webpack's `publicPath` 
+
+---
+
 ### v0.16.0 (2016-04-14)
 
 Breaks:
