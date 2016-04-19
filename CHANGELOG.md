@@ -1,3 +1,14 @@
+### v0.18.0 (2016-04-19)
+
+Features:
+- Add `ora` spinner
+
+Fixes:
+- Dev workflow
+- `vtexsay` message
+
+---
+
 ### v0.17.1 (2016-04-18)
 
 Fixes:
