@@ -23,7 +23,7 @@ function runWatcher(credentials, manifest) {
 }
 
 function showWelcomeMessage(app) {
-  console.log(vtexsay('Welcome to pop VTEX Toolbelt!'),
+  console.log(vtexsay('Welcome to the VTEX Toolbelt!'),
               chalk.green(`\n\nWatching ${chalk.italic(app)} \n`));
 }
 
