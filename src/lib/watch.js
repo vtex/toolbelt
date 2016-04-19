@@ -8,6 +8,7 @@ import tinylr from 'tiny-lr';
 import crypto from 'crypto';
 import net from 'net';
 import chalk from 'chalk';
+import ora from 'ora';
 
 class Watcher {
   constructor(app, vendor, credentials, isServerSet) {
@@ -171,6 +172,7 @@ class Watcher {
   }
 
   sendChanges = (batchChanges, refresh) => {
+    let spinner;
     const galleryObj = {
       account: this.credentials.account,
       workspace: this.workspace,
@@ -192,15 +194,19 @@ class Watcher {
     if (refresh) options.url += '?resync=true';
 
     if (refresh) {
-      console.log(chalk.blue('Synchronizing...'));
+      spinner = ora(chalk.blue('Synchronizing...'));
     } else {
-      console.log(chalk.blue('Changes detected, uploading...'));
+      spinner = ora(chalk.blue('Changes detected, uploading...'));
     }
+    spinner.start();
 
     return request(options, (error, response) => {
+      spinner.stop();
+
       if (error || response.statusCode !== 200 || response.statusCode >= 400) {
         return this.changeSendError(error, response);
       }
+
       return this.changesSentSuccessfuly(response.body);
     });
   }
