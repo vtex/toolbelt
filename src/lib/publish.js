@@ -17,11 +17,11 @@ function pushApp(app, version, vendor, credentials) {
         attachments: [fs.createReadStream(getZipFilePath(app, version))]
       };
       let options = {
-        url: url + '/' + vendor + '/apps',
+        url: `${url}/${vendor}/apps`,
         method: 'POST',
         formData: formData,
         headers: {
-          Authorization: 'token ' + credentials.token,
+          Authorization: `token ${credentials.token}`,
           'Accept': acceptHeader,
           'x-vtex-accept-snapshot': false
         }

@@ -99,10 +99,10 @@ function userAuth(result) {
 export function createWorkspace(credentials) {
   let deferred = Q.defer();
   let options = {
-    url: 'http://workspaces.vtex.com/' + credentials.account + '/workspaces',
+    url: `http://workspaces.vtex.com/${credentials.account}/workspaces`,
     method: 'POST',
     headers: {
-      Authorization: 'token ' + credentials.token,
+      Authorization: `token ${credentials.token}`,
       Accept: 'application/vnd.vtex.gallery.v0+json',
       'Content-Type': 'application/json'
     },
