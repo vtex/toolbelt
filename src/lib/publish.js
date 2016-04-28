@@ -11,17 +11,17 @@ function pushApp(app, version, vendor, credentials) {
     return getRequestConfig().then((config) => {
       let deferred = Q.defer();
 
-      const url = config.AppsEndpoint || 'http://apps.vtex.com';
+      const url = config.AppsEndpoint || 'http://apps.beta.vtex.com';
       const acceptHeader = config.AcceptHeader || 'application/vnd.vtex.gallery.v0+json';
       let formData = {
         attachments: [fs.createReadStream(getZipFilePath(app, version))]
       };
       let options = {
-        url: url + '/' + vendor + '/apps',
+        url: `${url}/${vendor}/apps`,
         method: 'POST',
         formData: formData,
         headers: {
-          Authorization: 'token ' + credentials.token,
+          Authorization: `token ${credentials.token}`,
           'Accept': acceptHeader,
           'x-vtex-accept-snapshot': false
         }

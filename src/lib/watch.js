@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 
 class Watcher {
-  constructor(app, vendor, credentials, isServerSet) {
+  constructor(app, version, vendor, credentials, isServerSet) {
     this.ChangeAction = {
       Save: 'save',
       Remove: 'remove'
@@ -21,12 +21,13 @@ class Watcher {
     this.lrPortInUse = false;
 
     this.app = app;
+    this.version = version;
     this.vendor = vendor;
     this.credentials = credentials;
     this.isServerSet = isServerSet;
 
-    this.appsEndpoint = 'http://apps.vtex.com';
-    this.workspacesEndpoint = 'http://workspaces.vtex.com';
+    this.appsEndpoint = 'http://apps.beta.vtex.com';
+    this.workspacesEndpoint = 'http://workspaces.beta.vtex.com';
     this.acceptHeader = 'application/vnd.vtex.workspaces.v0+json';
     this.sandbox = this.credentials.email;
     this.workspace = 'sb_' + this.credentials.email;
@@ -180,11 +181,11 @@ class Watcher {
     };
 
     let options = {
-      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files',
+      url: `${this.appsEndpoint}/${this.vendor}/sandboxes/${this.sandbox}/${this.app}/${this.version}/files`,
       method: 'POST',
       json: galleryObj,
       headers: {
-        Authorization: 'token ' + this.credentials.token,
+        Authorization: `token ${this.credentials.token}`,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json',
         'x-vtex-accept-snapshot': false
@@ -285,29 +286,62 @@ class Watcher {
 
   getSandboxFiles = () => {
     let options = {
-      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files?list=true&_from=1&_to=1000',
+      url: `${this.appsEndpoint}/${this.vendor}/sandboxes/${this.sandbox}/${this.app}/${this.version}/files?_limit=1000`,
       method: 'GET',
       headers: {
-        Authorization: 'token ' + this.credentials.token,
+        Authorization: `token ${this.credentials.token}`,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json',
         'x-vtex-accept-snapshot': false
       }
     };
 
-    return Q.nfcall(request, options).then((data) => {
+    return Q.nfcall(request, options)
+    .then((data) => {
       let response = data[0];
 
       if (response.statusCode === 200) {
-        return JSON.parse(response.body).data.reduce((acc, file) => {
-          acc[file.path] = { hash: file.hash };
-          return acc;
-        }, {});
+        let servicesRequests = JSON.parse(response.body).map(service => {
+          return Q.nfcall(request, {
+            ...options,
+            url: `${this.appsEndpoint}/${this.vendor}/sandboxes/${this.sandbox}/${this.app}/${this.version}/files/${service}?_limit=1000`
+          })
+          .then((data) => {
+            let response = data[0];
+
+            if (response.statusCode === 200) {
+              return {
+                service,
+                data: JSON.parse(response.body).data
+              };
+            }
+          });
+        });
+
+        return Q.all(servicesRequests);
       } else if (response.statusCode === 404) {
         return void 0;
       }
 
       return console.error('Status:', response.statusCode);
+    })
+    .then((servicesDataArray) => {
+      return servicesDataArray.reduce((acc, serviceData) => {
+        let prefixedData = serviceData.data.map((file) => {
+          return {
+            ...file,
+            path: `${serviceData.service}/${file.path}`
+          };
+        });
+
+        return acc.concat(prefixedData);
+      }, []);
+    })
+    .then((data) => {
+      return data.reduce((acc, file) => {
+        acc[file.path] = { hash: file.hash };
+        return acc;
+      }, {});
     });
   }
 
@@ -410,10 +444,10 @@ class Watcher {
   activateSandbox = () => {
     let deferred = Q.defer();
     let options = {
-      url: this.appsEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/sandboxes/' + this.vendor + '/' + this.sandbox + '/' + this.app,
+      url: `${this.appsEndpoint}/${this.credentials.account}/workspaces/${this.workspace}/sandboxes/${this.vendor}/${this.sandbox}/${this.app}/${this.version}`,
       method: 'PUT',
       headers: {
-        Authorization: 'token ' + this.credentials.token,
+        Authorization: `token ${this.credentials.token}`,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json'
       },
@@ -434,10 +468,10 @@ class Watcher {
 
   deactivateSandbox = () => {
     let options = {
-      url: this.appsEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/sandboxes/' + this.vendor + '/' + this.sandbox + '/' + this.app,
+      url: `${this.appsEndpoint}/${this.credentials.account}/workspaces/${this.workspace}/sandboxes/${this.vendor}/${this.sandbox}/${this.app}/${this.version}`,
       method: 'DELETE',
       headers: {
-        Authorization: 'token ' + this.credentials.token,
+        Authorization: `token ${this.credentials.token}`,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json'
       }
