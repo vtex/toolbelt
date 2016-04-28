@@ -296,19 +296,52 @@ class Watcher {
       }
     };
 
-    return Q.nfcall(request, options).then((data) => {
+    return Q.nfcall(request, options)
+    .then((data) => {
       let response = data[0];
 
       if (response.statusCode === 200) {
-        return JSON.parse(response.body).data.reduce((acc, file) => {
-          acc[file.path] = { hash: file.hash };
-          return acc;
-        }, {});
+        let servicesRequests = JSON.parse(response.body).map(service => {
+          return Q.nfcall(request, {
+            ...options,
+            url: `${this.appsEndpoint}/${this.vendor}/sandboxes/${this.sandbox}/${this.app}/${this.version}/files/${service}?_limit=1000`
+          })
+          .then((data) => {
+            let response = data[0];
+
+            if (response.statusCode === 200) {
+              return {
+                service,
+                data: JSON.parse(response.body).data
+              };
+            }
+          });
+        });
+
+        return Q.all(servicesRequests);
       } else if (response.statusCode === 404) {
         return void 0;
       }
 
       return console.error('Status:', response.statusCode);
+    })
+    .then((servicesDataArray) => {
+      return servicesDataArray.reduce((acc, serviceData) => {
+        let prefixedData = serviceData.data.map((file) => {
+          return {
+            ...file,
+            path: `${serviceData.service}/${file.path}`
+          };
+        });
+
+        return acc.concat(prefixedData);
+      }, []);
+    })
+    .then((data) => {
+      return data.reduce((acc, file) => {
+        acc[file.path] = { hash: file.hash };
+        return acc;
+      }, {});
     });
   }
 
