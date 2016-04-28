@@ -286,7 +286,7 @@ class Watcher {
 
   getSandboxFiles = () => {
     let options = {
-      url: `${this.appsEndpoint}/${this.vendor}/sandboxes/${this.sandbox}/${this.app}/${this.version}/files?_limit=1000`,
+      url: `${this.appsEndpoint}/${this.vendor}/sandboxes/${this.sandbox}/${this.app}/${this.version}/files?list=true&_limit=1000`,
       method: 'GET',
       headers: {
         Authorization: `token ${this.credentials.token}`,
