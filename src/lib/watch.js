@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 
 class Watcher {
-  constructor(app, vendor, credentials, isServerSet) {
+  constructor(app, version, vendor, credentials, isServerSet) {
     this.ChangeAction = {
       Save: 'save',
       Remove: 'remove'
@@ -21,6 +21,7 @@ class Watcher {
     this.lrPortInUse = false;
 
     this.app = app;
+    this.version = version;
     this.vendor = vendor;
     this.credentials = credentials;
     this.isServerSet = isServerSet;
