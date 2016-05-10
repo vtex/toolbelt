@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "0.19.1-beta.0",
+  "version": "0.19.1-beta.1",
   "description": "CLI tool for creating and managing VTEX apps",
   "bin": {
     "vtex": "bin/vtex.js",
