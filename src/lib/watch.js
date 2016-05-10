@@ -27,7 +27,7 @@ class Watcher {
     this.isServerSet = isServerSet;
 
     this.appsEndpoint = 'http://apps.beta.vtex.com';
-    this.workspacesEndpoint = 'http://workspaces.beta.vtex.com';
+    this.workspacesEndpoint = 'http://workspaces.vtex.com';
     this.acceptHeader = 'application/vnd.vtex.workspaces.v0+json';
     this.sandbox = this.credentials.email;
     this.workspace = 'sb_' + this.credentials.email;
