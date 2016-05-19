@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 
 class Watcher {
-  constructor(app, vendor, credentials, isServerSet) {
+  constructor(app, version, vendor, credentials, isServerSet) {
     this.ChangeAction = {
       Save: 'save',
       Remove: 'remove'
@@ -21,6 +21,7 @@ class Watcher {
     this.lrPortInUse = false;
 
     this.app = app;
+    this.version = version;
     this.vendor = vendor;
     this.credentials = credentials;
     this.isServerSet = isServerSet;
@@ -180,11 +181,11 @@ class Watcher {
     };
 
     let options = {
-      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files',
+      url: `${this.appsEndpoint}/${this.vendor}/sandboxes/${this.sandbox}/${this.app}/${this.version}/files`,
       method: 'POST',
       json: galleryObj,
       headers: {
-        Authorization: 'token ' + this.credentials.token,
+        Authorization: `token ${this.credentials.token}`,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json',
         'x-vtex-accept-snapshot': false
@@ -228,7 +229,7 @@ class Watcher {
     if (this.isServerSet === 'true') {
       linkMsg += chalk.blue.underline('http://' + this.credentials.account + '.local.myvtex.com:3000/');
     } else {
-      linkMsg += chalk.blue.underline('http://' + this.credentials.account + '.beta.myvtex.com/');
+      linkMsg += chalk.blue.underline('http://' + this.credentials.account + '.myvtex.com/');
     }
 
     linkMsg += chalk.blue.underline('?workspace=sb_' + this.sandbox + '\n');
@@ -285,10 +286,10 @@ class Watcher {
 
   getSandboxFiles = () => {
     let options = {
-      url: this.appsEndpoint + '/' + this.vendor + '/sandboxes/' + this.sandbox + '/' + this.app + '/files?list=true&_from=1&_to=1000',
+      url: `${this.appsEndpoint}/${this.vendor}/sandboxes/${this.sandbox}/${this.app}/${this.version}/files?list=true&_limit=1000`,
       method: 'GET',
       headers: {
-        Authorization: 'token ' + this.credentials.token,
+        Authorization: `token ${this.credentials.token}`,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json',
         'x-vtex-accept-snapshot': false
@@ -410,10 +411,10 @@ class Watcher {
   activateSandbox = () => {
     let deferred = Q.defer();
     let options = {
-      url: this.appsEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/sandboxes/' + this.vendor + '/' + this.sandbox + '/' + this.app,
+      url: `${this.appsEndpoint}/${this.credentials.account}/workspaces/${this.workspace}/sandboxes/${this.vendor}/${this.sandbox}/${this.app}/${this.version}`,
       method: 'PUT',
       headers: {
-        Authorization: 'token ' + this.credentials.token,
+        Authorization: `token ${this.credentials.token}`,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json'
       },
@@ -434,10 +435,10 @@ class Watcher {
 
   deactivateSandbox = () => {
     let options = {
-      url: this.appsEndpoint + '/' + this.credentials.account + '/workspaces/' + this.workspace + '/sandboxes/' + this.vendor + '/' + this.sandbox + '/' + this.app,
+      url: `${this.appsEndpoint}/${this.credentials.account}/workspaces/${this.workspace}/sandboxes/${this.vendor}/${this.sandbox}/${this.app}/${this.version}`,
       method: 'DELETE',
       headers: {
-        Authorization: 'token ' + this.credentials.token,
+        Authorization: `token ${this.credentials.token}`,
         Accept: this.acceptHeader,
         'Content-Type': 'application/json'
       }

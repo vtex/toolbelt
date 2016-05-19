@@ -16,4 +16,4 @@ deploy:
     branch: master
     repo: vtex/toolbelt
   api_key:
-    secure: Kxz4qEBfQvKCzbmOPpQo7thwSLMBr9ukSprR0G8koEsJqgA1+WJtEAnzMQ0rdpq0WyE4Mc1NsC3eSSuY6X7uqMFSKDQxvAZ532CKN+X7gF+ByS9C/+jXI3TSpx8kKaAKMlRpC1REqx9uZsGkbv5pV/2apgRQYKJ5DgwBrI38cJU=
+    secure: "FVMaOeQl4UXtGmFhJQsq+u4NXj+7VLBipGpwySUCBX6gzwaT2CiEhTeHoY744zKs7P9yxl7sAHSdAiJdjlyUtrN1MFyEo2iwE+zrJa7zpiY0qofPXjIgKCk4wLMT5fVGbzXzgs1lMrgF4pINBG4Odnmv8DuYQfEmfFZ+ehExbso="
