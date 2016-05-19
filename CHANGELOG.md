@@ -1,3 +1,17 @@
+### v0.19.0 (2016-05-19)
+
+Breaking:
+- Change stable endpoints to new apps and workspaces model
+
+Fixes:
+- `webpack-dev-server` redirect without port
+ 
+Updates:
+- `shelljs` to v0.7.0
+- `update-notifier` to v0.7.0
+
+---
+
 ### v0.18.0 (2016-04-19)
 
 Features:
