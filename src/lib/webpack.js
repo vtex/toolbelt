@@ -40,7 +40,8 @@ class WebpackRunner {
 
       app.use(require('webpack-dev-middleware')(this.compiler, {
         noInfo: true,
-        publicPath: this.config.output.publicPath
+        publicPath: this.config.output.publicPath,
+        stats: { colors: true }
       }));
 
       app.use(require('webpack-hot-middleware')(this.compiler));
@@ -65,6 +66,8 @@ class WebpackRunner {
 
         this.config.proxy.forEach((proxyOptions) => {
           app.all(proxyOptions.path, (req, res) => {
+            req.headers['x-vtex-forwarded-port'] = 3000;
+
             if (typeof proxyOptions.rewrite === 'function') {
               proxyOptions.rewrite(req, proxyOptions);
             }
