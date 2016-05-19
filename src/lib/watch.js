@@ -26,8 +26,8 @@ class Watcher {
     this.credentials = credentials;
     this.isServerSet = isServerSet;
 
-    this.appsEndpoint = 'http://apps.vtex.com';
-    this.workspacesEndpoint = 'http://workspaces.vtex.com';
+    this.appsEndpoint = 'http://apps.beta.vtex.com';
+    this.workspacesEndpoint = 'http://workspaces.beta.vtex.com';
     this.acceptHeader = 'application/vnd.vtex.workspaces.v0+json';
     this.sandbox = this.credentials.email;
     this.workspace = 'sb_' + this.credentials.email;
@@ -229,7 +229,7 @@ class Watcher {
     if (this.isServerSet === 'true') {
       linkMsg += chalk.blue.underline('http://' + this.credentials.account + '.local.myvtex.com:3000/');
     } else {
-      linkMsg += chalk.blue.underline('http://' + this.credentials.account + '.myvtex.com/');
+      linkMsg += chalk.blue.underline('http://' + this.credentials.account + '.beta.myvtex.com/');
     }
 
     linkMsg += chalk.blue.underline('?workspace=sb_' + this.sandbox + '\n');
