@@ -1,3 +1,15 @@
+### v0.19.2 (2016-05-19)
+
+Travis deploy test
+
+---
+
+### v0.19.1 (2016-05-19)
+
+Travis deploy test
+
+---
+
 ### v0.19.0 (2016-05-19)
 
 Breaking:
