@@ -12,8 +12,9 @@ deploy:
   provider: npm
   email: breno+npm@vtex.com.br
   on:
+    repo: vtex/toolbelt
     tags: true
     branch: master
-    repo: vtex/toolbelt
+    condition: "$TRAVIS_BRANCH = master"
   api_key:
     secure: "FVMaOeQl4UXtGmFhJQsq+u4NXj+7VLBipGpwySUCBX6gzwaT2CiEhTeHoY744zKs7P9yxl7sAHSdAiJdjlyUtrN1MFyEo2iwE+zrJa7zpiY0qofPXjIgKCk4wLMT5fVGbzXzgs1lMrgF4pINBG4Odnmv8DuYQfEmfFZ+ehExbso="
