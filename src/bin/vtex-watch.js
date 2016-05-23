@@ -10,6 +10,7 @@ import vtexsay from 'vtexsay';
 
 const SERVER_INDEX = process.argv.length - 1;
 const WEBPACK_INDEX = process.argv.length - 2;
+const DELAY_TIME = 2000;
 
 const serverFlag = process.argv[SERVER_INDEX];
 const webpackFlag = process.argv[WEBPACK_INDEX];
@@ -58,6 +59,8 @@ Q.all([getValidCredentials(), getAppMetadata()])
   return { credentials, manifest };
 })
 .then(({ credentials, manifest }) => {
-  return runWebpack(credentials, manifest);
+  setTimeout(() => {
+    webpack = runWebpack(credentials, manifest);
+  }, DELAY_TIME);
 })
 .catch(handleError);
