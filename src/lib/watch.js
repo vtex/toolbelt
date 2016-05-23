@@ -296,9 +296,7 @@ class Watcher {
       }
     };
 
-    return Q.nfcall(request, options).then((data) => {
-      let response = data[0];
-
+    return request(options).then((response) => {
       if (response.statusCode === 200) {
         return JSON.parse(response.body).data.reduce((acc, file) => {
           acc[file.path] = { hash: file.hash };
