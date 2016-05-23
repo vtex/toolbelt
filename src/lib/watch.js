@@ -19,6 +19,8 @@ class Watcher {
     this.changes = {};
     this.lastBatch = 0;
     this.lrPortInUse = false;
+    this.isMuted = false;
+    this.spinner;
 
     this.app = app;
     this.version = version;
@@ -158,7 +160,8 @@ class Watcher {
   }
 
   sendChanges = (batchChanges, refresh) => {
-    let spinner;
+    if (this.isMuted) return;
+
     const galleryObj = {
       account: this.credentials.account,
       workspace: this.workspace,
@@ -180,14 +183,14 @@ class Watcher {
     if (refresh) options.url += '?resync=true';
 
     if (refresh) {
-      spinner = ora(chalk.blue('Synchronizing...'));
+      this.spinner = ora(chalk.blue('Synchronizing...'));
     } else {
-      spinner = ora(chalk.blue('Changes detected, uploading...'));
+      this.spinner = ora(chalk.blue('Changes detected, uploading...'));
     }
-    spinner.start();
+    this.spinner.start();
 
     return request(options, (error, response) => {
-      spinner.stop();
+      this.spinner.stop();
 
       if (error || response.statusCode !== 200 || response.statusCode >= 400) {
         return this.changeSendError(error, response);
@@ -198,6 +201,8 @@ class Watcher {
   }
 
   changesSentSuccessfuly = (batchChanges) => {
+    if (this.isMuted) return;
+
     this.logResponse(batchChanges);
     let paths = batchChanges.map(function(change) {
       return change.path;
@@ -259,6 +264,8 @@ class Watcher {
   }
 
   changeSendError = (error, response) => {
+    if (this.isMuted) return;
+
     console.error(chalk.red('Error sending files'));
     if (error) console.error(error);
 
@@ -417,6 +424,8 @@ class Watcher {
   }
 
   deactivateSandbox = () => {
+    this.isMuted = true;
+
     let options = {
       url: `${this.appsEndpoint}/${this.credentials.account}/workspaces/${this.workspace}/sandboxes/${this.vendor}/${this.sandbox}/${this.app}/${this.version}`,
       method: 'DELETE',
@@ -431,7 +440,6 @@ class Watcher {
       if (error || response.statusCode !== 204) {
         console.log(error || response.body.message);
       }
-      return process.exit(1);
     });
   }
 }
