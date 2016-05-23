@@ -1,5 +1,5 @@
 import path from 'path';
-import request from 'request';
+import request from 'requestretry';
 import Q from 'q';
 import fs from 'fs';
 import prompt from 'prompt';

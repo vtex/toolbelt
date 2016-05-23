@@ -1,7 +1,7 @@
 import Q from 'q';
 import path from 'path';
 import fs from 'fs';
-import request from 'request';
+import request from 'requestretry';
 import chokidar from 'chokidar';
 import { listFiles } from './file-manager';
 import tinylr from 'tiny-lr';
