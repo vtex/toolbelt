@@ -425,6 +425,7 @@ class Watcher {
 
   deactivateSandbox = () => {
     this.isMuted = true;
+    const deferred = Q.defer();
 
     let options = {
       url: `${this.appsEndpoint}/${this.credentials.account}/workspaces/${this.workspace}/sandboxes/${this.vendor}/${this.sandbox}/${this.app}/${this.version}`,
@@ -436,11 +437,15 @@ class Watcher {
       }
     };
 
-    return request(options, function(error, response) {
+    request(options, function(error, response) {
       if (error || response.statusCode !== 204) {
-        console.log(error || response.body.message);
+        deferred.reject(error || response.body.message);
       }
+
+      return deferred.resolve();
     });
+
+    return deferred.promise;
   }
 }
 
