@@ -6,7 +6,7 @@ import chalk from 'chalk';
 class WebpackRunner {
   constructor(vendor, credentials) {
     try {
-      this.config = require(process.cwd() + '/webpack.config.js');
+      this.config = require(`${process.cwd()}/webpack.config.js`);
     } catch (err) {
       if (err.code === 'MODULE_NOT_FOUND') {
         let pkgName = err.toString().match(/'(.*)'/)[1];
@@ -14,10 +14,10 @@ class WebpackRunner {
           console.log(chalk.bold.yellow('webpack.config.js not found'));
         } else {
           console.log(chalk.bold.red(err.toString()));
-          console.log('Did you install ' + chalk.yellow(pkgName) + '?');
+          console.log(`Did you install ${chalk.yellow(pkgName)}?`);
         }
       } else {
-        console.error('Error while trying to read ' + process.cwd() + '/webpack.config.js');
+        console.error(`Error while trying to read ${process.cwd()}/webpack.config.js`);
         console.error(err);
       }
 
