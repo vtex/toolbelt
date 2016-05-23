@@ -44,7 +44,7 @@
     "ora": "^0.2.1",
     "prompt": "~1.0.0",
     "q": "^1.4.1",
-    "request": "^2.64.0",
+    "requestretry": "^1.8.0",
     "semver": "^5.0.3",
     "shelljs": "^0.7.0",
     "supports-color": "^3.1.1",

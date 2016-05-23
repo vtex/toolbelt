@@ -1,7 +1,7 @@
 import Q from 'q';
 import path from 'path';
 import fs from 'fs';
-import request from 'request';
+import request from 'requestretry';
 import chokidar from 'chokidar';
 import { listFiles } from './file-manager';
 import tinylr from 'tiny-lr';
@@ -296,9 +296,7 @@ class Watcher {
       }
     };
 
-    return Q.nfcall(request, options).then((data) => {
-      let response = data[0];
-
+    return request(options).then((response) => {
       if (response.statusCode === 200) {
         return JSON.parse(response.body).data.reduce((acc, file) => {
           acc[file.path] = { hash: file.hash };

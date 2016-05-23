@@ -1,5 +1,5 @@
 import Q from 'q';
-import request from 'request';
+import request from 'requestretry';
 import fs from 'fs';
 import { compressFiles, getRequestConfig, getZipFilePath, removeZipFile } from './file-manager';
 import chalk from 'chalk';
