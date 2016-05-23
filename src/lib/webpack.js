@@ -118,6 +118,16 @@ class WebpackRunner {
       console.log(stats.toString(outputOptions) + '\n');
     });
   }
+
+  close = () => {
+    if (this.server) {
+      this.server.close();
+    } else if (this.watcher) {
+      this.watcher.close();
+    } else {
+      return Error('No instance of webpack is running');
+    }
+  }
 }
 
 export default WebpackRunner;
