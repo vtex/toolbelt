@@ -32,21 +32,6 @@ class Watcher {
     this.sandbox = this.credentials.email;
     this.workspace = 'sb_' + this.credentials.email;
     this.lrRun(35729);
-
-    if (process.platform === 'win32') {
-      let rl = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout
-      });
-      rl.on('SIGINT', function() {
-        return process.emit('SIGINT');
-      });
-    }
-
-    process.on('SIGINT', () => {
-      console.log('\nExiting...');
-      return this.deactivateSandbox();
-    });
   }
 
   watch = () => {
