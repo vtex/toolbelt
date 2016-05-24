@@ -19,6 +19,8 @@ class Watcher {
     this.changes = {};
     this.lastBatch = 0;
     this.lrPortInUse = false;
+    this.isMuted = false;
+    this.spinner;
 
     this.app = app;
     this.version = version;
@@ -32,21 +34,6 @@ class Watcher {
     this.sandbox = this.credentials.email;
     this.workspace = 'sb_' + this.credentials.email;
     this.lrRun(35729);
-
-    if (process.platform === 'win32') {
-      let rl = require('readline').createInterface({
-        input: process.stdin,
-        output: process.stdout
-      });
-      rl.on('SIGINT', function() {
-        return process.emit('SIGINT');
-      });
-    }
-
-    process.on('SIGINT', () => {
-      console.log('\nExiting...');
-      return this.deactivateSandbox();
-    });
   }
 
   watch = () => {
@@ -173,7 +160,8 @@ class Watcher {
   }
 
   sendChanges = (batchChanges, refresh) => {
-    let spinner;
+    if (this.isMuted) return;
+
     const galleryObj = {
       account: this.credentials.account,
       workspace: this.workspace,
@@ -195,14 +183,14 @@ class Watcher {
     if (refresh) options.url += '?resync=true';
 
     if (refresh) {
-      spinner = ora(chalk.blue('Synchronizing...'));
+      this.spinner = ora(chalk.blue('Synchronizing...'));
     } else {
-      spinner = ora(chalk.blue('Changes detected, uploading...'));
+      this.spinner = ora(chalk.blue('Changes detected, uploading...'));
     }
-    spinner.start();
+    this.spinner.start();
 
     return request(options, (error, response) => {
-      spinner.stop();
+      this.spinner.stop();
 
       if (error || response.statusCode !== 200 || response.statusCode >= 400) {
         return this.changeSendError(error, response);
@@ -213,6 +201,8 @@ class Watcher {
   }
 
   changesSentSuccessfuly = (batchChanges) => {
+    if (this.isMuted) return;
+
     this.logResponse(batchChanges);
     let paths = batchChanges.map(function(change) {
       return change.path;
@@ -274,6 +264,8 @@ class Watcher {
   }
 
   changeSendError = (error, response) => {
+    if (this.isMuted) return;
+
     console.error(chalk.red('Error sending files'));
     if (error) console.error(error);
 
@@ -432,6 +424,9 @@ class Watcher {
   }
 
   deactivateSandbox = () => {
+    this.isMuted = true;
+    const deferred = Q.defer();
+
     let options = {
       url: `${this.appsEndpoint}/${this.credentials.account}/workspaces/${this.workspace}/sandboxes/${this.vendor}/${this.sandbox}/${this.app}/${this.version}`,
       method: 'DELETE',
@@ -442,12 +437,15 @@ class Watcher {
       }
     };
 
-    return request(options, function(error, response) {
+    request(options, function(error, response) {
       if (error || response.statusCode !== 204) {
-        console.log(error || response.body.message);
+        deferred.reject(error || response.body.message);
       }
-      return process.exit(1);
+
+      return deferred.resolve();
     });
+
+    return deferred.promise;
   }
 }
 
