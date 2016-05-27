@@ -3,6 +3,7 @@ import yargs from 'yargs'
 import updateNotifier from 'update-notifier'
 import Configstore from 'configstore'
 import vtexsay from 'vtexsay'
+import chalk from 'chalk'
 import pkg from '../package.json'
 import winston from './logger'
 import {
@@ -37,7 +38,15 @@ getCommandList().forEach((c) => {
 
 // Be polite :)
 if (command() == null) {
-  console.log(vtexsay('Welcome to VTEX I/O'))
+  let greeting
+  const account = conf.get('account')
+  const login = conf.get('login')
+  if (account && login) {
+    greeting = `Logged in account ${chalk.blue(account)} as ${chalk.green(login)}`
+  } else {
+    greeting = `Welcome to VTEX I/O. Log into your account with ${chalk.green('vtex login')} ${chalk.blue('<account>')}`
+  }
+  console.log(vtexsay(greeting, {maxLength: 40}))
 }
 
 // Setup generic options

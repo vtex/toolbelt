@@ -1,11 +1,12 @@
 import {mergeAll, values, keys} from 'ramda'
 import * as apps from './apps'
-// import * as auth from './auth'
+import * as auth from './auth'
 // import * as masterdata from './masterdata'
 // import * as render from './render'
 // import * as workspace from './workspace'
 
 export function commandsByModule (modules = [
+  auth,
   apps,
 ]) {
   return mergeAll(modules)
