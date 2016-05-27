@@ -8,7 +8,7 @@
     "watch": "babel src --out-dir=lib --watch",
     "lint": "eslint src",
     "test": "npm run lint && nyc ava src/*.test.js src/**/*.test.js",
-    "prepublish": "babel src --out-dir=lib --ignore=*.spec.js",
+    "prepublish": "babel src --out-dir=lib --ignore=*.test.js",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "engines": {
