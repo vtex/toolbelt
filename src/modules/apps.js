@@ -17,7 +17,7 @@ export const install = {
   builder: {},
   handler: (argv, log, conf, done) => {
     log.debug('Starting to install app', argv.app)
-    log.info('TODO')
+    log.info('Install app', argv.app)
     done()
   },
 }
@@ -28,7 +28,18 @@ export const uninstall = {
   builder: {},
   handler: (argv, log, conf, done) => {
     log.debug('Starting to uninstall app', argv.app)
-    log.info('TODO')
+    log.info('Uninstall app', argv.app)
+    done()
+  },
+}
+
+export const publish = {
+  command: 'publish',
+  describe: 'Publish this app',
+  builder: {},
+  handler: (argv, log, conf, done) => {
+    log.debug('Starting to publish app')
+    log.info('Publish app', argv.app)
     done()
   },
 }

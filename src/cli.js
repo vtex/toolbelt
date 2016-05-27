@@ -8,13 +8,14 @@ import pkg from '../package.json'
 import winston from './logger'
 import {
   getCommandList,
+  getCommandName,
   getHandler,
 } from './modules'
 
 const log = winston
 const start = new Date()
 const conf = new Configstore(pkg.name)
-const command = () => yargs.argv._[0]
+const command = () => getCommandName(yargs.argv._)
 
 // Setup logging
 if (yargs.boolean('verbose').alias('V', 'verbose').argv.verbose) {
