@@ -1,21 +1,18 @@
 {
   "name": "vtex",
-  "version": "0.19.2",
-  "description": "CLI tool for creating and managing VTEX apps",
-  "bin": {
-    "vtex": "bin/vtex.js",
-    "vtex-login": "bin/vtex-login.js",
-    "vtex-logout": "bin/vtex-logout.js",
-    "vtex-watch": "bin/vtex-watch.js",
-    "vtex-publish": "bin/vtex-publish.js"
-  },
+  "version": "1.0.0-beta.1",
+  "description": "The platform for e-commerce apps.",
+  "main": "lib/index.js",
+  "bin": "lib/cli.js",
   "scripts": {
-    "start": "npm run permitexe && babel src --out-dir . --source-maps --watch",
-    "build": "rm -rf bin lib && npm run permitexe && babel src --out-dir .",
-    "permitexe": "chmod +x ./src/**/*",
+    "watch": "babel src --out-dir=lib --watch",
     "lint": "eslint src",
-    "compile": "babel src --out-dir .",
-    "test": "mocha --compilers js:babel-core/register"
+    "test": "npm run lint && nyc ava src/*.test.js src/**/*.test.js",
+    "prepublish": "babel src --out-dir=lib --ignore=*.spec.js",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "engines": {
+    "node": ">=0.12.0"
   },
   "repository": {
     "type": "git",
@@ -24,6 +21,11 @@
   "keywords": [
     "CLI",
     "vtex",
+    "ecommerce",
+    "commerce",
+    "omnichannel",
+    "platform",
+    "react",
     "toolbelt",
     "apps"
   ],
@@ -33,18 +35,19 @@
   },
   "dependencies": {
     "archiver": "^1.0.0",
-    "chalk": "^1.1.1",
+    "bluebird": "^3.4.0",
+    "chalk": "^1.1.3",
     "chokidar": "^1.2.0",
-    "docopt": "^0.6.2",
+    "configstore": "^2.0.0",
     "express": "^4.13.3",
     "glob": "^7.0.0",
     "http-proxy": "^1.11.2",
     "http-status-name": "^2.0.0",
-    "node-libs-browser": "^1.0.0",
-    "ora": "^0.2.1",
-    "prompt": "~1.0.0",
-    "q": "^1.4.1",
-    "requestretry": "^1.8.0",
+    "log-symbols": "^1.0.2",
+    "ora": "^0.2.3",
+    "ramda": "^0.21.0",
+    "request": "^2.72.0",
+    "request-promise": "^3.0.0",
     "semver": "^5.0.3",
     "shelljs": "^0.7.0",
     "supports-color": "^3.1.1",
@@ -53,21 +56,33 @@
     "vtexsay": "^1.0.3",
     "webpack": "^1.12.10",
     "webpack-dev-middleware": "^1.2.0",
-    "webpack-hot-middleware": "^2.4.1"
+    "webpack-hot-middleware": "^2.4.1",
+    "winston": "^2.2.0",
+    "yargs": "^4.7.1"
   },
   "preferGlobal": true,
   "devDependencies": {
+    "ava": "^0.15.0",
     "babel-cli": "^6.1.18",
     "babel-core": "^6.1.21",
     "babel-eslint": "^6.0.2",
     "babel-preset-es2015": "^6.1.18",
     "babel-preset-stage-0": "^6.1.18",
-    "chai": "^3.4.1",
-    "chai-as-promised": "^5.1.0",
+    "babel-register": "^6.9.0",
+    "coveralls": "^2.11.9",
     "eslint": "^2.0.0",
     "eslint-config-vtex": "^3.0.1",
     "eslint-plugin-react": "^5.0.1",
     "mocha": "^2.3.3",
-    "mock-fs": "^3.4.0"
+    "mock-fs": "^3.4.0",
+    "nock": "^8.0.0",
+    "nyc": "^6.4.4"
+  },
+  "ava": {
+    "failFast": true,
+    "require": [
+      "babel-register"
+    ],
+    "babel": "inherit"
   }
 }

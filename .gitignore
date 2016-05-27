@@ -1,9 +1,6 @@
 node_modules/
 .idea/
+.nyc_output/
 npm-debug.log
-lib/**/*.js
-lib/temporary/
-bin/
-lib/
 .tern-project
-!src/bin/
+lib/

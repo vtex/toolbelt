@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt)
 
-CLI tool for developing VTEX apps.
+All you need to start developing VTEX apps.
 
 # Getting started
 
