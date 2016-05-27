@@ -2,8 +2,8 @@
 import yargs from 'yargs'
 import updateNotifier from 'update-notifier'
 import Configstore from 'configstore'
-import vtexsay from 'vtexsay'
 import chalk from 'chalk'
+import printMessage from 'print-message'
 import pkg from '../package.json'
 import winston from './logger'
 import {
@@ -42,11 +42,11 @@ if (command() == null) {
   const account = conf.get('account')
   const login = conf.get('login')
   if (account && login) {
-    greeting = `Logged in account ${chalk.blue(account)} as ${chalk.green(login)}`
+    greeting = [`Logged into ${chalk.blue(account)} as`, `${chalk.green(login)}`]
   } else {
-    greeting = `Welcome to VTEX I/O. Log into your account with ${chalk.green('vtex login')} ${chalk.blue('<account>')}`
+    greeting = ['Welcome to VTEX I/O', `Login with ${chalk.green('vtex login')} ${chalk.blue('<account>')}`]
   }
-  console.log(vtexsay(greeting, {maxLength: 40}))
+  printMessage(greeting)
 }
 
 // Setup generic options
