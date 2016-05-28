@@ -1,3 +1,4 @@
+import {pipe, values, find as rfind, propEq} from 'ramda'
 import ExtendableError from 'es6-error'
 
 export class CommandNotFoundError extends ExtendableError {}
@@ -36,18 +37,20 @@ export function find (node, args, argv) {
     throw new CommandNotFoundError()
   }
 
+  const findByAlias = pipe(values, rfind(propEq('alias', args[0])))
+  const command = node[args[0]] || findByAlias(node)
+
   // There are more arguments but no tree to traverse.
-  if (node[args[0]] == null) {
+  if (command == null) {
     throw new CommandNotFoundError(args[0])
   }
 
   // Next node is a namespace, traverse down.
-  if (!node[args[0]].handler) {
-    return find(node[args[0]], args.slice(1), argv)
+  if (!command.handler) {
+    return find(command, args.slice(1), argv)
   }
 
   // Next node is a command with handler
-  const command = node[args[0]]
   const commandArgs = args.slice(1)
   const requires = parseCommandArgs(command, commandArgs)
   const options = parseCommandOpts(command, commandArgs)

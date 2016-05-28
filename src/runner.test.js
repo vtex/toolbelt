@@ -67,6 +67,15 @@ test('finds required args', t => {
   t.deepEqual(found.requires, args)
 })
 
+test('finds command by alias', t => {
+  const argv = minimist(['i', 'cool-app'])
+  const command = tree.install
+  const args = ['cool-app']
+  const found = find(tree, argv)
+  t.true(found.command === command)
+  t.deepEqual(found.requires, args)
+})
+
 test('fails if not given required args', t => {
   const argv = minimist(['workspace', 'new'])
   t.throws(() => find(tree, argv), MissingRequiredArgsError)
