@@ -4,7 +4,7 @@ import ExtendableError from 'es6-error'
 export class CommandNotFoundError extends ExtendableError {}
 export class MissingRequiredArgsError extends ExtendableError {}
 
-const toArray = a => Array.isArray(a) ? a : [a]
+const toArray = a => Array.isArray(a) ? a : (a == null ? [] : [a])
 
 export function parseCommandArgs (command, args) {
   if (command.requires == null) {
@@ -19,11 +19,12 @@ export function parseCommandArgs (command, args) {
 }
 
 export function parseCommandOpts (command, args) {
-  if (command.requires == null) {
-    return args
+  if (command.options == null) {
+    return []
   }
   const requiredArguments = toArray(command.requires)
-  return args.slice(requiredArguments.length)
+  const definedOptions = toArray(command.options)
+  return args.slice(requiredArguments.length, requiredArguments.length + definedOptions.length)
 }
 
 export function find (node, args, argv) {
@@ -60,9 +61,10 @@ export function find (node, args, argv) {
     command,
     requires,
     options,
+    argv,
   }
 }
 
-export function run ({command, requires, options}) {
-  return command.handler.apply(this, requires.concat(options))
+export function run ({command, requires, options, argv}) {
+  return command.handler.apply(this, requires.concat(options, argv))
 }
