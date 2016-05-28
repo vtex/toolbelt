@@ -1,45 +1,37 @@
-export const list = {
-  command: 'list',
-  alias: 'ls',
-  describe: 'List your installed VTEX apps',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Starting to list apps')
-    log.info('You have no installed apps')
-    done()
-  },
-}
+import log from '../logger'
 
-export const install = {
-  command: 'install <app>',
-  alias: 'i <app>',
-  describe: 'Install the specified app',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Starting to install app', argv.app)
-    log.info('Install app', argv.app)
-    done()
+export default {
+  list: {
+    alias: 'ls',
+    description: 'List your installed VTEX apps',
+    handler: () => {
+      log.debug('Starting to list apps')
+      log.info('You have no installed apps')
+    },
   },
-}
-
-export const uninstall = {
-  command: 'uninstall <app>',
-  describe: 'Uninstall the specified app',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Starting to uninstall app', argv.app)
-    log.info('Uninstall app', argv.app)
-    done()
+  install: {
+    requires: 'app',
+    alias: 'i',
+    description: 'Install the specified app',
+    handler: (app) => {
+      log.debug('Starting to install app', app)
+      log.info('Install app', app)
+    },
   },
-}
-
-export const publish = {
-  command: 'publish',
-  describe: 'Publish this app',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Starting to publish app')
-    log.info('Publish app', argv.app)
-    done()
+  uninstall: {
+    requires: 'app',
+    description: 'Uninstall the specified app',
+    handler: (app) => {
+      log.debug('Starting to uninstall app', app)
+      log.info('Uninstall app', app)
+    },
+  },
+  publish: {
+    requires: 'app',
+    description: 'Publish this app',
+    handler: (app) => {
+      log.debug('Starting to publish app', app)
+      log.info('Publish app', app)
+    },
   },
 }

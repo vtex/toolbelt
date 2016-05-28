@@ -1,84 +1,65 @@
 import test from 'ava'
-import {mergeAll, values} from 'ramda'
 import {
-  commandsByModule,
-  commandsByName,
-  commandsByAlias,
-  getCommandList,
-  getHandler,
+  commandTree,
 } from './index'
 
-const modules = {
-  apps: {
-    list: {
-      command: 'list',
-      alias: 'ls',
-      handler: () => {},
-    },
-    install: {
-      command: 'install <app>',
-      alias: 'i <app>',
-    },
-    uninstall: {
-      command: 'uninstall <app>',
+const modules = [
+  {
+    default: {
+      login: {
+        requires: 'store',
+        handler: () => {},
+      },
+      logout: {
+        handler: () => {},
+      },
     },
   },
-  auth: {
-    login: {
-      command: 'login <account>',
-    },
-    logout: {
-      command: 'logout',
+  {
+    default: {
+      list: {
+        alias: 'ls',
+        handler: () => {},
+      },
+      install: {
+        requires: 'app',
+        alias: 'i',
+        handler: () => {},
+      },
+      uninstall: {
+        requires: 'app',
+        handler: () => {},
+      },
+      publish: {
+        requires: 'app',
+        handler: () => {},
+      },
     },
   },
-  workspace: {
-    newWorkspace: {
-      command: 'workspace new <name>',
-      alias: 'wn',
-    },
-    deleteWorkspace: {
-      command: 'workspace delete <name>',
-      alias: 'wd',
-    },
-    promoteWorkspace: {
-      command: 'workspace promote <name>',
-      alias: 'wp',
+  {
+    default: {
+      workspace: {
+        new: {
+          requires: 'name',
+          handler: () => {},
+        },
+        delete: {
+          requires: 'name',
+          handler: () => {},
+        },
+        promote: {
+          requires: 'name',
+          handler: () => {},
+        },
+      },
     },
   },
-}
+]
 
-const merged = mergeAll(values(modules))
-const byModule = commandsByModule(merged)
-const byName = commandsByName(byModule)
-const byAlias = commandsByAlias(byModule)
-const list = getCommandList(byName)
+const tree = commandTree(modules)
 
-test('finds commands from modules', t => {
-  t.true(byName.list.command === 'list')
-  t.true(byName.ls == null)
-  t.true(byName['workspace new'].command.indexOf('workspace new') >= 0)
-})
-
-test('finds aliases from modules', t => {
-  t.true(byAlias.ls.command === 'list')
-  t.true(byAlias.ls === byName.list)
-  t.true(byAlias.wn.command.indexOf('workspace new') >= 0)
-  t.true(byAlias.wn === byName['workspace new'])
-})
-
-test('gets command list', t => {
-  t.true(list.length === values(merged).length)
-  t.true(list[0].command === 'list')
-})
-
-test('finds handler by name', t => {
-  t.true(getHandler('list', byName, byAlias) === byName.list.handler)
-})
-
-test('finds handler with two words by name', t => {
-  t.true(getHandler('workspace new', byName, byAlias) === byName['workspace new'].handler)
-})
-
-test('finds handler by alias', t => {
-  t.true(getHandler('ls', byName, byAlias) === byName.list.handler)
+test('makes command tree from imported modules', t => {
+  t.truthy(tree.login.handler)
+  t.truthy(tree.list.handler)
+  t.truthy(tree.workspace.new.handler)
 })

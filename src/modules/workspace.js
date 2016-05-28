@@ -1,35 +1,30 @@
-export const newWorkspace = {
-  command: 'workspace new <name>',
-  alias: 'wn <name>',
-  describe: 'Create a new workspace with this name',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Creating workspace', argv.name)
-    log.info('Create', argv.name)
-    done()
-  },
-}
+import log from '../logger'
 
-export const deleteWorkspace = {
-  command: 'workspace delete <name>',
-  alias: 'wd <name>',
-  describe: 'Delete this workspace',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Deleting workspace', argv.name)
-    log.info('Delete', argv.name)
-    done()
-  },
-}
-
-export const promoteWorkspace = {
-  command: 'workspace promote <name>',
-  alias: 'wp <name>',
-  describe: 'Promote this workspace to master',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Promoting workspace', argv.name)
-    log.info('TODO')
-    done()
+export default {
+  workspace: {
+    new: {
+      requires: 'name',
+      description: 'Create a new workspace with this name',
+      handler: (name) => {
+        log.debug('Creating workspace', name)
+        log.info('Create', name)
+      },
+    },
+    delete: {
+      requires: 'name',
+      description: 'Delete this workspace',
+      handler: (name) => {
+        log.debug('Deleting workspace', name)
+        log.info('Delete', name)
+      },
+    },
+    promote: {
+      requires: 'name',
+      description: 'Promote this workspace to master',
+      handler: (name) => {
+        log.debug('Promoting workspace', name)
+        log.info('Promote', name)
+      },
+    },
   },
 }

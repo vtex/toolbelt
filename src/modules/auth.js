@@ -1,21 +1,19 @@
-export const login = {
-  command: 'login <account>',
-  describe: 'Log into a VTEX account',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Starting login')
-    log.info('TODO')
-    done()
-  },
-}
+import log from '../logger'
 
-export const logout = {
-  command: 'logout',
-  describe: 'Logout of the current VTEX account',
-  builder: {},
-  handler: (argv, log, conf, done) => {
-    log.debug('Starting logout')
-    log.info('TODO')
-    done()
+export default {
+  login: {
+    requires: 'store',
+    description: 'Log into a VTEX store',
+    handler: (store) => {
+      log.debug('Starting login', store)
+      log.info('Store', store)
+    },
+  },
+  logout: {
+    description: 'Logout of the current VTEX store',
+    handler: () => {
+      log.debug('Starting logout')
+      log.info('See you soon!')
+    },
   },
 }
