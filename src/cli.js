@@ -7,6 +7,7 @@ import greeting from './greeting'
 import log from './logger'
 import notify from './update'
 import {modules, commandTree} from './modules'
+import {help} from './helper'
 import {
   find,
   run,
@@ -14,10 +15,6 @@ import {
 } from './finder'
 
 const tree = commandTree(modules)
-
-const help = () => {
-  return 'Usage: vtex <command> [options]'
-}
 
 // Setup logging
 const VERBOSE = '--verbose'
@@ -27,14 +24,15 @@ log.level = process.argv.indexOf(VERBOSE) >= 0 ? 'debug' : 'info'
 notify()
 
 try {
-  const argv = without([VERBOSE], process.argv.slice(2))
-  const found = find(tree, argv, minimist)
+  const found = find(tree, without([VERBOSE], process.argv.slice(2)), minimist)
   if (found.command) {
     run(found)
   } else {
-    found.argv._.length === 0
-      ? printMessage(greeting)
-      : log.error('Command not found:', chalk.blue(found.argv._))
+    if (!(found.options.h || found.options.help)) {
+      found.argv._.length
+        ? log.error('Command not found:', chalk.blue(found.argv._))
+        : printMessage(greeting)
+    }
 
     console.log(help(tree))
   }
