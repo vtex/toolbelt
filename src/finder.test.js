@@ -1,7 +1,7 @@
 import test from 'ava'
 import minimist from 'minimist'
 import {omit} from 'ramda'
-import {find, run, MissingRequiredArgsError} from './finder'
+import {find, run, findOptions, optionsByType, MissingRequiredArgsError} from './finder'
 
 const tree = {
   'options': [
@@ -192,4 +192,18 @@ cases.forEach((c) => {
 test('fails if not given required args', t => {
   const argv = minimist(['workspace', 'new'])
   t.throws(() => find(tree, argv), MissingRequiredArgsError)
+})
+
+test('finds options', t => {
+  const options = findOptions(tree)
+  t.true(options.indexOf(tree.options[0]) >= 0)
+  t.true(options.indexOf(tree.options[1]) >= 0)
+  t.true(options.indexOf(tree.list.options[0]) >= 0)
+})
+
+test('groups options by type', t => {
+  const options = findOptions(tree)
+  const types = optionsByType(options);
+  ['verbose', 'h', 'help', 'a', 'all']
+  .forEach(o => t.true(types.boolean.indexOf(o) >= 0))
 })

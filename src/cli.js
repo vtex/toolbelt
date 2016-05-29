@@ -9,14 +9,18 @@ import {modules, commandTree} from './modules'
 import {
   find,
   run,
+  findOptions,
+  optionsByType,
   MissingRequiredArgsError,
 } from './finder'
 
 const tree = commandTree(modules)
-const argv = minimist(process.argv.slice(2), {boolean: ['verbose']})
+const options = optionsByType(findOptions(tree))
+const argv = minimist(process.argv.slice(2), options)
 
 // Setup logging
 log.level = argv.verbose ? 'debug' : 'info'
+log.debug('Available options', options)
 
 // Show update notification if newer version is available
 notify()

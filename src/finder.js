@@ -1,4 +1,4 @@
-import {pipe, values, find as rfind, propEq, pick, chain, props} from 'ramda'
+import {pipe, values, find as rfind, propEq, pick, chain, props, omit, type, equals, filter, map, flatten, reduce, reject, isNil} from 'ramda'
 import ExtendableError from 'es6-error'
 
 export class MissingRequiredArgsError extends ExtendableError {}
@@ -28,6 +28,27 @@ export function parseCommandOpts (command, args) {
 
 export function parseOptions ({options = {}}, argv) {
   return pick(chain(props(['long', 'short']), options), argv)
+}
+
+const omitOptions = omit(['options'])
+const isObject = pipe(type, equals('Object'))
+const otherObjects = pipe(omitOptions, values, filter(isObject))
+
+export function findOptions (node) {
+  if (!node) {
+    return []
+  }
+  return flatten([map(findOptions, otherObjects(node)), node.options || []])
+}
+
+export function optionsByType (options) {
+  return reduce((result, option) => {
+    if (!option.type) {
+      return result
+    }
+    result[option.type] = flatten(reject(isNil, [result[option.type], option.short, option.long]))
+    return result
+  }, {}, options)
 }
 
 export function find (node, args, argv) {
