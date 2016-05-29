@@ -2,18 +2,18 @@ import {filterCommands, filterNamespaces, filterOptions, toArray} from './finder
 import {map, mapObjIndexed, values} from 'ramda'
 
 export function help (tree) {
-  const rootCommands = filterCommands(tree)
   const rootOptions = filterOptions(tree)
-  const namespaces = filterNamespaces(tree)
+  const namespaces = {
+    root: filterCommands(tree),
+    ...filterNamespaces(tree),
+  }
 
   return `
   Usage: vtex <command> [options]
 
   Commands:
 
-${values(mapObjIndexed(formatCommand, rootCommands)).join('\n')}
-
-${values(mapObjIndexed(formatNamespace, namespaces)).join('\n')}
+${values(mapObjIndexed(formatNamespace, namespaces)).join('\n\n')}
 
   Options:
 
@@ -41,7 +41,8 @@ function addNamespace (namespace) {
 }
 
 function formatNamespace (node, namespace) {
-  return values(mapObjIndexed(formatCommand, map(addNamespace(namespace), node))).join('\n')
+  const ns = namespace === 'root' ? undefined : namespace
+  return values(mapObjIndexed(formatCommand, map(addNamespace(ns), node))).join('\n')
 }
 
 function formatOption (o) {
