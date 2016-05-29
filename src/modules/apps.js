@@ -3,6 +3,7 @@ import log from '../logger'
 export default {
   list: {
     alias: 'ls',
+    'optionalArgs': 'query',
     description: 'List your installed VTEX apps',
     handler: () => {
       log.debug('Starting to list apps')

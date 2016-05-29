@@ -33,7 +33,7 @@ function formatRequiredArgs (c) {
 }
 
 function formatOptionalArgs (c) {
-  return c.optionalArgs ? `[${toArray(c.requiredArgs).join('] [')}]` : ''
+  return c.optionalArgs ? `[${toArray(c.optionalArgs).join('] [')}]` : ''
 }
 
 function formatCommandArgs (c, k) {
