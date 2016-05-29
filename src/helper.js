@@ -45,5 +45,11 @@ function formatNamespace (node, namespace) {
 }
 
 function formatOption (o) {
-  return '    ' + o.short + ' ' + o.description
+  return `    ${formatFlags(o)} ${o.description}`
+}
+
+function formatFlags (o) {
+  const short = `-${o.short}`
+  const long = `--${o.long}`
+  return `${[short, long].join(', ')} `
 }
