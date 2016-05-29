@@ -1,5 +1,6 @@
 import {filterCommands, filterNamespaces, filterOptions, toArray} from './finder'
-import {map, mapObjIndexed, values} from 'ramda'
+import {map, mapObjIndexed, values, pipe, length} from 'ramda'
+import pad from 'pad'
 
 export function help (tree) {
   const rootOptions = filterOptions(tree)
@@ -21,8 +22,10 @@ ${map(formatOption, rootOptions.options).join('\n')}
 `
 }
 
-function formatCommand (c, k) {
-  return `    ${c.namespace ? c.namespace + ' ' : ''}${k} ${formatRequiredArgs(c)}${formatOptionalArgs(c)}- ${c.description}`
+function formatCommand (padLength) {
+  return (c, k) => {
+    return `    ${pad(formatCommandArgs(c, k), padLength)}${c.description}`
+  }
 }
 
 function formatRequiredArgs (c) {
@@ -31,6 +34,10 @@ function formatRequiredArgs (c) {
 
 function formatOptionalArgs (c) {
   return c.optionalArgs ? `[${toArray(c.requiredArgs).join('] [')}]` : ''
+}
+
+function formatCommandArgs (c, k) {
+  return `${c.namespace ? c.namespace + ' ' : ''}${k} ${formatRequiredArgs(c)}${formatOptionalArgs(c)}`
 }
 
 function addNamespace (namespace) {
@@ -42,7 +49,9 @@ function addNamespace (namespace) {
 
 function formatNamespace (node, namespace) {
   const ns = namespace === 'root' ? undefined : namespace
-  return values(mapObjIndexed(formatCommand, map(addNamespace(ns), node))).join('\n')
+  const namespaced = map(addNamespace(ns), node)
+  const maxLength = Math.max(...values(map(pipe(formatCommandArgs, length), namespaced)))
+  return values(mapObjIndexed(formatCommand(maxLength), namespaced)).join('\n')
 }
 
 function formatOption (o) {
