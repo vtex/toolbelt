@@ -5,12 +5,12 @@ import {without} from 'ramda'
 import log from './logger'
 import notify from './update'
 import {modules, commandTree} from './modules'
-import {help} from './helper'
 import {
+  help,
   find,
   run,
   MissingRequiredArgsError,
-} from './finder'
+} from 'findhelp'
 
 const tree = commandTree(modules)
 
@@ -32,7 +32,7 @@ try {
         : null
     }
 
-    console.log(help(tree))
+    console.log(help(tree, {name: 'vtex'}))
   }
 } catch (e) {
   switch (e.constructor) {
