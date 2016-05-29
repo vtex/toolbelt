@@ -41,6 +41,11 @@ export function findOptions (node) {
   return flatten([map(findOptions, otherObjects(node)), node.options || []])
 }
 
+// TODO: A current limitation is that options are found recursively.
+// This means that deeper options might accidentally overwrite shallower ones
+// if the have the same name and different types. The solution would be to only
+// consider options in the current level, but would make us re-parse argv with
+// the option's types on every new level.
 export function optionsByType (options) {
   return reduce((result, option) => {
     if (!option.type) {
