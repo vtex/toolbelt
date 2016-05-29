@@ -15,25 +15,27 @@ import {
 } from './finder'
 
 const tree = commandTree(modules)
-const options = optionsByType(findOptions(tree))
-const argv = minimist(process.argv.slice(2), options)
 
 // Setup logging
-log.level = argv.verbose ? 'debug' : 'info'
-log.debug('Available options', options)
+log.level = minimist(
+  process.argv.slice(2),
+  optionsByType(findOptions(tree))
+).verbose ? 'debug' : 'info'
 
 // Show update notification if newer version is available
 notify()
 
 try {
-  const found = find(tree, argv)
-  log.debug('Using options', found.options)
+  const found = find(tree, process.argv.slice(2), minimist)
+  log.debug('Options', found.options)
+  log.debug('argv', found.argv)
   if (found.command) {
     log.debug('Found command', found.name)
     run(found)
-  } else {
+  } else if (found.argv._.length === 0) {
     printMessage(greeting)
-    log.error('Command not found:', chalk.blue(argv._))
+  } else {
+    log.error('Command not found:', chalk.blue(found.argv._))
   }
 } catch (e) {
   switch (e.constructor) {

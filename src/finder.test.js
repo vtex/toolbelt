@@ -77,11 +77,9 @@ const tree = {
   },
 }
 
-const byType = optionsByType(findOptions(tree))
-
 const cases = [
   {
-    argv: minimist(['--verbose'], byType),
+    argv: ['--verbose'],
     command: null,
     requiredArgs: [],
     optionalArgs: [],
@@ -91,7 +89,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['list'], byType),
+    argv: ['list'],
     command: tree.list,
     requiredArgs: [],
     optionalArgs: [],
@@ -99,7 +97,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['list', '-a'], byType),
+    argv: ['list', '-a'],
     command: tree.list,
     requiredArgs: [],
     optionalArgs: [],
@@ -109,7 +107,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['workspace', 'list'], byType),
+    argv: ['workspace', 'list'],
     command: tree.workspace.list,
     requiredArgs: [],
     optionalArgs: [],
@@ -117,7 +115,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['install', 'cool-app'], byType),
+    argv: ['install', 'cool-app'],
     command: tree.install,
     requiredArgs: ['cool-app'],
     optionalArgs: [],
@@ -125,7 +123,7 @@ const cases = [
     arguments: ['cool-app'],
   },
   {
-    argv: minimist(['i', 'cool-app'], byType),
+    argv: ['i', 'cool-app'],
     command: tree.install,
     requiredArgs: ['cool-app'],
     optionalArgs: [],
@@ -133,7 +131,7 @@ const cases = [
     arguments: ['cool-app'],
   },
   {
-    argv: minimist(['list', 'query'], byType),
+    argv: ['list', 'query'],
     command: tree.list,
     requiredArgs: [],
     optionalArgs: ['query'],
@@ -141,7 +139,7 @@ const cases = [
     arguments: ['query'],
   },
   {
-    argv: minimist(['login', 'bestever', 'me@there.com'], byType),
+    argv: ['login', 'bestever', 'me@there.com'],
     command: tree.login,
     requiredArgs: ['bestever'],
     optionalArgs: ['me@there.com'],
@@ -149,7 +147,7 @@ const cases = [
     arguments: ['bestever', 'me@there.com'],
   },
   {
-    argv: minimist(['login', 'bestever', 'me@there.com', 'extra'], byType),
+    argv: ['login', 'bestever', 'me@there.com', 'extra'],
     command: tree.login,
     requiredArgs: ['bestever'],
     optionalArgs: ['me@there.com'],
@@ -157,7 +155,7 @@ const cases = [
     arguments: ['bestever', 'me@there.com'],
   },
   {
-    argv: minimist(['workspace', 'foo'], byType),
+    argv: ['workspace', 'foo'],
     command: null,
     requiredArgs: [],
     optionalArgs: [],
@@ -165,7 +163,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['workspace', 'delete', 'app', '-a', 'test'], byType),
+    argv: ['workspace', 'delete', 'app', '-a', 'test'],
     command: tree.workspace.delete,
     requiredArgs: ['app'],
     optionalArgs: [],
@@ -177,25 +175,24 @@ const cases = [
 ]
 
 cases.forEach((c) => {
-  test(`finds ${c.argv._.join(', ')}`, t => {
-    const found = find(tree, c.argv)
+  test(`finds ${c.argv.join(', ')}`, t => {
+    const found = find(tree, c.argv, minimist)
     t.true(found.command === c.command)
     t.deepEqual(found.requiredArgs, c.requiredArgs)
     t.deepEqual(found.optionalArgs, c.optionalArgs)
     t.deepEqual(pick(keys(c.options), found.options), c.options)
-    t.true(found.argv === c.argv)
+    t.deepEqual(found.argv, minimist(c.argv, optionsByType(findOptions(found.node))))
   })
 
-  test(`runs ${c.argv._.join(', ')}`, t => {
+  test(`runs ${c.argv.join(', ')}`, t => {
     const _this = {}
+    const _argv = {}
     const found = {
-      argv: c.argv,
+      argv: _argv,
       command: {
         handler: function (...args) {
           // Passes argv as last argument
-          t.deepEqual(args, c.arguments.concat(c.argv))
-          // Check that argv contains options
-          t.deepEqual(pick(keys(c.options), c.argv), c.options)
+          t.deepEqual(args, c.arguments.concat(_argv))
           // Preserves context
           t.true(this === _this)
         },
@@ -203,26 +200,25 @@ cases.forEach((c) => {
       requiredArgs: c.requiredArgs,
       optionalArgs: c.optionalArgs,
     }
-    t.plan(3)
+    t.plan(2)
     run.call(_this, found)
   })
 })
 
 test('fails if not given required args', t => {
-  const argv = minimist(['workspace', 'new'])
-  t.throws(() => find(tree, argv), MissingRequiredArgsError)
+  t.throws(() => find(tree, ['workspace', 'new'], minimist), MissingRequiredArgsError)
 })
 
 test('finds options', t => {
   const options = findOptions(tree)
   t.true(options.indexOf(tree.options[0]) >= 0)
   t.true(options.indexOf(tree.options[1]) >= 0)
-  t.true(options.indexOf(tree.list.options[0]) >= 0)
+  t.true(options.indexOf(tree.list.options[0]) === -1)
 })
 
 test('groups options by type', t => {
   const options = findOptions(tree)
   const types = optionsByType(options);
-  ['verbose', 'h', 'help', 'a', 'all']
+  ['verbose', 'h', 'help']
   .forEach(o => t.true(types.boolean.indexOf(o) >= 0))
 })

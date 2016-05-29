@@ -1,4 +1,4 @@
-import {pipe, values, find as rfind, propEq, pick, chain, props, omit, type, equals, filter, map, flatten, reduce, reject, isNil} from 'ramda'
+import {pipe, values, find as rfind, propEq, pick, chain, props, flatten, reduce, reject, isNil} from 'ramda'
 import ExtendableError from 'es6-error'
 
 export class MissingRequiredArgsError extends ExtendableError {}
@@ -26,26 +26,14 @@ export function parseCommandOpts (command, args) {
   return args.slice(requiredArguments.length, requiredArguments.length + definedOptions.length)
 }
 
-export function parseOptions ({options = {}}, argv) {
+export function parseOptions (options, argv) {
   return pick(chain(props(['long', 'short']), options), argv)
 }
 
-const omitOptions = omit(['options'])
-const isObject = pipe(type, equals('Object'))
-const otherObjects = pipe(omitOptions, values, filter(isObject))
-
 export function findOptions (node) {
-  if (!node) {
-    return []
-  }
-  return flatten([map(findOptions, otherObjects(node)), node.options || []])
+  return node.options || []
 }
 
-// TODO: A current limitation is that options are found recursively.
-// This means that deeper options might accidentally overwrite shallower ones
-// if the have the same name and different types. The solution would be to only
-// consider options in the current level, but would make us re-parse argv with
-// the option's types on every new level.
 export function optionsByType (options) {
   return reduce((result, option) => {
     if (!option.type) {
@@ -56,10 +44,11 @@ export function optionsByType (options) {
   }, {}, options)
 }
 
-export function find (node, args, argv) {
-  // Accept root, argv as initial arguments
-  if (node && args._ && argv == null) {
-    return find(node, args._.slice(0), args)
+export function find (node, args, raw, minimist) {
+  // Accept (node, raw, minimist) as initial arguments
+  if (arguments.length === 3) {
+    const argv = raw(args, optionsByType(findOptions(node)))
+    return find(node, argv._.slice(0), args, raw)
   }
 
   const findByAlias = pipe(values, rfind(propEq('alias', args[0])))
@@ -68,9 +57,11 @@ export function find (node, args, argv) {
   // There are more arguments but no tree to traverse, or
   // there are no more arguments and no command was found.
   if (command == null || args.length === 0) {
+    const argv = minimist(raw, optionsByType(findOptions(node)))
     return {
       command: null,
-      options: parseOptions(node, argv),
+      node: node,
+      options: parseOptions(findOptions(node), argv),
       requiredArgs: [],
       optionalArgs: [],
       argv,
@@ -79,18 +70,20 @@ export function find (node, args, argv) {
 
   // Next node is a namespace, traverse down.
   if (!command.handler) {
-    return find(command, args.slice(1), argv)
+    return find(command, args.slice(1), raw, minimist)
   }
 
   // Next node is a command with handler
   const commandArgs = args.slice(1)
   const requiredArgs = parseCommandArgs(command, commandArgs)
   const optionalArgs = parseCommandOpts(command, commandArgs)
+  const argv = minimist(raw, optionsByType(findOptions(command)))
 
   return {
     name: argv._.join(' ').split(args[0]).shift() + args[0],
     command,
-    options: parseOptions(command, argv),
+    node: command,
+    options: parseOptions(findOptions(command), argv),
     requiredArgs,
     optionalArgs,
     argv,
