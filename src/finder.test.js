@@ -1,7 +1,16 @@
 import test from 'ava'
 import minimist from 'minimist'
 import {pick, keys} from 'ramda'
-import {find, run, findOptions, optionsByType, MissingRequiredArgsError} from './finder'
+import {
+  find,
+  run,
+  findOptions,
+  optionsByType,
+  filterCommands,
+  filterNamespaces,
+  filterOptions,
+  MissingRequiredArgsError,
+} from './finder'
 
 const tree = {
   'options': [
@@ -221,4 +230,19 @@ test('groups options by type', t => {
   const types = optionsByType(options);
   ['verbose', 'h', 'help']
   .forEach(o => t.true(types.boolean.indexOf(o) >= 0))
+})
+
+test('filters commands', t => {
+  const commands = filterCommands(tree)
+  t.true(commands.login === tree.login)
+})
+
+test('filters namespaces', t => {
+  const namespaces = filterNamespaces(tree)
+  t.true(namespaces.workspace === tree.workspace)
+})
+
+test('filters options', t => {
+  const options = filterOptions(tree)
+  t.true(options.options === tree.options)
 })
