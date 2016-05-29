@@ -1,6 +1,6 @@
 import test from 'ava'
 import minimist from 'minimist'
-import {omit} from 'ramda'
+import {pick, keys} from 'ramda'
 import {find, run, findOptions, optionsByType, MissingRequiredArgsError} from './finder'
 
 const tree = {
@@ -58,6 +58,13 @@ const tree = {
     },
     'delete': {
       'requiredArgs': 'name',
+      'options': [
+        {
+          'short': 'a',
+          'long': 'account',
+          'type': 'string',
+        },
+      ],
       handler: () => {},
     },
     'promote': {
@@ -70,9 +77,11 @@ const tree = {
   },
 }
 
+const byType = optionsByType(findOptions(tree))
+
 const cases = [
   {
-    argv: minimist(['--verbose']),
+    argv: minimist(['--verbose'], byType),
     command: null,
     requiredArgs: [],
     optionalArgs: [],
@@ -82,7 +91,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['list']),
+    argv: minimist(['list'], byType),
     command: tree.list,
     requiredArgs: [],
     optionalArgs: [],
@@ -90,7 +99,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['list', '-a']),
+    argv: minimist(['list', '-a'], byType),
     command: tree.list,
     requiredArgs: [],
     optionalArgs: [],
@@ -100,7 +109,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['workspace', 'list']),
+    argv: minimist(['workspace', 'list'], byType),
     command: tree.workspace.list,
     requiredArgs: [],
     optionalArgs: [],
@@ -108,7 +117,7 @@ const cases = [
     arguments: [],
   },
   {
-    argv: minimist(['install', 'cool-app']),
+    argv: minimist(['install', 'cool-app'], byType),
     command: tree.install,
     requiredArgs: ['cool-app'],
     optionalArgs: [],
@@ -116,7 +125,7 @@ const cases = [
     arguments: ['cool-app'],
   },
   {
-    argv: minimist(['i', 'cool-app']),
+    argv: minimist(['i', 'cool-app'], byType),
     command: tree.install,
     requiredArgs: ['cool-app'],
     optionalArgs: [],
@@ -124,7 +133,7 @@ const cases = [
     arguments: ['cool-app'],
   },
   {
-    argv: minimist(['list', 'query']),
+    argv: minimist(['list', 'query'], byType),
     command: tree.list,
     requiredArgs: [],
     optionalArgs: ['query'],
@@ -132,7 +141,7 @@ const cases = [
     arguments: ['query'],
   },
   {
-    argv: minimist(['login', 'bestever', 'me@there.com']),
+    argv: minimist(['login', 'bestever', 'me@there.com'], byType),
     command: tree.login,
     requiredArgs: ['bestever'],
     optionalArgs: ['me@there.com'],
@@ -140,7 +149,7 @@ const cases = [
     arguments: ['bestever', 'me@there.com'],
   },
   {
-    argv: minimist(['login', 'bestever', 'me@there.com', 'extra']),
+    argv: minimist(['login', 'bestever', 'me@there.com', 'extra'], byType),
     command: tree.login,
     requiredArgs: ['bestever'],
     optionalArgs: ['me@there.com'],
@@ -148,12 +157,22 @@ const cases = [
     arguments: ['bestever', 'me@there.com'],
   },
   {
-    argv: minimist(['workspace', 'foo']),
+    argv: minimist(['workspace', 'foo'], byType),
     command: null,
     requiredArgs: [],
     optionalArgs: [],
     options: {},
     arguments: [],
+  },
+  {
+    argv: minimist(['workspace', 'delete', 'app', '-a', 'test'], byType),
+    command: tree.workspace.delete,
+    requiredArgs: ['app'],
+    optionalArgs: [],
+    options: {
+      a: 'test',
+    },
+    arguments: ['app'],
   },
 ]
 
@@ -163,7 +182,7 @@ cases.forEach((c) => {
     t.true(found.command === c.command)
     t.deepEqual(found.requiredArgs, c.requiredArgs)
     t.deepEqual(found.optionalArgs, c.optionalArgs)
-    t.deepEqual(found.options, c.options)
+    t.deepEqual(pick(keys(c.options), found.options), c.options)
     t.true(found.argv === c.argv)
   })
 
@@ -176,7 +195,7 @@ cases.forEach((c) => {
           // Passes argv as last argument
           t.deepEqual(args, c.arguments.concat(c.argv))
           // Check that argv contains options
-          t.deepEqual(omit(['_'], c.argv), c.options)
+          t.deepEqual(pick(keys(c.options), c.argv), c.options)
           // Preserves context
           t.true(this === _this)
         },
