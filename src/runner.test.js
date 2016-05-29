@@ -48,7 +48,7 @@ const tree = {
   },
 }
 
-const finds = [
+const cases = [
   {
     argv: minimist(['list']),
     command: tree.list,
@@ -99,7 +99,8 @@ const finds = [
     arguments: ['bestever', 'me@there.com'],
   },
 ]
-finds.forEach((c) => {
+
+cases.forEach((c) => {
   test(`finds ${c.argv._.join(', ')}`, t => {
     const found = find(tree, c.argv)
     t.true(found.command === c.command)
