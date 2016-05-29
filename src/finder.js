@@ -84,7 +84,7 @@ export function find (node, args, raw, minimist) {
   }
 
   const next = findNext(args[0], node)
-  // Next node is a namespace, traverse down.
+
   if (isNamespace(next)) {
     return find(next, args.slice(1), raw, minimist)
   }
