@@ -1,9 +1,10 @@
-import {filterCommands, filterOptions, toArray} from './finder'
+import {filterCommands, filterNamespaces, filterOptions, toArray} from './finder'
 import {map, mapObjIndexed, values} from 'ramda'
 
 export function help (tree) {
   const rootCommands = filterCommands(tree)
   const rootOptions = filterOptions(tree)
+  const namespaces = filterNamespaces(tree)
 
   return `
   Usage: vtex <command> [options]
@@ -12,6 +13,8 @@ export function help (tree) {
 
 ${values(mapObjIndexed(formatCommand, rootCommands)).join('\n')}
 
+${values(mapObjIndexed(formatNamespace, namespaces)).join('\n')}
+
   Options:
 
 ${map(formatOption, rootOptions.options).join('\n')}
@@ -19,7 +22,7 @@ ${map(formatOption, rootOptions.options).join('\n')}
 }
 
 function formatCommand (c, k) {
-  return `    ${k} ${formatRequiredArgs(c)}${formatOptionalArgs(c)}- ${c.description}`
+  return `    ${c.namespace ? c.namespace + ' ' : ''}${k} ${formatRequiredArgs(c)}${formatOptionalArgs(c)}- ${c.description}`
 }
 
 function formatRequiredArgs (c) {
@@ -28,6 +31,17 @@ function formatRequiredArgs (c) {
 
 function formatOptionalArgs (c) {
   return c.optionalArgs ? `[${toArray(c.requiredArgs).join('] [')}]` : ''
+}
+
+function addNamespace (namespace) {
+  return (command) => {
+    command.namespace = namespace
+    return command
+  }
+}
+
+function formatNamespace (node, namespace) {
+  return values(mapObjIndexed(formatCommand, map(addNamespace(namespace), node))).join('\n')
 }
 
 function formatOption (o) {
