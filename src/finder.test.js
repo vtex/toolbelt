@@ -156,7 +156,7 @@ const cases = [
   },
   {
     argv: ['workspace', 'foo'],
-    command: null,
+    command: undefined,
     requiredArgs: [],
     optionalArgs: [],
     options: {},
@@ -177,11 +177,11 @@ const cases = [
 cases.forEach((c) => {
   test(`finds ${c.argv.join(', ')}`, t => {
     const found = find(tree, c.argv, minimist)
-    t.true(found.command === c.command)
+    t.is(found.command, c.command)
     t.deepEqual(found.requiredArgs, c.requiredArgs)
     t.deepEqual(found.optionalArgs, c.optionalArgs)
     t.deepEqual(pick(keys(c.options), found.options), c.options)
-    t.deepEqual(found.argv, minimist(c.argv, optionsByType(findOptions(found.node))))
+    t.deepEqual(found.argv, minimist(c.argv, optionsByType(findOptions(found.command || found.node))))
   })
 
   test(`runs ${c.argv.join(', ')}`, t => {

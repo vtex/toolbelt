@@ -1,4 +1,4 @@
-import {pipe, values, find as rfind, propEq, pick, chain, props, flatten, reduce, reject, isNil} from 'ramda'
+import {type, values, find as rfind, propEq, pick, chain, props, flatten, reduce, reject, isNil} from 'ramda'
 import ExtendableError from 'es6-error'
 
 export class MissingRequiredArgsError extends ExtendableError {}
@@ -6,7 +6,7 @@ export class MissingRequiredArgsError extends ExtendableError {}
 const toArray = a => Array.isArray(a) ? a : (a == null ? [] : [a])
 
 export function parseCommandArgs (command, args) {
-  if (command.requiredArgs == null) {
+  if (!command || command.requiredArgs == null) {
     return []
   }
   const requiredArguments = toArray(command.requiredArgs)
@@ -18,7 +18,7 @@ export function parseCommandArgs (command, args) {
 }
 
 export function parseCommandOpts (command, args) {
-  if (command.optionalArgs == null) {
+  if (!command || command.optionalArgs == null) {
     return []
   }
   const requiredArguments = toArray(command.requiredArgs)
@@ -44,6 +44,26 @@ export function optionsByType (options) {
   }, {}, options)
 }
 
+export function isCommand (node) {
+  return node && type(node.handler) === 'Function'
+}
+
+export function isNamespace (node) {
+  return !isCommand(node) && type(node) === 'Object'
+}
+
+export function isOptions (node) {
+  Array.isArray(node)
+}
+
+export function findByAlias (key, node) {
+  return rfind(propEq('alias', key), values(node))
+}
+
+export function findNext (key, node) {
+  return key ? node[key] || findByAlias(key, node) : null
+}
+
 export function find (node, args, raw, minimist) {
   // Accept (node, raw, minimist) as initial arguments
   if (arguments.length === 3) {
@@ -51,41 +71,22 @@ export function find (node, args, raw, minimist) {
     return find(node, argv._.slice(0), args, raw)
   }
 
-  const findByAlias = pipe(values, rfind(propEq('alias', args[0])))
-  const command = node[args[0]] || findByAlias(node)
-
-  // There are more arguments but no tree to traverse, or
-  // there are no more arguments and no command was found.
-  if (command == null || args.length === 0) {
-    const argv = minimist(raw, optionsByType(findOptions(node)))
-    return {
-      command: null,
-      node: node,
-      options: parseOptions(findOptions(node), argv),
-      requiredArgs: [],
-      optionalArgs: [],
-      argv,
-    }
-  }
-
+  const next = findNext(args[0], node)
   // Next node is a namespace, traverse down.
-  if (!command.handler) {
-    return find(command, args.slice(1), raw, minimist)
+  if (isNamespace(next)) {
+    return find(next, args.slice(1), raw, minimist)
   }
 
-  // Next node is a command with handler
   const commandArgs = args.slice(1)
-  const requiredArgs = parseCommandArgs(command, commandArgs)
-  const optionalArgs = parseCommandOpts(command, commandArgs)
-  const argv = minimist(raw, optionsByType(findOptions(command)))
+  const options = findOptions(isCommand(next) ? next : node)
+  const argv = minimist(raw, optionsByType(options))
 
   return {
-    name: argv._.join(' ').split(args[0]).shift() + args[0],
-    command,
-    node: command,
-    options: parseOptions(findOptions(command), argv),
-    requiredArgs,
-    optionalArgs,
+    command: next,
+    node: node,
+    options: parseOptions(options, argv),
+    requiredArgs: parseCommandArgs(next, commandArgs),
+    optionalArgs: parseCommandOpts(next, commandArgs),
     argv,
   }
 }
