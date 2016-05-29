@@ -10,7 +10,7 @@ import {
   find,
   run,
   MissingRequiredArgsError,
-} from './runner'
+} from './finder'
 
 const tree = commandTree(modules)
 const argv = minimist(process.argv.slice(2), {boolean: ['verbose']})

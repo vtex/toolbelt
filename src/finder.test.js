@@ -1,7 +1,7 @@
 import test from 'ava'
 import minimist from 'minimist'
 import {omit} from 'ramda'
-import {find, run, MissingRequiredArgsError} from './runner'
+import {find, run, MissingRequiredArgsError} from './finder'
 
 const tree = {
   'options': [
