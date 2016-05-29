@@ -4,8 +4,8 @@ import {find, run, CommandNotFoundError, MissingRequiredArgsError} from './runne
 
 const tree = {
   'login': {
-    'requires': 'store',
-    'options': 'email',
+    'requiredArgs': 'store',
+    'optionalArgs': 'email',
     handler: () => {},
   },
   'logout': {
@@ -13,33 +13,33 @@ const tree = {
   },
   'list': {
     'alias': 'ls',
-    'options': 'query',
+    'optionalArgs': 'query',
     handler: () => {},
   },
   'install': {
-    'requires': 'app',
+    'requiredArgs': 'app',
     'alias': 'i',
     handler: () => {},
   },
   'uninstall': {
-    'requires': 'app',
+    'requiredArgs': 'app',
     handler: () => {},
   },
   'publish': {
-    'requires': 'app',
+    'requiredArgs': 'app',
     handler: () => {},
   },
   'workspace': {
     'new': {
-      'requires': 'name',
+      'requiredArgs': 'name',
       handler: () => {},
     },
     'delete': {
-      'requires': 'name',
+      'requiredArgs': 'name',
       handler: () => {},
     },
     'promote': {
-      'requires': 'name',
+      'requiredArgs': 'name',
       handler: () => {},
     },
     'list': {
@@ -52,50 +52,50 @@ const cases = [
   {
     argv: minimist(['list']),
     command: tree.list,
-    requires: [],
-    options: [],
+    requiredArgs: [],
+    optionalArgs: [],
     arguments: [],
   },
   {
     argv: minimist(['workspace', 'list']),
     command: tree.workspace.list,
-    requires: [],
-    options: [],
+    requiredArgs: [],
+    optionalArgs: [],
     arguments: [],
   },
   {
     argv: minimist(['install', 'cool-app']),
     command: tree.install,
-    requires: ['cool-app'],
-    options: [],
+    requiredArgs: ['cool-app'],
+    optionalArgs: [],
     arguments: ['cool-app'],
   },
   {
     argv: minimist(['i', 'cool-app']),
     command: tree.install,
-    requires: ['cool-app'],
-    options: [],
+    requiredArgs: ['cool-app'],
+    optionalArgs: [],
     arguments: ['cool-app'],
   },
   {
     argv: minimist(['list', 'query']),
     command: tree.list,
-    requires: [],
-    options: ['query'],
+    requiredArgs: [],
+    optionalArgs: ['query'],
     arguments: ['query'],
   },
   {
     argv: minimist(['login', 'bestever', 'me@there.com']),
     command: tree.login,
-    requires: ['bestever'],
-    options: ['me@there.com'],
+    requiredArgs: ['bestever'],
+    optionalArgs: ['me@there.com'],
     arguments: ['bestever', 'me@there.com'],
   },
   {
     argv: minimist(['login', 'bestever', 'me@there.com', 'extra']),
     command: tree.login,
-    requires: ['bestever'],
-    options: ['me@there.com'],
+    requiredArgs: ['bestever'],
+    optionalArgs: ['me@there.com'],
     arguments: ['bestever', 'me@there.com'],
   },
 ]
@@ -104,8 +104,8 @@ cases.forEach((c) => {
   test(`finds ${c.argv._.join(', ')}`, t => {
     const found = find(tree, c.argv)
     t.true(found.command === c.command)
-    t.deepEqual(found.requires, c.requires)
-    t.deepEqual(found.options, c.options)
+    t.deepEqual(found.requiredArgs, c.requiredArgs)
+    t.deepEqual(found.optionalArgs, c.optionalArgs)
     t.true(found.argv === c.argv)
   })
 
@@ -121,8 +121,8 @@ cases.forEach((c) => {
           t.true(this === _this)
         },
       },
-      requires: c.requires,
-      options: c.options,
+      requiredArgs: c.requiredArgs,
+      optionalArgs: c.optionalArgs,
     }
     t.plan(2)
     run.call(_this, found)

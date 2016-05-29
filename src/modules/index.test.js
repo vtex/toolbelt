@@ -7,7 +7,7 @@ const modules = [
   {
     default: {
       login: {
-        requires: 'store',
+        requiredArgs: 'store',
         handler: () => {},
       },
       logout: {
@@ -22,16 +22,16 @@ const modules = [
         handler: () => {},
       },
       install: {
-        requires: 'app',
+        requiredArgs: 'app',
         alias: 'i',
         handler: () => {},
       },
       uninstall: {
-        requires: 'app',
+        requiredArgs: 'app',
         handler: () => {},
       },
       publish: {
-        requires: 'app',
+        requiredArgs: 'app',
         handler: () => {},
       },
     },
@@ -40,15 +40,15 @@ const modules = [
     default: {
       workspace: {
         new: {
-          requires: 'name',
+          requiredArgs: 'name',
           handler: () => {},
         },
         delete: {
-          requires: 'name',
+          requiredArgs: 'name',
           handler: () => {},
         },
         promote: {
-          requires: 'name',
+          requiredArgs: 'name',
           handler: () => {},
         },
       },

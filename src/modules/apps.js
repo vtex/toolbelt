@@ -10,7 +10,7 @@ export default {
     },
   },
   install: {
-    requires: 'app',
+    requiredArgs: 'app',
     alias: 'i',
     description: 'Install the specified app',
     handler: (app) => {
@@ -19,7 +19,7 @@ export default {
     },
   },
   uninstall: {
-    requires: 'app',
+    requiredArgs: 'app',
     description: 'Uninstall the specified app',
     handler: (app) => {
       log.debug('Starting to uninstall app', app)
@@ -27,7 +27,7 @@ export default {
     },
   },
   publish: {
-    requires: 'app',
+    requiredArgs: 'app',
     description: 'Publish this app',
     handler: (app) => {
       log.debug('Starting to publish app', app)

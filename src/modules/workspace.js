@@ -3,7 +3,7 @@ import log from '../logger'
 export default {
   workspace: {
     new: {
-      requires: 'name',
+      requiredArgs: 'name',
       description: 'Create a new workspace with this name',
       handler: (name) => {
         log.debug('Creating workspace', name)
@@ -11,7 +11,7 @@ export default {
       },
     },
     delete: {
-      requires: 'name',
+      requiredArgs: 'name',
       description: 'Delete this workspace',
       handler: (name) => {
         log.debug('Deleting workspace', name)
@@ -19,7 +19,7 @@ export default {
       },
     },
     promote: {
-      requires: 'name',
+      requiredArgs: 'name',
       description: 'Promote this workspace to master',
       handler: (name) => {
         log.debug('Promoting workspace', name)

@@ -2,7 +2,7 @@ import log from '../logger'
 
 export default {
   login: {
-    requires: 'store',
+    requiredArgs: 'store',
     description: 'Log into a VTEX store',
     handler: (store) => {
       log.debug('Starting login', store)

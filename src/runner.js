@@ -7,10 +7,10 @@ export class MissingRequiredArgsError extends ExtendableError {}
 const toArray = a => Array.isArray(a) ? a : (a == null ? [] : [a])
 
 export function parseCommandArgs (command, args) {
-  if (command.requires == null) {
+  if (command.requiredArgs == null) {
     return []
   }
-  const requiredArguments = toArray(command.requires)
+  const requiredArguments = toArray(command.requiredArgs)
   const difference = requiredArguments.length - args.length
   if (difference > 0) {
     throw new MissingRequiredArgsError(requiredArguments.slice(difference - 1).join(', '))
@@ -19,11 +19,11 @@ export function parseCommandArgs (command, args) {
 }
 
 export function parseCommandOpts (command, args) {
-  if (command.options == null) {
+  if (command.optionalArgs == null) {
     return []
   }
-  const requiredArguments = toArray(command.requires)
-  const definedOptions = toArray(command.options)
+  const requiredArguments = toArray(command.requiredArgs)
+  const definedOptions = toArray(command.optionalArgs)
   return args.slice(requiredArguments.length, requiredArguments.length + definedOptions.length)
 }
 
@@ -53,18 +53,18 @@ export function find (node, args, argv) {
 
   // Next node is a command with handler
   const commandArgs = args.slice(1)
-  const requires = parseCommandArgs(command, commandArgs)
-  const options = parseCommandOpts(command, commandArgs)
+  const requiredArgs = parseCommandArgs(command, commandArgs)
+  const optionalArgs = parseCommandOpts(command, commandArgs)
 
   return {
     name: argv._.join(' ').split(args[0]).shift() + args[0],
     command,
-    requires,
-    options,
+    requiredArgs,
+    optionalArgs,
     argv,
   }
 }
 
-export function run ({command, requires, options, argv}) {
-  return command.handler.apply(this, requires.concat(options, argv))
+export function run ({command, requiredArgs, optionalArgs, argv}) {
+  return command.handler.apply(this, requiredArgs.concat(optionalArgs, argv))
 }
