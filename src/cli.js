@@ -9,34 +9,30 @@ import {modules, commandTree} from './modules'
 import {
   find,
   run,
-  CommandNotFoundError,
   MissingRequiredArgsError,
 } from './runner'
 
-const argv = minimist(process.argv.slice(2), {boolean: ['verbose']})
 const tree = commandTree(modules)
+const argv = minimist(process.argv.slice(2), {boolean: ['verbose']})
 
 // Setup logging
 log.level = argv.verbose ? 'debug' : 'info'
-
-// Show usage when ran without commands
-if (argv._.length === 0) {
-  printMessage(greeting)
-  process.exit(0)
-}
 
 // Show update notification if newer version is available
 notify()
 
 try {
-  const command = find(tree, argv)
-  log.debug('Found command', command.name)
-  run(command)
+  const found = find(tree, argv)
+  log.debug('Using options', found.options)
+  if (found.command) {
+    log.debug('Found command', found.name)
+    run(found)
+  } else {
+    printMessage(greeting)
+    log.error('Command not found:', chalk.blue(argv._))
+  }
 } catch (e) {
   switch (e.constructor) {
-    case CommandNotFoundError:
-      log.error('Command not found:', chalk.blue(e.message || argv._))
-      break
     case MissingRequiredArgsError:
       log.error('Missing required arguments:', chalk.blue(e.message))
       break
