@@ -2,6 +2,7 @@
 import minimist from 'minimist'
 import printMessage from 'print-message'
 import chalk from 'chalk'
+import {without} from 'ramda'
 import greeting from './greeting'
 import log from './logger'
 import notify from './update'
@@ -9,33 +10,33 @@ import {modules, commandTree} from './modules'
 import {
   find,
   run,
-  findOptions,
-  optionsByType,
   MissingRequiredArgsError,
 } from './finder'
 
 const tree = commandTree(modules)
 
+const help = () => {
+  return 'Usage: vtex <command> [options]'
+}
+
 // Setup logging
-log.level = minimist(
-  process.argv.slice(2),
-  optionsByType(findOptions(tree))
-).verbose ? 'debug' : 'info'
+const VERBOSE = '--verbose'
+log.level = process.argv.indexOf(VERBOSE) >= 0 ? 'debug' : 'info'
 
 // Show update notification if newer version is available
 notify()
 
 try {
-  const found = find(tree, process.argv.slice(2), minimist)
-  log.debug('Options', found.options)
-  log.debug('argv', found.argv)
+  const argv = without([VERBOSE], process.argv.slice(2))
+  const found = find(tree, argv, minimist)
   if (found.command) {
-    log.debug('Found command', found.name)
     run(found)
-  } else if (found.argv._.length === 0) {
-    printMessage(greeting)
   } else {
-    log.error('Command not found:', chalk.blue(found.argv._))
+    found.argv._.length === 0
+      ? printMessage(greeting)
+      : log.error('Command not found:', chalk.blue(found.argv._))
+
+    console.log(help(tree))
   }
 } catch (e) {
   switch (e.constructor) {
