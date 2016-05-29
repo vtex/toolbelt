@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import minimist from 'minimist'
-import printMessage from 'print-message'
 import chalk from 'chalk'
 import {without} from 'ramda'
 import greeting from './greeting'
@@ -31,10 +30,10 @@ try {
     if (!(found.options.h || found.options.help)) {
       found.argv._.length
         ? log.error('Command not found:', chalk.blue(found.argv._))
-        : printMessage(greeting)
+        : greeting.map(g => log.info(g))
     }
 
-    console.log(help(tree))
+    console.log('\n' + help(tree))
   }
 } catch (e) {
   switch (e.constructor) {
