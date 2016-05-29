@@ -3,7 +3,7 @@ import ExtendableError from 'es6-error'
 
 export class MissingRequiredArgsError extends ExtendableError {}
 
-const toArray = a => Array.isArray(a) ? a : (a == null ? [] : [a])
+export const toArray = a => Array.isArray(a) ? a : (a == null ? [] : [a])
 
 export function parseCommandArgs (command, args) {
   if (!command || command.requiredArgs == null) {

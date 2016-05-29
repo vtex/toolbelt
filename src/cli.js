@@ -2,7 +2,6 @@
 import minimist from 'minimist'
 import chalk from 'chalk'
 import {without} from 'ramda'
-import greeting from './greeting'
 import log from './logger'
 import notify from './update'
 import {modules, commandTree} from './modules'
@@ -30,10 +29,10 @@ try {
     if (!(found.options.h || found.options.help)) {
       found.argv._.length
         ? log.error('Command not found:', chalk.blue(found.argv._))
-        : greeting.map(g => log.info(g))
+        : null
     }
 
-    console.log('\n' + help(tree))
+    console.log(help(tree))
   }
 } catch (e) {
   switch (e.constructor) {
@@ -42,5 +41,6 @@ try {
       break
     default:
       log.error('Something exploded :(')
+      log.error(e)
   }
 }
