@@ -10,6 +10,14 @@ export default {
       log.info('You have no installed apps')
     },
   },
+  link: {
+    requiredArgs: 'path',
+    description: 'Link this path creating a sandbox',
+    handler: (path) => {
+      log.debug('Starting to link path', path)
+      log.info('Link', path)
+    },
+  },
   install: {
     requiredArgs: 'app',
     alias: 'i',
