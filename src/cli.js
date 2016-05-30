@@ -5,12 +5,7 @@ import {without} from 'ramda'
 import log from './logger'
 import notify from './update'
 import {modules, commandTree} from './modules'
-import {
-  help,
-  find,
-  run,
-  MissingRequiredArgsError,
-} from 'findhelp'
+import {find, run, MissingRequiredArgsError} from 'findhelp'
 
 const tree = commandTree(modules)
 
@@ -24,15 +19,9 @@ notify()
 try {
   const found = find(tree, without([VERBOSE], process.argv.slice(2)), minimist)
   if (found.command) {
-    run(found)
+    run.call(tree, found)
   } else {
-    if (!(found.options.h || found.options.help)) {
-      found.argv._.length
-        ? log.error('Command not found:', chalk.blue(found.argv._))
-        : null
-    }
-
-    console.log(help(tree, {name: 'vtex'}))
+    log.error('Command not found:', chalk.blue(process.argv.slice(2)))
   }
 } catch (e) {
   switch (e.constructor) {

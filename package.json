@@ -39,7 +39,7 @@
     "chalk": "^1.1.3",
     "configstore": "^2.0.0",
     "es6-error": "^3.0.0",
-    "findhelp": "^0.1.1",
+    "findhelp": "^0.1.3",
     "minimist": "^1.2.0",
     "pad": "^1.0.0",
     "ramda": "^0.21.0",
