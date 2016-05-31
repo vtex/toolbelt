@@ -43,6 +43,7 @@
     "minimist": "^1.2.0",
     "pad": "^1.0.0",
     "ramda": "^0.21.0",
+    "request-promise": "^3.0.0",
     "update-notifier": "^0.7.0",
     "winston": "^2.2.0"
   },

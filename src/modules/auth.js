@@ -3,10 +3,12 @@ import log from '../logger'
 export default {
   login: {
     requiredArgs: 'store',
+    optionalArgs: 'login',
     description: 'Log into a VTEX store',
-    handler: (store) => {
+    handler: (store, login) => {
       log.debug('Starting login', store)
       log.info('Store', store)
+      log.info('Login', login)
     },
   },
   logout: {
