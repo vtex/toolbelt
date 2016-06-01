@@ -4,7 +4,7 @@ import validator from 'validator'
 import chalk from 'chalk'
 import {startUserAuth} from '../api'
 import log from '../logger'
-import conf from '../conf'
+import {saveAccount, saveLogin, saveToken, clear} from '../conf'
 
 function promptLogin (login) {
   if (validator.isEmail(login.toString())) {
@@ -36,18 +36,6 @@ function promptEmailCode () {
   })
 }
 
-function saveAccount (account) {
-  conf.set('account', account)
-}
-
-function saveLogin (login) {
-  conf.set('login', login)
-}
-
-function saveToken (token) {
-  conf.set('token', token)
-}
-
 export default {
   login: {
     requiredArgs: 'account',
@@ -76,8 +64,9 @@ export default {
   logout: {
     description: 'Logout of the current VTEX account',
     handler: () => {
-      log.debug('Starting logout')
-      log.info('See you soon!')
+      log.debug('Clearing config file')
+      clear()
+      log.info('See you soon! ✋')
     },
   },
 }
