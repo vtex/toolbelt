@@ -56,7 +56,14 @@ export default {
       description: 'Promote this workspace to master',
       handler: (name) => {
         log.debug('Promoting workspace', name)
-        log.info('Promote', name)
+        inquirer.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message: `Are you sure you want to promote workspace ${name} to master?`,
+        })
+        .then(({confirm}) => confirm || Promise.reject('User cancelled'))
+        .then(() => client.promote(getAccount(), name))
+        .then(() => log.info(`Workspace ${name} promoted successfully`))
       },
     },
   },
