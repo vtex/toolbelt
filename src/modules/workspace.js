@@ -1,5 +1,6 @@
 import {WorkspacesClient} from '@vtex/workspaces'
 import {map, prop} from 'ramda'
+import {Promise} from 'bluebird'
 import log from '../logger'
 import {getToken, getAccount} from '../conf'
 import pkg from '../../package.json'
@@ -25,7 +26,13 @@ export default {
       description: 'Create a new workspace with this name',
       handler: (name) => {
         log.debug('Creating workspace', name)
-        log.info('Create', name)
+        client.create(getAccount(), name)
+        .then(() => log.info(`Workspace ${name} created successfully`))
+        .catch(res => {
+          return res.statusCode === 409
+          ? log.info(`Workspace ${name} already exists`)
+          : Promise.reject(res)
+        })
       },
     },
     delete: {
