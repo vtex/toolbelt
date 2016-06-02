@@ -1,3 +1,4 @@
+import inquirer from 'inquirer'
 import {WorkspacesClient} from '@vtex/workspaces'
 import {map, prop} from 'ramda'
 import {Promise} from 'bluebird'
@@ -40,7 +41,14 @@ export default {
       description: 'Delete this workspace',
       handler: (name) => {
         log.debug('Deleting workspace', name)
-        log.info('Delete', name)
+        inquirer.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message: `Are you sure you want to delete workspace ${name}?`,
+        })
+        .then(({confirm}) => confirm || Promise.reject('User cancelled'))
+        .then(() => client.delete(getAccount(), name))
+        .then(() => log.info(`Workspace ${name} deleted successfully`))
       },
     },
     promote: {
