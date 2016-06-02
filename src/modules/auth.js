@@ -1,8 +1,8 @@
 import inquirer from 'inquirer'
-import {Promise} from 'bluebird'
+import {Promise, all} from 'bluebird'
 import validator from 'validator'
 import chalk from 'chalk'
-import {startUserAuth} from '../api'
+import {startUserAuth, createSandbox} from '../api'
 import log from '../logger'
 import {saveAccount, saveLogin, saveToken, clear} from '../conf'
 
@@ -36,25 +36,32 @@ function promptEmailCode () {
   })
 }
 
+function saveCredentials (account, login, token) {
+  saveAccount(account)
+  saveLogin(login)
+  saveToken(token)
+}
+
 export default {
   login: {
     requiredArgs: 'account',
     optionalArgs: 'login',
     description: 'Log into a VTEX account',
     handler: (account, login) => {
-      log.debug('Starting login', account)
-      saveAccount(account)
       promptLogin(login)
       .then(({login}) => {
-        log.debug('Attempt login with email', login)
-        saveLogin(login)
-        return startUserAuth(login, promptEmailCode, promptPassword)
+        log.debug('Start login', {account, login})
+        return all([account, login, startUserAuth(login, promptEmailCode, promptPassword)])
       })
-      .then(token => {
-        log.debug('Logged in with token', token)
-        saveToken(token)
-        log.info('Login successful')
+      .tap(([account, login, token]) => {
+        log.debug('Login successful, saving credentials', {account, login, token})
+        saveCredentials(account, login, token)
         log.info('Creating workspace...')
+      })
+      .spread(createSandbox)
+      .then(res => {
+        log.debug('Created sandbox', res)
+        log.info('Login successful! 👍')
       })
       .catch(reason => {
         log.error(reason)

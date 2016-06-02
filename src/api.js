@@ -1,34 +1,39 @@
-// TODO: move everything here into different packages.
 import request from 'request-promise'
 import {Promise} from 'bluebird'
 import {prop} from 'ramda'
+import {WorkspacesClient} from '@vtex/workspaces'
+import pkg from '../package.json'
 import log from './logger'
 
 export function getTemporaryToken () {
-  // TODO: check if `callbackUrl` can be removed
-  return request({json: true, uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start?callbackUrl='})
+  return request({json: true, uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start'})
   .then(prop('authenticationToken'))
 }
 
 export function sendCodeToEmail (token, email) {
-  // TODO use qs
   log.debug('Sending code to email', {token, email})
-  const query = `authenticationToken=${token}&email=${email}`
-  return request(`https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/send?${query}`)
+  return request({
+    uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/send',
+    qs: {authenticationToken: token, email},
+  })
 }
 
 export function getEmailCodeAuthenticationToken (token, email, code) {
-  // TODO use qs
   log.debug('Getting auth token with email code', {token, email, code})
-  const query = `login=${email}&accesskey=${code}&authenticationToken=${token}`
-  return request({json: true, uri: `https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/validate?${query}`})
+  return request({
+    json: true,
+    uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/validate',
+    qs: {login: email, accesskey: code, authenticationToken: token},
+  })
 }
 
 export function getPasswordAuthenticationToken (token, email, password) {
-  // TODO use qs
   log.debug('Getting auth token with password', {token, email, password})
-  const query = `authenticationToken=${encodeURIComponent(token)}&login=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
-  return request({json: true, uri: `https://vtexid.vtex.com.br/api/vtexid/pub/authentication/classic/validate?${query}`})
+  return request({
+    json: true,
+    uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/classic/validate',
+    qs: {authenticationToken: encodeURIComponent(token), login: encodeURIComponent(email), password: encodeURIComponent(password)},
+  })
 }
 
 export function isVtexUser (email) {
@@ -36,8 +41,8 @@ export function isVtexUser (email) {
 }
 
 export function handleAuthResult (result) {
-  if (!result.authStatus === 'Success') {
-    return Promise.reject(result.authSuccess)
+  if (result.authStatus !== 'Success') {
+    return Promise.reject(result.authStatus)
   }
   return result.authCookie.Value
 }
@@ -68,17 +73,16 @@ export function startUserAuth (email, promptCode, promptPass) {
   return isVtexUser(email) ? vtexUserAuth(email, promptCode) : userAuth(email, promptPass)
 }
 
-export function createWorkspace (token, email, account) {
-  return request({
-    uri: `http://workspaces.vtex.com/${account}/workspaces`,
-    method: 'POST',
-    headers: {
-      Authorization: `token ${token}`,
-      Accept: 'application/vnd.vtex.gallery.v0+json',
-      'Content-Type': 'application/json',
-    },
-    json: {
-      name: `sb_${email}`,
-    },
+export function createSandbox (account, login, token) {
+  return new WorkspacesClient({
+    authToken: token,
+    userAgent: `toolbelt-v-${pkg.version}`,
+  }).create(account, `sb_${login}`)
+  .then(res => ({status: res.statusCode}))
+  .catch(res => {
+    // Treat 409 (already created) as success
+    return res.statusCode === 409
+    ? Promise.resolve({status: res.statusCode, body: res.response.body})
+    : Promise.reject(res)
   })
 }
