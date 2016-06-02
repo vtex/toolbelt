@@ -9,7 +9,7 @@
     "lint": "eslint src",
     "test": "npm run lint && nyc ava src/*.test.js src/**/*.test.js",
     "test-watch": "ava src/*.test.js src/**/*.test.js --watch",
-    "prepublish": "babel src --out-dir=lib --ignore=*.test.js",
+    "prepublish": "npm run test && babel src --out-dir=lib --ignore=*.test.js",
     "exe": "chmod +x lib/cli.js",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
@@ -36,7 +36,7 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "@vtex/workspaces": "^0.1.1",
+    "@vtex/workspaces": "^0.1.3",
     "bluebird": "^3.4.0",
     "chalk": "^1.1.3",
     "configstore": "^2.0.0",
