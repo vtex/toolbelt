@@ -3,8 +3,6 @@ import pkg from '../package.json'
 
 const conf = new Configstore(pkg.name)
 
-export default conf
-
 export function saveAccount (account) {
   conf.set('account', account)
 }
@@ -15,6 +13,18 @@ export function saveLogin (login) {
 
 export function saveToken (token) {
   conf.set('token', token)
+}
+
+export function getAccount () {
+  return conf.get('account')
+}
+
+export function getLogin () {
+  return conf.get('login')
+}
+
+export function getToken () {
+  return conf.get('token')
 }
 
 export function clear () {

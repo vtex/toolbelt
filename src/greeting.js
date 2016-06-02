@@ -1,8 +1,8 @@
 import chalk from 'chalk'
-import conf from './conf'
+import {getAccount, getLogin} from './conf'
 
-const account = conf.get('account')
-const login = conf.get('login')
+const account = getAccount()
+const login = getLogin()
 
 export const greeting = account && login
   ? [`Logged into ${chalk.blue(account)} as ${chalk.green(login)}`]
