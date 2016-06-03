@@ -2,8 +2,8 @@ import request from 'request-promise'
 import {Promise} from 'bluebird'
 import {prop} from 'ramda'
 import {WorkspacesClient} from '@vtex/workspaces'
-import pkg from '../package.json'
 import log from './logger'
+import userAgent from './user-agent'
 
 export function getTemporaryToken () {
   return request({json: true, uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start'})
@@ -76,7 +76,7 @@ export function startUserAuth (email, promptCode, promptPass) {
 export function createSandbox (account, login, token) {
   return new WorkspacesClient({
     authToken: token,
-    userAgent: `toolbelt-v-${pkg.version}`,
+    userAgent: userAgent,
   }).create(account, `sb_${login}`)
   .then(res => ({status: res.statusCode}))
   .catch(res => {

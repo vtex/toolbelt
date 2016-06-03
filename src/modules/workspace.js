@@ -4,11 +4,11 @@ import {map, prop} from 'ramda'
 import {Promise} from 'bluebird'
 import log from '../logger'
 import {getToken, getAccount} from '../conf'
-import pkg from '../../package.json'
+import userAgent from '../user-agent'
 
 const client = new WorkspacesClient({
   authToken: getToken(),
-  userAgent: `toolbelt-v-${pkg.version}`,
+  userAgent: userAgent,
 })
 
 export default {
