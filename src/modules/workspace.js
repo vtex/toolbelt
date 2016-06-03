@@ -3,6 +3,7 @@ import {WorkspacesClient} from '@vtex/workspaces'
 import {Promise} from 'bluebird'
 import Table from 'cli-table'
 import moment from 'moment'
+import {filter, keys} from 'ramda'
 import log from '../logger'
 import {getToken, getAccount} from '../conf'
 import userAgent from '../user-agent'
@@ -27,7 +28,7 @@ export default {
               r.name,
               r.state.changes,
               moment(r.state.lastModified).calendar(),
-              Object.keys(r.bucketStates).join(','),
+              keys(filter(b => b.changes > 0, r.bucketStates)).join(','),
             ])
           })
           console.log(table.toString())
