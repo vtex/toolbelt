@@ -11,11 +11,13 @@ function promptLogin (login) {
     return Promise.resolve({login})
   }
   const message = 'Please enter a valid email.'
-  return inquirer.prompt({
-    name: 'login',
-    message: 'Email:',
-    validate: (s) => validator.isEmail(s) || message,
-  })
+  return Promise.try(() =>
+    inquirer.prompt({
+      name: 'login',
+      message: 'Email:',
+      validate: (s) => validator.isEmail(s) || message,
+    })
+  )
 }
 
 function promptPassword () {
