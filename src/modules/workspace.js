@@ -22,7 +22,7 @@ export default {
         })
       },
     },
-    new: {
+    create: {
       requiredArgs: 'name',
       description: 'Create a new workspace with this name',
       handler: (name) => {
