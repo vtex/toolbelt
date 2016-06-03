@@ -6,7 +6,7 @@ import {startUserAuth, createSandbox} from '../api'
 import log from '../logger'
 import {saveAccount, saveLogin, saveToken, clear} from '../conf'
 
-function promptLogin (login) {
+function promptLogin (login = '') {
   if (validator.isEmail(login.toString())) {
     return Promise.resolve({login})
   }
@@ -50,7 +50,7 @@ export default {
     optionalArgs: 'login',
     description: 'Log into a VTEX account',
     handler: (account, login) => {
-      promptLogin(login)
+      return promptLogin(login)
       .then(({login}) => {
         log.debug('Start login', {account, login})
         return all([account, login, startUserAuth(login, promptEmailCode, promptPassword)])
