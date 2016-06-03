@@ -1,7 +1,8 @@
 import inquirer from 'inquirer'
 import {WorkspacesClient} from '@vtex/workspaces'
-import {map, prop} from 'ramda'
 import {Promise} from 'bluebird'
+import Table from 'cli-table'
+import moment from 'moment'
 import log from '../logger'
 import {getToken, getAccount} from '../conf'
 import userAgent from '../user-agent'
@@ -18,7 +19,18 @@ export default {
       handler: () => {
         log.debug('Listing workspaces')
         client.list(getAccount()).then(res => {
-          console.log(map(prop('name'), res.body).join('\n'))
+          const table = new Table({
+            head: ['Name', 'Changes', 'Last Modified', 'Buckets'],
+          })
+          res.body.forEach(r => {
+            table.push([
+              r.name,
+              r.state.changes,
+              moment(r.state.lastModified).calendar(),
+              Object.keys(r.bucketStates).join(','),
+            ])
+          })
+          console.log(table.toString())
         })
       },
     },
