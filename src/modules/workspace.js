@@ -21,7 +21,7 @@ export default {
         log.debug('Listing workspaces')
         client.list(getAccount()).then(res => {
           const table = new Table({
-            head: ['Name', 'Changes', 'Last Modified', 'Buckets'],
+            head: ['Name', 'Changes', 'Last Modified', 'Services'],
           })
           res.body.forEach(r => {
             table.push([
