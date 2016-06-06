@@ -58,7 +58,7 @@ export default {
       .tap(([account, login, token]) => {
         log.debug('Login successful, saving credentials', {account, login, token})
         saveCredentials(account, login, token)
-        log.info('Creating workspace...')
+        log.debug('Creating sandbox workspace...')
       })
       .spread(createSandbox)
       .then(res => {
