@@ -10,6 +10,7 @@
     "test": "npm run lint && nyc ava src/*.test.js src/**/*.test.js",
     "test-watch": "ava src/*.test.js src/**/*.test.js --watch",
     "prepublish": "npm run test && babel src --out-dir=lib --ignore=*.test.js",
+    "uninstall": "node scripts/uninstall.js",
     "exe": "chmod +x lib/cli.js",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
