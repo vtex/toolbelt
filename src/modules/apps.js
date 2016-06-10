@@ -75,12 +75,89 @@ export default {
       })
     },
   },
-  link: {
-    requiredArgs: 'path',
-    description: 'Link this path creating a sandbox',
-    handler: (path) => {
-      log.debug('Starting to link path', path)
-      log.info('Link', path)
+  watch: {
+    description: 'Send the files to the sandbox and watch for changes',
+    handler: () => {
+      const root = process.cwd()
+      let manifest
+      let keepAlive
+      let sandboxFiles
+      let ignore
+      let localFiles
+      let changes
+      let sendChanges
+      getAppManifest(root)
+      .then(m => { manifest = m })
+      .then(() => log.info('Watching app', `${manifest.vendor}.${manifest.name}@${manifest.version}`))
+      .then(() => {
+        const fn = () => {
+          workspaceSandboxesClient().updateAppTtl(
+            getAccount(),
+            getDevWorkspace(getLogin()),
+            manifest.vendor,
+            getLogin(),
+            manifest.name,
+            manifest.version,
+            35
+          )
+          .catch(() => {})
+        }
+        fn()
+        keepAlive = setInterval(fn, 30000)
+      })
+      .then(() => {
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        })
+        rl.on('SIGINT', () => {
+          workspaceSandboxesClient().deactivateApp(
+            getAccount(),
+            getDevWorkspace(getLogin()),
+            manifest.vendor,
+            getLogin(),
+            manifest.name,
+            manifest.version
+          )
+          .catch(() => {
+            log.info('Bye, bye o/')
+            clearTimeout(keepAlive)
+            process.exit()
+          })
+        })
+      })
+      .then(() => {
+        sendChanges = changes => {
+          sandboxesClient().updateFiles(
+            manifest.vendor,
+            getLogin(),
+            manifest.name,
+            manifest.version,
+            changes
+          )
+          .then(() => logChanges(changes))
+        }
+      })
+      .then(() =>
+        sandboxesClient().listRootFolders(
+          manifest.vendor,
+          getLogin(),
+          manifest.name,
+          manifest.version,
+          { list: true, '_limit': 1000 }
+        )
+      )
+      .then(f => { sandboxFiles = f.data })
+      .then(() => getVtexIgnore(root))
+      .then(i => { ignore = i })
+      .then(() => listFiles(root, ignore))
+      .then(f => { localFiles = f })
+      .then(() => generateFilesHash(root, localFiles))
+      .then(f => createBatch(f, sandboxFiles))
+      .then(b => createChanges(root, b))
+      .then(c => { changes = c })
+      .then(() => sendChanges(changes))
+      .then(() => watch(root, ignore, sendChanges))
     },
   },
   install: {
