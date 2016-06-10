@@ -52,7 +52,27 @@ export default {
     description: 'List your installed VTEX apps',
     handler: () => {
       log.debug('Starting to list apps')
-      log.info('You have no installed apps')
+      workspaceAppsClient().listDependencies(
+        getAccount(),
+        getDevWorkspace(getLogin()),
+        'storefront'
+      )
+      .then(res => {
+        if (res.data.length === 0) {
+          return log.info('You have no installed apps')
+        }
+        const table = new Table({
+          head: ['Vendor', 'Name', 'Version'],
+        })
+        res.data.forEach(r => {
+          table.push([
+            r.vendor,
+            r.name,
+            r.version,
+          ])
+        })
+        console.log(table.toString())
+      })
     },
   },
   link: {
