@@ -163,10 +163,37 @@ export default {
   install: {
     requiredArgs: 'app',
     alias: 'i',
+    options: [
+      {
+        short: 's',
+        long: 'simulation',
+        description: 'simulate an install',
+        type: 'boolean',
+      },
+    ],
     description: 'Install the specified app',
-    handler: (app) => {
+    handler: (app, options) => {
       log.debug('Starting to install app', app)
-      log.info('Install app', app)
+      const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
+      if (!appRegex.test(app)) {
+        return log.error('Invalid app format, please use <vendor>.<name>@<version>')
+      }
+      const simulation = options.s || options.simulation
+      const [name, version] = app.split('@')
+      workspaceAppsClient().installApp(
+        getAccount(),
+        getDevWorkspace(getLogin()),
+        name,
+        version,
+        simulation
+      )
+      .then(() => log.info(`Installed app ${app} succesfully`))
+      .catch(err => {
+        if (err.statusCode === 409) {
+          return log.error(`App ${app} already installed`)
+        }
+        throw new Error(err)
+      })
     },
   },
   uninstall: {
