@@ -3,8 +3,8 @@ import Table from 'cli-table'
 import inquirer from 'inquirer'
 import readline from 'readline'
 import {Promise} from 'bluebird'
-import {logChanges} from '../sandbox-utils'
-import {getDevWorkspace} from '../workspace-utils'
+import {logChanges} from '../sandbox'
+import {getDevWorkspace} from '../workspace'
 import {getToken, getAccount, getLogin} from '../conf'
 import userAgent from './user-agent'
 import {
@@ -17,7 +17,7 @@ import {
   namePattern,
   wildVersionPattern,
   getAppManifest,
-} from '../manifest-utils'
+} from '../manifest'
 import {
   generateFilesHash,
   createBatch,
@@ -28,7 +28,7 @@ import {
   listFiles,
   compressFiles,
   deleteTempFile,
-} from '../file-utils'
+} from '../file'
 
 const workspaceAppsClient = () => new WorkspaceAppsClient({
   authToken: getToken(),
