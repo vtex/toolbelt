@@ -198,10 +198,45 @@ export default {
   },
   uninstall: {
     requiredArgs: 'app',
+    options: [
+      {
+        short: 's',
+        long: 'simulation',
+        description: 'simulate an uninstall',
+        type: 'boolean',
+      },
+    ],
     description: 'Uninstall the specified app',
-    handler: (app) => {
+    handler: (app, options) => {
       log.debug('Starting to uninstall app', app)
-      log.info('Uninstall app', app)
+      const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}$`)
+      if (!appRegex.test(app)) {
+        return log.error('Invalid app format, please use <vendor>.<name>')
+      }
+      const simulation = options.s || options.simulation
+      Promise.try(() =>
+        inquirer.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message: `Are you sure you want to uninstall the app ${app}?`,
+        })
+      )
+      .then(({confirm}) => confirm || Promise.reject('User cancelled'))
+      .then(() =>
+        workspaceAppsClient().uninstallApp(
+          getAccount(),
+          getDevWorkspace(getLogin()),
+          app,
+          simulation
+        )
+      )
+      .then(() => log.info(`Uninstalled app ${app} succesfully`))
+      .catch(err => {
+        if (err.statusCode === 409) {
+          return log.error(`App ${app} not installed`)
+        }
+        throw new Error(err)
+      })
     },
   },
   publish: {
