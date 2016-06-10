@@ -1,4 +1,49 @@
 import log from '../logger'
+import Table from 'cli-table'
+import inquirer from 'inquirer'
+import readline from 'readline'
+import {Promise} from 'bluebird'
+import pkg from '../../package.json'
+import {logChanges} from '../sandbox-utils'
+import {getDevWorkspace} from '../workspace-utils'
+import {getToken, getAccount, getLogin} from '../conf'
+import {
+  WorkspaceAppsClient,
+  WorkspaceSandboxesClient,
+  SandboxesClient,
+} from '@vtex/apps'
+import {
+  vendorPattern,
+  namePattern,
+  wildVersionPattern,
+  getAppManifest,
+} from '../manifest-utils'
+import {
+  generateFilesHash,
+  createBatch,
+  createChanges,
+  watch,
+  createTempPath,
+  getVtexIgnore,
+  listFiles,
+  compressFiles,
+  deleteTempFile,
+} from '../file-utils'
+
+const workspaceAppsClient = () => new WorkspaceAppsClient({
+  authToken: getToken(),
+  userAgent: `toolbelt-v-${pkg.version}`,
+})
+
+const sandboxesClient = () => new SandboxesClient({
+  authToken: getToken(),
+  userAgent: `toolbelt-v-${pkg.version}`,
+})
+
+const workspaceSandboxesClient = () => new WorkspaceSandboxesClient({
+  authToken: getToken(),
+  userAgent: `toolbelt-v-${pkg.version}`,
+})
 
 export default {
   list: {
