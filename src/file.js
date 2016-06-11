@@ -6,6 +6,7 @@ import chokidar from 'chokidar'
 import archiver from 'archiver'
 import {filter, map, concat, differenceWith} from 'ramda'
 import {Promise, promisify} from 'bluebird'
+import log from './logger'
 
 const readFile = promisify(fs.readFile)
 const mkdir = promisify(fs.mkdir)
@@ -148,9 +149,11 @@ export function watch (root, ignore, sendChanges) {
 }
 
 export function sendSaveChanges (root, file, sendChanges) {
+  log.debug('Sending save changes', file)
   return sendChanges(createChanges(root, { [file]: 'save' }))
 }
 
 export function sendRemoveChanges (root, file, sendChanges) {
+  log.debug('Sending remove changes', file)
   return sendChanges(createChanges(root, { [file]: 'remove' }))
 }

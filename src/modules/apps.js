@@ -2,7 +2,7 @@ import log from '../logger'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
 import readline from 'readline'
-import {Promise} from 'bluebird'
+import {all} from 'bluebird'
 import {logChanges} from '../sandbox'
 import {getDevWorkspace} from '../workspace'
 import {getToken, getAccount, getLogin} from '../conf'
@@ -45,6 +45,63 @@ const workspaceSandboxesClient = () => new WorkspaceSandboxesClient({
   userAgent: userAgent,
 })
 
+const sendChanges = ({vendor, name, version}) => changes => {
+  return sandboxesClient().updateFiles(
+    vendor,
+    getLogin(),
+    name,
+    version,
+    changes
+  )
+  .then(() => logChanges(changes))
+}
+
+const updateAppTtl = ({vendor, name, version}) => {
+  return workspaceSandboxesClient().updateAppTtl(
+    getAccount(),
+    getDevWorkspace(getLogin()),
+    vendor,
+    getLogin(),
+    name,
+    version,
+    35
+  )
+  .catch(() => {})
+}
+
+const keepAppAlive = ({vendor, name, version}) => {
+  return updateAppTtl({vendor, name, version})
+  .then(() => {
+    const keepAliveInterval = setInterval(() => updateAppTtl({vendor, name, version}), 30000)
+    readline.createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    }).on('SIGINT', () => {
+      workspaceSandboxesClient().deactivateApp(
+        getAccount(),
+        getDevWorkspace(getLogin()),
+        vendor,
+        getLogin(),
+        name,
+        version
+      ).finally(() => {
+        log.info('Bye, bye o/')
+        clearTimeout(keepAliveInterval)
+        process.exit()
+      })
+    })
+  })
+}
+
+const listRoot = ({vendor, name, version}) =>
+  sandboxesClient().listRootFolders(
+    vendor,
+    getLogin(),
+    name,
+    version,
+    { list: true, '_limit': 1000 }
+  )
+
 export default {
   list: {
     alias: 'ls',
@@ -79,85 +136,25 @@ export default {
     description: 'Send the files to the sandbox and watch for changes',
     handler: () => {
       const root = process.cwd()
-      let manifest
-      let keepAlive
-      let sandboxFiles
-      let ignore
-      let localFiles
-      let changes
-      let sendChanges
-      getAppManifest(root)
-      .then(m => { manifest = m })
-      .then(() => log.info('Watching app', `${manifest.vendor}.${manifest.name}@${manifest.version}`))
-      .then(() => {
-        const fn = () => {
-          workspaceSandboxesClient().updateAppTtl(
-            getAccount(),
-            getDevWorkspace(getLogin()),
-            manifest.vendor,
-            getLogin(),
-            manifest.name,
-            manifest.version,
-            35
-          )
-          .catch(() => {})
-        }
-        fn()
-        keepAlive = setInterval(fn, 30000)
+      all([
+        getAppManifest(root),
+        getVtexIgnore(root),
+      ])
+      .spread(({vendor, name, version}, ignore) => {
+        log.info('Watching app', `${vendor}.${name}@${version}`)
+        return all([
+          listFiles(root, ignore),
+          keepAppAlive({vendor, name, version}),
+        ])
+        .spread(localFiles => all([
+          generateFilesHash(root, localFiles),
+          listRoot({vendor, name, version}),
+        ]))
+        .spread(createBatch)
+        .then(batch => createChanges(root, batch))
+        .then(changes => sendChanges({vendor, name, version})(changes))
+        .then(() => watch(root, ignore, sendChanges({vendor, name, version})))
       })
-      .then(() => {
-        const rl = readline.createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        })
-        rl.on('SIGINT', () => {
-          workspaceSandboxesClient().deactivateApp(
-            getAccount(),
-            getDevWorkspace(getLogin()),
-            manifest.vendor,
-            getLogin(),
-            manifest.name,
-            manifest.version
-          )
-          .catch(() => {
-            log.info('Bye, bye o/')
-            clearTimeout(keepAlive)
-            process.exit()
-          })
-        })
-      })
-      .then(() => {
-        sendChanges = changes => {
-          sandboxesClient().updateFiles(
-            manifest.vendor,
-            getLogin(),
-            manifest.name,
-            manifest.version,
-            changes
-          )
-          .then(() => logChanges(changes))
-        }
-      })
-      .then(() =>
-        sandboxesClient().listRootFolders(
-          manifest.vendor,
-          getLogin(),
-          manifest.name,
-          manifest.version,
-          { list: true, '_limit': 1000 }
-        )
-      )
-      .then(f => { sandboxFiles = f.data })
-      .then(() => getVtexIgnore(root))
-      .then(i => { ignore = i })
-      .then(() => listFiles(root, ignore))
-      .then(f => { localFiles = f })
-      .then(() => generateFilesHash(root, localFiles))
-      .then(f => createBatch(f, sandboxFiles))
-      .then(b => createChanges(root, b))
-      .then(c => { changes = c })
-      .then(() => sendChanges(changes))
-      .then(() => watch(root, ignore, sendChanges))
     },
   },
   install: {
