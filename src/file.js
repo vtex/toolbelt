@@ -90,7 +90,7 @@ export function generateFilesHash (root, files) {
   return Promise.all(map(f => generateFileHash(root, f), files))
 }
 
-export function createBatch (localFiles, sandboxFiles) {
+export function createBatch (localFiles, {data: sandboxFiles}) {
   let batch = {}
   differenceWith((sb, l) => sb.path === l.path, sandboxFiles, localFiles)
   .forEach(file => { batch[file.path] = 'remove' })
