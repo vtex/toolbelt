@@ -149,11 +149,9 @@ export function watch (root, ignore, sendChanges) {
 }
 
 export function sendSaveChanges (root, file, sendChanges) {
-  log.debug('Sending save changes', file)
   return sendChanges(createChanges(root, { [file]: 'save' }))
 }
 
 export function sendRemoveChanges (root, file, sendChanges) {
-  log.debug('Sending remove changes', file)
   return sendChanges(createChanges(root, { [file]: 'remove' }))
 }
