@@ -4,7 +4,7 @@ import {prop} from 'ramda'
 import {WorkspacesClient} from '@vtex/workspaces'
 import log from './logger'
 import userAgent from './user-agent'
-import {getDevWorkspace} from '../workspace'
+import {getDevWorkspace} from './workspace'
 
 export function getTemporaryToken () {
   return request({json: true, uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start'})

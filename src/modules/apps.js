@@ -2,11 +2,11 @@ import log from '../logger'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
 import readline from 'readline'
-import {all} from 'bluebird'
+import {Promise, all} from 'bluebird'
 import {logChanges} from '../sandbox'
 import {getDevWorkspace} from '../workspace'
 import {getToken, getAccount, getLogin} from '../conf'
-import userAgent from './user-agent'
+import userAgent from '../user-agent'
 import {
   WorkspaceAppsClient,
   WorkspaceSandboxesClient,
