@@ -4,6 +4,7 @@ import {prop} from 'ramda'
 import {WorkspacesClient} from '@vtex/workspaces'
 import log from './logger'
 import userAgent from './user-agent'
+import {getDevWorkspace} from './workspace'
 
 export function getTemporaryToken () {
   return request({json: true, uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start'})
@@ -77,7 +78,7 @@ export function createSandbox (account, login, token) {
   return new WorkspacesClient({
     authToken: token,
     userAgent: userAgent,
-  }).create(account, `sb_${login}`)
+  }).create(account, getDevWorkspace(login))
   .then(res => ({status: res.statusCode}))
   .catch(res => {
     // Treat 409 (already created) as success
