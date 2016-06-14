@@ -55,7 +55,7 @@ function saveCredentials ({account, login, token}) {
 export default {
   login: {
     description: 'Log into a VTEX account',
-    handler: options => {
+    handler: () => {
       let credentials
       return promptAccount()
       .then(({account}) => {
