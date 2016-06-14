@@ -6,7 +6,6 @@ import chokidar from 'chokidar'
 import archiver from 'archiver'
 import {filter, map, concat, differenceWith} from 'ramda'
 import {Promise, promisify} from 'bluebird'
-import log from './logger'
 
 const readFile = promisify(fs.readFile)
 const mkdir = promisify(fs.mkdir)
