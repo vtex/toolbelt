@@ -6,10 +6,18 @@ import {startUserAuth, createSandbox} from '../api'
 import log from '../logger'
 import {saveAccount, saveLogin, saveToken, clear} from '../conf'
 
-function promptLogin (login = '') {
-  if (validator.isEmail(login.toString())) {
-    return Promise.resolve({login})
-  }
+function promptAccount () {
+  const message = 'Please enter a valid account.'
+  return Promise.try(() =>
+    inquirer.prompt({
+      name: 'account',
+      message: 'Account:',
+      validate: (s) => /^[\w\-]+$/.test(s) || message,
+    })
+  )
+}
+
+function promptLogin () {
   const message = 'Please enter a valid email.'
   return Promise.try(() =>
     inquirer.prompt({
@@ -38,7 +46,7 @@ function promptEmailCode () {
   })
 }
 
-function saveCredentials (account, login, token) {
+function saveCredentials ({account, login, token}) {
   saveAccount(account)
   saveLogin(login)
   saveToken(token)
@@ -46,27 +54,31 @@ function saveCredentials (account, login, token) {
 
 export default {
   login: {
-    requiredArgs: 'account',
-    optionalArgs: 'login',
     description: 'Log into a VTEX account',
-    handler: (account, login) => {
-      return promptLogin(login)
-      .then(({login}) => {
-        log.debug('Start login', {account, login})
-        return all([account, login, startUserAuth(login, promptEmailCode, promptPassword)])
-      })
-      .tap(([account, login, token]) => {
-        log.debug('Login successful, saving credentials', {account, login, token})
-        saveCredentials(account, login, token)
-        log.debug('Creating sandbox workspace...')
-      })
-      .spread(createSandbox)
-      .then(res => {
-        log.debug('Created sandbox', res)
-        log.info('Login successful! 👍')
-      })
-      .catch(reason => {
-        log.error(reason)
+    handler: options => {
+      let credentials
+      return promptAccount()
+      .then(({account}) => {
+        return promptLogin()
+        .then(({login}) => {
+          log.debug('Start login', {account, login})
+          return all([account, login, startUserAuth(login, promptEmailCode, promptPassword)])
+        })
+        .tap(([account, login, token]) => {
+          credentials = {account, login, token}
+          log.debug('Creating sandbox workspace...')
+        })
+        .spread(createSandbox)
+        .then(res => {
+          log.debug('Created sandbox', res)
+          log.debug('Login successful, saving credentials', credentials)
+          saveCredentials(credentials)
+          log.info('Login successful! 👍')
+        })
+        .catch(reason => {
+          log.error(reason)
+          process.exit(1)
+        })
       })
     },
   },
