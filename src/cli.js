@@ -7,10 +7,9 @@ import {find, run, MissingRequiredArgsError} from 'findhelp'
 import {StatusCodeError} from 'request-promise/errors'
 import log from './logger'
 import notify from './update'
-import {modules, commandTree} from './modules'
-import {getAccount, getLogin, getToken} from './conf'
+import {tree} from './modules'
+import {getLogin, getToken} from './conf'
 
-const tree = commandTree(modules)
 run = run.bind(tree)
 
 // Setup logging
