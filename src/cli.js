@@ -47,12 +47,11 @@ const onError = e => {
       if (e.statusCode === 401) {
         log.error('Oops! There was an authentication error. Please login again.')
         // Try to login and re-issue the command.
-        run({command: tree.login})
+        return run({command: tree.login})
         .then(main) // TODO: catch with different handler for second error
-      } else {
-        log.error('Oops! There was an unexpected API error.')
-        log.error(e)
       }
+      log.error('Oops! There was an unexpected API error.')
+      log.error(e)
       break
     case 'CommandNotFound':
       log.error('Command not found:', chalk.blue(process.argv.slice(2)))
