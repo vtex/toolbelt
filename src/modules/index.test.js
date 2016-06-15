@@ -1,5 +1,5 @@
 import test from 'ava'
-import {tree} from './index'
+import tree from './index'
 
 test('makes command tree from imported modules', t => {
   t.truthy(tree.handler)

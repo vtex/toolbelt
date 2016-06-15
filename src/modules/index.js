@@ -7,7 +7,7 @@ import workspace from './workspace'
 // import masterdata from './masterdata'
 // import render from './render'
 
-export const tree = {
+export default {
   ...auth,
   ...apps,
   ...workspace,

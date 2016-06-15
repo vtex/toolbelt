@@ -7,7 +7,7 @@ import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 import {StatusCodeError} from 'request-promise/errors'
 import log from './logger'
 import notify from './update'
-import {tree} from './modules'
+import tree from './modules'
 import {getLogin, getToken} from './conf'
 
 const run = unboundRun.bind(tree)
