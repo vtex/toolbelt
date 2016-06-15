@@ -3,14 +3,14 @@ import minimist from 'minimist'
 import chalk from 'chalk'
 import {without} from 'ramda'
 import {Promise} from 'bluebird'
-import {find, run, MissingRequiredArgsError} from 'findhelp'
+import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 import {StatusCodeError} from 'request-promise/errors'
 import log from './logger'
 import notify from './update'
 import {tree} from './modules'
 import {getLogin, getToken} from './conf'
 
-run = run.bind(tree)
+const run = unboundRun.bind(tree)
 
 // Setup logging
 const VERBOSE = '--verbose'
@@ -21,7 +21,7 @@ notify()
 
 const checkCommandExists = found => {
   if (!found.command) {
-    return Promise.reject(log.error('Command not found:', chalk.blue(process.argv.slice(2))))
+    return Promise.reject({name: 'CommandNotFound'})
   }
 }
 
@@ -51,6 +51,9 @@ const onError = e => {
         return run({command: tree.login, args: [login, {}]})
         .then(main) // TODO: catch with different handler for second error
       }
+      break
+    case 'CommandNotFound':
+      log.error('Command not found:', chalk.blue(process.argv.slice(2)))
       break
     default:
       log.error('Something exploded :(')

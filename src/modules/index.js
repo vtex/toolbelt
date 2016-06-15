@@ -1,16 +1,16 @@
 import {help} from 'findhelp'
 import pkg from '../../package.json'
 import {greeting} from '../greeting'
-import * as apps from './apps'
-import * as auth from './auth'
-import * as workspace from './workspace'
-// import * as masterdata from './masterdata'
-// import * as render from './render'
+import apps from './apps'
+import auth from './auth'
+import workspace from './workspace'
+// import masterdata from './masterdata'
+// import render from './render'
 
 export const tree = {
-  ...auth.default,
-  ...apps.default,
-  ...workspace.default,
+  ...auth,
+  ...apps,
+  ...workspace,
   'options': [
     {
       'short': 'h',
