@@ -8,7 +8,7 @@ import {StatusCodeError} from 'request-promise/errors'
 import log from './logger'
 import notify from './update'
 import tree from './modules'
-import {getLogin, getToken} from './conf'
+import {getToken} from './conf'
 
 const run = unboundRun.bind(tree)
 
@@ -27,7 +27,7 @@ const checkCommandExists = found => {
 
 const checkLogin = found => {
   if (found.command !== tree && !getToken()) {
-    return run({command: tree.login, args: [{}]})
+    return run({command: tree.login})
   }
 }
 
@@ -45,11 +45,13 @@ const onError = e => {
       break
     case StatusCodeError.name:
       if (e.statusCode === 401) {
-        const login = getLogin()
         log.error('Oops! There was an authentication error. Please login again.')
         // Try to login and re-issue the command.
-        return run({command: tree.login, args: [login, {}]})
+        run({command: tree.login})
         .then(main) // TODO: catch with different handler for second error
+      } else {
+        log.error('Oops! There was an unexpected API error.')
+        log.error(e)
       }
       break
     case 'CommandNotFound':
