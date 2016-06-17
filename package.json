@@ -49,7 +49,7 @@
     "shelljs": "^0.7.0",
     "supports-color": "^3.1.1",
     "tiny-lr": "^0.2.0",
-    "update-notifier": "^0.7.0",
+    "update-notifier": "^1.0.1",
     "vtexsay": "^1.0.3",
     "webpack": "^1.12.10",
     "webpack-dev-middleware": "^1.2.0",
