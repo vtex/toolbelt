@@ -10,7 +10,7 @@ export const namePattern = '[\\w_-]+'
 
 export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 
-export const wildVersionPattern = '\\d+\\.(\\d+\\.\\d+)|(\\d+\\.x)|x(-.*)?'
+export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
 
 export function getAppManifest (root) {
   return readFile(path.resolve(root, 'manifest.json'), 'utf-8')
