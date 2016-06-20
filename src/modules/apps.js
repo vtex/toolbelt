@@ -54,6 +54,7 @@ const sendChanges = ({vendor, name, version}) => changes => {
     changes
   )
   .then(() => logChanges(changes))
+  .then(log => log.length > 0 ? console.log(log) : null)
 }
 
 const updateAppTtl = ({vendor, name, version}) => {

@@ -1,10 +1,11 @@
 import chalk from 'chalk'
 
 export function logChanges (changes) {
-  changes.forEach(change => {
+  return changes.reduce((acc, change) => {
+    const newline = acc.length === 0 ? '' : '\n'
     if (change.action === 'remove') {
-      return console.log(chalk.red('D'), change.path)
+      return acc + `${newline}${chalk.red('D')} ${change.path}`
     }
-    console.log(chalk.yellow('U'), change.path)
-  })
+    return acc + `${newline}${chalk.yellow('U')} ${change.path}`
+  }, '')
 }
