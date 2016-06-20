@@ -12,10 +12,8 @@ import {
 test('parses a VTEX ignore file', t => {
   const ignore =
     'src/' +
-    '\n.babelrc' +
     '\n.eslintrc' +
     '\n.gitignore' +
-    '\npackage.json' +
     '\nREADME.md' +
     '\nwebpack.config.js' +
     '\n# foo.txt'
@@ -27,10 +25,8 @@ test('parses a VTEX ignore file', t => {
     'package.json',
     'node_modules/**/*',
     'src/**',
-    '.babelrc',
     '.eslintrc',
     '.gitignore',
-    'package.json',
     'README.md',
     'webpack.config.js',
   ]
@@ -48,7 +44,6 @@ test('list files in a directory ignoring the cases on VTEX ignore', t => {
     'package.json',
     'node_modules/**/*',
     'src/**',
-    '.babelrc',
     '.eslintrc',
     '.gitignore',
     'README.md',
