@@ -4,7 +4,7 @@ import glob from 'glob'
 import crypto from 'crypto'
 import chokidar from 'chokidar'
 import archiver from 'archiver'
-import {filter, map, concat, differenceWith} from 'ramda'
+import {map, differenceWith} from 'ramda'
 import {Promise, promisify} from 'bluebird'
 
 const readFile = promisify(fs.readFile)
@@ -12,30 +12,10 @@ const mkdir = promisify(fs.mkdir)
 const unlink = promisify(fs.unlink)
 const bbGlob = promisify(glob)
 
-export function parseIgnore (ignore) {
-  const defaultIgnore = [
-    '**/.*',
-    '**/*~,',
-    '**/*__',
-    '.git/**/*',
-    'package.json',
-    'node_modules/**/*',
-  ]
-  const lines = ignore.match(/[^\r\n]+/g)
-  const parsedIgnore = concat(defaultIgnore, filter(l => /^[^#\s]/.test(l), lines))
-  return map(i => i.substr(-1) === '/' ? `${i}**` : i, parsedIgnore)
-}
-
-export function getVtexIgnore (root) {
-  return readFile(path.resolve(root, '.vtexignore'), 'utf-8')
-  .then(parseIgnore)
-}
-
-export function listFiles (root, ignore) {
-  return bbGlob('**', {
+export function listFiles (root) {
+  return bbGlob('{.build/**/*,manifest.json}', {
     cwd: root,
     nodir: true,
-    ignore: ignore,
   })
 }
 
@@ -128,10 +108,9 @@ export function createChanges (root, batch) {
   )
 }
 
-export function watch (root, ignore, sendChanges) {
-  const watcher = chokidar.watch(root, {
+export function watch (root, sendChanges) {
+  const watcher = chokidar.watch(['.build/**/*', 'manifest.json'], {
     cwd: root,
-    ignored: ignore,
     persistent: true,
     ignoreInitial: true,
     usePolling: process.platform === 'win32',
