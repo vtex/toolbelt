@@ -4,9 +4,9 @@ import inquirer from 'inquirer'
 import readline from 'readline'
 import {Promise, all} from 'bluebird'
 import {logChanges} from '../sandbox'
+import userAgent from '../user-agent'
 import {getDevWorkspace} from '../workspace'
 import {getToken, getAccount, getLogin} from '../conf'
-import userAgent from '../user-agent'
 import {
   WorkspaceAppsClient,
   WorkspaceSandboxesClient,
@@ -24,7 +24,6 @@ import {
   createChanges,
   watch,
   createTempPath,
-  getVtexIgnore,
   listFiles,
   compressFiles,
   deleteTempFile,
@@ -94,14 +93,23 @@ const keepAppAlive = ({vendor, name, version}) => {
   })
 }
 
-const listRoot = ({vendor, name, version}) =>
-  sandboxesClient().listRootFolders(
+const listRoot = ({vendor, name, version}) => {
+  return sandboxesClient().listRootFolders(
     vendor,
     getLogin(),
     name,
     version,
     { list: true, '_limit': 1000 }
   )
+  .catch(({error}) => {
+    const sandboxNotFound = error.code === 'sandbox_not_found'
+    const sandboxedAppNotFound = error.code === 'sandboxed_app_not_found'
+    if (sandboxNotFound || sandboxedAppNotFound) {
+      return Promise.resolve({data: []})
+    }
+    Promise.reject(error)
+  })
+}
 
 export default {
   list: {
@@ -137,24 +145,19 @@ export default {
     description: 'Send the files to the sandbox and watch for changes',
     handler: () => {
       const root = process.cwd()
-      all([
-        getAppManifest(root),
-        getVtexIgnore(root),
-      ])
-      .spread(({vendor, name, version}, ignore) => {
+      getAppManifest(root)
+      .then(({vendor, name, version}) => {
         log.info('Watching app', `${vendor}.${name}@${version}`)
-        return all([
-          listFiles(root, ignore),
-          keepAppAlive({vendor, name, version}),
-        ])
-        .spread(localFiles => all([
+        return listFiles(root)
+        .then(localFiles => all([
           generateFilesHash(root, localFiles),
           listRoot({vendor, name, version}),
         ]))
         .spread(createBatch)
         .then(batch => createChanges(root, batch))
         .then(changes => sendChanges({vendor, name, version})(changes))
-        .then(() => watch(root, ignore, sendChanges({vendor, name, version})))
+        .then(() => keepAppAlive({vendor, name, version}))
+        .then(() => watch(root, sendChanges({vendor, name, version})))
       })
     },
   },
@@ -248,7 +251,6 @@ export default {
       .then(m => { manifest = m })
       .then(() => createTempPath(manifest.name, manifest.version))
       .then(t => { tempPath = t })
-      .then(() => getVtexIgnore(root))
       .then(() => listFiles(root))
       .then(files => compressFiles(files, tempPath))
       .then(({file}) => workspaceAppsClient().publishApp(manifest.vendor, file))
