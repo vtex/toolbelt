@@ -69,14 +69,19 @@ export function generateFilesHash (root, files) {
   return Promise.all(map(f => generateFileHash(root, f), files))
 }
 
+export function rmBuildPrefix (path) {
+  return path.replace(/\.build[\/\\]/, '')
+}
+
 export function createBatch (localFiles, {data: sandboxFiles}) {
   let batch = {}
-  differenceWith((sb, l) => sb.path === l.path, sandboxFiles, localFiles)
+  differenceWith((sb, l) => sb.path === rmBuildPrefix(l.path), sandboxFiles, localFiles)
   .forEach(file => { batch[file.path] = 'remove' })
   localFiles.forEach(file => {
+    const buildlessFilePath = rmBuildPrefix(file.path)
     let hasOnSandbox = false
     for (const sbFile of sandboxFiles) {
-      const isFileEquals = file.path === sbFile.path
+      const isFileEquals = buildlessFilePath === sbFile.path
       const isHashEquals = file.hash === sbFile.hash
       if (isFileEquals) {
         if (!isHashEquals) {
@@ -103,8 +108,8 @@ export function createSaveChange (root, file) {
 export function createChanges (root, batch) {
   return Object.keys(batch).map(file =>
     batch[file] === 'save'
-      ? { path: file, action: 'save', ...createSaveChange(root, file) }
-      : { path: file, action: 'remove' }
+      ? { path: rmBuildPrefix(file), action: 'save', ...createSaveChange(root, file) }
+      : { path: rmBuildPrefix(file), action: 'remove' }
   )
 }
 
