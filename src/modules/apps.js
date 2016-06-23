@@ -1,5 +1,6 @@
 import log from '../logger'
 import Table from 'cli-table'
+import render from '../render'
 import inquirer from 'inquirer'
 import readline from 'readline'
 import {Promise, all} from 'bluebird'
@@ -158,6 +159,7 @@ export default {
         .then(changes => sendChanges({vendor, name, version})(changes))
         .then(() => keepAppAlive({vendor, name, version}))
         .then(() => watch(root, sendChanges({vendor, name, version})))
+        .then(() => render(root, {vendor, name, version}))
       })
     },
   },
