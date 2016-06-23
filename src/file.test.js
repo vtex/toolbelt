@@ -1,7 +1,7 @@
 import test from 'ava'
 import path from 'path'
 import {
-  parseIgnore,
+  rmBuildPrefix,
   listFiles,
   createTempPath,
   generateFileHash,
@@ -9,53 +9,18 @@ import {
   createChanges,
 } from './file'
 
-test('parses a VTEX ignore file', t => {
-  const ignore =
-    'src/' +
-    '\n.eslintrc' +
-    '\n.gitignore' +
-    '\nREADME.md' +
-    '\nwebpack.config.js' +
-    '\n# foo.txt'
-  const expectedParsedIgnore = [
-    '**/.*',
-    '**/*~,',
-    '**/*__',
-    '.git/**/*',
-    'package.json',
-    'node_modules/**/*',
-    'src/**',
-    '.eslintrc',
-    '.gitignore',
-    'README.md',
-    'webpack.config.js',
-  ]
-  const parsedIgnore = parseIgnore(ignore)
-  t.deepEqual(parsedIgnore, expectedParsedIgnore)
+test('removes the build folder from the start of a path', t => {
+  t.is(rmBuildPrefix('.build/render/assets/Foo.js'), 'render/assets/Foo.js')
 })
 
-test('list files in a directory ignoring the cases on VTEX ignore', t => {
+test('list files in a directory ignoring everything except the build folder and the manifest file', t => {
   const root = path.resolve('./file-test')
-  const ignore = [
-    '**/.*',
-    '**/*~,',
-    '**/*__',
-    '.git/**/*',
-    'package.json',
-    'node_modules/**/*',
-    'src/**',
-    '.eslintrc',
-    '.gitignore',
-    'README.md',
-    'webpack.config.js',
-  ]
   const expectedFiles = [
     'manifest.json',
-    'render/assets/Foo.js',
-    'render/assets/Bar.js',
-    'render/assets/Baz.js',
+    '.build/render/assets/Foo.js',
+    '.build/render/assets/style.css',
   ]
-  listFiles(root, ignore)
+  listFiles(root)
   .then(files => t.is(files, expectedFiles))
 })
 
@@ -121,12 +86,12 @@ test('creates a batch of changes based on the diff of the local and the sandbox 
 test('creates a set of changes', t => {
   const root = path.resolve('./file-test')
   const manifest = path.resolve(root, 'manifest.json')
-  const bar = path.resolve(root, 'render/assets/Bar.js')
-  const baz = path.resolve(root, 'render/assets/Baz.js')
+  const foo = path.resolve(root, '.build/render/assets/Foo.js')
+  const style = path.resolve(root, '.build/render/assets/style.css')
   const batch = {
     [manifest]: 'save',
-    [bar]: 'save',
-    [baz]: 'remove',
+    [foo]: 'save',
+    [style]: 'remove',
   }
   const expectedChanges = [
     {
@@ -136,13 +101,13 @@ test('creates a set of changes', t => {
       encoding: 'base64',
     },
     {
-      path: bar,
+      path: rmBuildPrefix(foo),
       action: 'save',
       content: '',
       encoding: 'base64',
     },
     {
-      path: baz,
+      path: rmBuildPrefix(style),
       action: 'remove',
     },
   ]
