@@ -5,7 +5,7 @@ import sass from 'gulp-sass'
 import less from 'gulp-less'
 import babel from 'gulp-babel'
 import {Promise, promisify} from 'bluebird'
-import vtexRender from 'gulp-vtex-render/dist/'
+import vtexRender from 'gulp-vtex-render'
 
 const stat = promisify(fs.stat)
 
