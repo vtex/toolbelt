@@ -98,6 +98,10 @@ export function createBatch (localFiles, {data: sandboxFiles}) {
   return batch
 }
 
+export function normalizePath (filePath) {
+  return path.normalize(filePath).replace(/\\/g, '/')
+}
+
 export function createSaveChange (root, file) {
   return {
     content: fs.readFileSync(path.resolve(root, file)).toString('base64'),
@@ -106,11 +110,12 @@ export function createSaveChange (root, file) {
 }
 
 export function createChanges (root, batch) {
-  return Object.keys(batch).map(file =>
-    batch[file] === 'save'
-      ? { path: rmBuildPrefix(file), action: 'save', ...createSaveChange(root, file) }
-      : { path: rmBuildPrefix(file), action: 'remove' }
-  )
+  return Object.keys(batch).map(file => {
+    const path = normalizePath(rmBuildPrefix(file))
+    return batch[file] === 'save'
+      ? { path: path, action: 'save', ...createSaveChange(root, file) }
+      : { path: path, action: 'remove' }
+  })
 }
 
 export function watch (root, sendChanges) {
