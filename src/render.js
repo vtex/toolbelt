@@ -41,6 +41,7 @@ export function buildJS (manifest) {
     .pipe(babel({
       presets: [
         path.resolve(nodeModulesPath, 'babel-preset-es2015'),
+        path.resolve(nodeModulesPath, 'babel-preset-stage-2'),
         path.resolve(nodeModulesPath, 'babel-preset-react'),
       ],
       plugins: [
