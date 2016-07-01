@@ -23,6 +23,7 @@ import {
   generateFilesHash,
   createBatch,
   createChanges,
+  createBuildFolder,
   watch,
   createTempPath,
   listFiles,
@@ -158,6 +159,7 @@ export default {
         .then(batch => createChanges(root, batch))
         .then(changes => sendChanges({vendor, name, version})(changes))
         .then(() => keepAppAlive({vendor, name, version}))
+        .then(() => createBuildFolder(root))
         .then(() => watch(root, sendChanges({vendor, name, version})))
         .then(() => render(root, {vendor, name, version}))
       })
