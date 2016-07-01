@@ -46,7 +46,6 @@ export function buildJS (manifest) {
         path.resolve(nodeModulesPath, 'babel-preset-react'),
       ],
       plugins: [
-        path.resolve(nodeModulesPath, 'babel-plugin-transform-decorators-legacy'),
         path.resolve(nodeModulesPath, 'babel-plugin-transform-es2015-modules-systemjs'),
       ],
     }))
