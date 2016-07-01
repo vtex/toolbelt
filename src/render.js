@@ -13,17 +13,15 @@ export const renderBasePath = './render'
 
 export const buildBasePath = './.build'
 
-export const renderAssetsPath = `${renderBasePath}/assets`
-
 export const buildAssetsPath = `${buildBasePath}/render/assets`
 
 export const buildComponentsPath = `${buildBasePath}/render/components`
 
-export const jsGlob = `${renderAssetsPath}/**/*.js`
+export const jsGlob = `${renderBasePath}/**/*.js`
 
-export const sassGlob = `${renderAssetsPath}/**/*.scss`
+export const sassGlob = `${renderBasePath}/**/*.scss`
 
-export const lessGlob = `${renderAssetsPath}/**/*.less`
+export const lessGlob = `${renderBasePath}/**/*.less`
 
 export const nodeModulesPath = path.resolve(__dirname, '../node_modules/')
 
