@@ -4,18 +4,25 @@ import path from 'path'
 import sass from 'gulp-sass'
 import less from 'gulp-less'
 import babel from 'gulp-babel'
+import gfilter from 'gulp-filter'
 import {Promise, promisify} from 'bluebird'
 import vtexRender from 'gulp-vtex-render'
 
 const stat = promisify(fs.stat)
 
-export const renderBasePath = './render'
+export const renderBasePath = 'render'
 
-export const buildBasePath = './.build'
+export const buildBasePath = '.build'
 
 export const buildAssetsPath = `${buildBasePath}/render/assets`
 
 export const buildComponentsPath = `${buildBasePath}/render/components`
+
+export const buildRoutesPath = `${buildBasePath}/render/routes`
+
+export const buildSettingsPath = `${buildBasePath}/render/settings`
+
+export const buildRouteSettingsPath = `${buildSettingsPath}/routes`
 
 export const jsGlob = `${renderBasePath}/**/*.js`
 
@@ -26,7 +33,7 @@ export const lessGlob = `${renderBasePath}/**/*.less`
 export const nodeModulesPath = path.resolve(__dirname, '../node_modules/')
 
 export function hasRenderService (root) {
-  return stat(path.resolve(root, 'render/'))
+  return stat(path.resolve(root, renderBasePath))
   .then(() => true)
   .catch(err => {
     return err.code === 'ENOENT'
@@ -37,6 +44,9 @@ export function hasRenderService (root) {
 
 export function buildJS (manifest) {
   return () => {
+    const componentsFilter = gfilter(`**/${buildComponentsPath}/**/*.json`, {restore: true})
+    const routesFilter = gfilter(`**/${buildRoutesPath}/*.json`, {restore: true})
+    const routesSettingsFilter = gfilter(`**/${buildRouteSettingsPath}/*.json`, {restore: true})
     gulp.src(jsGlob)
     .pipe(babel({
       presets: [
@@ -45,12 +55,20 @@ export function buildJS (manifest) {
         path.resolve(nodeModulesPath, 'babel-preset-react'),
       ],
       plugins: [
+        path.resolve(nodeModulesPath, 'babel-plugin-vtex-render-route'),
         path.resolve(nodeModulesPath, 'babel-plugin-transform-es2015-modules-systemjs'),
       ],
     }))
     .pipe(gulp.dest(buildAssetsPath))
     .pipe(vtexRender({manifest: manifest}))
+    .pipe(componentsFilter)
     .pipe(gulp.dest(buildComponentsPath))
+    .pipe(componentsFilter.restore)
+    .pipe(routesFilter)
+    .pipe(gulp.dest(buildRoutesPath))
+    .pipe(routesFilter.restore)
+    .pipe(routesSettingsFilter)
+    .pipe(gulp.dest(buildRouteSettingsPath))
   }
 }
 
