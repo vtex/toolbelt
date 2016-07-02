@@ -34,11 +34,10 @@ export function createTempPath (name, version) {
 export function compressFiles (files, destination) {
   const archive = archiver('zip')
   const output = fs.createWriteStream(destination)
-  const buildRegex = new RegExp(`.build${path.sep}`)
   archive.pipe(output)
   files.forEach(f => {
     const filePath = path.resolve(process.cwd(), f)
-    archive.append(fs.createReadStream(filePath), { name: f.replace(buildRegex, '') })
+    archive.append(fs.createReadStream(filePath), { name: rmBuildPrefix(f) })
   })
   archive.finalize()
   return new Promise((resolve, reject) => {
