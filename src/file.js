@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import glob from 'glob'
+import rimraf from 'rimraf'
 import crypto from 'crypto'
 import chokidar from 'chokidar'
 import archiver from 'archiver'
@@ -9,6 +10,7 @@ import {Promise, promisify} from 'bluebird'
 
 const readFile = promisify(fs.readFile)
 const mkdir = promisify(fs.mkdir)
+const bbRimraf = promisify(rimraf)
 const unlink = promisify(fs.unlink)
 const bbGlob = promisify(glob)
 
@@ -125,6 +127,15 @@ export function createBuildFolder (root) {
   .catch(err => {
     return err.code === 'EEXIST'
       ? Promise.resolve(buildPath)
+      : Promise.reject(err)
+  })
+}
+
+export function removeBuildFolder (root) {
+  return bbRimraf(path.resolve(root, '.build/'))
+  .catch(err => {
+    return err.code === 'ENOENT'
+      ? Promise.resolve()
       : Promise.reject(err)
   })
 }
