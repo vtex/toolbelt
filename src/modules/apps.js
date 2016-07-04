@@ -25,6 +25,7 @@ import {
   createChanges,
   createBuildFolder,
   watch,
+  removeBuildFolder,
   createTempPath,
   listFiles,
   compressFiles,
@@ -249,17 +250,20 @@ export default {
     handler: () => {
       log.debug('Starting to publish app')
       const root = process.cwd()
-      let manifest
-      let tempPath
-      getAppManifest(root)
-      .then(m => { manifest = m })
-      .then(() => createTempPath(manifest.name, manifest.version))
-      .then(t => { tempPath = t })
-      .then(() => listFiles(root))
-      .then(files => compressFiles(files, tempPath))
-      .then(({file}) => workspaceAppsClient().publishApp(manifest.vendor, file))
-      .then(() => deleteTempFile(tempPath))
-      .then(() => log.info(`Published app ${manifest.vendor}.${manifest.name} succesfully`))
+      all([getAppManifest(root), removeBuildFolder(root)])
+      .spread(({vendor, name, version}) => {
+        return all([
+          createTempPath(name, version),
+          renderBuild(root, {vendor, name, version}),
+        ])
+        .spread(tempPath => {
+          return listFiles(root)
+          .then(files => compressFiles(files, tempPath))
+          .then(({file}) => workspaceAppsClient().publishApp(vendor, file))
+          .then(() => deleteTempFile(tempPath))
+          .then(() => log.info(`Published app ${vendor}.${name} succesfully`))
+        })
+      })
     },
   },
 }
