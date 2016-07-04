@@ -1,3 +1,4 @@
+import ora from 'ora'
 import log from '../logger'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
@@ -48,6 +49,7 @@ const workspaceSandboxesClient = () => new WorkspaceSandboxesClient({
 })
 
 const sendChanges = ({vendor, name, version}) => changes => {
+  const spinner = ora('Sending changes...').start()
   return sandboxesClient().updateFiles(
     vendor,
     getLogin(),
@@ -56,6 +58,7 @@ const sendChanges = ({vendor, name, version}) => changes => {
     changes
   )
   .then(() => logChanges(changes))
+  .tap(() => spinner.stop())
   .then(log => log.length > 0 ? console.log(log) : null)
 }
 

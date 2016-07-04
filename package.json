@@ -62,6 +62,7 @@
     "inquirer": "^1.0.3",
     "minimist": "^1.2.0",
     "moment": "^2.13.0",
+    "ora": "^0.2.3",
     "pad": "^1.0.0",
     "ramda": "^0.21.0",
     "request-promise": "^3.0.0",
