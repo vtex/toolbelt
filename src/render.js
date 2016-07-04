@@ -127,7 +127,12 @@ export function buildAndWatchRender (manifest) {
   watchRender(manifest)
 }
 
-export default function render (root, manifest) {
+export function renderWatch (root, manifest) {
   return hasRenderService(root)
   .then(hasRender => hasRender ? buildAndWatchRender(manifest) : null)
+}
+
+export function renderBuild (root, manifest) {
+  return hasRenderService(root)
+  .then(hasRender => hasRender ? buildRender(manifest) : null)
 }

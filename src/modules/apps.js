@@ -1,12 +1,12 @@
 import log from '../logger'
 import Table from 'cli-table'
-import render from '../render'
 import inquirer from 'inquirer'
 import readline from 'readline'
 import {Promise, all} from 'bluebird'
 import {logChanges} from '../sandbox'
 import userAgent from '../user-agent'
 import {getDevWorkspace} from '../workspace'
+import {renderWatch, renderBuild} from '../render'
 import {getToken, getAccount, getLogin} from '../conf'
 import {
   WorkspaceAppsClient,
@@ -161,7 +161,7 @@ export default {
         .then(() => keepAppAlive({vendor, name, version}))
         .then(() => createBuildFolder(root))
         .then(() => watch(root, sendChanges({vendor, name, version})))
-        .then(() => render(root, {vendor, name, version}))
+        .then(() => renderWatch(root, {vendor, name, version}))
       })
     },
   },
