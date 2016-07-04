@@ -47,28 +47,32 @@ export function buildJS (manifest) {
     const componentsFilter = gfilter(`**/${buildComponentsPath}/**/*.json`, {restore: true})
     const routesFilter = gfilter(`**/${buildRoutesPath}/*.json`, {restore: true})
     const routesSettingsFilter = gfilter(`**/${buildRouteSettingsPath}/*.json`, {restore: true})
-    gulp.src(jsGlob)
-    .pipe(babel({
-      presets: [
-        path.resolve(nodeModulesPath, 'babel-preset-es2015'),
-        path.resolve(nodeModulesPath, 'babel-preset-stage-2'),
-        path.resolve(nodeModulesPath, 'babel-preset-react'),
-      ],
-      plugins: [
-        path.resolve(nodeModulesPath, 'babel-plugin-vtex-render-route'),
-        path.resolve(nodeModulesPath, 'babel-plugin-transform-es2015-modules-systemjs'),
-      ],
-    }))
-    .pipe(gulp.dest(buildAssetsPath))
-    .pipe(vtexRender({manifest: manifest}))
-    .pipe(componentsFilter)
-    .pipe(gulp.dest(buildComponentsPath))
-    .pipe(componentsFilter.restore)
-    .pipe(routesFilter)
-    .pipe(gulp.dest(buildRoutesPath))
-    .pipe(routesFilter.restore)
-    .pipe(routesSettingsFilter)
-    .pipe(gulp.dest(buildRouteSettingsPath))
+    return new Promise((resolve, reject) => {
+      gulp.src(jsGlob)
+      .pipe(babel({
+        presets: [
+          path.resolve(nodeModulesPath, 'babel-preset-es2015'),
+          path.resolve(nodeModulesPath, 'babel-preset-stage-2'),
+          path.resolve(nodeModulesPath, 'babel-preset-react'),
+        ],
+        plugins: [
+          path.resolve(nodeModulesPath, 'babel-plugin-vtex-render-route'),
+          path.resolve(nodeModulesPath, 'babel-plugin-transform-es2015-modules-systemjs'),
+        ],
+      }))
+      .pipe(gulp.dest(buildAssetsPath))
+      .pipe(vtexRender({manifest: manifest}))
+      .pipe(componentsFilter)
+      .pipe(gulp.dest(buildComponentsPath))
+      .pipe(componentsFilter.restore)
+      .pipe(routesFilter)
+      .pipe(gulp.dest(buildRoutesPath))
+      .pipe(routesFilter.restore)
+      .pipe(routesSettingsFilter)
+      .pipe(gulp.dest(buildRouteSettingsPath))
+      .on('end', resolve)
+      .on('error', reject)
+    })
   }
 }
 
@@ -77,9 +81,13 @@ export function watchJS (manifest) {
 }
 
 export function buildSass () {
-  gulp.src(sassGlob)
-  .pipe(sass())
-  .pipe(gulp.dest(buildAssetsPath))
+  return new Promise((resolve, reject) => {
+    gulp.src(sassGlob)
+    .pipe(sass())
+    .pipe(gulp.dest(buildAssetsPath))
+    .on('end', resolve)
+    .on('error', reject)
+  })
 }
 
 export function watchSass () {
@@ -87,9 +95,13 @@ export function watchSass () {
 }
 
 export function buildLESS () {
-  gulp.src(lessGlob)
-  .pipe(less())
-  .pipe(gulp.dest(buildAssetsPath))
+  return new Promise((resolve, reject) => {
+    gulp.src(lessGlob)
+    .pipe(less())
+    .pipe(gulp.dest(buildAssetsPath))
+    .on('end', resolve)
+    .on('error', reject)
+  })
 }
 
 export function watchLESS () {
@@ -97,9 +109,11 @@ export function watchLESS () {
 }
 
 export function buildRender (manifest) {
-  buildJS(manifest)()
-  buildSass()
-  buildLESS()
+  return Promise.all([
+    buildJS(manifest)(),
+    buildSass(),
+    buildLESS(),
+  ])
 }
 
 export function watchRender (manifest) {
