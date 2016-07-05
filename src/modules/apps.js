@@ -253,6 +253,7 @@ export default {
     handler: () => {
       log.debug('Starting to publish app')
       const root = process.cwd()
+      const spinner = ora('Publishing app...').start()
       all([getAppManifest(root), removeBuildFolder(root)])
       .spread(({vendor, name, version}) => {
         return all([
@@ -264,6 +265,7 @@ export default {
           .then(files => compressFiles(files, tempPath))
           .then(({file}) => workspaceAppsClient().publishApp(vendor, file))
           .then(() => deleteTempFile(tempPath))
+          .then(() => spinner.stop())
           .then(() => log.info(`Published app ${vendor}.${name} succesfully`))
         })
       })
