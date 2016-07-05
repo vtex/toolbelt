@@ -58,7 +58,7 @@
     "gulp-filter": "^4.0.0",
     "gulp-less": "^3.1.0",
     "gulp-sass": "^2.3.2",
-    "gulp-vtex-render": "^0.2.0",
+    "gulp-vtex-render": "^0.2.1",
     "inquirer": "^1.0.3",
     "minimist": "^1.2.0",
     "moment": "^2.13.0",
