@@ -37,8 +37,8 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "@vtex/apps": "^0.2.0",
-    "@vtex/workspaces": "^0.1.3",
+    "@vtex/apps": "^0.3.0",
+    "@vtex/workspaces": "^0.2.0",
     "archiver": "^1.0.0",
     "babel-plugin-transform-es2015-modules-systemjs": "^6.9.0",
     "babel-plugin-vtex-render-route": "^1.1.0",
