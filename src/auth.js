@@ -1,10 +1,7 @@
 import request from 'request-promise'
 import {Promise} from 'bluebird'
 import {prop} from 'ramda'
-import {WorkspacesClient} from '@vtex/workspaces'
 import log from './logger'
-import userAgent from './user-agent'
-import {getDevWorkspace} from './workspace'
 
 export function getTemporaryToken () {
   return request({json: true, uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start'})
@@ -72,18 +69,4 @@ export function userAuth (email, prompt) {
 
 export function startUserAuth (email, promptCode, promptPass) {
   return isVtexUser(email) ? vtexUserAuth(email, promptCode) : userAuth(email, promptPass)
-}
-
-export function createSandbox (account, login, token) {
-  return new WorkspacesClient({
-    authToken: token,
-    userAgent: userAgent,
-  }).create(account, getDevWorkspace(login))
-  .then(res => ({status: res.statusCode}))
-  .catch(res => {
-    // Treat 409 (already created) as success
-    return res.statusCode === 409
-    ? Promise.resolve({status: res.statusCode, body: res.response.body})
-    : Promise.reject(res)
-  })
 }

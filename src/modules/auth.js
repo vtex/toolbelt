@@ -1,8 +1,9 @@
 import inquirer from 'inquirer'
-import {Promise, all} from 'bluebird'
+import {Promise, all, mapSeries} from 'bluebird'
 import validator from 'validator'
 import chalk from 'chalk'
-import {startUserAuth, createSandbox} from '../api'
+import {startUserAuth} from '../auth'
+import {createSandbox} from '../sandbox'
 import log from '../logger'
 import {saveAccount, saveLogin, saveToken, clear} from '../conf'
 
@@ -57,28 +58,25 @@ export default {
     description: 'Log into a VTEX account',
     handler: () => {
       let credentials
-      return promptAccount()
-      .then(({account}) => {
-        return promptLogin()
-        .then(({login}) => {
-          log.debug('Start login', {account, login})
-          return all([account, login, startUserAuth(login, promptEmailCode, promptPassword)])
-        })
-        .tap(([account, login, token]) => {
-          credentials = {account, login, token}
-          log.debug('Creating sandbox workspace...')
-        })
-        .spread(createSandbox)
-        .then(res => {
-          log.debug('Created sandbox', res)
-          log.debug('Login successful, saving credentials', credentials)
-          saveCredentials(credentials)
-          log.info('Login successful! 👍')
-        })
-        .catch(reason => {
-          log.error(reason)
-          process.exit(1)
-        })
+      return mapSeries([promptAccount, promptLogin], a => a())
+      .spread(({account}, {login}) => {
+        log.debug('Start login', {account, login})
+        return all([account, login, startUserAuth(login, promptEmailCode, promptPassword)])
+      })
+      .tap(([account, login, token]) => {
+        credentials = {account, login, token}
+        log.debug('Creating sandbox workspace...')
+      })
+      .spread(createSandbox)
+      .then(res => {
+        log.debug('Created sandbox', res)
+        log.debug('Login successful, saving credentials', credentials)
+        saveCredentials(credentials)
+        log.info('Login successful! 👍')
+      })
+      .catch(reason => {
+        log.error(reason)
+        process.exit(1)
       })
     },
   },
