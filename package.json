@@ -53,7 +53,7 @@
     "vtexsay": "^1.0.3",
     "webpack": "^1.12.10",
     "webpack-dev-middleware": "^1.2.0",
-    "webpack-hot-middleware": "^2.4.1"
+    "webpack-hot-middleware": "^2.12.1"
   },
   "preferGlobal": true,
   "devDependencies": {
