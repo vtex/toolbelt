@@ -4,7 +4,7 @@ import Table from 'cli-table'
 import inquirer from 'inquirer'
 import readline from 'readline'
 import {Promise, all} from 'bluebird'
-import {logChanges} from '../sandbox'
+import {listRoot, logChanges} from '../sandbox'
 import userAgent from '../user-agent'
 import {getDevWorkspace} from '../workspace'
 import {renderWatch, renderBuild} from '../render'
@@ -15,10 +15,10 @@ import {
   SandboxesClient,
 } from '@vtex/apps'
 import {
+  manifest,
   vendorPattern,
   namePattern,
   wildVersionPattern,
-  getAppManifest,
 } from '../manifest'
 import {
   generateFilesHash,
@@ -28,12 +28,14 @@ import {
   watch,
   removeBuildFolder,
   createTempPath,
-  listFiles,
+  listLocalFiles,
   compressFiles,
   deleteTempFile,
 } from '../file'
 
 const root = process.cwd()
+
+const {vendor, name, version} = manifest
 
 const workspaceAppsClient = () => new WorkspaceAppsClient({
   authToken: getToken(),
@@ -50,7 +52,7 @@ const workspaceSandboxesClient = () => new WorkspaceSandboxesClient({
   userAgent: userAgent,
 })
 
-const sendChanges = ({vendor, name, version}) => changes => {
+const sendChanges = changes => {
   const spinner = ora('Sending changes...').start()
   return sandboxesClient().updateFiles(
     vendor,
@@ -64,7 +66,7 @@ const sendChanges = ({vendor, name, version}) => changes => {
   .then(log => log.length > 0 ? console.log(log) : null)
 }
 
-const updateAppTtl = ({vendor, name, version}) => {
+const updateAppTtl = () => {
   return workspaceSandboxesClient().updateAppTtl(
     getAccount(),
     getDevWorkspace(getLogin()),
@@ -77,10 +79,10 @@ const updateAppTtl = ({vendor, name, version}) => {
   .catch(() => {})
 }
 
-const keepAppAlive = ({vendor, name, version}) => {
-  return updateAppTtl({vendor, name, version})
+const keepAppAlive = () => {
+  return updateAppTtl()
   .then(() => {
-    const keepAliveInterval = setInterval(() => updateAppTtl({vendor, name, version}), 30000)
+    const keepAliveInterval = setInterval(() => updateAppTtl(), 30000)
     readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -101,23 +103,7 @@ const keepAppAlive = ({vendor, name, version}) => {
   })
 }
 
-const listRoot = ({vendor, name, version}) => {
-  return sandboxesClient().listRootFolders(
-    vendor,
-    getLogin(),
-    name,
-    version,
-    { list: true, '_limit': 1000 }
-  )
-  .catch(({error}) => {
-    const sandboxNotFound = error.code === 'sandbox_not_found'
-    const sandboxedAppNotFound = error.code === 'sandboxed_app_not_found'
-    if (sandboxNotFound || sandboxedAppNotFound) {
-      return Promise.resolve({data: []})
-    }
-    Promise.reject(error)
-  })
-}
+const generateFilesHashWithRoot = localFiles => generateFilesHash(root, localFiles)
 
 export default {
   list: {
@@ -151,26 +137,20 @@ export default {
   },
   watch: {
     description: 'Send the files to the sandbox and watch for changes',
-    handler: () =>
-      all([
-        getAppManifest(root),
-        listFiles(root),
+    handler: () => {
+      log.info('Watching app', `${vendor}.${name}@${version}`)
+      return all([
+        listLocalFiles(root).then(generateFilesHashWithRoot),
+        listRoot(manifest, getLogin(), getToken()),
       ])
-      .tap(([{vendor, name, version}]) =>
-        log.info('Watching app', `${vendor}.${name}@${version}`))
-      .spread(({vendor, name, version}, localFiles) =>
-        all([
-          generateFilesHash(root, localFiles),
-          listRoot({vendor, name, version}),
-        ])
-        .spread(createBatch)
-        .then(batch => createChanges(root, batch))
-        .then(changes => sendChanges({vendor, name, version})(changes))
-        .then(() => keepAppAlive({vendor, name, version}))
-        .then(() => createBuildFolder(root))
-        .then(() => watch(root, sendChanges({vendor, name, version})))
-        .then(() => renderWatch(root, {vendor, name, version}))
-      ),
+      .spread(createBatch)
+      .then(batch => createChanges(root, batch))
+      .then(sendChanges)
+      .then(keepAppAlive)
+      .then(() => createBuildFolder(root))
+      .then(() => watch(root, sendChanges))
+      .then(() => renderWatch(root, manifest))
+    },
   },
   install: {
     requiredArgs: 'app',
@@ -256,21 +236,19 @@ export default {
     handler: () => {
       log.debug('Starting to publish app')
       const spinner = ora('Publishing app...').start()
-      all([getAppManifest(root), removeBuildFolder(root)])
-      .spread(({vendor, name, version}) => {
-        return all([
-          createTempPath(name, version),
-          renderBuild(root, {vendor, name, version}),
-        ])
-        .spread(tempPath => {
-          return listFiles(root)
-          .then(files => compressFiles(files, tempPath))
-          .then(({file}) => workspaceAppsClient().publishApp(vendor, file))
-          .then(() => deleteTempFile(tempPath))
-          .then(() => spinner.stop())
-          .then(() => log.info(`Published app ${vendor}.${name} succesfully`))
-        })
-      })
+      removeBuildFolder(root)
+      .then(() => all([
+        createTempPath(name, version),
+        renderBuild(root, manifest),
+      ]))
+      .spread(tempPath =>
+        listLocalFiles(root)
+        .then(files => compressFiles(files, tempPath))
+        .then(({file}) => workspaceAppsClient().publishApp(vendor, file))
+        .then(() => deleteTempFile(tempPath))
+        .then(() => spinner.stop())
+        .then(() => log.info(`Published app ${vendor}.${name} succesfully`))
+      )
     },
   },
 }

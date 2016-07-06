@@ -14,7 +14,7 @@ const bbRimraf = promisify(rimraf)
 const unlink = promisify(fs.unlink)
 const bbGlob = promisify(glob)
 
-export function listFiles (root) {
+export function listLocalFiles (root) {
   return bbGlob('{.build/**/*,manifest.json}', {
     cwd: root,
     nodir: true,

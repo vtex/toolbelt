@@ -1,8 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import {promisify} from 'bluebird'
-
-const readFile = promisify(fs.readFile)
+import {pipe} from 'ramda'
+import log from './logger'
 
 export const vendorPattern = '[\\w_-]+'
 
@@ -12,11 +11,23 @@ export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
 
-export function getAppManifest (root) {
-  return readFile(path.resolve(root, 'manifest.json'), 'utf-8')
-  .then(JSON.parse)
-  .then(validateAppManifest)
+const manifestPath = path.resolve(process.cwd(), 'manifest.json')
+
+const R_OK = fs.constants ? fs.constants.R_OK : fs.R_OK // Node v6 breaking change
+
+const isManifestReadable = () => {
+  try {
+    fs.accessSync(manifestPath, R_OK) // Throws if check fails
+    return true
+  } catch (e) {
+    log.debug('manifest.json doesn\'t exist or is not readable')
+    return false
+  }
 }
+
+export const manifest = isManifestReadable()
+  ? pipe(fs.readFileSync, JSON.parse, validateAppManifest)(manifestPath)
+  : {}
 
 export function validateAppManifest (manifest) {
   const vendorRegex = new RegExp(`^${vendorPattern}$`)

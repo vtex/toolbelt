@@ -2,7 +2,7 @@ import test from 'ava'
 import path from 'path'
 import {
   rmBuildPrefix,
-  listFiles,
+  listLocalFiles,
   createTempPath,
   generateFileHash,
   createBatch,
@@ -20,7 +20,7 @@ test('list files in a directory ignoring everything except the build folder and 
     '.build/render/assets/Foo.js',
     '.build/render/assets/style.css',
   ]
-  listFiles(root)
+  listLocalFiles(root)
   .then(files => t.is(files, expectedFiles))
 })
 
