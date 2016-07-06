@@ -26,7 +26,7 @@ const checkCommandExists = found => {
 }
 
 const checkLogin = found => {
-  const whitelist = [tree, tree.login]
+  const whitelist = [tree, tree.login, tree.logout]
   if (!getToken() && whitelist.indexOf(found.command) === -1) {
     log.debug('Requesting login before command:', process.argv.slice(2).join(' '))
     return run({command: tree.login})
