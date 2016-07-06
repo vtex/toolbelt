@@ -33,6 +33,8 @@ import {
   deleteTempFile,
 } from '../file'
 
+const root = process.cwd()
+
 const workspaceAppsClient = () => new WorkspaceAppsClient({
   authToken: getToken(),
   userAgent: userAgent,
@@ -149,16 +151,18 @@ export default {
   },
   watch: {
     description: 'Send the files to the sandbox and watch for changes',
-    handler: () => {
-      const root = process.cwd()
-      getAppManifest(root)
-      .then(({vendor, name, version}) => {
-        log.info('Watching app', `${vendor}.${name}@${version}`)
-        return listFiles(root)
-        .then(localFiles => all([
+    handler: () =>
+      all([
+        getAppManifest(root),
+        listFiles(root),
+      ])
+      .tap(([{vendor, name, version}]) =>
+        log.info('Watching app', `${vendor}.${name}@${version}`))
+      .spread(({vendor, name, version}, localFiles) =>
+        all([
           generateFilesHash(root, localFiles),
           listRoot({vendor, name, version}),
-        ]))
+        ])
         .spread(createBatch)
         .then(batch => createChanges(root, batch))
         .then(changes => sendChanges({vendor, name, version})(changes))
@@ -166,8 +170,7 @@ export default {
         .then(() => createBuildFolder(root))
         .then(() => watch(root, sendChanges({vendor, name, version})))
         .then(() => renderWatch(root, {vendor, name, version}))
-      })
-    },
+      ),
   },
   install: {
     requiredArgs: 'app',
