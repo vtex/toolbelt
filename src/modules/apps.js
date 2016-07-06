@@ -255,7 +255,6 @@ export default {
     description: 'Publish this app',
     handler: () => {
       log.debug('Starting to publish app')
-      const root = process.cwd()
       const spinner = ora('Publishing app...').start()
       all([getAppManifest(root), removeBuildFolder(root)])
       .spread(({vendor, name, version}) => {
