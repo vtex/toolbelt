@@ -5,7 +5,16 @@ import chalk from 'chalk'
 import {startUserAuth} from '../auth'
 import {createSandbox} from '../sandbox'
 import log from '../logger'
-import {saveAccount, saveLogin, saveToken, clear} from '../conf'
+import {
+  saveAccount,
+  saveLogin,
+  saveToken,
+  getLogin,
+  getAccount,
+  clear,
+} from '../conf'
+
+const [account, login] = [getAccount(), getLogin()]
 
 function promptAccount () {
   const message = 'Please enter a valid account.'
@@ -47,6 +56,20 @@ function promptEmailCode () {
   })
 }
 
+function promptUsePrevious () {
+  log.info(
+    'Found previous credential!',
+    `\n${chalk.bold('Account:')} ${chalk.green(account)}`,
+    `\n${chalk.bold('Email:')} ${chalk.green(login)}`
+  )
+  return inquirer.prompt({
+    type: 'confirm',
+    name: 'confirm',
+    message: 'Do you want to log in with the previous credential?',
+  })
+  .then(({confirm}) => confirm)
+}
+
 function saveCredentials ({account, login, token}) {
   saveAccount(account)
   saveLogin(login)
@@ -58,7 +81,12 @@ export default {
     description: 'Log into a VTEX account',
     handler: () => {
       let credentials
-      return mapSeries([promptAccount, promptLogin], a => a())
+      return Promise.resolve(login)
+      .then(login => login ? promptUsePrevious() : false)
+      .then(prev => prev
+        ? [{account}, {login}]
+        : mapSeries([promptAccount, promptLogin], a => a())
+      )
       .spread(({account}, {login}) => {
         log.debug('Start login', {account, login})
         return all([account, login, startUserAuth(login, promptEmailCode, promptPassword)])
