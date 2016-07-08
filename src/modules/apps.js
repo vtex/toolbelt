@@ -33,6 +33,8 @@ import {
   deleteTempFile,
 } from '../file'
 
+let spinner
+
 const root = process.cwd()
 
 const {vendor, name, version} = manifest
@@ -53,7 +55,11 @@ const workspaceSandboxesClient = () => new WorkspaceSandboxesClient({
 })
 
 const sendChanges = changes => {
-  const spinner = ora('Sending changes...').start()
+  if (spinner) {
+    spinner.start()
+  } else {
+    spinner = ora('Sending changes...').start()
+  }
   return sandboxesClient().updateFiles(
     vendor,
     getLogin(),
@@ -95,7 +101,9 @@ const keepAppAlive = () => {
         name,
         version
       ).finally(() => {
-        log.info('Bye, bye o/')
+        if (spinner) {
+          spinner.stop()
+        }
         clearTimeout(keepAliveInterval)
         process.exit()
       })
@@ -235,7 +243,7 @@ export default {
     description: 'Publish this app',
     handler: () => {
       log.debug('Starting to publish app')
-      const spinner = ora('Publishing app...').start()
+      spinner = ora('Publishing app...').start()
       removeBuildFolder(root)
       .then(() => all([
         createTempPath(name, version),
