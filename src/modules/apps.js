@@ -261,6 +261,14 @@ export default {
         .then(() => deleteTempFile(tempPath))
         .then(() => spinner.stop())
         .then(() => log.info(`Published app ${vendor}.${name}@${version} succesfully`))
+        .catch(res => {
+          if (spinner) {
+            spinner.stop()
+          }
+          return res.error.code === 'app_version_already_exists'
+            ? log.error(`Version ${version} already published!`)
+            : Promise.reject(res)
+        })
       )
     },
   },
