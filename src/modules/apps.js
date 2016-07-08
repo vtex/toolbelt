@@ -260,7 +260,7 @@ export default {
         .then(({file}) => workspaceAppsClient().publishApp(vendor, file))
         .then(() => deleteTempFile(tempPath))
         .then(() => spinner.stop())
-        .then(() => log.info(`Published app ${vendor}.${name} succesfully`))
+        .then(() => log.info(`Published app ${vendor}.${name}@${version} succesfully`))
       )
     },
   },
