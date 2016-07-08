@@ -94,6 +94,10 @@ const keepAppAlive = () => {
       input: process.stdin,
       output: process.stdout,
     }).on('SIGINT', () => {
+      if (spinner) {
+        spinner.stop()
+      }
+      log.info('Exiting...')
       workspaceSandboxesClient().deactivateApp(
         getAccount(),
         getDevWorkspace(getLogin()),
@@ -102,9 +106,6 @@ const keepAppAlive = () => {
         name,
         version
       ).finally(() => {
-        if (spinner) {
-          spinner.stop()
-        }
         clearTimeout(keepAliveInterval)
         process.exit()
       })
