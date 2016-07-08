@@ -1,4 +1,5 @@
 import ora from 'ora'
+import chalk from 'chalk'
 import log from '../logger'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
@@ -6,7 +7,7 @@ import readline from 'readline'
 import {Promise, all} from 'bluebird'
 import {listRoot, logChanges} from '../sandbox'
 import userAgent from '../user-agent'
-import {getDevWorkspace} from '../workspace'
+import {getDevWorkspace, getWorkspaceURL} from '../workspace'
 import {renderWatch, renderBuild} from '../render'
 import {getToken, getAccount, getLogin} from '../conf'
 import {
@@ -147,6 +148,10 @@ export default {
     description: 'Send the files to the sandbox and watch for changes',
     handler: () => {
       log.info('Watching app', `${vendor}.${name}@${version}`)
+      console.log(
+        chalk.green('Your URL:'),
+        chalk.blue(getWorkspaceURL(getAccount(), getLogin()))
+      )
       return all([
         listLocalFiles(root).then(generateFilesHashWithRoot),
         listRoot(manifest, getLogin(), getToken()),
