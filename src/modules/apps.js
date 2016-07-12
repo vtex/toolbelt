@@ -4,17 +4,15 @@ import log from '../logger'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
 import readline from 'readline'
+import debounce from 'debounce'
 import {Promise, all} from 'bluebird'
-import {listRoot, logChanges} from '../sandbox'
 import userAgent from '../user-agent'
-import {getDevWorkspace, getWorkspaceURL} from '../workspace'
+import {uniqBy, curry, prop} from 'ramda'
 import {renderWatch, renderBuild} from '../render'
 import {getToken, getAccount, getLogin} from '../conf'
-import {
-  WorkspaceAppsClient,
-  WorkspaceSandboxesClient,
-  SandboxesClient,
-} from '@vtex/apps'
+import {updateFiles, listRoot, logChanges} from '../sandbox'
+import {getDevWorkspace, getWorkspaceURL} from '../workspace'
+import {WorkspaceAppsClient, WorkspaceSandboxesClient} from '@vtex/apps'
 import {
   manifest,
   vendorPattern,
@@ -25,7 +23,6 @@ import {
   generateFilesHash,
   createBatch,
   createChanges,
-  createBuildFolder,
   watch,
   removeBuildFolder,
   createTempPath,
@@ -45,33 +42,31 @@ const workspaceAppsClient = () => new WorkspaceAppsClient({
   userAgent: userAgent,
 })
 
-const sandboxesClient = () => new SandboxesClient({
-  authToken: getToken(),
-  userAgent: userAgent,
-})
-
 const workspaceSandboxesClient = () => new WorkspaceSandboxesClient({
   authToken: getToken(),
   userAgent: userAgent,
 })
 
-const sendChanges = changes => {
-  if (spinner) {
+const sendChanges = (() => {
+  let queue = []
+  return changes => {
+    if (changes.length === 0) {
+      return
+    }
+    spinner = spinner || ora('Sending changes...')
     spinner.start()
-  } else {
-    spinner = ora('Sending changes...').start()
+    queue = uniqBy(curry(prop)('path'), queue.concat(changes).reverse())
+    return Promise.try(
+      debounce(() => {
+        return updateFiles(manifest, getLogin(), getToken(), queue)
+        .then(() => spinner.stop())
+        .then(() => logChanges(queue))
+        .then(log => log.length > 0 ? console.log(log) : null)
+        .then(() => { queue = [] })
+      }, 200)
+    )
   }
-  return sandboxesClient().updateFiles(
-    vendor,
-    getLogin(),
-    name,
-    version,
-    changes
-  )
-  .then(() => logChanges(changes))
-  .tap(() => spinner.stop())
-  .then(log => log.length > 0 ? console.log(log) : null)
-}
+})()
 
 const updateAppTtl = () => {
   return workspaceSandboxesClient().updateAppTtl(
@@ -153,15 +148,18 @@ export default {
         chalk.green('Your URL:'),
         chalk.blue(getWorkspaceURL(getAccount(), getLogin()))
       )
-      return all([
-        listLocalFiles(root).then(generateFilesHashWithRoot),
-        listRoot(manifest, getLogin(), getToken()),
-      ])
+      return removeBuildFolder(root)
+      .then(() => renderBuild(root, manifest))
+      .then(() =>
+        all([
+          listLocalFiles(root).then(generateFilesHashWithRoot),
+          listRoot(manifest, getLogin(), getToken()),
+        ])
+      )
       .spread(createBatch)
       .then(batch => createChanges(root, batch))
       .then(sendChanges)
       .then(keepAppAlive)
-      .then(() => createBuildFolder(root))
       .then(() => watch(root, sendChanges))
       .then(() => renderWatch(root, manifest))
     },
