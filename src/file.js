@@ -143,7 +143,6 @@ export function watch (root, sendChanges) {
     .on('add', f => sendSaveChanges(root, f, sendChanges))
     .on('change', f => sendSaveChanges(root, f, sendChanges))
     .on('unlink', f => sendRemoveChanges(root, f, sendChanges))
-    .on('unlinkDir', f => sendRemoveChanges(root, f, sendChanges))
     .on('error', reject)
     .on('ready', resolve)
   })
