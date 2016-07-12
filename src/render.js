@@ -1,6 +1,8 @@
 import fs from 'fs'
 import gulp from 'gulp'
 import path from 'path'
+import log from './logger'
+import rimraf from 'rimraf'
 import sass from 'gulp-sass'
 import less from 'gulp-less'
 import babel from 'gulp-babel'
@@ -9,6 +11,7 @@ import {Promise, promisify} from 'bluebird'
 import vtexRender from 'gulp-vtex-render'
 
 const stat = promisify(fs.stat)
+const bbRimraf = promisify(rimraf)
 
 export const renderBasePath = 'render'
 
@@ -42,42 +45,57 @@ export function hasRenderService (root) {
   })
 }
 
-export function buildJS (manifest) {
-  return () => {
-    const componentsFilter = gfilter(`**/${buildComponentsPath}/**/*.json`, {restore: true})
-    const routesFilter = gfilter(`**/${buildRoutesPath}/*.json`, {restore: true})
-    const routesSettingsFilter = gfilter(`**/${buildRouteSettingsPath}/*.json`, {restore: true})
-    return new Promise((resolve, reject) => {
-      gulp.src(jsGlob)
-      .pipe(babel({
-        presets: [
-          path.resolve(nodeModulesPath, 'babel-preset-es2015'),
-          path.resolve(nodeModulesPath, 'babel-preset-stage-2'),
-          path.resolve(nodeModulesPath, 'babel-preset-react'),
-        ],
-        plugins: [
-          path.resolve(nodeModulesPath, 'babel-plugin-vtex-render-route'),
-          path.resolve(nodeModulesPath, 'babel-plugin-transform-es2015-modules-systemjs'),
-        ],
-      }))
-      .pipe(gulp.dest(buildAssetsPath))
-      .pipe(vtexRender({manifest: manifest}))
-      .pipe(componentsFilter)
-      .pipe(gulp.dest(buildComponentsPath))
-      .pipe(componentsFilter.restore)
-      .pipe(routesFilter)
-      .pipe(gulp.dest(buildRoutesPath))
-      .pipe(routesFilter.restore)
-      .pipe(routesSettingsFilter)
-      .pipe(gulp.dest(buildRouteSettingsPath))
-      .on('end', resolve)
-      .on('error', reject)
-    })
-  }
+export function removeConfigFolders (root) {
+  log.debug('Removing config folders...')
+  return Promise.all([
+    bbRimraf(path.resolve(root, buildRoutesPath)),
+    bbRimraf(path.resolve(root, buildComponentsPath)),
+    bbRimraf(path.resolve(root, buildRouteSettingsPath)),
+  ])
+  .catch(err => {
+    return err.code === 'ENOENT'
+      ? Promise.resolve()
+      : Promise.reject(err)
+  })
 }
 
-export function watchJS (manifest) {
-  gulp.watch(jsGlob, buildJS(manifest))
+export function buildJS (manifest) {
+  const componentsFilter = gfilter(`**/${buildComponentsPath}/**/*.json`, {restore: true})
+  const routesFilter = gfilter(`**/${buildRoutesPath}/*.json`, {restore: true})
+  const routesSettingsFilter = gfilter(`**/${buildRouteSettingsPath}/*.json`, {restore: true})
+  return new Promise((resolve, reject) => {
+    gulp.src(jsGlob)
+    .pipe(babel({
+      presets: [
+        path.resolve(nodeModulesPath, 'babel-preset-es2015'),
+        path.resolve(nodeModulesPath, 'babel-preset-stage-2'),
+        path.resolve(nodeModulesPath, 'babel-preset-react'),
+      ],
+      plugins: [
+        path.resolve(nodeModulesPath, 'babel-plugin-vtex-render-route'),
+        path.resolve(nodeModulesPath, 'babel-plugin-transform-es2015-modules-systemjs'),
+      ],
+    }))
+    .pipe(gulp.dest(buildAssetsPath))
+    .pipe(vtexRender({manifest: manifest}))
+    .pipe(componentsFilter)
+    .pipe(gulp.dest(buildComponentsPath))
+    .pipe(componentsFilter.restore)
+    .pipe(routesFilter)
+    .pipe(gulp.dest(buildRoutesPath))
+    .pipe(routesFilter.restore)
+    .pipe(routesSettingsFilter)
+    .pipe(gulp.dest(buildRouteSettingsPath))
+    .on('end', resolve)
+    .on('error', reject)
+  })
+}
+
+export function watchJS (root, manifest) {
+  gulp.watch(jsGlob, () => {
+    return removeConfigFolders(root)
+    .then(() => buildJS(manifest))
+  })
 }
 
 export function buildSass () {
@@ -110,26 +128,21 @@ export function watchLESS () {
 
 export function buildRender (manifest) {
   return Promise.all([
-    buildJS(manifest)(),
+    buildJS(manifest),
     buildSass(),
     buildLESS(),
   ])
 }
 
-export function watchRender (manifest) {
-  watchJS(manifest)
+export function watchRender (root, manifest) {
+  watchJS(root, manifest)
   watchSass()
   watchLESS()
 }
 
-export function buildAndWatchRender (manifest) {
-  buildRender(manifest)
-  watchRender(manifest)
-}
-
 export function renderWatch (root, manifest) {
   return hasRenderService(root)
-  .then(hasRender => hasRender ? buildAndWatchRender(manifest) : null)
+  .then(hasRender => hasRender ? watchRender(root, manifest) : null)
 }
 
 export function renderBuild (root, manifest) {
