@@ -49,3 +49,16 @@ export function logChanges (changes) {
     return acc + `${newline}${chalk.yellow('U')} ${change.path}`
   }, '')
 }
+
+export function updateFiles ({vendor, name, version}, login, token, changes) {
+  return new SandboxesClient({
+    authToken: token,
+    userAgent: userAgent,
+  }).updateFiles(
+    vendor,
+    login,
+    name,
+    version,
+    changes
+  )
+}
