@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import glob from 'glob'
+import log from './logger'
 import rimraf from 'rimraf'
 import crypto from 'crypto'
 import chokidar from 'chokidar'
@@ -121,6 +122,7 @@ export function createChanges (root, batch) {
 }
 
 export function removeBuildFolder (root) {
+  log.debug('Removing build folder...')
   return bbRimraf(path.resolve(root, '.build/'))
   .catch(err => {
     return err.code === 'ENOENT'
