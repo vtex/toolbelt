@@ -120,17 +120,6 @@ export function createChanges (root, batch) {
   })
 }
 
-export function createBuildFolder (root) {
-  const buildPath = path.resolve(root, '.build/')
-  return mkdir(buildPath)
-  .then(() => buildPath)
-  .catch(err => {
-    return err.code === 'EEXIST'
-      ? Promise.resolve(buildPath)
-      : Promise.reject(err)
-  })
-}
-
 export function removeBuildFolder (root) {
   return bbRimraf(path.resolve(root, '.build/'))
   .catch(err => {
