@@ -1,13 +1,15 @@
 import ora from 'ora'
 import chalk from 'chalk'
 import log from '../logger'
+import tinylr from 'tiny-lr'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
 import readline from 'readline'
 import debounce from 'debounce'
 import {Promise, all} from 'bluebird'
 import userAgent from '../user-agent'
-import {uniqBy, curry, prop} from 'ramda'
+import request from 'request-promise'
+import {map, uniqBy, curry, prop} from 'ramda'
 import {renderWatch, renderBuild} from '../render'
 import {getToken, getAccount, getLogin} from '../conf'
 import {updateFiles, listRoot, logChanges} from '../sandbox'
@@ -33,7 +35,11 @@ import {
 
 let spinner
 
+const lrServer = tinylr()
+
 const root = process.cwd()
+
+const pathProp = curry(prop)('path')
 
 const {vendor, name, version} = manifest
 
@@ -55,10 +61,11 @@ const sendChanges = (() => {
     }
     spinner = spinner || ora('Sending changes...')
     spinner.start()
-    queue = uniqBy(curry(prop)('path'), queue.concat(changes).reverse())
+    queue = uniqBy(pathProp, queue.concat(changes).reverse())
     return Promise.try(
       debounce(() => {
         return updateFiles(manifest, getLogin(), getToken(), queue)
+        .then(() => sendChangesToLr(queue))
         .then(() => spinner.stop())
         .then(() => logChanges(queue))
         .then(log => log.length > 0 ? console.log(log) : null)
@@ -101,6 +108,7 @@ const keepAppAlive = () => {
         name,
         version
       ).finally(() => {
+        lrServer.close()
         clearTimeout(keepAliveInterval)
         process.exit()
       })
@@ -109,6 +117,15 @@ const keepAppAlive = () => {
 }
 
 const generateFilesHashWithRoot = localFiles => generateFilesHash(root, localFiles)
+
+const sendChangesToLr = changes => {
+  const files = map(pathProp, changes)
+  return request({
+    method: 'POST',
+    uri: 'http://localhost:35729/changed',
+    json: {files},
+  })
+}
 
 export default {
   list: {
@@ -154,6 +171,7 @@ export default {
         all([
           listLocalFiles(root).then(generateFilesHashWithRoot),
           listRoot(manifest, getLogin(), getToken()),
+          lrServer.listen(35729),
         ])
       )
       .spread(createBatch)
