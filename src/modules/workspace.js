@@ -63,6 +63,19 @@ export default {
         .then(() => log.info(`Workspace ${name} deleted successfully`))
       },
     },
+    use: {
+      requiredArgs: 'name',
+      description: 'Use a workspace to perform operations',
+      handler: (name) => {
+        return client().get(getAccount(), name)
+        .then(() => saveCurrentWorkspace(name))
+        .catch(res => {
+          return res.statusCode === 404
+          ? log.info(`Workspace ${name} not found`)
+          : Promise.reject(res)
+        })
+      }
+    },
     promote: {
       requiredArgs: 'name',
       description: 'Promote this workspace to master',
