@@ -1,9 +1,10 @@
 import chalk from 'chalk'
+import moment from 'moment'
 import {Promise} from 'bluebird'
-import {WorkspacesClient} from '@vtex/workspaces'
-import {SandboxesClient} from '@vtex/apps'
 import userAgent from './user-agent'
+import {SandboxesClient} from '@vtex/apps'
 import {getDevWorkspace} from './workspace'
+import {WorkspacesClient} from '@vtex/workspaces'
 
 export function createSandbox (account, login, token) {
   return new WorkspacesClient({
@@ -41,12 +42,15 @@ export function listRoot ({vendor, name, version}, login, token) {
 }
 
 export function logChanges (changes) {
+  const time = moment().format('HH:mm:ss')
   return changes.reduce((acc, change) => {
-    const newline = acc.length === 0 ? '' : '\n'
+    const prefix = chalk.dim(
+      acc.length === 0 ? `[${time}] ` : `\n[${time}] `
+    )
     if (change.action === 'remove') {
-      return acc + `${newline}${chalk.red('D')} ${change.path}`
+      return acc + `${prefix}${chalk.red('D')} ${change.path}`
     }
-    return acc + `${newline}${chalk.yellow('U')} ${change.path}`
+    return acc + `${prefix}${chalk.yellow('U')} ${change.path}`
   }, '')
 }
 
