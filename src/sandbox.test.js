@@ -1,8 +1,10 @@
 import test from 'ava'
 import chalk from 'chalk'
+import moment from 'moment'
 import {logChanges} from './sandbox'
 
 test('creates a log given a set of changes', t => {
+  const time = moment().format('HH:mm:ss')
   const changes = [
     {
       action: 'save',
@@ -22,10 +24,10 @@ test('creates a log given a set of changes', t => {
     },
   ]
   const expectedLog =
-    `${chalk.yellow('U')} manifest.json` +
-    `\n${chalk.yellow('U')} render/assets/Bar.js` +
-    `\n${chalk.red('D')} render/assets/Foo.js` +
-    `\n${chalk.red('D')} render/assets/Baz.js`
-  const log = logChanges(changes)
+    `${chalk.dim(`[${time}] `)}${chalk.yellow('U')} manifest.json` +
+    `${chalk.dim(`\n[${time}] `)}${chalk.yellow('U')} render/assets/Bar.js` +
+    `${chalk.dim(`\n[${time}] `)}${chalk.red('D')} render/assets/Foo.js` +
+    `${chalk.dim(`\n[${time}] `)}${chalk.red('D')} render/assets/Baz.js`
+  const log = logChanges(changes, time)
   t.is(log, expectedLog)
 })

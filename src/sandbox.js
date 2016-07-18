@@ -1,5 +1,4 @@
 import chalk from 'chalk'
-import moment from 'moment'
 import {Promise} from 'bluebird'
 import userAgent from './user-agent'
 import {SandboxesClient} from '@vtex/apps'
@@ -41,8 +40,7 @@ export function listRoot ({vendor, name, version}, login, token) {
   })
 }
 
-export function logChanges (changes) {
-  const time = moment().format('HH:mm:ss')
+export function logChanges (changes, time) {
   return changes.reduce((acc, change) => {
     const prefix = chalk.dim(
       acc.length === 0 ? `[${time}] ` : `\n[${time}] `

@@ -1,6 +1,7 @@
 import ora from 'ora'
 import chalk from 'chalk'
 import log from '../logger'
+import moment from 'moment'
 import tinylr from 'tiny-lr'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
@@ -67,7 +68,7 @@ const sendChanges = (() => {
         return updateFiles(manifest, getLogin(), getToken(), queue)
         .then(() => sendChangesToLr(queue))
         .then(() => spinner.stop())
-        .then(() => logChanges(queue))
+        .then(() => logChanges(queue, moment().format('HH:mm:ss')))
         .then(log => log.length > 0 ? console.log(log) : null)
         .then(() => { queue = [] })
       }, 200)
