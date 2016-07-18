@@ -1,14 +1,14 @@
 import inquirer from 'inquirer'
-import {WorkspacesClient} from '@vtex/workspaces'
+import {VBaseClient} from '../vbase'
 import {Promise} from 'bluebird'
 import Table from 'cli-table'
 import moment from 'moment'
 import {filter, keys} from 'ramda'
 import log from '../logger'
-import {getToken, getAccount} from '../conf'
+import {getToken, getAccount, saveCurrentWorkspace} from '../conf'
 import userAgent from '../user-agent'
 
-const client = () => new WorkspacesClient({
+const client = () => new VBaseClient({
   authToken: getToken(),
   userAgent: userAgent,
 })
@@ -21,14 +21,13 @@ export default {
         log.debug('Listing workspaces')
         return client().list(getAccount()).then(res => {
           const table = new Table({
-            head: ['Name', 'Changes', 'Last Modified', 'Services'],
+            head: ['Name', 'Last Modified', 'State'],
           })
           res.body.forEach(r => {
             table.push([
               r.name,
-              r.state.changes,
-              moment(r.state.lastModified).calendar(),
-              keys(filter(b => b.changes > 0, r.bucketStates)).join(','),
+              moment(r.lastModified).calendar(),
+              r.state
             ])
           })
           console.log(table.toString())
