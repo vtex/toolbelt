@@ -9,7 +9,7 @@ import debounce from 'debounce'
 import {Promise, all} from 'bluebird'
 import userAgent from '../user-agent'
 import request from 'request-promise'
-import {map, uniqBy, curry, prop} from 'ramda'
+import {map, uniqBy, prop} from 'ramda'
 import {renderWatch, renderBuild} from '../render'
 import {getToken, getAccount, getLogin} from '../conf'
 import {updateFiles, listRoot, logChanges} from '../sandbox'
@@ -39,7 +39,7 @@ const lrServer = tinylr()
 
 const root = process.cwd()
 
-const pathProp = curry(prop)('path')
+const pathProp = prop('path')
 
 const {vendor, name, version} = manifest
 
