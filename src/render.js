@@ -6,6 +6,7 @@ import rimraf from 'rimraf'
 import sass from 'gulp-sass'
 import less from 'gulp-less'
 import babel from 'gulp-babel'
+import watch from 'gulp-watch'
 import gfilter from 'gulp-filter'
 import {Promise, promisify} from 'bluebird'
 import vtexRender from 'gulp-vtex-render'
@@ -92,7 +93,7 @@ export function buildJS (manifest) {
 }
 
 export function watchJS (root, manifest) {
-  gulp.watch(jsGlob, () => {
+  watch(jsGlob, () => {
     return removeConfigFolders(root)
     .then(() => buildJS(manifest))
   })
@@ -109,7 +110,7 @@ export function buildSass () {
 }
 
 export function watchSass () {
-  gulp.watch(sassGlob, buildSass)
+  watch(sassGlob, buildSass)
 }
 
 export function buildLESS () {
@@ -123,7 +124,7 @@ export function buildLESS () {
 }
 
 export function watchLESS () {
-  gulp.watch(lessGlob, buildLESS)
+  watch(lessGlob, buildLESS)
 }
 
 export function buildRender (manifest) {
