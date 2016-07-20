@@ -24,9 +24,7 @@ export const buildAssetsPath = `${buildRenderPath}/assets`
 
 export const buildComponentsPath = `${buildRenderPath}/components`
 
-export const buildRoutesPath = `${buildRenderPath}/routes`
-
-export const buildRouteSettingsPath = `${buildRenderPath}/settings/routes`
+export const buildRoutesFilePath = `${buildRenderPath}/routes.json`
 
 export const jsGlob = `${renderBasePath}/**/*.js`
 
@@ -49,9 +47,8 @@ export function hasRenderService (root) {
 export function removeConfigsAndJS (root) {
   log.debug('Removing render build folder...')
   return Promise.all([
-    bbRimraf(path.resolve(root, buildRoutesPath)),
     bbRimraf(path.resolve(root, buildComponentsPath)),
-    bbRimraf(path.resolve(root, buildRouteSettingsPath)),
+    bbRimraf(path.resolve(root, buildRoutesFilePath)),
     bbRimraf(path.join(root, buildAssetsPath, '**/*.js')),
   ])
   .catch(err => {
@@ -63,8 +60,7 @@ export function removeConfigsAndJS (root) {
 
 export function buildJS (manifest) {
   const componentsFilter = gfilter(`**/${buildComponentsPath}/**/*.json`, {restore: true})
-  const routesFilter = gfilter(`**/${buildRoutesPath}/*.json`, {restore: true})
-  const routesSettingsFilter = gfilter(`**/${buildRouteSettingsPath}/*.json`, {restore: true})
+  const routesFilter = gfilter(`**/${buildRoutesFilePath}`, {restore: true})
   return new Promise((resolve, reject) => {
     gulp.src(jsGlob)
     .pipe(babel({
@@ -84,10 +80,7 @@ export function buildJS (manifest) {
     .pipe(gulp.dest(buildComponentsPath))
     .pipe(componentsFilter.restore)
     .pipe(routesFilter)
-    .pipe(gulp.dest(buildRoutesPath))
-    .pipe(routesFilter.restore)
-    .pipe(routesSettingsFilter)
-    .pipe(gulp.dest(buildRouteSettingsPath))
+    .pipe(gulp.dest(buildRenderPath))
     .on('end', resolve)
     .on('error', reject)
   })
