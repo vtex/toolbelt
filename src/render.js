@@ -46,9 +46,14 @@ export function hasRenderService (root) {
   })
 }
 
-export function removeBuildRenderFolder (root) {
+export function removeConfigsAndJS (root) {
   log.debug('Removing render build folder...')
-  return bbRimraf(path.resolve(root, buildRenderPath))
+  return Promise.all([
+    bbRimraf(path.resolve(root, buildRoutesPath)),
+    bbRimraf(path.resolve(root, buildComponentsPath)),
+    bbRimraf(path.resolve(root, buildRouteSettingsPath)),
+    bbRimraf(path.join(root, buildAssetsPath, '**/*.js')),
+  ])
   .catch(err => {
     return err.code === 'ENOENT'
       ? Promise.resolve()
@@ -90,7 +95,7 @@ export function buildJS (manifest) {
 
 export function watchJS (root, manifest) {
   watch(jsGlob, () => {
-    return removeBuildRenderFolder(root)
+    return removeConfigsAndJS(root)
     .then(() => buildJS(manifest))
   })
 }
