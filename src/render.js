@@ -18,15 +18,15 @@ export const renderBasePath = 'render'
 
 export const buildBasePath = '.build'
 
-export const buildAssetsPath = `${buildBasePath}/render/assets`
+export const buildRenderPath = `${buildBasePath}/${renderBasePath}`
 
-export const buildComponentsPath = `${buildBasePath}/render/components`
+export const buildAssetsPath = `${buildRenderPath}/assets`
 
-export const buildRoutesPath = `${buildBasePath}/render/routes`
+export const buildComponentsPath = `${buildRenderPath}/components`
 
-export const buildSettingsPath = `${buildBasePath}/render/settings`
+export const buildRoutesPath = `${buildRenderPath}/routes`
 
-export const buildRouteSettingsPath = `${buildSettingsPath}/routes`
+export const buildRouteSettingsPath = `${buildRenderPath}/settings/routes`
 
 export const jsGlob = `${renderBasePath}/**/*.js`
 
@@ -46,13 +46,9 @@ export function hasRenderService (root) {
   })
 }
 
-export function removeConfigFolders (root) {
-  log.debug('Removing config folders...')
-  return Promise.all([
-    bbRimraf(path.resolve(root, buildRoutesPath)),
-    bbRimraf(path.resolve(root, buildComponentsPath)),
-    bbRimraf(path.resolve(root, buildRouteSettingsPath)),
-  ])
+export function removeBuildRenderFolder (root) {
+  log.debug('Removing render build folder...')
+  return bbRimraf(path.resolve(root, buildRenderPath))
   .catch(err => {
     return err.code === 'ENOENT'
       ? Promise.resolve()
@@ -94,7 +90,7 @@ export function buildJS (manifest) {
 
 export function watchJS (root, manifest) {
   watch(jsGlob, () => {
-    return removeConfigFolders(root)
+    return removeBuildRenderFolder(root)
     .then(() => buildJS(manifest))
   })
 }
