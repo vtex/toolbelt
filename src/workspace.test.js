@@ -1,8 +1,10 @@
 import test from 'ava'
-import {getDevWorkspace} from './workspace'
-
-const workspace = getDevWorkspace('foo@bar.com.br')
+import {getWorkspaceURL} from './workspace'
 
 test('makes a development workspace from the login email', t => {
-  t.is(workspace, 'sb_foo@bar.com.br')
+  const account = 'dreamstore'
+  const workspace = 'test'
+  const expected = `http://${account}.beta.myvtex.com/?workspace=${workspace}`
+  const actual = getWorkspaceURL(account, workspace)
+  t.is(actual, expected)
 })
