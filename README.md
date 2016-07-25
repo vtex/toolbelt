@@ -2,13 +2,29 @@
 
 [![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt)
 
-CLI tool for developing VTEX apps.
+All you need to start using the VTEX platform.
+
+```sh
+npm install -g vtex
+```
+
+### What is this?
+
+VTEX Toolbelt is a command-line program that gives you access to all of the features in the VTEX platform.
+
+With it you can:
+
+- List, install and uninstall available apps in your account.
+- List, create and remove workspaces.
+- Promote an workspace to `live`, making it public in your account URL.
+- Develop new apps in sandbox mode, using automatic synchronization.
+- Publish apps to the VTEX App Store.
 
 # Getting started
 
 The VTEX Toolbelt can be installed via [npm](https://www.npmjs.com/).
 If you don't have it installed, you can get it bundled with [node](https://nodejs.org/):
- - [Linux](https://gist.github.com/isaacs/579814)
+ - [Linux](https://nodejs.org/en/download/package-manager/)
  - [Mac and Windows](https://nodejs.org/download/)
 
 ## Installing the VTEX Toolbelt
@@ -19,36 +35,59 @@ It's recommended that you install it globally (you may need [sudo](http://wiki.u
 npm install -g vtex
 ```
 
-## Warming up
+Now you can use the `vtex` command:
 
-Remember that your project needs to meet some requirements to work:
+```sh
+$ vtex
+  Welcome to VTEX I/O
+  Login with vtex login <account>
 
-1. You need to have a VTEX ID credential in order to send the files to the developer environment or publish an app
-2. Your app must have a proper `manifest.json`, here's an example:
+  Usage: vtex <command> [options]
 
-    ```javascript
-    {
-      "name": "app-name",
-      "version": "0.2.0",
-      "vendor": "vtex"
-    }
-    ```
+  Commands:
 
-## Developing an app
+    login <account> [login]    Log into a VTEX account
+    logout                     Logout of the current VTEX account
+    list [query]               List your installed VTEX apps
+    watch <path>               Watch this path creating a sandbox
+    install <app>              Install the specified app
+    uninstall <app>            Uninstall the specified app
+    publish <app>              Publish this app
 
-> If you need help with the structure of your project or you just don't want to spend the time with this tinkering, you can use our [generator](https://github.com/vtex/generator-vtex)!
+    workspace list             List workspaces on this account
+    workspace create <name>    Create a new workspace with this name
+    workspace delete <name>    Delete this workspace
+    workspace promote <name>   Promote this workspace to master
 
-On the root of your project, run the `vtex watch` and click or copy the URL provided by the VTEX Toolbelt.
+  Options:
 
-That should do it! The VTEX Toolbelt watcher will be monitoring your files and send them to the VTEX Gallery as soon as you edit them.
+    -h, --help  show help information
+```
 
-For more information on the commands, options and other configs, you can seek more information below!
+## Login
+
+Start by using `vtex login <account>` to receive your credentials and be able to access other features.
+Simply type this command and follow the instructions.
+
+## Initialize an app structure
+
+To create an app from scratch, use `vtex init` and follow the instructions.
+
+Now you have a working app structure, let's see it running.
+
+## Using watch
+
+On your app directory, run `vtex watch` and click or copy the provided URL.
+
+The `vtex` command will now monitor your files for changes and sync them automatically.
 
 ---
 
-# Auth
+# Frequently Asked Questions
 
-You can use `vtex login` to login with yout VTEX ID credentials or `vtex logout` if you're already logged in and want to change credentials.
+## How do I login?
+
+You can use `vtex login` to login with your VTEX ID credentials or `vtex logout` if you're already logged in and want to change credentials.
 
 When logging in, you will be asked for **3** things:
 
@@ -61,7 +100,7 @@ If you wish to work on another `account`, logout and login again with that `acco
 Note that `watch` and `publish` implicitly checks if you're logged, and if you're not, it asks your credentials before proceeding.
 
 
-# Watch
+## How do I develop an app locally?
 
 To develop an app locally, open the directory where your VTEX app is and then type:
 
@@ -69,118 +108,19 @@ To develop an app locally, open the directory where your VTEX app is and then ty
 vtex watch
 ```
 
-VTEX Toolbelt will upload all your app files to the developer environment, print an URL for your use and will be watching for any changes you make to the files.
+Toolbelt will upload all your app files to the developer environment, print an URL for your use and watch for any changes you make to the files, which will be automatically synchronized.
 
-There's other forms of use too, if you use the options:
+## How do I ignore specific files or directories in my app so that they are not uploaded?
 
-Option|Alias
----|---
-`vtex watch --webpack`|`vtex watch -w`
-`vtex watch --server`|`vtex watch -s`
-
-## Webpack
-
-You can run the VTEX Toolbelt watcher in parallel with the [Webpack](http://webpack.github.io/) watcher if you use the `--webpack` option under the `watch` command.
-
-Make sure that you have a well configured and working [webpack.config.js](http://webpack.github.io/docs/tutorials/getting-started/#config-file) on the root of your project.
-
-```sh
-vtex watch --webpack
-```
-
-## Dev Server
-
-You can also run the VTEX Toolbelt watcher in parallel with the Dev Server watcher if you use the `--server` option under the `watch` command.
-
-As Dev Server uses Webpack, you also need a webpack.config.js file on the root of yout project.
-
-```sh
-vtex watch --server
-```
-
-You need to call it this way if you want to enable [Hot Module Replacement](http://webpack.github.io/docs/hot-module-replacement-with-webpack.html), see below for more information on how to configure your project for this.
+Create a `.vtexignore` file containing, on each line, paths you wish to ignore.
+If no `.vtexignore` is found, your [.gitignore](http://git-scm.com/docs/gitignore) file is used instead.
 
 
-# Livereload
+## How do I publish my App to the VTEX App Store?
 
-Add to your layout the following script:
+To publish your VTEX app to VTEX App Store, use the `vtex publish` command. The app will be published under the vendor name.
 
-```html
-<script src="http://localhost:35729/livereload.js?snipver=1"></script>
-```
-
-# Hot Module Replacement
-
-First things first, you need to use [babel](https://babeljs.io/). Then, there's a few packages you need to install:
-
-- [babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform)
-- [react-transform-hmr](https://github.com/gaearon/react-transform-hmr)
-- [react-transform-catch-errors](https://github.com/gaearon/react-transform-catch-errors) (actually, this one is opcional)
-
-You can install them using `npm i <package-name> --save-dev` on the root folder of your project (the `--save-dev` adds that package to the `devDependencies` of your `package.json`).
-
-After that, create a `.babelrc` file on the root folder of your project with the following:
-
-```json
-{
-  "stage": 0,
-  "env": {
-    "development": {
-      "plugins": ["react-transform"],
-      "extra": {
-        "react-transform": {
-          "transforms": [{
-            "transform": "react-transform-hmr",
-            "imports": ["react"],
-            "locals": ["module"]
-          }, {
-            "transform": "react-transform-catch-errors",
-            "imports": ["react", "redbox-react"]
-          }]
-        }
-      }
-    }
-  }
-}
-```
-
-Presto! Everything is configured and ready to use.
-
-
-# VTEX Ignore
-
-The VTEX Ignore it's a file that you can put on the root of your project, naming it `.vtexignore`.
-
-This files tells `watch` which files he shouldn't send to the server.
-If no `.vtexignore` is found, it fallbacks to the [.gitignore](http://git-scm.com/docs/gitignore) file.
-
-
-# Publish
-
-To publish your VTEX app to VTEX Gallery, just type `vtex publish`. The app will be published under the vendor name.
-
-
-# Troubleshooting
-
-### Cannot resolve module 'react/lib/ReactMount'
-
-If an error of this sort occurs:
-
-```
-ERROR in ./src/components/MyComponent.jsx
-Module not found: Error: Cannot resolve module 'react/lib/ReactMount' in /home/username/projects/mycomponent/src/components
- @ ./src/components/MyComponent.jsx 1:350-381
-```
-
-Add `ReactMount` to your webpack.config externals:
-
-```js
-externals: {
-  'react/lib/ReactMount': 'ReactMount',
-  'react': 'React'
-},
-```
-
+---
 
 ## License
 
