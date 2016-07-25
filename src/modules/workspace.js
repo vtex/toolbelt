@@ -1,12 +1,12 @@
 import chalk from 'chalk'
 import moment from 'moment'
 import log from '../logger'
-import {getToken, getAccount, saveCurrentWorkspace} from '../conf'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
 import {Promise} from 'bluebird'
 import userAgent from '../user-agent'
 import {VBaseClient} from '@vtex/vbase'
+import {getToken, getAccount, saveWorkspace} from '../conf'
 
 const client = () => new VBaseClient({
   endpointUrl: 'BETA',
@@ -69,7 +69,7 @@ export default {
       description: 'Use a workspace to perform operations',
       handler: (name) => {
         return client().get(getAccount(), name)
-        .then(() => saveCurrentWorkspace(name))
+        .then(() => saveWorkspace(name))
         .catch(res => {
           return res.statusCode === 404
           ? log.info(`Workspace ${name} not found`)
