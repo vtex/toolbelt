@@ -1,7 +1,7 @@
 import test from 'ava'
 import chalk from 'chalk'
 import moment from 'moment'
-import {logChanges} from './sandbox'
+import {logChanges} from './apps'
 
 test('creates a log given a set of changes', t => {
   const time = moment().format('HH:mm:ss')
