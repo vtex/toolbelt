@@ -70,10 +70,14 @@ export default {
       handler: (name) => {
         return client().get(getAccount(), name)
         .then(() => saveWorkspace(name))
+        .then(() => log.info(`You're now using the workspace ${name}!`))
         .catch(res => {
-          return res.statusCode === 404
-          ? log.info(`Workspace ${name} not found`)
-          : Promise.reject(res)
+          if (res.error && res.error.Code === 'NotFound') {
+            log.info(`Workspace ${name} doesn't exist`)
+            log.info(`You can use ${chalk.bold(`vtex workspace create ${name}`)} to create it!`)
+            return
+          }
+          return Promise.reject(res)
         })
       },
     },
