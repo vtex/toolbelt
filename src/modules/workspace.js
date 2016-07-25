@@ -1,13 +1,15 @@
-import inquirer from 'inquirer'
-import {VBaseClient} from '../vbase'
-import {Promise} from 'bluebird'
-import Table from 'cli-table'
+import chalk from 'chalk'
 import moment from 'moment'
 import log from '../logger'
 import {getToken, getAccount, saveCurrentWorkspace} from '../conf'
+import Table from 'cli-table'
+import inquirer from 'inquirer'
+import {Promise} from 'bluebird'
 import userAgent from '../user-agent'
+import {VBaseClient} from '@vtex/vbase'
 
 const client = () => new VBaseClient({
+  endpointUrl: 'BETA',
   authToken: getToken(),
   userAgent: userAgent,
 })
@@ -22,7 +24,7 @@ export default {
           const table = new Table({
             head: ['Name', 'Last Modified', 'State'],
           })
-          res.body.forEach(r => {
+          res.forEach(r => {
             table.push([
               r.name,
               moment(r.lastModified).calendar(),
