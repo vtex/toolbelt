@@ -3,13 +3,10 @@ import path from 'path'
 import glob from 'glob'
 import log from './logger'
 import rimraf from 'rimraf'
-import crypto from 'crypto'
 import chokidar from 'chokidar'
 import archiver from 'archiver'
-import {map, differenceWith} from 'ramda'
 import {Promise, promisify} from 'bluebird'
 
-const readFile = promisify(fs.readFile)
 const mkdir = promisify(fs.mkdir)
 const bbRimraf = promisify(rimraf)
 const unlink = promisify(fs.unlink)
@@ -58,47 +55,8 @@ export function deleteTempFile (tempPath) {
   return unlink(tempPath)
 }
 
-export function generateFileHash (root, file) {
-  return readFile(path.resolve(root, file))
-  .then(content => {
-    return {
-      path: file,
-      hash: crypto.createHash('md5').update(content, 'binary').digest('hex'),
-    }
-  })
-}
-
-export function generateFilesHash (root, files) {
-  return Promise.all(map(f => generateFileHash(root, f), files))
-}
-
 export function rmBuildPrefix (path) {
   return path.replace(/\.build[\/\\]/, '')
-}
-
-export function createBatch (localFiles, {data: sandboxFiles}) {
-  let batch = {}
-  differenceWith((sb, l) => sb.path === rmBuildPrefix(l.path), sandboxFiles, localFiles)
-  .forEach(file => { batch[file.path] = 'remove' })
-  localFiles.forEach(file => {
-    const buildlessFilePath = rmBuildPrefix(file.path)
-    let hasOnSandbox = false
-    for (const sbFile of sandboxFiles) {
-      const isFileEquals = buildlessFilePath === sbFile.path
-      const isHashEquals = file.hash === sbFile.hash
-      if (isFileEquals) {
-        if (!isHashEquals) {
-          batch[file.path] = 'save'
-        }
-        hasOnSandbox = true
-        break
-      }
-    }
-    if (!hasOnSandbox) {
-      batch[file.path] = 'save'
-    }
-  })
-  return batch
 }
 
 export function normalizePath (filePath) {
