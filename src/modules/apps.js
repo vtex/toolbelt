@@ -179,6 +179,7 @@ export default {
         chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
       )
       let tempPath
+      log.debug('Removing build folder...')
       return removeBuildFolder(root)
       .then(() => {
         log.debug('Building render files...')
