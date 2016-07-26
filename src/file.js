@@ -18,6 +18,7 @@ export const fallbackIgnore = [
   '.build/**/*',
   'manifest.json',
   'render/**/*',
+  'node_modules/**/*',
 ]
 
 export function listLocalFiles (root) {
