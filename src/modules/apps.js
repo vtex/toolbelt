@@ -180,22 +180,29 @@ export default {
       )
       let tempPath
       return removeBuildFolder(root)
-      .then(() =>
-        all([
+      .then(() => {
+        log.debug('Building render files...')
+        log.debug('Creating temp path...')
+        return all([
           renderBuild(root, manifest),
           createTempPath(name, version).then(t => { tempPath = t }),
         ])
-      )
-      .then(() =>
-        all([
+      })
+      .then(() => {
+        log.debug('Listing local files...')
+        log.debug('Starting local live reload server...')
+        return all([
           listLocalFiles(root),
           lrServer.listen(35729),
         ])
-      )
+      })
       .spread(files => compressFiles(files, tempPath))
+      .tap(() => log.debug('Publishing app...'))
       .then(({file}) => publishApp(file, true))
+      .tap(() => log.debug('Deleting temp file...'))
       .then(() => deleteTempFile(tempPath))
       .then(keepAppAlive)
+      .tap(() => log.debug('Starting watch...'))
       .then(() => watch(root, sendChanges))
       .then(() => renderWatch(root, manifest))
     },
