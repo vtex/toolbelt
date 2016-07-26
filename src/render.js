@@ -58,19 +58,9 @@ export function removeConfigsAndJS (root) {
   })
 }
 
-export function removeSass (root) {
-  log.debug('Removing sass build files...')
-  return bbRimraf(path.join(root, buildAssetsPath, '**/*.scss'))
-  .catch(err => {
-    return err.code === 'ENOENT'
-      ? Promise.resolve()
-      : Promise.reject(err)
-  })
-}
-
-export function removeLESS (root) {
-  log.debug('Removing less build files...')
-  return bbRimraf(path.join(root, buildAssetsPath, '**/*.less'))
+export function removeCSS (root) {
+  log.debug('Removing css build files...')
+  return bbRimraf(path.join(root, buildAssetsPath, '**/*.css'))
   .catch(err => {
     return err.code === 'ENOENT'
       ? Promise.resolve()
@@ -125,7 +115,7 @@ export function buildSass () {
 
 export function watchSass (root) {
   watch(sassGlob, () => {
-    return removeSass(root)
+    return removeCSS(root)
     .then(buildSass)
   })
 }
@@ -142,7 +132,7 @@ export function buildLESS () {
 
 export function watchLESS (root) {
   watch(lessGlob, () => {
-    return removeLESS(root)
+    return removeCSS(root)
     .then(buildLESS)
   })
 }
