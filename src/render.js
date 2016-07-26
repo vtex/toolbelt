@@ -45,12 +45,32 @@ export function hasRenderService (root) {
 }
 
 export function removeConfigsAndJS (root) {
-  log.debug('Removing render build folder...')
+  log.debug('Removing configs and js build folders...')
   return Promise.all([
     bbRimraf(path.resolve(root, buildComponentsPath)),
     bbRimraf(path.resolve(root, buildRoutesFilePath)),
     bbRimraf(path.join(root, buildAssetsPath, '**/*.js')),
   ])
+  .catch(err => {
+    return err.code === 'ENOENT'
+      ? Promise.resolve()
+      : Promise.reject(err)
+  })
+}
+
+export function removeSass (root) {
+  log.debug('Removing sass build files...')
+  return bbRimraf(path.join(root, buildAssetsPath, '**/*.scss'))
+  .catch(err => {
+    return err.code === 'ENOENT'
+      ? Promise.resolve()
+      : Promise.reject(err)
+  })
+}
+
+export function removeLESS (root) {
+  log.debug('Removing less build files...')
+  return bbRimraf(path.join(root, buildAssetsPath, '**/*.less'))
   .catch(err => {
     return err.code === 'ENOENT'
       ? Promise.resolve()
@@ -103,8 +123,11 @@ export function buildSass () {
   })
 }
 
-export function watchSass () {
-  watch(sassGlob, buildSass)
+export function watchSass (root) {
+  watch(sassGlob, () => {
+    return removeSass(root)
+    .then(buildSass)
+  })
 }
 
 export function buildLESS () {
@@ -117,8 +140,11 @@ export function buildLESS () {
   })
 }
 
-export function watchLESS () {
-  watch(lessGlob, buildLESS)
+export function watchLESS (root) {
+  watch(lessGlob, () => {
+    return removeLESS(root)
+    .then(buildLESS)
+  })
 }
 
 export function buildRender (manifest) {
@@ -131,8 +157,8 @@ export function buildRender (manifest) {
 
 export function watchRender (root, manifest) {
   watchJS(root, manifest)
-  watchSass()
-  watchLESS()
+  watchSass(root)
+  watchLESS(root)
 }
 
 export function renderWatch (root, manifest) {
