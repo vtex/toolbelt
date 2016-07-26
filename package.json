@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@vtex/apps": "^0.3.0",
-    "@vtex/workspaces": "^0.2.0",
+    "@vtex/vbase": "^0.1.0",
     "archiver": "^1.0.0",
     "babel-plugin-transform-es2015-modules-systemjs": "^6.9.0",
     "babel-plugin-vtex-render-route": "^1.3.0",

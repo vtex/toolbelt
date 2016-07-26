@@ -1,13 +1,15 @@
-import inquirer from 'inquirer'
-import {VBaseClient} from '../vbase'
-import {Promise} from 'bluebird'
-import Table from 'cli-table'
+import chalk from 'chalk'
 import moment from 'moment'
 import log from '../logger'
-import {getToken, getAccount, saveCurrentWorkspace} from '../conf'
+import Table from 'cli-table'
+import inquirer from 'inquirer'
+import {Promise} from 'bluebird'
 import userAgent from '../user-agent'
+import {VBaseClient} from '@vtex/vbase'
+import {getToken, getAccount, saveWorkspace} from '../conf'
 
 const client = () => new VBaseClient({
+  endpointUrl: 'BETA',
   authToken: getToken(),
   userAgent: userAgent,
 })
@@ -22,7 +24,7 @@ export default {
           const table = new Table({
             head: ['Name', 'Last Modified', 'State'],
           })
-          res.body.forEach(r => {
+          res.forEach(r => {
             table.push([
               r.name,
               moment(r.lastModified).calendar(),
@@ -67,11 +69,15 @@ export default {
       description: 'Use a workspace to perform operations',
       handler: (name) => {
         return client().get(getAccount(), name)
-        .then(() => saveCurrentWorkspace(name))
+        .then(() => saveWorkspace(name))
+        .then(() => log.info(`You're now using the workspace ${name}!`))
         .catch(res => {
-          return res.statusCode === 404
-          ? log.info(`Workspace ${name} not found`)
-          : Promise.reject(res)
+          if (res.error && res.error.Code === 'NotFound') {
+            log.info(`Workspace ${name} doesn't exist`)
+            log.info(`You can use ${chalk.bold(`vtex workspace create ${name}`)} to create it!`)
+            return
+          }
+          return Promise.reject(res)
         })
       },
     },

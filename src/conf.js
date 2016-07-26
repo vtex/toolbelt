@@ -15,7 +15,7 @@ export function saveToken (token) {
   conf.set('token', token)
 }
 
-export function saveCurrentWorkspace (workspace) {
+export function saveWorkspace (workspace) {
   return conf.set('workspace', workspace)
 }
 
@@ -31,7 +31,7 @@ export function getToken () {
   return conf.get('token')
 }
 
-export function getCurrentWorkspace () {
+export function getWorkspace () {
   return conf.get('workspace')
 }
 

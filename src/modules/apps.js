@@ -7,15 +7,15 @@ import Table from 'cli-table'
 import inquirer from 'inquirer'
 import readline from 'readline'
 import debounce from 'debounce'
+import {logChanges} from '../apps'
 import {Promise, all} from 'bluebird'
 import userAgent from '../user-agent'
 import request from 'request-promise'
 import {map, uniqBy, prop} from 'ramda'
+import {getWorkspaceURL} from '../workspace'
 import {renderWatch, renderBuild} from '../render'
-import {getToken, getAccount, getLogin} from '../conf'
-import {updateFiles, listRoot, logChanges} from '../sandbox'
-import {getDevWorkspace, getWorkspaceURL} from '../workspace'
-import {WorkspaceAppsClient, WorkspaceSandboxesClient} from '@vtex/apps'
+import {AppsClient, RegistryClient} from '@vtex/apps'
+import {getToken, getAccount, getWorkspace} from '../conf'
 import {
   manifest,
   vendorPattern,
@@ -23,9 +23,6 @@ import {
   wildVersionPattern,
 } from '../manifest'
 import {
-  generateFilesHash,
-  createBatch,
-  createChanges,
   watch,
   removeBuildFolder,
   createTempPath,
@@ -44,18 +41,39 @@ const pathProp = prop('path')
 
 const {vendor, name, version} = manifest
 
-const workspaceAppsClient = () => new WorkspaceAppsClient({
+const appsClient = () => new AppsClient({
+  endpointUrl: 'http://api.beta.vtex.com',
   authToken: getToken(),
   userAgent: userAgent,
 })
 
-const workspaceSandboxesClient = () => new WorkspaceSandboxesClient({
+const registryClient = () => new RegistryClient({
+  endpointUrl: 'http://api.beta.vtex.com',
   authToken: getToken(),
   userAgent: userAgent,
 })
 
 const sendChanges = (() => {
   let queue = []
+  const publishPatch = debounce(
+    (account, workspace, vendor, name, version) => {
+      return registryClient().publishAppPatch(
+        account,
+        workspace,
+        vendor,
+        name,
+        version,
+        queue
+      )
+      .then(() => installApp(vendor, name, version, 35))
+      .then(() => sendChangesToLr(queue))
+      .then(() => spinner.stop())
+      .then(() => logChanges(queue, moment().format('HH:mm:ss')))
+      .then(log => log.length > 0 ? console.log(log) : null)
+      .then(() => { queue = [] })
+    },
+    200
+  )
   return changes => {
     if (changes.length === 0) {
       return
@@ -63,36 +81,23 @@ const sendChanges = (() => {
     spinner = spinner || ora('Sending changes...')
     spinner.start()
     queue = uniqBy(pathProp, queue.concat(changes).reverse())
-    return Promise.try(
-      debounce(() => {
-        return updateFiles(manifest, getLogin(), getToken(), queue)
-        .then(() => sendChangesToLr(queue))
-        .then(() => spinner.stop())
-        .then(() => logChanges(queue, moment().format('HH:mm:ss')))
-        .then(log => log.length > 0 ? console.log(log) : null)
-        .then(() => { queue = [] })
-      }, 200)
-    )
+    return publishPatch(getAccount(), getWorkspace(), vendor, name, version)
   }
 })()
 
-const updateAppTtl = () => {
-  return workspaceSandboxesClient().updateAppTtl(
-    getAccount(),
-    getDevWorkspace(getLogin()),
-    vendor,
-    getLogin(),
-    name,
-    version,
-    35
-  )
-  .catch(() => {})
-}
-
 const keepAppAlive = () => {
-  return updateAppTtl()
+  return installApp(vendor, name, version, 35)
   .then(() => {
-    const keepAliveInterval = setInterval(() => updateAppTtl(), 30000)
+    const keepAliveInterval = setInterval(() => {
+      appsClient().updateAppTtl(
+        getAccount(),
+        getWorkspace(),
+        vendor,
+        name,
+        version,
+        30
+      )
+    }, 30000)
     readline.createInterface({
       input: process.stdin,
       output: process.stdout,
@@ -101,23 +106,12 @@ const keepAppAlive = () => {
         spinner.stop()
       }
       log.info('Exiting...')
-      workspaceSandboxesClient().deactivateApp(
-        getAccount(),
-        getDevWorkspace(getLogin()),
-        vendor,
-        getLogin(),
-        name,
-        version
-      ).finally(() => {
-        lrServer.close()
-        clearTimeout(keepAliveInterval)
-        process.exit()
-      })
+      lrServer.close()
+      clearTimeout(keepAliveInterval)
+      process.exit()
     })
   })
 }
-
-const generateFilesHashWithRoot = localFiles => generateFilesHash(root, localFiles)
 
 const sendChangesToLr = changes => {
   const files = map(pathProp, changes)
@@ -128,6 +122,25 @@ const sendChangesToLr = changes => {
   })
 }
 
+const installApp = (vendor, name, version, ttl = null) => {
+  const actualVersion = ttl ? `${version}+rc` : version
+  return appsClient().installApp(
+    getAccount(),
+    getWorkspace(),
+    {vendor, name, version: actualVersion},
+    ttl
+  )
+}
+
+const publishApp = (file, pre = false) => {
+  return registryClient().publishApp(
+    getAccount(),
+    getWorkspace(),
+    file,
+    pre
+  )
+}
+
 export default {
   list: {
     alias: 'ls',
@@ -135,19 +148,18 @@ export default {
     description: 'List your installed VTEX apps',
     handler: () => {
       log.debug('Starting to list apps')
-      workspaceAppsClient().listDependencies(
+      appsClient().listApps(
         getAccount(),
-        getDevWorkspace(getLogin()),
-        'storefront'
+        getWorkspace()
       )
       .then(res => {
-        if (res.data.length === 0) {
+        if (res.length === 0) {
           return log.info('You have no installed apps')
         }
         const table = new Table({
           head: ['Vendor', 'Name', 'Version'],
         })
-        res.data.forEach(r => {
+        res.forEach(r => {
           table.push([
             r.vendor,
             r.name,
@@ -159,25 +171,30 @@ export default {
     },
   },
   watch: {
-    description: 'Send the files to the sandbox and watch for changes',
+    description: 'Send the files to the registry and watch for changes',
     handler: () => {
       log.info('Watching app', `${vendor}.${name}@${version}`)
       console.log(
         chalk.green('Your URL:'),
-        chalk.blue(getWorkspaceURL(getAccount(), getLogin()))
+        chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
       )
+      let tempPath
       return removeBuildFolder(root)
-      .then(() => renderBuild(root, manifest))
       .then(() =>
         all([
-          listLocalFiles(root).then(generateFilesHashWithRoot),
-          listRoot(manifest, getLogin(), getToken()),
+          renderBuild(root, manifest),
+          createTempPath(name, version).then(t => { tempPath = t }),
+        ])
+      )
+      .then(() =>
+        all([
+          listLocalFiles(root),
           lrServer.listen(35729),
         ])
       )
-      .spread(createBatch)
-      .then(batch => createChanges(root, batch))
-      .then(sendChanges)
+      .spread(files => compressFiles(files, tempPath))
+      .then(({file}) => publishApp(file, true))
+      .then(() => deleteTempFile(tempPath))
       .then(keepAppAlive)
       .then(() => watch(root, sendChanges))
       .then(() => renderWatch(root, manifest))
@@ -186,30 +203,16 @@ export default {
   install: {
     requiredArgs: 'app',
     alias: 'i',
-    options: [
-      {
-        short: 's',
-        long: 'simulation',
-        description: 'simulate an install',
-        type: 'boolean',
-      },
-    ],
     description: 'Install the specified app',
-    handler: (app, options) => {
+    handler: (app) => {
       log.debug('Starting to install app', app)
       const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
       if (!appRegex.test(app)) {
         return log.error('Invalid app format, please use <vendor>.<name>@<version>')
       }
-      const simulation = options.s || options.simulation
-      const [name, version] = app.split('@')
-      workspaceAppsClient().installApp(
-        getAccount(),
-        getDevWorkspace(getLogin()),
-        name,
-        version,
-        simulation
-      )
+      const [vendorAndName, version] = app.split('@')
+      const [vendor, name] = vendorAndName.split('.')
+      installApp(vendor, name, version)
       .then(() => log.info(`Installed app ${app} succesfully`))
       .catch(err => {
         if (err.statusCode === 409) {
@@ -221,22 +224,15 @@ export default {
   },
   uninstall: {
     requiredArgs: 'app',
-    options: [
-      {
-        short: 's',
-        long: 'simulation',
-        description: 'simulate an uninstall',
-        type: 'boolean',
-      },
-    ],
     description: 'Uninstall the specified app',
-    handler: (app, options) => {
+    handler: (app) => {
       log.debug('Starting to uninstall app', app)
-      const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}$`)
+      const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
       if (!appRegex.test(app)) {
-        return log.error('Invalid app format, please use <vendor>.<name>')
+        return log.error('Invalid app format, please use <vendor>.<name>@<version>')
       }
-      const simulation = options.s || options.simulation
+      const [vendorAndName, version] = app.split('@')
+      const [vendor, name] = vendorAndName.split('.')
       Promise.try(() =>
         inquirer.prompt({
           type: 'confirm',
@@ -246,11 +242,12 @@ export default {
       )
       .then(({confirm}) => confirm || Promise.reject('User cancelled'))
       .then(() =>
-        workspaceAppsClient().uninstallApp(
+        appsClient().uninstallApp(
           getAccount(),
-          getDevWorkspace(getLogin()),
-          app,
-          simulation
+          getWorkspace(),
+          vendor,
+          name,
+          version
         )
       )
       .then(() => log.info(`Uninstalled app ${app} succesfully`))
@@ -275,7 +272,7 @@ export default {
       .spread(tempPath =>
         listLocalFiles(root)
         .then(files => compressFiles(files, tempPath))
-        .then(({file}) => workspaceAppsClient().publishApp(vendor, file))
+        .then(({file}) => publishApp(file))
         .then(() => deleteTempFile(tempPath))
         .then(() => spinner.stop())
         .then(() => log.info(`Published app ${vendor}.${name}@${version} succesfully`))
