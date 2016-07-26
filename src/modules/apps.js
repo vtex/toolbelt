@@ -18,17 +18,20 @@ import {AppsClient, RegistryClient} from '@vtex/apps'
 import {getToken, getAccount, getWorkspace} from '../conf'
 import {
   manifest,
-  vendorPattern,
   namePattern,
+  vendorPattern,
   wildVersionPattern,
 } from '../manifest'
 import {
   watch,
-  removeBuildFolder,
+  compressFiles,
+  fallbackBuild,
+  fallbackWatch,
   createTempPath,
   listLocalFiles,
-  compressFiles,
   deleteTempFile,
+  createBuildFolder,
+  removeBuildFolder,
 } from '../file'
 
 let spinner
@@ -181,11 +184,15 @@ export default {
       let tempPath
       log.debug('Removing build folder...')
       return removeBuildFolder(root)
+      .tap(() => log.debug('Creating build folder...'))
+      .then(() => createBuildFolder(root))
       .then(() => {
         log.debug('Building render files...')
+        log.debug('Copying fallback folders or files...')
         log.debug('Creating temp path...')
         return all([
           renderBuild(root, manifest),
+          fallbackBuild(root),
           createTempPath(name, version).then(t => { tempPath = t }),
         ])
       })
@@ -206,6 +213,7 @@ export default {
       .tap(() => log.debug('Starting watch...'))
       .then(() => watch(root, sendChanges))
       .then(() => renderWatch(root, manifest))
+      .then(() => fallbackWatch(root))
     },
   },
   install: {

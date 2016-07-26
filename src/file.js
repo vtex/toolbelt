@@ -1,6 +1,8 @@
 import fs from 'fs'
+import {ncp} from 'ncp'
 import path from 'path'
 import glob from 'glob'
+import {uniq} from 'ramda'
 import rimraf from 'rimraf'
 import chokidar from 'chokidar'
 import archiver from 'archiver'
@@ -10,6 +12,13 @@ const mkdir = promisify(fs.mkdir)
 const bbRimraf = promisify(rimraf)
 const unlink = promisify(fs.unlink)
 const bbGlob = promisify(glob)
+const bbNcp = promisify(ncp)
+
+export const fallbackIgnore = [
+  '.build/**/*',
+  'manifest.json',
+  'render/**/*',
+]
 
 export function listLocalFiles (root) {
   return bbGlob('{.build/**/*,manifest.json}', {
@@ -78,6 +87,10 @@ export function createChanges (root, batch) {
   })
 }
 
+export function createBuildFolder (root) {
+  return mkdir(path.resolve(root, '.build/'))
+}
+
 export function removeBuildFolder (root) {
   return bbRimraf(path.resolve(root, '.build/'))
   .catch(err => {
@@ -110,4 +123,38 @@ export function sendSaveChanges (root, file, sendChanges) {
 
 export function sendRemoveChanges (root, file, sendChanges) {
   return sendChanges(createChanges(root, { [file]: 'remove' }))
+}
+
+export function copyToBuildFolder (root, file) {
+  return bbNcp(path.join(root, file), path.join(root, '.build', file))
+}
+export function fallbackBuild (root) {
+  return bbGlob('**', {
+    cwd: root,
+    nodir: true,
+    ignore: fallbackIgnore,
+  })
+  .then(files => uniq(files.map(f => f.split('/')[0])))
+  .then(files => {
+    return Promise.all(files.map(f => copyToBuildFolder(root, f)))
+  })
+}
+
+export function fallbackWatch (root) {
+  const watcher = chokidar.watch('**', {
+    cwd: root,
+    nodir: true,
+    ignored: fallbackIgnore,
+    persistent: true,
+    ignoreInitial: true,
+    usePolling: process.platform === 'win32',
+  })
+  return new Promise((resolve, reject) => {
+    watcher
+    .on('add', f => copyToBuildFolder(root, f))
+    .on('change', f => copyToBuildFolder(root, f))
+    .on('unlink', f => unlink(path.join(root, '.build', f)))
+    .on('error', reject)
+    .on('ready', resolve)
+  })
 }
