@@ -36,7 +36,12 @@ import {
 
 let spinner
 
-const lrServer = tinylr()
+const lrServer = tinylr({
+  errorListener (err) {
+    if (err.code === 'EADDRINUSE') { return }
+    throw new Error(err)
+  },
+})
 
 const root = process.cwd()
 
@@ -201,7 +206,7 @@ export default {
         log.debug('Starting local live reload server...')
         return all([
           listLocalFiles(root),
-          lrServer.listen(35729),
+          lrServer.listen(),
         ])
       })
       .spread(files => compressFiles(files, tempPath))
