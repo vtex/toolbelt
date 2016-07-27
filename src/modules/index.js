@@ -4,13 +4,14 @@ import {greeting} from '../greeting'
 import apps from './apps'
 import auth from './auth'
 import workspace from './workspace'
+import render from './render'
 // import masterdata from './masterdata'
-// import render from './render'
 
 export default {
   ...auth,
   ...apps,
   ...workspace,
+  ...render,
   'options': [
     {
       'short': 'h',
