@@ -110,8 +110,8 @@ export function buildJS (manifest) {
     .pipe(componentsFilter.restore)
     .pipe(routesFilter)
     .pipe(gulp.dest(buildRenderPath))
-    .on('end', resolve)
-    .on('error', reject)
+    .once('end', resolve)
+    .once('error', reject)
   })
 }
 
@@ -131,8 +131,8 @@ export function buildSass () {
     gulp.src(sassGlob)
     .pipe(sass())
     .pipe(gulp.dest(buildAssetsPath))
-    .on('end', resolve)
-    .on('error', reject)
+    .once('end', resolve)
+    .once('error', reject)
   })
 }
 
@@ -148,8 +148,8 @@ export function buildLESS () {
     gulp.src(lessGlob)
     .pipe(less())
     .pipe(gulp.dest(buildAssetsPath))
-    .on('end', resolve)
-    .on('error', reject)
+    .once('end', resolve)
+    .once('error', reject)
   })
 }
 
