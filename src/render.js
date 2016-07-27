@@ -7,6 +7,7 @@ import sass from 'gulp-sass'
 import less from 'gulp-less'
 import babel from 'gulp-babel'
 import watch from 'gulp-watch'
+import eslint from 'gulp-eslint'
 import gfilter from 'gulp-filter'
 import {Promise, promisify} from 'bluebird'
 import vtexRender from 'gulp-vtex-render'
@@ -68,6 +69,24 @@ export function removeCSS (root) {
   })
 }
 
+export function lintJS () {
+  return new Promise((resolve, reject) => {
+    gulp.src(jsGlob)
+    .pipe(
+      eslint(path.resolve(__dirname, '../.eslintrc'))
+    )
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+    .once('end', resolve)
+    .once('error', err => {
+      return err.name && err.name === 'ESLintError'
+        ? resolve(true)
+        : reject(err)
+    })
+    .resume()
+  })
+}
+
 export function buildJS (manifest) {
   const componentsFilter = gfilter(`**/${buildComponentsPath}/**/*.json`, {restore: true})
   const routesFilter = gfilter(`**/${buildRoutesFilePath}`, {restore: true})
@@ -98,8 +117,12 @@ export function buildJS (manifest) {
 
 export function watchJS (root, manifest) {
   watch(jsGlob, () => {
-    return removeConfigsAndJS(root)
-    .then(() => buildJS(manifest))
+    return lintJS()
+    .then(hasLintErrors => {
+      return !hasLintErrors
+        ? removeConfigsAndJS(root).then(() => buildJS(manifest))
+        : null
+    })
   })
 }
 
@@ -138,11 +161,14 @@ export function watchLESS (root) {
 }
 
 export function buildRender (manifest) {
-  return Promise.all([
-    buildJS(manifest),
-    buildSass(),
-    buildLESS(),
-  ])
+  return lintJS()
+  .then(hasLintErrors => !hasLintErrors ? buildJS(manifest) : null)
+  .then(() => {
+    return Promise.all([
+      buildSass(),
+      buildLESS(),
+    ])
+  })
 }
 
 export function watchRender (root, manifest) {
