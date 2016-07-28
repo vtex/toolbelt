@@ -73,7 +73,7 @@ const sendChanges = (() => {
         version,
         queue
       )
-      .then(() => installApp(vendor, name, version, 35))
+      .then(() => installApp(vendor, name, version))
       .then(() => sendChangesToLr(queue))
       .then(() => spinner.stop())
       .then(() => logChanges(queue, moment().format('HH:mm:ss')))
@@ -94,7 +94,7 @@ const sendChanges = (() => {
 })()
 
 const keepAppAlive = () => {
-  return installApp(vendor, name, version, 35)
+  return installApp(vendor, name, version)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
       appsClient().updateAppTtl(
@@ -102,10 +102,9 @@ const keepAppAlive = () => {
         getWorkspace(),
         vendor,
         name,
-        version,
-        30
+        version
       )
-    }, 30000)
+    }, 20000)
     readline.createInterface({
       input: process.stdin,
       output: process.stdout,
