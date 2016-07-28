@@ -16,10 +16,11 @@ const format = (fullMessage) => {
 }
 
 export default {
+  logLevels: Object.keys(levelFormat),
   listen: (account, workspace, level, authToken) => {
     level = level || 'info'
 
-    console.log('starting listener')
+    console.log('starting listener with level ' + level)
     let es = new EventSource(`http://courier.vtex.com/${account}/${workspace}/app-events?level=${level}`, {
       'Authorization': `token ${authToken}`,
     })

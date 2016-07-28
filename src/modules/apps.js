@@ -178,13 +178,20 @@ export default {
   },
   watch: {
     description: 'Send the files to the registry and watch for changes',
-    handler: () => {
+    optionalArgs: 'log-level',
+    handler: (options) => {
+      let logLevel = options['log-level']
+      if (logLevel && courier.logLevels.indexOf(logLevel) < 0) {
+        log.error('Invalid value for \'log-level\', the valid options are: ' + courier.logLevels.join(', '))
+        log.info('Exiting...')
+        process.exit()
+      }
       log.info('Watching app', `${vendor}.${name}@${version}`)
       console.log(
         chalk.green('Your URL:'),
         chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
       )
-      courier.listen(getAccount(), getWorkspace(), 'info', getToken())
+      courier.listen(getAccount(), getWorkspace(), options['log-level'], getToken())
       let tempPath
       log.debug('Removing build folder...')
       return removeBuildFolder(root)
