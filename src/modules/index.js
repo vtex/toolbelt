@@ -5,6 +5,7 @@ import apps from './apps'
 import auth from './auth'
 import workspace from './workspace'
 import render from './render'
+import setup from './setup'
 // import masterdata from './masterdata'
 
 export default {
@@ -12,6 +13,7 @@ export default {
   ...apps,
   ...workspace,
   ...render,
+  ...setup,
   'options': [
     {
       'short': 'h',
