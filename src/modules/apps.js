@@ -94,7 +94,7 @@ const sendChanges = (() => {
 })()
 
 const keepAppAlive = () => {
-  return installApp(vendor, name, version)
+  return installApp(vendor, name, `${version}+rc`)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
       appsClient().updateAppTtl(
@@ -129,13 +129,11 @@ const sendChangesToLr = changes => {
   })
 }
 
-const installApp = (vendor, name, version, ttl = null) => {
-  const actualVersion = ttl ? `${version}+rc` : version
+const installApp = (vendor, name, version) => {
   return appsClient().installApp(
     getAccount(),
     getWorkspace(),
-    {vendor, name, version: actualVersion},
-    ttl
+    {vendor, name, version}
   )
 }
 
