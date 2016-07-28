@@ -46,11 +46,22 @@ const onError = e => {
       log.error('Missing required arguments:', chalk.blue(e.message))
       break
     case StatusCodeError.name:
-      if (e.statusCode === 401) {
+      const {statusCode} = e
+      if (statusCode === 401) {
         log.error('Oops! There was an authentication error. Please login again.')
         // Try to login and re-issue the command.
         return run({command: tree.login})
         .then(main) // TODO: catch with different handler for second error
+      }
+      if (statusCode >= 500) {
+        try {
+          const {code, exception} = e.error
+          const {message, stackTrace} = exception
+          log.error('There was an API error.', {statusCode, code})
+          log.error(message)
+          log.debug(stackTrace)
+          break
+        } catch (e) {}
       }
       log.error('Oops! There was an unexpected API error.')
       log.error(e)
