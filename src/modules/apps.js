@@ -11,6 +11,7 @@ import {logChanges} from '../apps'
 import {Promise, all} from 'bluebird'
 import userAgent from '../user-agent'
 import request from 'request-promise'
+import courier from '../courier'
 import {map, uniqBy, prop} from 'ramda'
 import {getWorkspaceURL} from '../workspace'
 import {renderWatch, renderBuild} from '../render'
@@ -183,6 +184,7 @@ export default {
         chalk.green('Your URL:'),
         chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
       )
+      courier.listen(getAccount(), getWorkspace(), 'info', getToken())
       let tempPath
       log.debug('Removing build folder...')
       return removeBuildFolder(root)
