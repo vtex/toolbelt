@@ -19,6 +19,14 @@ import {
 
 const [account, login, workspace] = [getAccount(), getLogin(), getWorkspace()]
 
+const client = (token) => {
+  return new VBaseClient({
+    endpointUrl: 'BETA',
+    authToken: token,
+    userAgent: userAgent,
+  })
+}
+
 function promptAccount () {
   const message = 'Please enter a valid account.'
   return Promise.try(() =>
@@ -121,10 +129,7 @@ function saveCredentials ({account, login, token, workspace}) {
 }
 
 function workspaceExists (account, workspace, token) {
-  return new VBaseClient({
-    authToken: token,
-    userAgent: userAgent,
-  }).get(account, workspace)
+  return client(token).get(account, workspace)
   .then(() => true)
   .catch(res =>
     res.error && res.error.Code === 'NotFound'
@@ -134,10 +139,7 @@ function workspaceExists (account, workspace, token) {
 }
 
 function createWorkspace (account, workspace, token) {
-  return new VBaseClient({
-    authToken: token,
-    userAgent: userAgent,
-  }).create(account, workspace)
+  return client(token).create(account, workspace)
   .then(() => workspace)
 }
 
