@@ -57,8 +57,7 @@ const onError = e => {
         try {
           const {code, exception} = e.error
           const {message, stackTrace} = exception
-          log.error('There was an API error.', {statusCode, code})
-          log.error(message)
+          log.error('API:', message, {statusCode, code})
           log.debug(stackTrace)
           break
         } catch (e) {}
