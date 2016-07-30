@@ -99,6 +99,7 @@ export function buildJS (manifest) {
         path.resolve(nodeModulesPath, 'babel-preset-react'),
       ],
       plugins: [
+        [path.resolve(nodeModulesPath, 'babel-plugin-import-rename'), {'(.less|.sass|.scss)$': '.css'}],
         path.resolve(nodeModulesPath, 'babel-plugin-vtex-render-route'),
         path.resolve(nodeModulesPath, 'babel-plugin-transform-es2015-modules-systemjs'),
       ],
