@@ -240,7 +240,7 @@ export default {
       const [vendorAndName, version] = app.split('@')
       const [vendor, name] = vendorAndName.split('.')
       installApp(vendor, name, version)
-      .then(() => log.info(`Installed app ${app} succesfully`))
+      .then(() => log.info(`Installed app ${app} successfully`))
       .catch(err => {
         if (err.statusCode === 409) {
           return log.error(`App ${app} already installed`)
@@ -277,7 +277,7 @@ export default {
           version
         )
       )
-      .then(() => log.info(`Uninstalled app ${app} succesfully`))
+      .then(() => log.info(`Uninstalled app ${app} successfully`))
       .catch(err => {
         if (err.statusCode === 409) {
           return log.error(`App ${app} not installed`)
@@ -302,7 +302,7 @@ export default {
         .then(({file}) => publishApp(file))
         .then(() => deleteTempFile(tempPath))
         .then(() => spinner.stop())
-        .then(() => log.info(`Published app ${vendor}.${name}@${version} succesfully`))
+        .then(() => log.info(`Published app ${vendor}.${name}@${version} successfully`))
         .catch(res => {
           if (spinner) {
             spinner.stop()

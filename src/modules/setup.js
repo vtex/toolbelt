@@ -31,7 +31,7 @@ export default {
             : Promise.reject(err)
         })
         .then(() => linkEslint(pkg, root))
-        .then(() => log.info('Succesfully linked eslint setup!'))
+        .then(() => log.info('Successfully linked eslint setup!'))
         .catch(err => {
           if (err.code && err.code === 'EEXIST') {
             log.error(`${basename(err.dest)} already exists on ${dirname(err.dest)}`)
