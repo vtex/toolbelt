@@ -7,9 +7,11 @@ import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 import {StatusCodeError} from 'request-promise/errors'
 import log from './logger'
 import notify from './update'
-import tree from './modules'
 import {getToken} from './conf'
 
+// Disable deprecation until gulp v4 is out. https://github.com/gulpjs/gulp/issues/1571
+process.noDeprecation = true
+const tree = require('./modules').default
 const run = unboundRun.bind(tree)
 
 // Setup logging
