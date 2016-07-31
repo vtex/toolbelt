@@ -154,7 +154,8 @@ export default {
     description: 'List your installed VTEX apps',
     handler: () => {
       log.debug('Starting to list apps')
-      appsClient().listApps(
+
+      return appsClient().listApps(
         getAccount(),
         getWorkspace()
       )
@@ -194,6 +195,7 @@ export default {
       courier.listen(getAccount(), getWorkspace(), options['log-level'], getToken())
       let tempPath
       log.debug('Removing build folder...')
+
       return removeBuildFolder(root)
       .tap(() => log.debug('Creating build folder...'))
       .then(() => createBuildFolder(root))
@@ -239,7 +241,8 @@ export default {
       }
       const [vendorAndName, version] = app.split('@')
       const [vendor, name] = vendorAndName.split('.')
-      installApp(vendor, name, version)
+
+      return installApp(vendor, name, version)
       .then(() => log.info(`Installed app ${app} successfully`))
       .catch(err => {
         if (err.statusCode === 409) {
@@ -260,7 +263,8 @@ export default {
       }
       const [vendorAndName, version] = app.split('@')
       const [vendor, name] = vendorAndName.split('.')
-      Promise.try(() =>
+
+      return Promise.try(() =>
         inquirer.prompt({
           type: 'confirm',
           name: 'confirm',
@@ -291,7 +295,8 @@ export default {
     handler: () => {
       log.debug('Starting to publish app')
       spinner = ora('Publishing app...').start()
-      removeBuildFolder(root)
+
+      return removeBuildFolder(root)
       .then(() => all([
         createTempPath(name, version),
         renderBuild(root, manifest),
@@ -301,16 +306,11 @@ export default {
         .then(files => compressFiles(files, tempPath))
         .then(({file}) => publishApp(file))
         .then(() => deleteTempFile(tempPath))
-        .then(() => spinner.stop())
-        .then(() => log.info(`Published app ${vendor}.${name}@${version} successfully`))
-        .catch(res => {
-          if (spinner) {
-            spinner.stop()
-          }
-          return res.error.code === 'app_version_already_exists'
-            ? log.error(`Version ${version} already published!`)
-            : Promise.reject(res)
-        })
+        .tap(() => log.info(`Published app ${vendor}.${name}@${version} successfully`))
+        .finally(() => spinner.stop())
+        .catch(res => res.error && res.error.code === 'app_version_already_exists'
+          ? log.error(`Version ${version} already published!`)
+          : Promise.reject(res))
       )
     },
   },

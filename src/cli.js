@@ -37,7 +37,13 @@ const main = () => {
   return Promise.resolve(find(tree, without([VERBOSE], process.argv.slice(2)), minimist))
   .tap(checkCommandExists)
   .tap(checkLogin)
-  .then(run)
+  .then(command => {
+    const maybePromise = run(command)
+    if (!maybePromise || !maybePromise.then) {
+      log.warn('Command handlers should return a Promise.')
+    }
+    return maybePromise
+  })
 }
 
 const onError = e => {
