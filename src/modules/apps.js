@@ -306,8 +306,8 @@ export default {
         .then(files => compressFiles(files, tempPath))
         .then(({file}) => publishApp(file))
         .then(() => deleteTempFile(tempPath))
-        .tap(() => log.info(`Published app ${vendor}.${name}@${version} successfully`))
         .finally(() => spinner.stop())
+        .then(() => log.info(`Published app ${vendor}.${name}@${version} successfully`))
         .catch(res => res.error && res.error.code === 'app_version_already_exists'
           ? log.error(`Version ${version} already published!`)
           : Promise.reject(res))
