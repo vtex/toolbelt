@@ -1,0 +1,6 @@
+var Configstore = require('configstore')
+var pkg = require('../package.json')
+var fs = require('fs')
+var conf = new Configstore(pkg.name)
+fs.unlinkSync(conf.path)
+console.log('Removed configstore in', conf.path)

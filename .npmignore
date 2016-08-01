@@ -1,7 +1,8 @@
 .idea/
-npm-debug.log
 src/
 test/
+.nyc_output/
 .babelrc
+.editorconfig
 .eslintrc
 .travis.yml

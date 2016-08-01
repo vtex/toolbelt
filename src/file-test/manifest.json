@@ -1,0 +1,9 @@
+{
+  "name": "foo",
+  "title": "A foo app",
+  "version": "0.1.2",
+  "vendor": "bar",
+  "dependencies": [
+    "vtex.storefront-sdk": "0.x"
+  ]
+}

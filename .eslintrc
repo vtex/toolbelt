@@ -1,3 +1,14 @@
 {
-  "extends": "vtex"
+  "parser": "babel-eslint",
+  "env": {
+    "browser": true,
+    "node": true,
+    "mocha": true
+  },
+  "globals": {
+    "__DEV__": true,
+    "System": true,
+    "__moduleName": true
+  },
+  "extends": ["vtex", "vtex-react"]
 }
