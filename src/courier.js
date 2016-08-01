@@ -23,7 +23,7 @@ let retry = (account, workspace, level, authToken) => {
 const listen = (account, workspace, level, authToken) => {
   level = level || 'info'
 
-  let es = new EventSource(`http://courier.vtex.com/${account}/${workspace}/app-eventsa?level=${level}`, {
+  let es = new EventSource(`http://courier.vtex.com/${account}/${workspace}/app-events?level=${level}`, {
     'Authorization': `token ${authToken}`,
   })
   es.onopen = () => log.debug(`courier: connected with level ${level}`)
