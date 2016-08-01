@@ -4,8 +4,10 @@
 
 All you need to start using the VTEX platform.
 
+**Important**: The current master branch refers to the `next` version. Make sure to use `@next` when installing!
+
 ```sh
-npm install -g vtex
+npm install -g vtex@next
 ```
 
 ### What is this?
@@ -16,8 +18,8 @@ With it you can:
 
 - List, install and uninstall available apps in your account.
 - List, create and remove workspaces.
-- Promote an workspace to `live`, making it public in your account URL.
-- Develop new apps in sandbox mode, using automatic synchronization.
+- Promote a workspace to `master`, making it public in your account URL.
+- Develop new apps in watch mode, using automatic synchronization.
 - Publish apps to the VTEX App Store.
 
 # Getting started
@@ -32,7 +34,7 @@ If you don't have it installed, you can get it bundled with [node](https://nodej
 It's recommended that you install it globally (you may need [sudo](http://wiki.ubuntu-br.org/RootSudo) or administrative privileges):
 
 ```sh
-npm install -g vtex
+npm install -g vtex@next
 ```
 
 Now you can use the `vtex` command:
@@ -46,18 +48,23 @@ $ vtex
 
   Commands:
 
-    login <account> [login]    Log into a VTEX account
-    logout                     Logout of the current VTEX account
-    list [query]               List your installed VTEX apps
-    watch <path>               Watch this path creating a sandbox
-    install <app>              Install the specified app
-    uninstall <app>            Uninstall the specified app
-    publish <app>              Publish this app
+    login                Log into a VTEX account
+    logout               Logout of the current VTEX account
+    list [query]         List your installed VTEX apps
+    watch [log-level]    Send the files to the registry and watch for changes
+    install <app>        Install the specified app
+    uninstall <app>      Uninstall the specified app
+    publish              Publish this app
 
     workspace list             List workspaces on this account
     workspace create <name>    Create a new workspace with this name
     workspace delete <name>    Delete this workspace
+    workspace use <name>       Use a workspace to perform operations
     workspace promote <name>   Promote this workspace to master
+
+    render build     Build app
+
+    setup eslint    Setup a local eslint environment
 
   Options:
 
@@ -66,18 +73,12 @@ $ vtex
 
 ## Login
 
-Start by using `vtex login <account>` to receive your credentials and be able to access other features.
+Start by using `vtex login` to receive your credentials and be able to access other features.
 Simply type this command and follow the instructions.
-
-## Initialize an app structure
-
-To create an app from scratch, use `vtex init` and follow the instructions.
-
-Now you have a working app structure, let's see it running.
 
 ## Using watch
 
-On your app directory, run `vtex watch` and click or copy the provided URL.
+On an app directory, run `vtex watch` and click on or copy the provided URL into your browser.
 
 The `vtex` command will now monitor your files for changes and sync them automatically.
 
