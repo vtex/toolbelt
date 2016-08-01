@@ -74,7 +74,7 @@ const sendChanges = (() => {
         version,
         queue
       )
-      .then(() => installApp(vendor, name, version))
+      .then(() => installApp(vendor, name, `${version}+rc`))
       .then(() => sendChangesToLr(queue))
       .then(() => spinner.stop())
       .then(() => logChanges(queue, moment().format('HH:mm:ss')))
