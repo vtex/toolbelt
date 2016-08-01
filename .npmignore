@@ -4,5 +4,4 @@ test/
 .nyc_output/
 .babelrc
 .editorconfig
-.eslintrc
 .travis.yml
