@@ -297,9 +297,11 @@ export default {
       spinner = ora('Publishing app...').start()
 
       return removeBuildFolder(root)
+      .then(() => createBuildFolder(root))
       .then(() => all([
         createTempPath(name, version),
         renderBuild(root, manifest),
+        fallbackBuild(root),
       ]))
       .spread(tempPath =>
         listLocalFiles(root)
