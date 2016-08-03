@@ -300,7 +300,7 @@ export default {
       .then(() => createBuildFolder(root))
       .then(() => all([
         createTempPath(name, version),
-        renderBuild(root, manifest),
+        renderBuild(root, manifest, true),
         fallbackBuild(root),
       ]))
       .spread(tempPath =>

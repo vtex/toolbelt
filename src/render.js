@@ -4,16 +4,21 @@ import path from 'path'
 import log from './logger'
 import tap from 'gulp-tap'
 import rimraf from 'rimraf'
+import gulpif from 'gulp-if'
 import sass from 'gulp-sass'
 import less from 'gulp-less'
 import babel from 'gulp-babel'
 import watch from 'gulp-watch'
 import cache from 'gulp-cached'
 import eslint from 'gulp-eslint'
+import uglify from 'gulp-uglify'
 import gfilter from 'gulp-filter'
+import cssnano from 'gulp-cssnano'
 import remember from 'gulp-remember'
+import sourcemaps from 'gulp-sourcemaps'
 import vtexRender from 'gulp-vtex-render'
 import {Promise, promisify} from 'bluebird'
+import autoprefixer from 'gulp-autoprefixer'
 
 const stat = promisify(fs.stat)
 const bbRimraf = promisify(rimraf)
@@ -86,12 +91,14 @@ export function lintJS () {
   })
 }
 
-export function buildJS (root, manifest) {
+export function buildJS (root, manifest, production) {
   const componentsFilter = gfilter(`**/${buildComponentsPath}/**/*.json`, {restore: true})
   const routesFilter = gfilter(`**/${buildRoutesFilePath}`, {restore: true})
+  const jsFilter = gfilter(`${buildRenderPath}/**/*.js`, {restore: true})
   return new Promise((resolve, reject) => {
     gulp.src(jsGlob)
     .pipe(cache('scripts'))
+    .pipe(gulpif(!production, sourcemaps.init()))
     .pipe(babel({
       presets: [
         path.resolve(nodeModulesPath, 'babel-preset-es2015'),
@@ -107,7 +114,10 @@ export function buildJS (root, manifest) {
         path.resolve(nodeModulesPath, 'babel-plugin-transform-es2015-modules-systemjs'),
       ],
     }))
+    .pipe(gulpif(!production, sourcemaps.write('.')))
+    .pipe(gulpif(production, uglify()))
     .pipe(gulp.dest(buildAssetsPath))
+    .pipe(jsFilter)
     .pipe(remember('scripts'))
     .pipe(vtexRender({manifest: manifest}))
     .pipe(componentsFilter)
@@ -142,11 +152,16 @@ export function watchJS (root, manifest) {
   .on('unlink', file => removeFile(root, 'scripts', file))
 }
 
-export function buildSass () {
+export function buildSass (production) {
   return new Promise((resolve, reject) => {
     gulp.src(sassGlob)
     .pipe(cache('sass'))
     .pipe(sass())
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false,
+    }))
+    .pipe(gulpif(production, cssnano()))
     .pipe(gulp.dest(buildAssetsPath))
     .once('end', resolve)
     .once('error', reject)
@@ -154,15 +169,20 @@ export function buildSass () {
 }
 
 export function watchSass (root) {
-  watch(sassGlob, buildSass)
+  watch(sassGlob, () => buildSass(false))
   .on('unlink', file => removeFile(root, 'sass', file))
 }
 
-export function buildLESS () {
+export function buildLESS (production) {
   return new Promise((resolve, reject) => {
     gulp.src(lessGlob)
     .pipe(cache('less'))
     .pipe(less())
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false,
+    }))
+    .pipe(gulpif(production, cssnano()))
     .pipe(gulp.dest(buildAssetsPath))
     .once('end', resolve)
     .once('error', reject)
@@ -170,17 +190,21 @@ export function buildLESS () {
 }
 
 export function watchLESS (root) {
-  watch(lessGlob, buildLESS)
+  watch(lessGlob, () => buildLESS(false))
   .on('unlink', file => removeFile(root, 'less', file))
 }
 
-export function buildRender (manifest) {
+export function buildRender (root, manifest, production) {
   return lintJS()
-  .then(hasLintErrors => !hasLintErrors ? buildJS(manifest) : null)
+  .then(hasLintErrors => {
+    return !hasLintErrors
+      ? buildJS(root, manifest, production)
+      : null
+  })
   .then(() => {
     return Promise.all([
-      buildSass(),
-      buildLESS(),
+      buildSass(production),
+      buildLESS(production),
     ])
   })
 }
@@ -196,7 +220,7 @@ export function renderWatch (root, manifest) {
   .then(hasRender => hasRender ? watchRender(root, manifest) : null)
 }
 
-export function renderBuild (root, manifest) {
+export function renderBuild (root, manifest, production = false) {
   return hasRenderService(root)
-  .then(hasRender => hasRender ? buildRender(root, manifest) : null)
+  .then(hasRender => hasRender ? buildRender(root, manifest, production) : null)
 }
