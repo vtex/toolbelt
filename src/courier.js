@@ -1,5 +1,6 @@
-import EventSource from 'eventsource'
 import log from './logger'
+import EventSource from 'eventsource'
+import {clearLine, cursorTo} from 'readline'
 
 const levelFormat = {
   debug: log.debug,
@@ -29,6 +30,8 @@ const listen = (account, workspace, level, authToken) => {
   es.onopen = () => log.debug(`courier: connected with level ${level}`)
   es.addEventListener('message', (message) => {
     let data = JSON.parse(message.data)
+    clearLine(process.stdout, 0)
+    cursorTo(process.stdout, 0)
     levelFormat[data.level](`(${data.origin}) ${data.message}`)
     retryCount = 0
   })
