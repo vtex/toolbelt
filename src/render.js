@@ -14,10 +14,12 @@ import eslint from 'gulp-eslint'
 import uglify from 'gulp-uglify'
 import gfilter from 'gulp-filter'
 import cssnano from 'gulp-cssnano'
+import imagemin from 'gulp-imagemin'
 import remember from 'gulp-remember'
 import sourcemaps from 'gulp-sourcemaps'
 import vtexRender from 'gulp-vtex-render'
 import {Promise, promisify} from 'bluebird'
+import {clearLine, cursorTo} from 'readline'
 import autoprefixer from 'gulp-autoprefixer'
 
 const stat = promisify(fs.stat)
@@ -40,6 +42,12 @@ export const jsGlob = `${renderBasePath}/**/*.js`
 export const sassGlob = `${renderBasePath}/**/*.scss`
 
 export const lessGlob = `${renderBasePath}/**/*.less`
+
+export const cssGlob = `${renderBasePath}/**/*.css`
+
+export const imgGlob = `${renderBasePath}/**/*.{png,gif,jpg,jpeg,svg,ico}`
+
+export const fontGlob = `${renderBasePath}/**/*.{ttf,otf,woff,woff2}`
 
 export const nodeModulesPath = path.resolve(__dirname, '../node_modules/')
 
@@ -194,6 +202,61 @@ export function watchLESS (root) {
   .on('unlink', file => removeFile(root, 'less', file))
 }
 
+export function copyCSS (production) {
+  return new Promise((resolve, reject) => {
+    gulp.src(cssGlob)
+    .pipe(cache('css'))
+    .pipe(autoprefixer({
+      browsers: ['last 2 versions'],
+      cascade: false,
+    }))
+    .pipe(gulpif(production, cssnano()))
+    .pipe(gulp.dest(buildAssetsPath))
+    .once('end', resolve)
+    .once('error', reject)
+  })
+}
+
+export function watchCSS (root) {
+  watch(cssGlob, () => copyCSS(false))
+  .on('unlink', file => removeFile(root, 'css', file))
+}
+
+export function moveImgs (production) {
+  return new Promise((resolve, reject) => {
+    gulp.src(imgGlob)
+    .pipe(cache('images'))
+    .pipe(gulpif(production, imagemin()))
+    .pipe(gulp.dest(buildAssetsPath))
+    .once('data', () => {
+      clearLine(process.stdout, 0)
+      cursorTo(process.stdout, 0)
+    })
+    .once('end', resolve)
+    .once('error', reject)
+  })
+}
+
+export function watchImgs (root, production) {
+  watch(imgGlob, () => moveImgs(production))
+  .on('unlink', file => removeFile(root, 'images', file))
+}
+
+export function copyFonts () {
+  return new Promise((resolve, reject) => {
+    gulp.src(fontGlob)
+    .pipe(cache('fonts'))
+    .pipe(gulp.dest(buildAssetsPath))
+    .once('end', resolve)
+    .once('error', reject)
+  })
+}
+
+export function watchFonts (root) {
+  watch(fontGlob, copyFonts)
+  .on('unlink', file => removeFile(root, 'fonts', file))
+}
+
 export function buildRender (root, manifest, production) {
   return lintJS()
   .then(hasLintErrors => {
@@ -205,6 +268,9 @@ export function buildRender (root, manifest, production) {
     return Promise.all([
       buildSass(production),
       buildLESS(production),
+      moveImgs(production),
+      copyCSS(production),
+      copyFonts(),
     ])
   })
 }
@@ -213,6 +279,9 @@ export function watchRender (root, manifest) {
   watchJS(root, manifest)
   watchSass(root)
   watchLESS(root)
+  watchImgs(root)
+  watchCSS(root)
+  watchFonts(root)
 }
 
 export function renderWatch (root, manifest) {
