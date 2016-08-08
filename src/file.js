@@ -1,9 +1,10 @@
 import fs from 'fs'
-import {ncp} from 'ncp'
+import gulp from 'gulp'
 import path from 'path'
 import glob from 'glob'
-import {uniq} from 'ramda'
 import rimraf from 'rimraf'
+import cache from 'gulp-cached'
+import gwatch from 'gulp-watch'
 import chokidar from 'chokidar'
 import archiver from 'archiver'
 import {Promise, promisify} from 'bluebird'
@@ -12,14 +13,21 @@ const mkdir = promisify(fs.mkdir)
 const bbRimraf = promisify(rimraf)
 const unlink = promisify(fs.unlink)
 const bbGlob = promisify(glob)
-const bbNcp = promisify(ncp)
 
-export const fallbackIgnore = [
-  '.build/**/*',
-  'manifest.json',
-  'render/**/*',
-  'node_modules/**/*',
+export const fallbackGlob = [
+  '**',
+  '!.build/',
+  '!.build/**/*',
+  '!manifest.json',
+  '!render/',
+  '!render/**/*',
+  '!node_modules/',
+  '!node_modules/**/*',
 ]
+
+export function joinWithBuild (root) {
+  return path.join(root, '.build/')
+}
 
 export function listLocalFiles (root) {
   return bbGlob('{.build/**/*,manifest.json}', {
@@ -126,36 +134,23 @@ export function sendRemoveChanges (root, file, sendChanges) {
   return sendChanges(createChanges(root, { [file]: 'remove' }))
 }
 
-export function copyToBuildFolder (root, file) {
-  return bbNcp(path.join(root, file), path.join(root, '.build', file))
-}
 export function fallbackBuild (root) {
-  return bbGlob('**', {
-    cwd: root,
-    nodir: true,
-    ignore: fallbackIgnore,
-  })
-  .then(files => uniq(files.map(f => f.split('/')[0])))
-  .then(files => {
-    return Promise.all(files.map(f => copyToBuildFolder(root, f)))
+  return new Promise((resolve, reject) => {
+    const buildPath = joinWithBuild(root)
+    gulp.src(fallbackGlob)
+    .pipe(cache('fallback'))
+    .pipe(gulp.dest(buildPath))
+    .on('end', resolve)
+    .on('error', reject)
   })
 }
 
 export function fallbackWatch (root) {
-  const watcher = chokidar.watch('**', {
-    cwd: root,
-    nodir: true,
-    ignored: fallbackIgnore,
-    persistent: true,
-    ignoreInitial: true,
-    usePolling: process.platform === 'win32',
-  })
-  return new Promise((resolve, reject) => {
-    watcher
-    .on('add', f => copyToBuildFolder(root, f))
-    .on('change', f => copyToBuildFolder(root, f))
-    .on('unlink', f => unlink(path.join(root, '.build', f)))
-    .on('error', reject)
-    .on('ready', resolve)
+  gwatch(fallbackGlob, () => fallbackBuild(root))
+  .on('unlink', file => {
+    const pathDiff = file.replace(root, '')
+    const buildPath = joinWithBuild(root)
+    fs.unlinkSync(path.join(buildPath, pathDiff))
+    delete cache.caches['fallback'][file]
   })
 }
