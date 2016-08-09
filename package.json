@@ -55,7 +55,7 @@
     "debounce": "^1.0.0",
     "es6-error": "^3.0.0",
     "eslint": "^2.10.2",
-    "eslint-config-vtex": "^4.0.0",
+    "eslint-config-vtex": "^5.0.1",
     "eslint-config-vtex-react": "^1.0.2",
     "eslint-plugin-react": "^5.0.1",
     "eventsource": "^0.2.1",
