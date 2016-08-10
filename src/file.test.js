@@ -1,22 +1,19 @@
 import test from 'ava'
 import path from 'path'
 import {
-  rmBuildPrefix,
   listLocalFiles,
   createTempPath,
   createChanges,
 } from './file'
 
-test('removes the build folder from the start of a path', t => {
-  t.is(rmBuildPrefix('.build/render/assets/Foo.js'), 'render/assets/Foo.js')
-})
+const FIXTURES_PATH = '../test/fixtures/file-test'
+const root = path.resolve(FIXTURES_PATH)
 
-test('list files in a directory ignoring everything except the build folder and the manifest file', t => {
-  const root = path.resolve('./file-test')
+test('list files in a directory ignoring everything except the folders and the manifest file', t => {
   const expectedFiles = [
     'manifest.json',
-    '.build/render/assets/Foo.js',
-    '.build/render/assets/style.css',
+    './render/Foo.js',
+    './render/style.scss',
   ]
   listLocalFiles(root)
   .then(files => t.is(files, expectedFiles))
@@ -31,10 +28,9 @@ test('creates a temporary folder and returns the path of the temporary file', t 
 })
 
 test('creates a set of changes', t => {
-  const root = path.resolve('./file-test')
   const manifest = path.resolve(root, 'manifest.json')
-  const foo = path.resolve(root, '.build/render/assets/Foo.js')
-  const style = path.resolve(root, '.build/render/assets/style.css')
+  const foo = path.resolve(root, './render/Foo.js')
+  const style = path.resolve(root, './render/style.scss')
   const batch = {
     [manifest]: 'save',
     [foo]: 'save',
@@ -48,13 +44,13 @@ test('creates a set of changes', t => {
       encoding: 'base64',
     },
     {
-      path: rmBuildPrefix(foo),
+      path: foo,
       action: 'save',
       content: '',
       encoding: 'base64',
     },
     {
-      path: rmBuildPrefix(style),
+      path: style,
       action: 'remove',
     },
   ]
