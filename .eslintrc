@@ -6,9 +6,7 @@
     "mocha": true
   },
   "globals": {
-    "__DEV__": true,
-    "System": true,
-    "__moduleName": true
+    "__DEV__": true
   },
   "extends": ["vtex", "vtex-react"]
 }
