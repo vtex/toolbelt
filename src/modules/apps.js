@@ -234,12 +234,12 @@ export default {
     description: 'Uninstall the specified app',
     handler: (app) => {
       log.debug('Starting to uninstall app', app)
-      const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
+      const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}$`)
       if (!appRegex.test(app)) {
-        log.error('Invalid app format, please use <vendor>.<name>@<version>')
+        log.error('Invalid app format, please use <vendor>.<name>')
         return Promise.resolve()
       }
-      const [vendorAndName, version] = app.split('@')
+      const [vendorAndName] = app.split('@')
       const [vendor, name] = vendorAndName.split('.')
 
       return Promise.try(() =>
@@ -255,8 +255,7 @@ export default {
           getAccount(),
           getWorkspace(),
           vendor,
-          name,
-          version
+          name
         )
       )
       .then(() => log.info(`Uninstalled app ${app} successfully`))
