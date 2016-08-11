@@ -5,3 +5,4 @@ test/
 .babelrc
 .editorconfig
 .travis.yml
+.eslintrc
