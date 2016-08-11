@@ -60,7 +60,7 @@
     "ora": "^0.2.3",
     "pad": "^1.0.0",
     "ramda": "^0.22.0",
-    "request-promise": "^4.1.1",
+    "requisition": "^1.7.0",
     "rimraf": "^2.5.3",
     "tiny-lr": "^0.2.1",
     "update-notifier": "^0.7.0",

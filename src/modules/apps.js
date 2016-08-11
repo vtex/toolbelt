@@ -10,7 +10,7 @@ import debounce from 'debounce'
 import {logChanges} from '../apps'
 import {Promise, all} from 'bluebird'
 import userAgent from '../user-agent'
-import request from 'request-promise'
+import http from '../http'
 import courier from '../courier'
 import {map, uniqBy, prop} from 'ramda'
 import {getWorkspaceURL} from '../workspace'
@@ -118,11 +118,7 @@ const keepAppAlive = () => {
 
 const sendChangesToLr = changes => {
   const files = map(pathProp, changes)
-  return request({
-    method: 'POST',
-    uri: 'http://localhost:35729/changed',
-    json: {files},
-  })
+  return http.post('http://localhost:35729/changed').send({files})
 }
 
 const installApp = (vendor, name, version) => {

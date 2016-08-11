@@ -4,14 +4,12 @@ import chalk from 'chalk'
 import {without} from 'ramda'
 import {Promise} from 'bluebird'
 import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
-import {StatusCodeError} from 'request-promise/errors'
 import log from './logger'
 import notify from './update'
 import {getToken} from './conf'
+import {StatusCodeError} from './http'
+import tree from './modules'
 
-// Disable deprecation until gulp v4 is out. https://github.com/gulpjs/gulp/issues/1571
-process.noDeprecation = true
-const tree = require('./modules').default
 const run = unboundRun.bind(tree)
 
 // Setup logging
@@ -61,7 +59,7 @@ const onError = e => {
         return run({command: tree.login})
         .then(main) // TODO: catch with different handler for second error
       }
-      if (statusCode >= 500) {
+      if (statusCode >= 400) {
         try {
           const {code, exception} = e.error
           const {message, stackTrace} = exception
