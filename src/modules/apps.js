@@ -225,7 +225,7 @@ export default {
         if (err.statusCode === 409) {
           return log.error(`App ${app} already installed`)
         }
-        throw new Error(err)
+        return Promise.reject(err)
       })
     },
   },
@@ -236,7 +236,8 @@ export default {
       log.debug('Starting to uninstall app', app)
       const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
       if (!appRegex.test(app)) {
-        return log.error('Invalid app format, please use <vendor>.<name>@<version>')
+        log.error('Invalid app format, please use <vendor>.<name>@<version>')
+        return Promise.resolve()
       }
       const [vendorAndName, version] = app.split('@')
       const [vendor, name] = vendorAndName.split('.')
@@ -263,7 +264,7 @@ export default {
         if (err.statusCode === 409) {
           return log.error(`App ${app} not installed`)
         }
-        throw new Error(err)
+        return Promise.reject(err)
       })
     },
   },

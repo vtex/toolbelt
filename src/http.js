@@ -41,5 +41,10 @@ Request.prototype.then = function (resolve, reject) {
 }
 
 Request.prototype.json = function () {
-  return this.then(res => res.json())
+  return this.then(res => {
+    if (res.is('json')) {
+      return res.json()
+    }
+    return res
+  })
 }
