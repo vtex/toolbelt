@@ -22,10 +22,10 @@ export function StatusCodeError (statusCode, statusMessage, response) {
 StatusCodeError.prototype = Object.create(Error.prototype)
 StatusCodeError.prototype.constructor = StatusCodeError
 
-Request.prototype._then = Request.prototype.then
+const prototypeThen = Request.prototype.then
 
 Request.prototype.then = function (resolve, reject) {
-  return this._then(res => {
+  return prototypeThen.call(this, res => {
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return resolve(res)
     }
