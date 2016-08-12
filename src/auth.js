@@ -1,37 +1,33 @@
-import request from 'request-promise'
+import http from './http'
 import {Promise} from 'bluebird'
 import {prop} from 'ramda'
 import log from './logger'
 
 export function getTemporaryToken () {
-  return request({json: true, uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start'})
-  .then(prop('authenticationToken'))
+  return http('https://vtexid.vtex.com.br/api/vtexid/pub/authentication/start')
+    .json()
+    .then(prop('authenticationToken'))
 }
 
 export function sendCodeToEmail (token, email) {
   log.debug('Sending code to email', {token, email})
-  return request({
-    uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/send',
-    qs: {authenticationToken: token, email},
-  })
+  return http('https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/send')
+    .query({authenticationToken: token, email})
+    .json()
 }
 
 export function getEmailCodeAuthenticationToken (token, email, code) {
   log.debug('Getting auth token with email code', {token, email, code})
-  return request({
-    json: true,
-    uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/validate',
-    qs: {login: email, accesskey: code, authenticationToken: token},
-  })
+  return http('https://vtexid.vtex.com.br/api/vtexid/pub/authentication/accesskey/validate')
+    .query({login: email, accesskey: code, authenticationToken: token})
+    .json()
 }
 
 export function getPasswordAuthenticationToken (token, email, password) {
   log.debug('Getting auth token with password', {token, email, password})
-  return request({
-    json: true,
-    uri: 'https://vtexid.vtex.com.br/api/vtexid/pub/authentication/classic/validate',
-    qs: {authenticationToken: encodeURIComponent(token), login: encodeURIComponent(email), password: encodeURIComponent(password)},
-  })
+  return http('https://vtexid.vtex.com.br/api/vtexid/pub/authentication/classic/validate')
+    .query({authenticationToken: encodeURIComponent(token), login: encodeURIComponent(email), password: encodeURIComponent(password)})
+    .json()
 }
 
 export function isVtexUser (email) {

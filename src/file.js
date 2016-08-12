@@ -1,38 +1,19 @@
 import fs from 'fs'
-import gulp from 'gulp'
 import path from 'path'
 import glob from 'glob'
-import rimraf from 'rimraf'
-import cache from 'gulp-cached'
-import gwatch from 'gulp-watch'
 import chokidar from 'chokidar'
 import archiver from 'archiver'
 import {Promise, promisify} from 'bluebird'
 
 const mkdir = promisify(fs.mkdir)
-const bbRimraf = promisify(rimraf)
 const unlink = promisify(fs.unlink)
 const bbGlob = promisify(glob)
 
-export const fallbackGlob = [
-  '**',
-  '!.build/',
-  '!.build/**/*',
-  '!manifest.json',
-  '!render/',
-  '!render/**/*',
-  '!node_modules/',
-  '!node_modules/**/*',
-]
-
-export function joinWithBuild (root) {
-  return path.join(root, '.build/')
-}
-
 export function listLocalFiles (root) {
-  return bbGlob('{.build/**/*,manifest.json}', {
+  return bbGlob('{*/**,manifest.json}', {
     cwd: root,
     nodir: true,
+    ignore: ['node_modules/**'],
   })
 }
 
@@ -54,7 +35,7 @@ export function compressFiles (files, destination) {
   archive.pipe(output)
   files.forEach(f => {
     const filePath = path.resolve(process.cwd(), f)
-    archive.append(fs.createReadStream(filePath), { name: rmBuildPrefix(f) })
+    archive.append(fs.createReadStream(filePath), { name: f })
   })
   archive.finalize()
   return new Promise((resolve, reject) => {
@@ -72,10 +53,6 @@ export function deleteTempFile (tempPath) {
   return unlink(tempPath)
 }
 
-export function rmBuildPrefix (path) {
-  return path.replace(/\.build[\/\\]/, '')
-}
-
 export function normalizePath (filePath) {
   return path.normalize(filePath).replace(/\\/g, '/')
 }
@@ -89,31 +66,19 @@ export function createSaveChange (root, file) {
 
 export function createChanges (root, batch) {
   return Object.keys(batch).map(file => {
-    const path = normalizePath(rmBuildPrefix(file))
+    const path = normalizePath(file)
     return batch[file] === 'save'
       ? { path: path, action: 'save', ...createSaveChange(root, file) }
       : { path: path, action: 'remove' }
   })
 }
 
-export function createBuildFolder (root) {
-  return mkdir(path.resolve(root, '.build/'))
-}
-
-export function removeBuildFolder (root) {
-  return bbRimraf(path.resolve(root, '.build/'))
-  .catch(err => {
-    return err.code === 'ENOENT'
-      ? Promise.resolve()
-      : Promise.reject(err)
-  })
-}
-
 export function watch (root, sendChanges) {
-  const watcher = chokidar.watch(['.build/**/*', 'manifest.json'], {
+  const watcher = chokidar.watch(['*/**', 'manifest.json'], {
     cwd: root,
     persistent: true,
     ignoreInitial: true,
+    ignore: ['node_modules/**'],
     usePolling: process.platform === 'win32',
   })
   return new Promise((resolve, reject) => {
@@ -132,25 +97,4 @@ export function sendSaveChanges (root, file, sendChanges) {
 
 export function sendRemoveChanges (root, file, sendChanges) {
   return sendChanges(createChanges(root, { [file]: 'remove' }))
-}
-
-export function fallbackBuild (root) {
-  return new Promise((resolve, reject) => {
-    const buildPath = joinWithBuild(root)
-    gulp.src(fallbackGlob)
-    .pipe(cache('fallback'))
-    .pipe(gulp.dest(buildPath))
-    .on('end', resolve)
-    .on('error', reject)
-  })
-}
-
-export function fallbackWatch (root) {
-  gwatch(fallbackGlob, () => fallbackBuild(root))
-  .on('unlink', file => {
-    const pathDiff = file.replace(root, '')
-    const buildPath = joinWithBuild(root)
-    fs.unlinkSync(path.join(buildPath, pathDiff))
-    delete cache.caches['fallback'][file]
-  })
 }

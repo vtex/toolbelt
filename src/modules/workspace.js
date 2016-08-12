@@ -5,7 +5,7 @@ import Table from 'cli-table'
 import inquirer from 'inquirer'
 import {Promise} from 'bluebird'
 import userAgent from '../user-agent'
-import {VBaseClient} from '@vtex/vbase'
+import {VBaseClient} from '@vtex/api'
 import {getToken, getAccount, saveWorkspace} from '../conf'
 
 const client = () => new VBaseClient({

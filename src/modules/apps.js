@@ -10,12 +10,11 @@ import debounce from 'debounce'
 import {logChanges} from '../apps'
 import {Promise, all} from 'bluebird'
 import userAgent from '../user-agent'
-import request from 'request-promise'
+import http from '../http'
 import courier from '../courier'
 import {map, uniqBy, prop} from 'ramda'
 import {getWorkspaceURL} from '../workspace'
-import {renderWatch, renderBuild} from '../render'
-import {AppsClient, RegistryClient} from '@vtex/apps'
+import {AppsClient, RegistryClient} from '@vtex/api'
 import {getToken, getAccount, getWorkspace} from '../conf'
 import {
   manifest,
@@ -26,13 +25,9 @@ import {
 import {
   watch,
   compressFiles,
-  fallbackBuild,
-  fallbackWatch,
   createTempPath,
   listLocalFiles,
   deleteTempFile,
-  createBuildFolder,
-  removeBuildFolder,
 } from '../file'
 
 let spinner
@@ -123,11 +118,7 @@ const keepAppAlive = () => {
 
 const sendChangesToLr = changes => {
   const files = map(pathProp, changes)
-  return request({
-    method: 'POST',
-    uri: 'http://localhost:35729/changed',
-    json: {files},
-  })
+  return http.post('http://localhost:35729/changed').send({files})
 }
 
 const installApp = (vendor, name, version) => {
@@ -194,21 +185,9 @@ export default {
       )
       courier.listen(getAccount(), getWorkspace(), options['log-level'], getToken())
       let tempPath
-      log.debug('Removing build folder...')
+      log.debug('Creating temp path...')
 
-      return removeBuildFolder(root)
-      .tap(() => log.debug('Creating build folder...'))
-      .then(() => createBuildFolder(root))
-      .then(() => {
-        log.debug('Building render files...')
-        log.debug('Copying fallback folders or files...')
-        log.debug('Creating temp path...')
-        return all([
-          renderBuild(root, manifest),
-          fallbackBuild(root),
-          createTempPath(name, version).then(t => { tempPath = t }),
-        ])
-      })
+      return createTempPath(name, version).then(t => { tempPath = t })
       .then(() => {
         log.debug('Listing local files...')
         log.debug('Starting local live reload server...')
@@ -225,8 +204,6 @@ export default {
       .then(keepAppAlive)
       .tap(() => log.debug('Starting watch...'))
       .then(() => watch(root, sendChanges))
-      .then(() => renderWatch(root, manifest))
-      .then(() => fallbackWatch(root))
     },
   },
   install: {
@@ -248,7 +225,7 @@ export default {
         if (err.statusCode === 409) {
           return log.error(`App ${app} already installed`)
         }
-        throw new Error(err)
+        return Promise.reject(err)
       })
     },
   },
@@ -257,11 +234,12 @@ export default {
     description: 'Uninstall the specified app',
     handler: (app) => {
       log.debug('Starting to uninstall app', app)
-      const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
+      const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}$`)
       if (!appRegex.test(app)) {
-        return log.error('Invalid app format, please use <vendor>.<name>@<version>')
+        log.error('Invalid app format, please use <vendor>.<name>')
+        return Promise.resolve()
       }
-      const [vendorAndName, version] = app.split('@')
+      const [vendorAndName] = app.split('@')
       const [vendor, name] = vendorAndName.split('.')
 
       return Promise.try(() =>
@@ -277,8 +255,7 @@ export default {
           getAccount(),
           getWorkspace(),
           vendor,
-          name,
-          version
+          name
         )
       )
       .then(() => log.info(`Uninstalled app ${app} successfully`))
@@ -286,7 +263,7 @@ export default {
         if (err.statusCode === 409) {
           return log.error(`App ${app} not installed`)
         }
-        throw new Error(err)
+        return Promise.reject(err)
       })
     },
   },
@@ -296,14 +273,7 @@ export default {
       log.debug('Starting to publish app')
       spinner = ora('Publishing app...').start()
 
-      return removeBuildFolder(root)
-      .then(() => createBuildFolder(root))
-      .then(() => all([
-        createTempPath(name, version),
-        renderBuild(root, manifest, true),
-        fallbackBuild(root),
-      ]))
-      .spread(tempPath =>
+      return createTempPath(name, version).then(tempPath =>
         listLocalFiles(root)
         .then(files => compressFiles(files, tempPath))
         .then(({file}) => publishApp(file))
