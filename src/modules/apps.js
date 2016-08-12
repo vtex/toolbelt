@@ -14,7 +14,7 @@ import http from '../http'
 import courier from '../courier'
 import {map, uniqBy, prop} from 'ramda'
 import {getWorkspaceURL} from '../workspace'
-import {AppsClient, RegistryClient} from '@vtex/apps'
+import {AppsClient, RegistryClient} from '@vtex/api'
 import {getToken, getAccount, getWorkspace} from '../conf'
 import {
   manifest,

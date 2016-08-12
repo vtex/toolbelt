@@ -4,7 +4,7 @@ import inquirer from 'inquirer'
 import validator from 'validator'
 import userAgent from '../user-agent'
 import {startUserAuth} from '../auth'
-import {VBaseClient} from '@vtex/vbase'
+import {VBaseClient} from '@vtex/api'
 import {Promise, all, mapSeries} from 'bluebird'
 import {
   clear,

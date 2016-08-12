@@ -37,8 +37,7 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "@vtex/apps": "^0.5.0",
-    "@vtex/vbase": "^0.1.0",
+    "@vtex/api": "^0.7.0",
     "archiver": "^1.0.0",
     "bluebird": "^3.4.0",
     "chalk": "^1.1.3",
