@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import 'any-promise/register/bluebird'
 import minimist from 'minimist'
 import chalk from 'chalk'
 import {without} from 'ramda'
