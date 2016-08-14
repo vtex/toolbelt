@@ -8,7 +8,6 @@ import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 import log from './logger'
 import notify from './update'
 import {getToken} from './conf'
-import {StatusCodeError} from './http'
 import tree from './modules'
 
 const run = unboundRun.bind(tree)
@@ -52,7 +51,7 @@ const onError = e => {
     case MissingRequiredArgsError.name:
       log.error('Missing required arguments:', chalk.blue(e.message))
       break
-    case StatusCodeError.name:
+    case 'StatusCodeError':
       const {statusCode} = e
       if (statusCode === 401) {
         log.error('Oops! There was an authentication error. Please login again.')
