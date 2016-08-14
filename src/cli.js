@@ -47,36 +47,37 @@ const main = () => {
 }
 
 const onError = e => {
-  switch (e.name) {
-    case MissingRequiredArgsError.name:
-      log.error('Missing required arguments:', chalk.blue(e.message))
-      break
-    case 'StatusCodeError':
-      const {statusCode} = e
-      if (statusCode === 401) {
-        log.error('Oops! There was an authentication error. Please login again.')
-        // Try to login and re-issue the command.
-        return run({command: tree.login})
-        .then(main) // TODO: catch with different handler for second error
-      }
-      if (statusCode >= 400) {
-        try {
-          const {code, exception} = e.error
-          const {message, stackTrace} = exception
-          log.error('API:', message, {statusCode, code})
-          log.debug(stackTrace)
-          break
-        } catch (e) {}
-      }
-      log.error('Oops! There was an unexpected API error.')
-      log.error(e)
-      break
-    case 'CommandNotFound':
-      log.error('Command not found:', chalk.blue(process.argv.slice(2)))
-      break
-    default:
-      log.error('Something exploded :(')
-      log.error(e)
+  const {statusCode} = e
+  if (statusCode) {
+    if (statusCode === 401) {
+      log.error('Oops! There was an authentication error. Please login again.')
+      // Try to login and re-issue the command.
+      return run({command: tree.login})
+      .then(main) // TODO: catch with different handler for second error
+    }
+    if (statusCode >= 400) {
+      try {
+        const {code, exception} = e.error
+        const {message, stackTrace} = exception
+        log.error('API:', message, {statusCode, code})
+        log.debug(stackTrace)
+        return
+      } catch (e) {}
+    }
+    log.error('Oops! There was an unexpected API error.')
+    log.error(e.read().toString('utf8'))
+  } else {
+    switch (e.name) {
+      case MissingRequiredArgsError.name:
+        log.error('Missing required arguments:', chalk.blue(e.message))
+        break
+      case 'CommandNotFound':
+        log.error('Command not found:', chalk.blue(process.argv.slice(2)))
+        break
+      default:
+        log.error('Something exploded :(')
+        log.error(e)
+    }
   }
   process.exit()
 }
