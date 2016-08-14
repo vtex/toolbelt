@@ -28,9 +28,9 @@ test('creates a temporary folder and returns the path of the temporary file', t 
 })
 
 test('creates a set of changes', t => {
-  const manifest = path.resolve(root, 'manifest.json')
-  const foo = path.resolve(root, './render/Foo.js')
-  const style = path.resolve(root, './render/style.scss')
+  const manifest = path.resolve(root, 'manifest.json').replace(/\\/g, '/')
+  const foo = path.resolve(root, './render/Foo.js').replace(/\\/g, '/')
+  const style = path.resolve(root, './render/style.scss').replace(/\\/g, '/')
   const batch = {
     [manifest]: 'save',
     [foo]: 'save',
