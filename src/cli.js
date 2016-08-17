@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import 'babel-polyfill'
 import 'any-promise/register/bluebird'
 import minimist from 'minimist'
 import chalk from 'chalk'
