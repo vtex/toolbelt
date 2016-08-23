@@ -48,23 +48,25 @@ $ vtex
 
   Commands:
 
-    login                Log into a VTEX account
-    logout               Logout of the current VTEX account
-    list [query]         List your installed VTEX apps
-    watch [log-level]    Send the files to the registry and watch for changes
-    install <app>        Install the specified app
-    uninstall <app>      Uninstall the specified app
-    publish              Publish this app
+    login                  Log into a VTEX account
+    logout                 Logout of the current VTEX account
+    list [query]           List your installed VTEX apps
+    watch [log-level]      Send the files to the registry and watch for changes
+    install <app>          Install the specified app
+    uninstall <app>        Uninstall the specified app
+    publish                Publish this app
 
-    workspace list             List workspaces on this account
-    workspace create <name>    Create a new workspace with this name
-    workspace delete <name>    Delete this workspace
-    workspace use <name>       Use a workspace to perform operations
-    workspace promote <name>   Promote this workspace to master
+    settings <app> [field]                     Get app settings
+    settings set <app> <field> <value>         Set a value
+    settings unset <app> <field>               Unset a value
 
-    render build     Build app
+    workspace list               List workspaces on this account
+    workspace create <name>      Create a new workspace with this name
+    workspace delete <name>      Delete this workspace
+    workspace use <name>         Use a workspace to perform operations
+    workspace promote <name>     Promote this workspace to master
 
-    setup eslint    Setup a local eslint environment
+    setup eslint      Setup a local eslint environment
 
   Options:
 
