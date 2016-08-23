@@ -43,7 +43,7 @@ const root = process.cwd()
 
 const pathProp = prop('path')
 
-const {vendor, name, version} = manifest
+const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
 const appsClient = () => new AppsClient({
   endpointUrl: 'http://api.beta.vtex.com',
@@ -69,7 +69,7 @@ const sendChanges = (() => {
         version,
         queue
       )
-      .then(() => installApp(vendor, name, `${version}+rc`))
+      .then(() => installApp(`${vendor}.${name}@${version}+rc`))
       .then(() => sendChangesToLr(queue))
       .then(() => spinner.stop())
       .then(() => logChanges(queue, moment().format('HH:mm:ss')))
@@ -85,20 +85,18 @@ const sendChanges = (() => {
     spinner = spinner || ora('Sending changes...')
     spinner.start()
     queue = uniqBy(pathProp, queue.concat(changes).reverse())
-    return publishPatch(getAccount(), getWorkspace(), vendor, name, version)
+    return publishPatch(getAccount(), getWorkspace(), manifest.vendor, manifest.name, manifest.version)
   }
 })()
 
 const keepAppAlive = () => {
-  return installApp(vendor, name, `${version}+rc`)
+  return installApp(`${id}+rc`)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
       appsClient().updateAppTtl(
         getAccount(),
         getWorkspace(),
-        vendor,
-        name,
-        version
+        id,
       )
     }, 20000)
     readline.createInterface({
@@ -121,7 +119,9 @@ const sendChangesToLr = changes => {
   return http.post('http://localhost:35729/changed').send({files})
 }
 
-const installApp = (vendor, name, version) => {
+const installApp = (id) => {
+  const [vendorAndName, version] = id.split('@')
+  const [vendor, name] = vendorAndName.split('.')
   return appsClient().installApp(
     getAccount(),
     getWorkspace(),
@@ -178,7 +178,7 @@ export default {
         log.info('Exiting...')
         process.exit()
       }
-      log.info('Watching app', `${vendor}.${name}@${version}`)
+      log.info('Watching app', `${id}`)
       console.log(
         chalk.green('Your URL:'),
         chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
@@ -187,7 +187,7 @@ export default {
       let tempPath
       log.debug('Creating temp path...')
 
-      return createTempPath(name, version).then(t => { tempPath = t })
+      return createTempPath(id).then(t => { tempPath = t })
       .then(() => {
         log.debug('Listing local files...')
         log.debug('Starting local live reload server...')
@@ -216,10 +216,8 @@ export default {
       if (!appRegex.test(app)) {
         return log.error('Invalid app format, please use <vendor>.<name>@<version>')
       }
-      const [vendorAndName, version] = app.split('@')
-      const [vendor, name] = vendorAndName.split('.')
 
-      return installApp(vendor, name, version)
+      return installApp(app)
       .then(() => log.info(`Installed app ${app} successfully`))
       .catch(err => {
         if (err.statusCode === 409) {
@@ -239,8 +237,6 @@ export default {
         log.error('Invalid app format, please use <vendor>.<name>')
         return Promise.resolve()
       }
-      const [vendorAndName] = app.split('@')
-      const [vendor, name] = vendorAndName.split('.')
 
       return Promise.try(() =>
         inquirer.prompt({
@@ -254,8 +250,7 @@ export default {
         appsClient().uninstallApp(
           getAccount(),
           getWorkspace(),
-          vendor,
-          name
+          app
         )
       )
       .then(() => log.info(`Uninstalled app ${app} successfully`))
@@ -273,15 +268,15 @@ export default {
       log.debug('Starting to publish app')
       spinner = ora('Publishing app...').start()
 
-      return createTempPath(name, version).then(tempPath =>
+      return createTempPath(id).then(tempPath =>
         listLocalFiles(root)
         .then(files => compressFiles(files, tempPath))
         .then(({file}) => publishApp(file))
         .then(() => deleteTempFile(tempPath))
         .finally(() => spinner.stop())
-        .then(() => log.info(`Published app ${vendor}.${name}@${version} successfully`))
+        .then(() => log.info(`Published app ${id} successfully`))
         .catch(res => res.error && res.error.code === 'app_version_already_exists'
-          ? log.error(`Version ${version} already published!`)
+          ? log.error(`Version ${manifest.version} already published!`)
           : Promise.reject(res))
       )
     },

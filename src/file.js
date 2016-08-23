@@ -17,9 +17,9 @@ export function listLocalFiles (root) {
   })
 }
 
-export function createTempPath (name, version) {
+export function createTempPath (id) {
   const tempPath = path.resolve(module.filename, '../../temp/')
-  const tempPathFile = path.resolve(tempPath, `${name}-${version}.zip`)
+  const tempPathFile = path.resolve(tempPath, `${id}.zip`)
   return mkdir(tempPath)
   .then(() => tempPathFile)
   .catch(err => {
