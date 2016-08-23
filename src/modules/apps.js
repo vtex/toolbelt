@@ -171,20 +171,13 @@ export default {
   },
   watch: {
     description: 'Send the files to the registry and watch for changes',
-    optionalArgs: 'log-level',
-    handler: (options) => {
-      let logLevel = options['log-level']
-      if (logLevel && courier.logLevels.indexOf(logLevel) < 0) {
-        log.error('Invalid value for \'log-level\', the valid options are: ' + courier.logLevels.join(', '))
-        log.info('Exiting...')
-        process.exit()
-      }
+    handler: () => {
       log.info('Watching app', `${id}`)
       console.log(
         chalk.green('Your URL:'),
         chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
       )
-      courier.listen(getAccount(), getWorkspace(), options['log-level'], getToken())
+      courier.listen(getAccount(), getWorkspace(), getToken())
       let tempPath
       log.debug('Creating temp path...')
 
