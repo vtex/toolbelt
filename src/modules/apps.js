@@ -287,17 +287,12 @@ export default {
     requiredArgs: 'app',
     optionalArgs: 'field',
     handler: async (app, field) => {
-      try {
-        let response = await appsClient().getAppSettings(
-            getAccount(), getWorkspace(), app)
-        if (typeof field === 'object') {
-          console.log(response)
-        } else {
-          let jsonPath = '$.' + field
-          console.log(jp.value(response, jsonPath))
-        }
-      } catch (err) {
-        log.error(`${err.name}: ${err.message || err.status}`)
+      const response = await appsClient().getAppSettings(
+        getAccount(), getWorkspace(), app)
+      if (typeof field === 'object') {
+        console.log(response)
+      } else {
+        console.log(jp.value(response, '$.' + field))
       }
     },
 
@@ -305,16 +300,11 @@ export default {
       description: 'Set a value',
       requiredArgs: ['app', 'field', 'value'],
       handler: async (app, field, value) => {
-        try {
-          let jsonPath = '$.' + field
-          let patch = {}
-          jp.value(patch, jsonPath, value)
-          let response = await appsClient().patchAppSettings(
-            getAccount(), getWorkspace(), app, patch)
-          console.log(response)
-        } catch (err) {
-          log.error(`${err.name}: ${err.message || err.status}`)
-        }
+        const patch = {}
+        jp.value(patch, '$.' + field, value)
+        const response = await appsClient().patchAppSettings(
+          getAccount(), getWorkspace(), app, patch)
+        console.log(response)
       },
     },
 
@@ -322,16 +312,11 @@ export default {
       description: 'Unset a value',
       requiredArgs: ['app', 'field'],
       handler: async (app, field) => {
-        try {
-          let jsonPath = '$.' + field
-          let patch = {}
-          jp.value(patch, jsonPath, null)
-          let response = await appsClient().patchAppSettings(
-            getAccount(), getWorkspace(), app, patch)
-          console.log(response)
-        } catch (err) {
-          log.error(`${err.name}: ${err.message || err.status}`)
-        }
+        const patch = {}
+        jp.value(patch, '$.' + field, null)
+        const response = await appsClient().patchAppSettings(
+          getAccount(), getWorkspace(), app, patch)
+        console.log(response)
       },
     },
   },
