@@ -5,7 +5,6 @@ import apps from './apps'
 import auth from './auth'
 import workspace from './workspace'
 import setup from './setup'
-// import masterdata from './masterdata'
 
 export default {
   ...auth,

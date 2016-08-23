@@ -7,6 +7,7 @@ import Table from 'cli-table'
 import inquirer from 'inquirer'
 import readline from 'readline'
 import debounce from 'debounce'
+import jp from 'jsonpath'
 import {logChanges} from '../apps'
 import {Promise, all} from 'bluebird'
 import userAgent from '../user-agent'
@@ -279,6 +280,44 @@ export default {
           ? log.error(`Version ${manifest.version} already published!`)
           : Promise.reject(res))
       )
+    },
+  },
+  settings: {
+    description: 'Get app settings',
+    requiredArgs: 'app',
+    optionalArgs: 'field',
+    handler: async (app, field) => {
+      const response = await appsClient().getAppSettings(
+        getAccount(), getWorkspace(), app)
+      if (typeof field === 'object') {
+        console.log(response)
+      } else {
+        console.log(jp.value(response, '$.' + field))
+      }
+    },
+
+    set: {
+      description: 'Set a value',
+      requiredArgs: ['app', 'field', 'value'],
+      handler: async (app, field, value) => {
+        const patch = {}
+        jp.value(patch, '$.' + field, value)
+        const response = await appsClient().patchAppSettings(
+          getAccount(), getWorkspace(), app, patch)
+        console.log(response)
+      },
+    },
+
+    unset: {
+      description: 'Unset a value',
+      requiredArgs: ['app', 'field'],
+      handler: async (app, field) => {
+        const patch = {}
+        jp.value(patch, '$.' + field, null)
+        const response = await appsClient().patchAppSettings(
+          getAccount(), getWorkspace(), app, patch)
+        console.log(response)
+      },
     },
   },
 }
