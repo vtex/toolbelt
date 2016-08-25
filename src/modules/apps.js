@@ -13,7 +13,7 @@ import {Promise, all} from 'bluebird'
 import userAgent from '../user-agent'
 import http from 'requisition'
 import courier from '../courier'
-import {map, uniqBy, prop} from 'ramda'
+import {uniqBy, prop} from 'ramda'
 import {getWorkspaceURL} from '../workspace'
 import {AppsClient, RegistryClient} from '@vtex/api'
 import {getToken, getAccount, getWorkspace} from '../conf'
@@ -71,7 +71,6 @@ const sendChanges = (() => {
         queue
       )
       .then(() => installApp(`${vendor}.${name}@${version}+rc`))
-      .then(() => sendChangesToLr(queue))
       .then(() => spinner.stop())
       .then(() => logChanges(queue, moment().format('HH:mm:ss')))
       .then(log => log.length > 0 ? console.log(log) : null)
@@ -115,9 +114,8 @@ const keepAppAlive = () => {
   })
 }
 
-const sendChangesToLr = changes => {
-  const files = map(pathProp, changes)
-  return http.post('http://localhost:35729/changed').send({files})
+const sendChangesToLr = () => {
+  return http.post('http://localhost:35729/changed').send({files: ['']})
 }
 
 const installApp = (id) => {
@@ -177,7 +175,7 @@ export default {
         chalk.green('Your URL:'),
         chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
       )
-      courier.listen(getAccount(), getWorkspace(), getToken())
+      courier.listen(getAccount(), getWorkspace(), getToken(), sendChangesToLr)
       let tempPath
       log.debug('Creating temp path...')
 

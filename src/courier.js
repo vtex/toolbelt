@@ -21,11 +21,14 @@ let retry = (account, workspace, authToken) => {
   }
 }
 
-const listen = (account, workspace, authToken) => {
+const listen = (account, workspace, authToken, sendChangesToLr) => {
   let es = new EventSource(`http://courier.vtex.com/${account}/${workspace}/app-events?level=${log.level}`, {
     'Authorization': `token ${authToken}`,
   })
   es.onopen = () => log.debug(`courier: connected with level ${log.level}`)
+  es.addEventListener('system', async () => {
+    await sendChangesToLr()
+  })
   es.addEventListener('message', (message) => {
     let data = JSON.parse(message.data)
     clearLine(process.stdout, 0)
