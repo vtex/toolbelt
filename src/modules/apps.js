@@ -33,6 +33,8 @@ import {
 
 let spinner
 
+const KEEP_ALIVE_INTERVAL = 5000
+
 const lrServer = tinylr({
   errorListener (err) {
     if (err.code === 'EADDRINUSE') { return }
@@ -98,7 +100,7 @@ const keepAppAlive = () => {
         getWorkspace(),
         id,
       )
-    }, 20000)
+    }, KEEP_ALIVE_INTERVAL)
     readline.createInterface({
       input: process.stdin,
       output: process.stdout,
