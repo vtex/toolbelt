@@ -84,7 +84,7 @@
     "babel-preset-stage-2": "^6.11.0",
     "babel-register": "^6.9.0",
     "coveralls": "^2.11.9",
-    "npm-run-all": "^2.3.0",
+    "npm-run-all": "^3.0.0",
     "nyc": "^6.4.4",
     "rimraf": "^2.5.4"
   },
