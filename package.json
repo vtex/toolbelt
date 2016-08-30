@@ -85,7 +85,7 @@
     "babel-register": "^6.9.0",
     "coveralls": "^2.11.9",
     "npm-run-all": "^3.0.0",
-    "nyc": "^6.4.4",
+    "nyc": "^8.1.0",
     "rimraf": "^2.5.4"
   },
   "ava": {
