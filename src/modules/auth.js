@@ -132,7 +132,7 @@ function workspaceExists (account, workspace, token) {
   return client(token).get(account, workspace)
   .then(() => true)
   .catch(res =>
-    res.error && res.error.Code === 'NotFound'
+    res.error && res.error.code === 'NotFound'
       ? Promise.resolve(false)
       : Promise.reject(res)
   )
