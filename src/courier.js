@@ -1,6 +1,7 @@
 import log from './logger'
 import EventSource from 'eventsource'
 import {clearLine, cursorTo} from 'readline'
+import moment from 'moment'
 
 const levelFormat = {
   debug: log.debug,
@@ -21,23 +22,32 @@ let retry = (account, workspace, authToken) => {
   }
 }
 
+const logToConsole = (level, origin, message) => {
+  let time = moment().format('hh:mm:ss')
+  levelFormat[level](`[${time}] (${origin}) ${message}`)
+}
+
 const listen = (account, workspace, authToken, sendChangesToLr) => {
   let es = new EventSource(`http://courier.vtex.com/${account}/${workspace}/app-events?level=${log.level}`, {
     'Authorization': `token ${authToken}`,
   })
   es.onopen = () => log.debug(`courier: connected with level ${log.level}`)
-  es.addEventListener('system', async () => {
-    await sendChangesToLr()
+  es.addEventListener('system', async (msg) => {
+    let {origin, message} = JSON.parse(msg.data)
+    if (message === 'workspace:changed') {
+      logToConsole('debug', origin, 'Starting livereload')
+      await sendChangesToLr()
+    }
   })
-  es.addEventListener('message', (message) => {
-    let data = JSON.parse(message.data)
+  es.addEventListener('message', (msg) => {
+    let {level, origin, message} = JSON.parse(msg.data)
     clearLine(process.stdout, 0)
     cursorTo(process.stdout, 0)
-    levelFormat[data.level](`(${data.origin}) ${data.message}`)
+    logToConsole(level, origin, message)
     retryCount = 0
   })
-  es.addEventListener('close', (message) => {
-    log.debug(`courrier: connection closed. Error: ${message.data}`)
+  es.addEventListener('close', (msg) => {
+    log.debug(`courrier: connection closed. Error: ${msg.data}`)
     es.close()
     retry(account, workspace, authToken)
   })
