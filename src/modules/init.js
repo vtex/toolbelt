@@ -110,22 +110,18 @@ export default {
         ], f => f())
       )
       .spread((name, vendor, title, description) => {
+        log.debug('Creating manifest file')
         const fullName = `${vendor}.${name}`
-        const appFolder = join(process.cwd(), fullName)
-        return bbMkdir(appFolder)
-        .tap(() => log.debug('Creating manifest file'))
-        .then(() =>
-          bbWriteFile(
-            join(process.cwd(), fullName, 'manifest.json'),
-            createManifest(name, vendor, title, description)
-          )
+        return bbWriteFile(
+          join(process.cwd(), 'manifest.json'),
+          createManifest(name, vendor, title, description)
         )
         .then(promptService)
-        .then(service => this.init[service].handler(appFolder))
+        .then(service => this.init[service].handler())
         .tap(() => {
           console.log('')
-          log.info(`${fullName} structure generated successfully!`)
-          log.info(`Enter on the ${fullName} folder and run ${chalk.bold.green('vtex watch')} to start developing!`)
+          log.info(`${fullName} structure generated successfully.`)
+          log.info(`Run ${chalk.bold.green('vtex watch')} to start developing!`)
         })
         .catch(err =>
           err && err.code === 'EEXIST'
@@ -136,10 +132,9 @@ export default {
     },
     render: {
       description: 'Create a new render bootstrap project',
-      requiredArgs: 'path',
-      handler: (appPath) => {
+      handler: () => {
         log.debug('Prompting for app info')
-        return bbMkdir(join(appPath, 'render'))
+        return bbMkdir(join(process.cwd(), 'render'))
       },
     },
   },
