@@ -3,10 +3,12 @@ import chalk from 'chalk'
 import moment from 'moment'
 import log from '../logger'
 import inquirer from 'inquirer'
-import {mkdir, writeFile} from 'fs'
+import {manifestPath} from '../manifest'
+import {mkdir, writeFile, readFile} from 'fs'
 import {Promise, promisify, mapSeries} from 'bluebird'
 
 const bbMkdir = promisify(mkdir)
+const bbReadFile = promisify(readFile)
 const bbWriteFile = promisify(writeFile)
 
 function promptService () {
@@ -71,7 +73,7 @@ function promptDescription () {
 
 function createManifest (name, vendor, title, description) {
   const [year, ...monthAndDay] = moment().format('YYYY-MM-DD').split('-')
-  const manifest = {
+  return {
     name,
     vendor,
     version: '1.0.0',
@@ -80,13 +82,28 @@ function createManifest (name, vendor, title, description) {
     mustUpdateAt: `${Number(year) + 1}-${monthAndDay.join('-')}`,
     categories: [],
     settingsSchema: {},
+    dependencies: {},
+  }
+}
+
+function addRenderDeps (manifest) {
+  return {
+    ...manifest,
     dependencies: {
+      ...manifest.dependencies,
       'vtex.renderjs': '0.x',
       'vtex.placeholder': '0.x',
       'npm:react': '15.1.0',
     },
   }
-  return JSON.stringify(manifest, null, 2)
+}
+
+function readManifest () {
+  return bbReadFile(manifestPath).then(JSON.parse)
+}
+
+function writeManifest (manifest) {
+  return bbWriteFile(manifestPath, JSON.stringify(manifest, null, 2))
 }
 
 export default {
@@ -104,10 +121,7 @@ export default {
       .spread((name, vendor, title, description) => {
         log.debug('Creating manifest file')
         const fullName = `${vendor}.${name}`
-        return bbWriteFile(
-          join(process.cwd(), 'manifest.json'),
-          createManifest(name, vendor, title, description)
-        )
+        return writeManifest(createManifest(name, vendor, title, description))
         .then(promptService)
         .then(service => this.init[service].handler())
         .tap(() => {
@@ -125,8 +139,22 @@ export default {
     render: {
       description: 'Create a new render bootstrap project',
       handler: () => {
-        log.debug('Creating render folder')
-        return bbMkdir(join(process.cwd(), 'render'))
+        log.debug('Reading manifest file')
+        return readManifest()
+        .tap(() =>
+          log.debug('Adding render deps to manifest and creating render folder')
+        )
+        .then(manifest =>
+          Promise.all([
+            writeManifest(addRenderDeps(manifest)),
+            bbMkdir(join(process.cwd(), 'render')),
+          ])
+        )
+        .catch(err =>
+          err && err.code === 'ENOENT'
+            ? log.error('Manifest file not found.')
+            : Promise.reject(err)
+        )
       },
     },
   },
