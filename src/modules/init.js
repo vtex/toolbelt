@@ -97,10 +97,10 @@ export default {
       log.info('Please login before procceding.\n')
       return this.login.handler()
       .tap(() => {
-        log.debug('Creating app folders')
         console.log('')
         log.info('Now that you\'re logged please provide us some info about your app.')
       })
+      .tap(() => log.debug('Prompting for app info'))
       .then(() =>
         mapSeries([
           promptName,
@@ -133,7 +133,7 @@ export default {
     render: {
       description: 'Create a new render bootstrap project',
       handler: () => {
-        log.debug('Prompting for app info')
+        log.debug('Creating render folder')
         return bbMkdir(join(process.cwd(), 'render'))
       },
     },
