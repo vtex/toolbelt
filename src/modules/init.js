@@ -91,8 +91,9 @@ function createManifest (name, vendor, title, description) {
 
 export default {
   init: {
+    description: 'Create basic files and folders for your VTEX app',
     handler: function () {
-      log.info('Hello! I will help you generate basic files and folder for your app.')
+      log.info('Hello! I will help you generate basic files and folders for your app.')
       log.info('Please login before procceding.\n')
       return this.login.handler()
       .tap(() => {
