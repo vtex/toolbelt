@@ -31,5 +31,6 @@ export default {
       console.log(`  ${greeting.join('\n  ')}`)
       console.log(help(this, pkg))
     }
+    return Promise.resolve()
   },
 }
