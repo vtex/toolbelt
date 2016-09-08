@@ -4,12 +4,6 @@
 
 All you need to start using the VTEX platform.
 
-**Important**: The current master branch refers to the `next` version. Make sure to use `@next` when installing!
-
-```sh
-npm install -g vtex@next
-```
-
 ### What is this?
 
 VTEX Toolbelt is a command-line program that gives you access to all of the features in the VTEX platform.
@@ -34,7 +28,7 @@ If you don't have it installed, you can get it bundled with [node](https://nodej
 It's recommended that you install it globally (you may need [sudo](http://wiki.ubuntu-br.org/RootSudo) or administrative privileges):
 
 ```sh
-npm install -g vtex@next
+npm install -g vtex
 ```
 
 Now you can use the `vtex` command:
