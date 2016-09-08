@@ -93,22 +93,14 @@ export default {
   init: {
     description: 'Create basic files and folders for your VTEX app',
     handler: function () {
+      log.debug('Prompting for app info')
       log.info('Hello! I will help you generate basic files and folders for your app.')
-      log.info('Please login before procceding.\n')
-      return this.login.handler()
-      .tap(() => {
-        console.log('')
-        log.info('Now that you\'re logged please provide us some info about your app.')
-      })
-      .tap(() => log.debug('Prompting for app info'))
-      .then(() =>
-        mapSeries([
-          promptName,
-          promptVendor,
-          promptTitle,
-          promptDescription,
-        ], f => f())
-      )
+      return mapSeries([
+        promptName,
+        promptVendor,
+        promptTitle,
+        promptDescription,
+      ], f => f())
       .spread((name, vendor, title, description) => {
         log.debug('Creating manifest file')
         const fullName = `${vendor}.${name}`
