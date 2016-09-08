@@ -136,6 +136,7 @@ export default {
     },
     render: {
       description: 'Create a new render bootstrap project',
+      requiredArgs: 'path',
       handler: (appPath) => {
         log.debug('Prompting for app info')
         return bbMkdir(join(appPath, 'render'))
