@@ -1,16 +1,19 @@
-import {help} from 'findhelp'
-import pkg from '../../package.json'
-import {greeting} from '../greeting'
 import apps from './apps'
 import auth from './auth'
-import workspace from './workspace'
+import init from './init'
 import setup from './setup'
+import {help} from 'findhelp'
+import {Promise} from 'bluebird'
+import workspace from './workspace'
+import pkg from '../../package.json'
+import {greeting} from '../greeting'
 
 export default {
   ...auth,
   ...apps,
   ...workspace,
   ...setup,
+  ...init,
   'options': [
     {
       'short': 'h',
@@ -28,5 +31,6 @@ export default {
       console.log(`  ${greeting.join('\n  ')}`)
       console.log(help(this, pkg))
     }
+    return Promise.resolve()
   },
 }
