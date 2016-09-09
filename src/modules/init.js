@@ -71,7 +71,7 @@ function promptDescription () {
   .then(({description}) => description)
 }
 
-function createManifest (name, vendor, title, description) {
+function createManifest (name, vendor, title = '', description = '') {
   const [year, ...monthAndDay] = moment().format('YYYY-MM-DD').split('-')
   return {
     name,
