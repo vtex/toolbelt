@@ -52,7 +52,7 @@ function promptVendor () {
 function promptTitle () {
   return Promise.try(() =>
     inquirer.prompt({
-      name: 'vendor',
+      name: 'title',
       message: 'What\'s your VTEX app title?',
       filter: s => s.trim(),
     })
@@ -63,7 +63,7 @@ function promptTitle () {
 function promptDescription () {
   return Promise.try(() =>
     inquirer.prompt({
-      name: 'vendor',
+      name: 'description',
       message: 'What\'s your VTEX app description?',
       filter: s => s.trim(),
     })
