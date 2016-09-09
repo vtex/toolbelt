@@ -76,7 +76,7 @@ function createManifest (name, vendor, title = '', description = '') {
   return {
     name,
     vendor,
-    version: '1.0.0',
+    version: '0.1.0',
     title,
     description,
     mustUpdateAt: `${Number(year) + 1}-${monthAndDay.join('-')}`,
