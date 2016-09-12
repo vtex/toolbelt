@@ -78,6 +78,24 @@ On an app directory, run `vtex watch` and click on or copy the provided URL into
 
 The `vtex` command will now monitor your files for changes and sync them automatically.
 
+## Customizing your prompt
+
+If you are a _bash_ user and wish to have information regarding the account and the workspace 
+you are logged in visible at your command prompt it is achievable by running the following 
+command:
+
+```sh
+echo "source $(npm get prefix)/node_modules/vtex/scripts/prompt.bash" >> .bashrc
+```
+
+Or, similarly, if you are a _zsh_ user:
+
+```sh
+echo "source $(npm get prefix)/node_modules/vtex/scripts/prompt.bash" >> .zshrc
+```
+
+Disclaimer: _fish_ is not yet supported.
+
 ---
 
 # Frequently Asked Questions
@@ -116,6 +134,11 @@ If no `.vtexignore` is found, your [.gitignore](http://git-scm.com/docs/gitignor
 ## How do I publish my App to the VTEX App Store?
 
 To publish your VTEX app to VTEX App Store, use the `vtex publish` command. The app will be published under the vendor name.
+
+
+## I don't like the default toolbelt prompt customization. It's ugly or it messes with some of my other configurations, but I still want to be able to see the account and workspace I'm logged into. What do I do?
+
+You can do so by adding the `vtex_get_account` and `vtex_get_workspace` commands to your PS1 environment variable the way it pleases you.
 
 ---
 
