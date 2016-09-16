@@ -10,7 +10,7 @@ const unlink = promisify(fs.unlink)
 const bbGlob = promisify(glob)
 
 export function listLocalFiles (root) {
-  return bbGlob('{*/**,manifest.json}', {
+  return bbGlob('{*/**,*.json}', {
     cwd: root,
     nodir: true,
     ignore: ['node_modules/**'],
@@ -74,7 +74,7 @@ export function createChanges (root, batch) {
 }
 
 export function watch (root, sendChanges) {
-  const watcher = chokidar.watch(['*/**', 'manifest.json'], {
+  const watcher = chokidar.watch(['*/**', '*.json'], {
     cwd: root,
     persistent: true,
     ignoreInitial: true,
