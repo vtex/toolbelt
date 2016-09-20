@@ -1,22 +1,21 @@
-import ora from 'ora'
 import chalk from 'chalk'
+import jp from 'jsonpath'
 import log from '../logger'
 import moment from 'moment'
-import tinylr from 'tiny-lr'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
-import readline from 'readline'
 import debounce from 'debounce'
-import jp from 'jsonpath'
-import {logChanges} from '../apps'
-import {Promise, all} from 'bluebird'
-import userAgent from '../user-agent'
-import http from 'requisition'
+import {Promise} from 'bluebird'
 import courier from '../courier'
 import {uniqBy, prop} from 'ramda'
+import userAgent from '../user-agent'
+import {createInterface} from 'readline'
+import {allocateChangeLog} from '../apps'
+import {timeStart, timeEnd} from '../time'
 import {getWorkspaceURL} from '../workspace'
 import {AppsClient, RegistryClient} from '@vtex/api'
 import {getToken, getAccount, getWorkspace} from '../conf'
+import {setSpinnerText, startSpinner, stopSpinner} from '../spinner'
 import {
   manifest,
   namePattern,
@@ -31,16 +30,7 @@ import {
   deleteTempFile,
 } from '../file'
 
-let spinner
-
 const KEEP_ALIVE_INTERVAL = 5000
-
-const lrServer = tinylr({
-  errorListener (err) {
-    if (err.code === 'EADDRINUSE') { return }
-    throw new Error(err)
-  },
-})
 
 const root = process.cwd()
 
@@ -64,6 +54,9 @@ const sendChanges = (() => {
   let queue = []
   const publishPatch = debounce(
     (account, workspace, vendor, name, version) => {
+      setSpinnerText('Sending changes')
+      startSpinner()
+      timeStart()
       return registryClient().publishAppPatch(
         account,
         workspace,
@@ -73,10 +66,13 @@ const sendChanges = (() => {
         queue
       )
       .then(() => installApp(`${vendor}.${name}@${version}+rc`))
-      .then(() => spinner.stop())
-      .then(() => logChanges(queue, moment().format('HH:mm:ss')))
-      .then(log => log.length > 0 ? console.log(log) : null)
+      .then(() => allocateChangeLog(queue, moment().format('HH:mm:ss')))
       .then(() => { queue = [] })
+      .catch(err => {
+        timeEnd()
+        stopSpinner()
+        throw new Error(err)
+      })
     },
     200
   )
@@ -84,8 +80,6 @@ const sendChanges = (() => {
     if (changes.length === 0) {
       return
     }
-    spinner = spinner || ora('Sending changes...')
-    spinner.start()
     queue = uniqBy(pathProp, queue.concat(changes).reverse())
     return publishPatch(getAccount(), getWorkspace(), manifest.vendor, manifest.name, manifest.version)
   }
@@ -101,23 +95,16 @@ const keepAppAlive = () => {
         id,
       )
     }, KEEP_ALIVE_INTERVAL)
-    readline.createInterface({
+    createInterface({
       input: process.stdin,
       output: process.stdout,
     }).on('SIGINT', () => {
-      if (spinner) {
-        spinner.stop()
-      }
+      stopSpinner()
       log.info('Exiting...')
-      lrServer.close()
       clearTimeout(keepAliveInterval)
       process.exit()
     })
   })
-}
-
-const sendChangesToLr = () => {
-  return http.post('http://localhost:35729/changed').send({files: ['']})
 }
 
 const installApp = (id) => {
@@ -177,20 +164,18 @@ export default {
         chalk.green('Your URL:'),
         chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
       )
-      courier.listen(getAccount(), getWorkspace(), getToken(), sendChangesToLr)
+      courier.listen(getAccount(), getWorkspace(), getToken())
+      if (log.level === 'info') {
+        setSpinnerText('Sending files')
+        startSpinner()
+      }
       let tempPath
       log.debug('Creating temp path...')
 
       return createTempPath(id).then(t => { tempPath = t })
-      .then(() => {
-        log.debug('Listing local files...')
-        log.debug('Starting local live reload server...')
-        return all([
-          listLocalFiles(root),
-          lrServer.listen(),
-        ])
-      })
-      .spread(files => compressFiles(files, tempPath))
+      .tap(() => log.debug('Listing local files...'))
+      .then(() => listLocalFiles(root))
+      .then(files => compressFiles(files, tempPath))
       .tap(() => log.debug('Publishing app...'))
       .then(({file}) => publishApp(file, true))
       .tap(() => log.debug('Deleting temp file...'))
@@ -198,6 +183,10 @@ export default {
       .then(keepAppAlive)
       .tap(() => log.debug('Starting watch...'))
       .then(() => watch(root, sendChanges))
+      .catch(err => {
+        stopSpinner()
+        throw new Error(err)
+      })
     },
   },
   install: {
@@ -260,14 +249,15 @@ export default {
     description: 'Publish this app',
     handler: () => {
       log.debug('Starting to publish app')
-      spinner = ora('Publishing app...').start()
+      setSpinnerText('Publishing app...')
+      startSpinner()
 
       return createTempPath(id).then(tempPath =>
         listLocalFiles(root)
         .then(files => compressFiles(files, tempPath))
         .then(({file}) => publishApp(file))
         .then(() => deleteTempFile(tempPath))
-        .finally(() => spinner.stop())
+        .finally(() => stopSpinner())
         .then(() => log.info(`Published app ${id} successfully`))
         .catch(res => res.error && res.error.code === 'app_version_already_exists'
           ? log.error(`Version ${manifest.version} already published!`)
