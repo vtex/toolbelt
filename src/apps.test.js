@@ -1,7 +1,7 @@
 import test from 'ava'
 import chalk from 'chalk'
 import moment from 'moment'
-import {logChanges} from './apps'
+import {changesToString} from './apps'
 
 test('creates a log given a set of changes', t => {
   const time = moment().format('HH:mm:ss')
@@ -28,6 +28,6 @@ test('creates a log given a set of changes', t => {
     `${chalk.dim(`\n[${time}] `)}${chalk.yellow('U')} render/assets/Bar.js` +
     `${chalk.dim(`\n[${time}] `)}${chalk.red('D')} render/assets/Foo.js` +
     `${chalk.dim(`\n[${time}] `)}${chalk.red('D')} render/assets/Baz.js`
-  const log = logChanges(changes, time)
+  const log = changesToString(changes, time)
   t.is(log, expectedLog)
 })
