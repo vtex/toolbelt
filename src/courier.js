@@ -1,7 +1,13 @@
+import chalk from 'chalk'
 import log from './logger'
-import EventSource from 'eventsource'
-import {clearLine, cursorTo} from 'readline'
 import moment from 'moment'
+import {timeStop} from './time'
+import stripAnsi from 'strip-ansi'
+import {manifest} from './manifest'
+import EventSource from 'eventsource'
+import {consumeChangeLog} from './apps'
+import {clearLine, cursorTo} from 'readline'
+import {setSpinnerText, stopSpinner} from './spinner'
 
 const levelFormat = {
   debug: log.debug,
@@ -22,32 +28,79 @@ let retry = (account, workspace, authToken) => {
   }
 }
 
-const logToConsole = (level, origin, message) => {
-  let time = moment().format('hh:mm:ss')
-  levelFormat[level](`[${time}] (${origin}) ${message}`)
+const clearAbove = () => {
+  clearLine(process.stdout, 0)
+  cursorTo(process.stdout, 0)
 }
 
-const listen = (account, workspace, authToken, sendChangesToLr) => {
+const stopAndLog = (log) => {
+  const timeEnd = timeStop()
+  const isValidLog = log && log.length > 0
+  const isStopped = stopSpinner()
+
+  if (!isValidLog || !timeEnd) {
+    return
+  }
+
+  if (!isStopped) {
+    clearAbove()
+  }
+
+  const logLength = stripAnsi(log).split('\n').pop().length
+  const padLength = process.stdout.columns - (logLength + timeEnd.length)
+  const pad = padLength > 0 ? Array(padLength).join(' ') : ' '
+  const timedLog = `${log}${pad}${chalk.gray(timeEnd)}`
+  console.log(timedLog)
+}
+
+const logToConsole = (level, origin, message) => {
+  if (log.level === 'info') {
+    if (level === 'error') {
+      stopAndLog(consumeChangeLog())
+      clearAbove()
+      return console.log(`\n${message}\n`)
+    }
+    setSpinnerText(message)
+    return
+  }
+
+  const time = moment().format('hh:mm:ss')
+  levelFormat[level](`[${time}] ${`(${origin})`} ${message}`)
+}
+
+const originMatch = (origin) => {
+  const {vendor, name, version} = manifest
+  const local = `${vendor}.${name}@${version.substring(0, 0)}`
+  return local === origin.substring(0, origin.indexOf('@') + 1)
+}
+
+const listen = (account, workspace, authToken) => {
   let es = new EventSource(`http://courier.vtex.com/${account}/${workspace}/app-events?level=${log.level}`, {
     'Authorization': `token ${authToken}`,
   })
   es.onopen = () => log.debug(`courier: connected with level ${log.level}`)
   es.addEventListener('system', async (msg) => {
-    let {origin, message} = JSON.parse(msg.data)
+    let {message, origin} = JSON.parse(msg.data)
+    if (!originMatch(origin)) {
+      return
+    }
+
     if (message === 'workspace:changed') {
-      logToConsole('debug', origin, 'Starting livereload')
-      await sendChangesToLr()
+      stopAndLog(consumeChangeLog())
     }
   })
   es.addEventListener('message', (msg) => {
     let {level, origin, message} = JSON.parse(msg.data)
-    clearLine(process.stdout, 0)
-    cursorTo(process.stdout, 0)
+    if (!originMatch(origin)) {
+      return
+    }
+
+    clearAbove()
     logToConsole(level, origin, message)
     retryCount = 0
   })
   es.addEventListener('close', (msg) => {
-    log.debug(`courrier: connection closed. Error: ${msg.data}`)
+    log.debug(`courier: connection closed. Error: ${msg.data}`)
     es.close()
     retry(account, workspace, authToken)
   })
