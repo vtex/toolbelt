@@ -109,9 +109,10 @@ const keepAppAlive = () => {
       output: process.stdout,
     }).on('SIGINT', () => {
       stopSpinner()
-      log.info('Exiting...')
       clearTimeout(keepAliveInterval)
-      process.exit()
+      log.info('Exiting...')
+      appsClient().uninstallApp(getAccount(), getWorkspace(), id)
+      .finally(() => process.exit())
     })
   })
 }
