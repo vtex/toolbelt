@@ -95,7 +95,8 @@ const sendChanges = (() => {
 })()
 
 const keepAppAlive = () => {
-  return installApp(`${id}+rc`)
+  const rcApp = `${id}+rc`
+  return installApp(rcApp)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
       appsClient().updateAppTtl(
@@ -111,7 +112,7 @@ const keepAppAlive = () => {
       stopSpinner()
       clearTimeout(keepAliveInterval)
       log.info('Exiting...')
-      appsClient().uninstallApp(getAccount(), getWorkspace(), id)
+      appsClient().uninstallApp(getAccount(), getWorkspace(), rcApp)
       .finally(() => process.exit())
     })
   })
