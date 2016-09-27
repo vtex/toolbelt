@@ -58,9 +58,10 @@ const onError = e => {
     }
     if (statusCode >= 400) {
       try {
-        const {code, exception} = e.error
-        const {message, stackTrace} = exception
+        const {code, message, exception} = e.error
+        const {source, stackTrace} = exception
         log.error('API:', message, {statusCode, code})
+	log.debug(source)
         log.debug(stackTrace)
         return
       } catch (e) {}
