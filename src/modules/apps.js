@@ -51,12 +51,12 @@ const registryClient = () => new RegistryClient({
 })
 
 const handleError = (err) => {
-  if (err && err.name === 'StatusCodeError') {
+  if (err && err.name === 'StatusCodeError' && err.error.exception) {
     const error = new Error(err.error.exception.message)
     error.name = err.error.code
     throw error
   }
-  throw new Error(err)
+  throw err
 }
 
 const sendChanges = (() => {
