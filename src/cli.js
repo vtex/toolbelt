@@ -66,7 +66,7 @@ const onError = e => {
       } catch (e) {}
     }
     log.error('Oops! There was an unexpected API error.')
-    log.error(e.read ? e.read().toString('utf8') : e.error)
+    log.error(e.read ? e.read().toString('utf8') : e)
   } else {
     switch (e.name) {
       case MissingRequiredArgsError.name:
