@@ -73,12 +73,35 @@ export function createChanges (root, batch) {
   })
 }
 
+const defaultIgnored = [
+  'node_modules/**',
+  'README.md',
+  'CHANGELOG.md',
+  '.eslintrc',
+  '.gitignore',
+  'package.json',
+  '.DS_Store',
+]
+
+function getIgnoredPaths (root) {
+  try {
+    return fs.readFileSync(path.join(root, '.vtexignore'))
+      .toString()
+      .split('\n')
+      .map(p => p.trim())
+      .filter(p => p !== '')
+  } catch (e) {
+    return []
+  }
+}
+
 export function watch (root, sendChanges) {
+  const ignored = defaultIgnored.concat(getIgnoredPaths(root))
   const watcher = chokidar.watch(['*/**', '*.json'], {
     cwd: root,
     persistent: true,
     ignoreInitial: true,
-    ignore: ['node_modules/**'],
+    ignored,
     usePolling: process.platform === 'win32',
   })
   return new Promise((resolve, reject) => {
