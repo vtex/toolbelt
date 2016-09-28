@@ -13,7 +13,7 @@ export function listLocalFiles (root) {
   return bbGlob('{*/**,*.json}', {
     cwd: root,
     nodir: true,
-    ignore: ['node_modules/**'],
+    ignore: getIgnoredPaths(root),
   })
 }
 
@@ -89,19 +89,18 @@ function getIgnoredPaths (root) {
       .toString()
       .split('\n')
       .map(p => p.trim())
-      .filter(p => p !== '')
+      .filter(p => p !== '').concat(defaultIgnored)
   } catch (e) {
-    return []
+    return defaultIgnored
   }
 }
 
 export function watch (root, sendChanges) {
-  const ignored = defaultIgnored.concat(getIgnoredPaths(root))
   const watcher = chokidar.watch(['*/**', '*.json'], {
     cwd: root,
     persistent: true,
     ignoreInitial: true,
-    ignored,
+    ignored: getIgnoredPaths(root),
     usePolling: process.platform === 'win32',
   })
   return new Promise((resolve, reject) => {
