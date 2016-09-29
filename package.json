@@ -66,10 +66,8 @@
     "ora": "^0.2.3",
     "pad": "^1.0.0",
     "ramda": "^0.22.0",
-    "requisition": "^1.7.0",
     "rimraf": "^2.5.3",
     "strip-ansi": "^3.0.1",
-    "tiny-lr": "^0.2.1",
     "update-notifier": "^0.7.0",
     "validator": "^5.3.0",
     "winston": "^2.2.0"
