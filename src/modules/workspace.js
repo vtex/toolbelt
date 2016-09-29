@@ -66,12 +66,12 @@ export default {
       handler: (name) => {
         log.debug('Creating workspace', name)
         return client().create(getAccount(), name)
-        .then(() => log.info(`Workspace ${name} created successfully`))
-        .catch(res => {
-          return res.statusCode === 409
-          ? log.info(`Workspace ${name} already exists`)
-          : Promise.reject(res)
-        })
+        .then(() => log.info(`Workspace ${chalk.green(name)} created successfully`))
+        .catch(err =>
+          err.error && err.error.code === 'WorkspaceAlreadyExists'
+            ? log.error(err.error.message)
+            : Promise.reject(err)
+        )
       },
     },
     delete: {
