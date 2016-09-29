@@ -147,16 +147,17 @@ export default {
     promote: {
       requiredArgs: 'name',
       description: 'Promote this workspace to master',
-      handler: (name) => {
+      handler: function (name) {
         log.debug('Promoting workspace', name)
         return inquirer.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: `Are you sure you want to promote workspace ${name} to master?`,
+          message: `Are you sure you want to promote workspace ${chalk.green(name)} to master?`,
         })
         .then(({confirm}) => confirm || Promise.reject('User cancelled'))
         .then(() => client().promote(getAccount(), name))
-        .then(() => log.info(`Workspace ${name} promoted successfully`))
+        .tap(() => log.info(`Workspace ${chalk.green(name)} promoted successfully`))
+        .then(() => this.workspace.use.handler('master'))
       },
     },
   },
