@@ -132,6 +132,15 @@ const publishApp = (file, pre = false) => {
   )
 }
 
+const promptAppUninstall = (app) => {
+  return inquirer.prompt({
+    type: 'confirm',
+    name: 'confirm',
+    message: `Are you sure you want to uninstall the app ${app}?`,
+  })
+  .then(({confirm}) => confirm)
+}
+
 const workspaceMasterMessage = `${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace`
 
 export default {
@@ -234,7 +243,15 @@ export default {
   uninstall: {
     requiredArgs: 'app',
     description: 'Uninstall the specified app',
-    handler: (app) => {
+    options: [
+      {
+        short: 'y',
+        long: 'yes',
+        description: 'Auto confirm prompts',
+        type: 'boolean',
+      },
+    ],
+    handler: (app, options) => {
       const workspace = getWorkspace()
       if (workspace === 'master') {
         log.error(workspaceMasterMessage)
@@ -248,14 +265,9 @@ export default {
         return Promise.resolve()
       }
 
-      return Promise.try(() =>
-        inquirer.prompt({
-          type: 'confirm',
-          name: 'confirm',
-          message: `Are you sure you want to uninstall the app ${app}?`,
-        })
-      )
-      .then(({confirm}) => confirm || Promise.reject('User cancelled'))
+      const preConfirm = options.y || options.yes
+      return Promise.try(() => preConfirm || promptAppUninstall(app))
+      .then(confirm => confirm || Promise.reject('User cancelled'))
       .then(() =>
         appsClient().uninstallApp(
           getAccount(),
