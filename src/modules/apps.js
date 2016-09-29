@@ -146,11 +146,10 @@ const workspaceMasterMessage = `${chalk.green('master')} is ${chalk.red('read-on
 export default {
   list: {
     alias: 'ls',
-    'optionalArgs': 'query',
+    optionalArgs: 'query',
     description: 'List your installed VTEX apps',
     handler: () => {
       log.debug('Starting to list apps')
-
       return appsClient().listApps(
         getAccount(),
         getWorkspace()
@@ -214,20 +213,24 @@ export default {
     },
   },
   install: {
-    requiredArgs: 'app',
+    optionalArgs: 'app',
     alias: 'i',
-    description: 'Install the specified app',
-    handler: (app) => {
+    description: 'Install an app on the current directory or a specified one',
+    handler: (optionalApp) => {
       const workspace = getWorkspace()
       if (workspace === 'master') {
         log.error(workspaceMasterMessage)
         return Promise.resolve()
       }
 
+      const app = typeof optionalApp === 'string'
+        ? optionalApp
+        : `${manifest.vendor}.${manifest.name}@${manifest.version}`
       log.debug('Starting to install app', app)
       const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
       if (!appRegex.test(app)) {
-        return log.error('Invalid app format, please use <vendor>.<name>@<version>')
+        log.error('Invalid app format, please use <vendor>.<name>@<version>')
+        return Promise.resolve()
       }
 
       return installApp(app)
