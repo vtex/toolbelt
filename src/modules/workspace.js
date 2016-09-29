@@ -160,5 +160,15 @@ export default {
         .then(() => this.workspace.use.handler('master'))
       },
     },
+    reset: {
+      requiredArgs: 'name',
+      description: 'Delete and create a workspace',
+      handler: function (name) {
+        log.debug('Resetting workspace', name)
+        return this.workspace.delete.handler(name, {yes: true, force: true})
+        .delay(3000)
+        .then(() => this.workspace.create.handler(name))
+      },
+    },
   },
 }
