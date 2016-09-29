@@ -6,7 +6,7 @@ import inquirer from 'inquirer'
 import {Promise} from 'bluebird'
 import userAgent from '../user-agent'
 import {VBaseClient} from '@vtex/api'
-import {getToken, getAccount, saveWorkspace} from '../conf'
+import {getToken, getAccount, getWorkspace, saveWorkspace} from '../conf'
 
 const client = () => new VBaseClient({
   endpointUrl: 'BETA',
@@ -20,13 +20,17 @@ export default {
       description: 'List workspaces on this account',
       handler: () => {
         log.debug('Listing workspaces')
+        const currentWorkspace = getWorkspace()
         return client().list(getAccount()).then(res => {
           const table = new Table({
             head: ['Name', 'Last Modified', 'State'],
           })
           res.forEach(r => {
+            const name = r.name === currentWorkspace
+              ? chalk.green(`* ${r.name}`)
+              : r.name
             table.push([
-              r.name,
+              name,
               moment(r.lastModified).calendar(),
               r.state,
             ])
