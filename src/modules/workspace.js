@@ -23,6 +23,18 @@ const promptWorkspaceDeletion = (name) => {
   .then(({confirm}) => confirm)
 }
 
+const promptWorkspaceCreation = (name) => {
+  console.log(chalk.blue('!'), `Workspace ${chalk.green(name)} doesn't exist`)
+  return Promise.try(() =>
+    inquirer.prompt({
+      type: 'confirm',
+      name: 'confirm',
+      message: 'Do you wish to create it?',
+    })
+  )
+  .then(({confirm}) => confirm)
+}
+
 export default {
   workspace: {
     list: {
@@ -112,18 +124,24 @@ export default {
     use: {
       requiredArgs: 'name',
       description: 'Use a workspace to perform operations',
-      handler: (name) => {
+      handler: function (name) {
         return client().get(getAccount(), name)
-        .then(() => saveWorkspace(name))
-        .then(() => log.info(`You're now using the workspace ${name}!`))
-        .catch(res => {
-          if (res.error && res.error.Code === 'NotFound') {
-            log.info(`Workspace ${name} doesn't exist`)
-            log.info(`You can use ${chalk.bold(`vtex workspace create ${name}`)} to create it!`)
-            return
+        .catch(err => {
+          if (err.error && err.error.code === 'WorkspaceNotFound') {
+            return promptWorkspaceCreation(name)
+            .then(confirm => {
+              if (!confirm) {
+                log.error(`Could not use workspace ${chalk.green(name)}`)
+                return Promise.reject()
+              }
+              return this.workspace.create.handler(name)
+            })
           }
-          return Promise.reject(res)
+          return Promise.reject(err)
         })
+        .then(() => saveWorkspace(name))
+        .tap(() => log.info(`You're now using the workspace ${chalk.green(name)}!`))
+        .catch(err => err ? Promise.reject(err) : Promise.resolve())
       },
     },
     promote: {
