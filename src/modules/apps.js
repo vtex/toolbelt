@@ -86,6 +86,7 @@ const sendChanges = (() => {
 })()
 
 const keepAppAlive = () => {
+  let exitPromise
   const rcApp = `${id}+rc`
   return installApp(rcApp)
   .then(() => {
@@ -100,10 +101,13 @@ const keepAppAlive = () => {
       input: process.stdin,
       output: process.stdout,
     }).on('SIGINT', () => {
+      if (exitPromise) {
+        return
+      }
       stopSpinner()
       clearTimeout(keepAliveInterval)
       log.info('Exiting...')
-      appsClient().uninstallApp(getAccount(), getWorkspace(), rcApp)
+      exitPromise = appsClient().uninstallApp(getAccount(), getWorkspace(), rcApp)
       .finally(() => process.exit())
     })
   })
