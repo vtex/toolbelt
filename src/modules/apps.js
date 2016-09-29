@@ -50,15 +50,6 @@ const registryClient = () => new RegistryClient({
   userAgent: userAgent,
 })
 
-const handleError = (err) => {
-  if (err && err.name === 'StatusCodeError' && err.error.exception) {
-    const error = new Error(err.error.exception.message)
-    error.name = err.error.code
-    throw error
-  }
-  throw err
-}
-
 const sendChanges = (() => {
   let queue = []
   const publishPatch = debounce(
@@ -80,7 +71,7 @@ const sendChanges = (() => {
       .catch(err => {
         timeEnd()
         stopSpinner()
-        handleError(err)
+        return Promise.reject(err)
       })
     },
     200
@@ -196,7 +187,7 @@ export default {
       .then(() => watch(root, sendChanges))
       .catch(err => {
         stopSpinner()
-        handleError(err)
+        return Promise.reject(err)
       })
     },
   },
