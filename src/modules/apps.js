@@ -198,6 +198,7 @@ export default {
       return createTempPath(id).then(t => { tempPath = t })
       .tap(() => log.debug('Listing local files...'))
       .then(() => listLocalFiles(root))
+      .tap(files => log.debug('Compressing files:', '\n' + files.join('\n')))
       .then(files => compressFiles(files, tempPath))
       .tap(() => log.debug('Publishing app...'))
       .then(({file}) => publishApp(file, true))
@@ -302,6 +303,7 @@ export default {
 
       return createTempPath(id).then(tempPath =>
         listLocalFiles(root)
+        .tap(files => log.debug('Compressing files:', '\n' + files.join('\n')))
         .then(files => compressFiles(files, tempPath))
         .then(({file}) => publishApp(file))
         .then(() => deleteTempFile(tempPath))
