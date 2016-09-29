@@ -132,6 +132,8 @@ const publishApp = (file, pre = false) => {
   )
 }
 
+const workspaceMasterMessage = `${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace`
+
 export default {
   list: {
     alias: 'ls',
@@ -165,12 +167,19 @@ export default {
   watch: {
     description: 'Send the files to the registry and watch for changes',
     handler: () => {
+      const workspace = getWorkspace()
+      if (workspace === 'master') {
+        log.error(workspaceMasterMessage)
+        return Promise.resolve()
+      }
+
+      const account = getAccount()
       log.info('Watching app', `${id}`)
       console.log(
         chalk.green('Your URL:'),
-        chalk.blue(getWorkspaceURL(getAccount(), getWorkspace()))
+        chalk.blue(getWorkspaceURL(account, workspace))
       )
-      courier.listen(getAccount(), getWorkspace(), getToken())
+      courier.listen(account, workspace, getToken())
       if (log.level === 'info') {
         setSpinnerText('Sending files')
         startSpinner()
@@ -200,6 +209,12 @@ export default {
     alias: 'i',
     description: 'Install the specified app',
     handler: (app) => {
+      const workspace = getWorkspace()
+      if (workspace === 'master') {
+        log.error(workspaceMasterMessage)
+        return Promise.resolve()
+      }
+
       log.debug('Starting to install app', app)
       const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
       if (!appRegex.test(app)) {
@@ -220,6 +235,12 @@ export default {
     requiredArgs: 'app',
     description: 'Uninstall the specified app',
     handler: (app) => {
+      const workspace = getWorkspace()
+      if (workspace === 'master') {
+        log.error(workspaceMasterMessage)
+        return Promise.resolve()
+      }
+
       log.debug('Starting to uninstall app', app)
       const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}$`)
       if (!appRegex.test(app)) {
@@ -254,6 +275,12 @@ export default {
   publish: {
     description: 'Publish this app',
     handler: () => {
+      const workspace = getWorkspace()
+      if (workspace === 'master') {
+        log.error(workspaceMasterMessage)
+        return Promise.resolve()
+      }
+
       log.debug('Starting to publish app')
       setSpinnerText('Publishing app...')
       startSpinner()
@@ -289,6 +316,12 @@ export default {
       description: 'Set a value',
       requiredArgs: ['app', 'field', 'value'],
       handler: async (app, field, value) => {
+        const workspace = getWorkspace()
+        if (workspace === 'master') {
+          log.error(workspaceMasterMessage)
+          return Promise.resolve()
+        }
+
         const patch = {}
         jp.value(patch, '$.' + field, value)
         const response = await appsClient().patchAppSettings(
@@ -301,6 +334,12 @@ export default {
       description: 'Unset a value',
       requiredArgs: ['app', 'field'],
       handler: async (app, field) => {
+        const workspace = getWorkspace()
+        if (workspace === 'master') {
+          log.error(workspaceMasterMessage)
+          return Promise.resolve()
+        }
+
         const patch = {}
         jp.value(patch, '$.' + field, null)
         const response = await appsClient().patchAppSettings(
