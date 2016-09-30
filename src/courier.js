@@ -67,7 +67,7 @@ const logToConsole = (level, origin, message) => {
     return
   }
 
-  const format = isLogLevelInfo ? 'HH:mm:ss' : 'HH:mm:ss:SS'
+  const format = isLogLevelInfo ? 'HH:mm:ss' : 'HH:mm:ss:SSS'
   const time = moment().format(format)
   levelFormat[level](`[${time}] ${text}`)
 }
