@@ -54,9 +54,10 @@ const stopAndLog = (log) => {
 }
 
 const logToConsole = (level, origin, message) => {
+  const isLogLevelInfo = log.level === 'info'
   const {message: text, timeout} = typeof message === 'string'
     ? {message} : message
-  if (log.level === 'info' && isSpinnerActive()) {
+  if (isLogLevelInfo && isSpinnerActive()) {
     if (level === 'error') {
       stopAndLog(consumeChangeLog())
       clearAbove()
@@ -66,7 +67,8 @@ const logToConsole = (level, origin, message) => {
     return
   }
 
-  const time = moment().format('HH:mm:ss')
+  const format = isLogLevelInfo ? 'HH:mm:ss' : 'HH:mm:ss:SS'
+  const time = moment().format(format)
   levelFormat[level](`[${time}] ${text}`)
 }
 
