@@ -10,17 +10,27 @@ import {Promise, promisify, mapSeries} from 'bluebird'
 const bbMkdir = promisify(mkdir)
 const bbReadFile = promisify(readFile)
 const bbWriteFile = promisify(writeFile)
+const choices = [
+  'render',
+]
 
 function promptService () {
+  const cancel = 'Cancel'
   return Promise.try(() =>
     inquirer.prompt({
       name: 'service',
       message: 'Choose the VTEX service you will use',
       type: 'list',
-      choices: ['render'],
+      choices: [...choices, cancel],
     })
   )
-  .then(({service}) => service)
+  .then(({service}) => {
+    if (service === cancel) {
+      log.info('Bye o/')
+      return process.exit()
+    }
+    return service
+  })
 }
 
 function promptName () {
@@ -122,6 +132,7 @@ export default {
         log.debug('Creating manifest file')
         const fullName = `${vendor}.${name}`
         return writeManifest(createManifest(name, vendor, title, description))
+        .tap(() => log.info('Manifest file generated succesfully!'))
         .then(promptService)
         .then(service => this.init[service].handler())
         .tap(() => {

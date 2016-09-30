@@ -69,48 +69,62 @@ function promptEmailCode () {
   })
 }
 
-function promptWorkspace () {
-  console.log(
-    chalk.blue('!'),
-    `Leave it blank if you're unsure, it will default to ${chalk.green('master')}.`
-  )
+function promptWorkspaceInput (account, token) {
   const message = 'Please enter a valid workspace.'
   return Promise.try(() =>
     inquirer.prompt({
       name: 'workspace',
-      message: 'Workspace:',
-      validate: (s) => /^(\s*|\s*[\w\-]+\s*)$/.test(s) || message,
-      filter: (s) => {
-        const trimmed = s.trim()
-        return trimmed.length > 0 ? trimmed : 'master'
-      },
+      message: 'New workspace name:',
+      validate: s => /^(\s*|\s*[\w\-]+\s*)$/.test(s) || message,
+      filter: s => s.trim(),
     })
   )
   .then(({workspace}) => workspace)
+  .tap(workspace => client(token).create(account, workspace))
+  .catch(err => {
+    if (err.error && err.error.code === 'WorkspaceAlreadyExists') {
+      log.error(err.error.exception.message)
+      return promptWorkspaceInput(account, token)
+    }
+    throw new Error(err)
+  })
 }
 
-function promptWorkspaceCreation (workspace) {
-  console.log(
-    chalk.blue('!'),
-    `The workspace ${chalk.green(workspace)} doesn't exist.`
-  )
-  console.log(
-    chalk.blue('!'),
-    `If you choose ${chalk.red('no')}, it will default to ${chalk.green('master')}.`
-  )
-  return inquirer.prompt({
-    type: 'confirm',
-    name: 'confirm',
-    message: 'Do you wish to create it?',
+function promptWorkspace (account, token) {
+  const newWorkspace = 'Create new workspace...'
+  const master = `master ${chalk.red('(read-only)')}`
+  return client(token).list(account)
+  .then(workspaces => {
+    const workspaceList = [
+      newWorkspace,
+      master,
+      ...workspaces.map(w => w.name).filter(w => w !== 'master'),
+      new inquirer.Separator(),
+    ]
+    return inquirer.prompt({
+      type: 'list',
+      name: 'workspace',
+      message: 'Workspaces:',
+      choices: workspaceList,
+    })
   })
-  .then(({confirm}) => confirm)
+  .then(({workspace}) => {
+    switch (workspace) {
+      case master:
+        return 'master'
+      case newWorkspace:
+        return promptWorkspaceInput(account, token)
+      default:
+        return workspace
+    }
+  })
 }
 
 function promptUsePrevious () {
   log.info(
     'Found previous credential!',
-    `\n${chalk.bold('Account:')} ${chalk.green(account)}`,
     `\n${chalk.bold('Email:')} ${chalk.green(login)}`,
+    `\n${chalk.bold('Account:')} ${chalk.green(account)}`,
     `\n${chalk.bold('Workspace:')} ${chalk.green(workspace)}`
   )
   return inquirer.prompt({
@@ -121,26 +135,11 @@ function promptUsePrevious () {
   .then(({confirm}) => confirm)
 }
 
-function saveCredentials ({account, login, token, workspace}) {
-  saveAccount(account)
+function saveCredentials ({login, account, token, workspace}) {
   saveLogin(login)
+  saveAccount(account)
   saveToken(token)
   saveWorkspace(workspace)
-}
-
-function workspaceExists (account, workspace, token) {
-  return client(token).get(account, workspace)
-  .then(() => true)
-  .catch(res =>
-    res.error && res.error.code === 'NotFound'
-      ? Promise.resolve(false)
-      : Promise.reject(res)
-  )
-}
-
-function createWorkspace (account, workspace, token) {
-  return client(token).create(account, workspace)
-  .then(() => workspace)
 }
 
 export default {
@@ -150,48 +149,27 @@ export default {
       return Promise.resolve(login)
       .then(login => login ? promptUsePrevious() : false)
       .then(prev => prev
-        ? [{account}, {login}, {workspace}]
-        : mapSeries([promptAccount, promptLogin, () => ({})], a => a())
+        ? [{login}, {account}, {workspace}]
+        : mapSeries([promptLogin, promptAccount, () => ({})], a => a())
       )
-      .spread(({account}, {login}, {workspace}) => {
-        log.debug('Start login', {account, login, workspace})
+      .spread(({login}, {account}, {workspace}) => {
+        log.debug('Start login', {login, account, workspace})
         return all([
-          account,
           login,
+          account,
           startUserAuth(login, promptEmailCode, promptPassword),
           workspace,
         ])
       })
-      .then(([account, login, token, workspace]) => {
-        const actualWorkspace = workspace || promptWorkspace()
-        return all([
-          account,
-          login,
-          token,
-          actualWorkspace,
-        ])
+      .spread((login, account, token, workspace) => {
+        const actualWorkspace = workspace || promptWorkspace(account, token)
+        return all([login, account, token, actualWorkspace])
       })
-      .then(([account, login, token, workspace]) => {
-        log.debug('Checking if workspace exists...')
-        return workspaceExists(account, workspace, token)
-        .then(exists => {
-          if (exists) { return workspace }
-          return promptWorkspaceCreation(workspace)
-          .then(confirm => confirm
-            ? createWorkspace(account, workspace, token)
-            : 'master'
-          )
-        })
-        .then(workspace => ({account, login, token, workspace}))
-      })
-      .then(credentials => {
+      .spread((login, account, token, workspace) => {
+        const credentials = {login, account, token, workspace}
         log.debug('Login successful, saving credentials', credentials)
         saveCredentials(credentials)
-        log.info('Login successful!')
-      })
-      .catch(reason => {
-        log.error(reason)
-        process.exit(1)
+        log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
       })
     },
   },

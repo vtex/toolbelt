@@ -48,7 +48,7 @@ const main = () => {
 }
 
 const onError = e => {
-  const {statusCode} = e
+  const {statusCode, code} = e
   if (statusCode) {
     if (statusCode === 401) {
       log.error('Oops! There was an authentication error. Please login again.')
@@ -58,15 +58,19 @@ const onError = e => {
     }
     if (statusCode >= 400) {
       try {
-        const {code, exception} = e.error
-        const {message, stackTrace} = exception
+        const {code, message, exception} = e.error
+        const {source, stackTrace} = exception
         log.error('API:', message, {statusCode, code})
+        log.debug(source)
         log.debug(stackTrace)
         return
       } catch (e) {}
     }
     log.error('Oops! There was an unexpected API error.')
     log.error(e.read ? e.read().toString('utf8') : e)
+  } else if (code && code === 'ENOTFOUND') {
+    log.error('Connection failure :(')
+    log.error('Please check your internet')
   } else {
     switch (e.name) {
       case MissingRequiredArgsError.name:

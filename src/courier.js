@@ -7,7 +7,7 @@ import {manifest} from './manifest'
 import EventSource from 'eventsource'
 import {consumeChangeLog} from './apps'
 import {clearLine, cursorTo} from 'readline'
-import {setSpinnerText, stopSpinner} from './spinner'
+import {setSpinnerText, stopSpinner, isSpinnerActive} from './spinner'
 
 const levelFormat = {
   debug: log.debug,
@@ -54,18 +54,20 @@ const stopAndLog = (log) => {
 }
 
 const logToConsole = (level, origin, message) => {
-  if (log.level === 'info') {
+  const {message: text, timeout} = typeof message === 'string'
+    ? {message} : message
+  if (log.level === 'info' && isSpinnerActive()) {
     if (level === 'error') {
       stopAndLog(consumeChangeLog())
       clearAbove()
-      return console.log(`\n${message}\n`)
+      return console.log(`\n${text}\n`)
     }
-    setSpinnerText(message)
+    setSpinnerText(text, timeout)
     return
   }
 
-  const time = moment().format('hh:mm:ss')
-  levelFormat[level](`[${time}] ${`(${origin})`} ${message}`)
+  const time = moment().format('HH:mm:ss')
+  levelFormat[level](`[${time}] ${text}`)
 }
 
 const originMatch = (origin) => {
