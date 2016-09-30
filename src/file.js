@@ -89,7 +89,8 @@ function getIgnoredPaths (root) {
       .toString()
       .split('\n')
       .map(p => p.trim())
-      .filter(p => p !== '').concat(defaultIgnored)
+      .filter(p => p !== '')
+      .map(p => p.replace(/\/$/, '/**')).concat(defaultIgnored)
   } catch (e) {
     return defaultIgnored
   }
