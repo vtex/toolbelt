@@ -96,6 +96,7 @@ const keepAppAlive = () => {
         getWorkspace(),
         id,
       )
+      .catch(Promise.reject)
     }, KEEP_ALIVE_INTERVAL)
     createInterface({
       input: process.stdin,
