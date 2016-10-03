@@ -103,6 +103,10 @@ export function watch (root, sendChanges) {
     ignoreInitial: true,
     ignored: getIgnoredPaths(root),
     usePolling: process.platform === 'win32',
+    awaitWriteFinish: {
+      stabilityThreshold: 50,
+      pollInterval: 10,
+    },
   })
   return new Promise((resolve, reject) => {
     watcher
