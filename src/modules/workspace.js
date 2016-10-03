@@ -161,13 +161,20 @@ export default {
       },
     },
     reset: {
-      requiredArgs: 'name',
+      optionalArgs: 'name',
       description: 'Delete and create a workspace',
       handler: function (name) {
         log.debug('Resetting workspace', name)
-        return this.workspace.delete.handler(name, {yes: true, force: true})
+        const workspace = typeof name !== 'string' ? getWorkspace() : name
+        return this.workspace.delete.handler(workspace, {yes: true, force: true})
         .delay(3000)
-        .then(() => this.workspace.create.handler(name))
+        .then(() => this.workspace.create.handler(workspace))
+        .catch(err => {
+          if (err.error && err.error.code === 'WorkspaceAlreadyExists') {
+            return setTimeout(() => this.workspace.create.handler(workspace), 3000)
+          }
+          return Promise.reject(err)
+        })
       },
     },
   },
