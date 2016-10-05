@@ -2,11 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import glob from 'glob'
 import chokidar from 'chokidar'
-import archiver from 'archiver'
 import {Promise, promisify} from 'bluebird'
 
-const mkdir = promisify(fs.mkdir)
-const unlink = promisify(fs.unlink)
 const bbGlob = promisify(glob)
 
 export function listLocalFiles (root) {
@@ -15,42 +12,6 @@ export function listLocalFiles (root) {
     nodir: true,
     ignore: getIgnoredPaths(root),
   })
-}
-
-export function createTempPath (id) {
-  const tempPath = path.resolve(module.filename, '../../temp/')
-  const tempPathFile = path.resolve(tempPath, `${id}.zip`)
-  return mkdir(tempPath)
-  .then(() => tempPathFile)
-  .catch(err => {
-    return err.code === 'EEXIST'
-      ? Promise.resolve(tempPathFile)
-      : Promise.reject(err)
-  })
-}
-
-export function compressFiles (files, destination) {
-  const archive = archiver('zip')
-  const output = fs.createWriteStream(destination)
-  archive.pipe(output)
-  files.forEach(f => {
-    const filePath = path.resolve(process.cwd(), f)
-    archive.append(fs.createReadStream(filePath), { name: f })
-  })
-  archive.finalize()
-  return new Promise((resolve, reject) => {
-    output.on('close', () => {
-      return resolve({
-        file: fs.createReadStream(destination),
-        size: archive.pointer(),
-      })
-    })
-    archive.on('error', reject)
-  })
-}
-
-export function deleteTempFile (tempPath) {
-  return unlink(tempPath)
 }
 
 export function normalizePath (filePath) {

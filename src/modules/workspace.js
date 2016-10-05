@@ -8,11 +8,7 @@ import userAgent from '../user-agent'
 import {VBaseClient} from '@vtex/api'
 import {getToken, getAccount, getWorkspace, saveWorkspace} from '../conf'
 
-const client = () => new VBaseClient({
-  endpointUrl: 'BETA',
-  authToken: getToken(),
-  userAgent: userAgent,
-})
+const client = () => new VBaseClient(getToken(), userAgent, 'BETA')
 
 const promptWorkspaceDeletion = (name) => {
   return inquirer.prompt({

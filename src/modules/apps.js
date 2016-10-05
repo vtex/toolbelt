@@ -5,15 +5,16 @@ import moment from 'moment'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
 import debounce from 'debounce'
+import vfs from 'vinyl-fs'
 import {Promise} from 'bluebird'
-import courier from '../courier'
 import {uniqBy, prop} from 'ramda'
-import userAgent from '../user-agent'
 import {createInterface} from 'readline'
+import {AppsClient, RegistryClient} from '@vtex/api'
+import courier from '../courier'
+import userAgent from '../user-agent'
 import {allocateChangeLog} from '../apps'
 import {timeStart, timeEnd} from '../time'
 import {getWorkspaceURL} from '../workspace'
-import {AppsClient, RegistryClient} from '@vtex/api'
 import {getToken, getAccount, getWorkspace} from '../conf'
 import {setSpinnerText, startSpinner, stopSpinner} from '../spinner'
 import {
@@ -24,10 +25,7 @@ import {
 } from '../manifest'
 import {
   watch,
-  compressFiles,
-  createTempPath,
   listLocalFiles,
-  deleteTempFile,
 } from '../file'
 
 const KEEP_ALIVE_INTERVAL = 5000
@@ -38,17 +36,9 @@ const pathProp = prop('path')
 
 const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
-const appsClient = () => new AppsClient({
-  endpointUrl: 'http://api.beta.vtex.com',
-  authToken: getToken(),
-  userAgent: userAgent,
-})
+const appsClient = () => new AppsClient(getToken(), userAgent, 'BETA')
 
-const registryClient = () => new RegistryClient({
-  endpointUrl: 'http://api.beta.vtex.com',
-  authToken: getToken(),
-  userAgent: userAgent,
-})
+const registryClient = () => new RegistryClient(getToken(), userAgent, 'BETA')
 
 const sendChanges = (() => {
   let queue = []
@@ -65,7 +55,7 @@ const sendChanges = (() => {
         version,
         queue
       )
-      .then(() => installApp(`${vendor}.${name}@${version}+rc`))
+      .then(() => installApp(`${vendor}.${name}@${version.replace(/-.*$/, '')}-dev`))
       .then(() => allocateChangeLog(queue, moment().format('HH:mm:ss')))
       .then(() => { queue = [] })
       .catch(err => {
@@ -124,12 +114,12 @@ const installApp = (id) => {
   )
 }
 
-const publishApp = (file, pre = false) => {
+const publishApp = (stream, isDevelopment = false) => {
   return registryClient().publishApp(
     getAccount(),
     getWorkspace(),
-    file,
-    pre
+    stream,
+    isDevelopment
   )
 }
 
@@ -140,6 +130,10 @@ const promptAppUninstall = (app) => {
     message: `Are you sure you want to uninstall the app ${app}?`,
   })
   .then(({confirm}) => confirm)
+}
+
+const createVinylStream = (files) => {
+  return vfs.src(files, {base: root})
 }
 
 const workspaceMasterMessage = `${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace`
@@ -193,25 +187,18 @@ export default {
         setSpinnerText('Sending files')
         startSpinner()
       }
-      let tempPath
-      log.debug('Creating temp path...')
 
-      return createTempPath(id).then(t => { tempPath = t })
-      .tap(() => log.debug('Listing local files...'))
-      .then(() => listLocalFiles(root))
-      .tap(files => log.debug('Compressing files:', '\n' + files.join('\n')))
-      .then(files => compressFiles(files, tempPath))
-      .tap(() => log.debug('Publishing app...'))
-      .then(({file}) => publishApp(file, true))
-      .tap(() => log.debug('Deleting temp file...'))
-      .then(() => deleteTempFile(tempPath))
-      .then(keepAppAlive)
-      .tap(() => log.debug('Starting watch...'))
-      .then(() => watch(root, sendChanges))
-      .catch(err => {
-        stopSpinner()
-        return Promise.reject(err)
-      })
+      return listLocalFiles(root)
+        .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
+        .then(createVinylStream)
+        .then(stream => publishApp(stream, true))
+        .then(keepAppAlive)
+        .tap(() => log.debug('Starting watch...'))
+        .then(() => watch(root, sendChanges))
+        .catch(err => {
+          stopSpinner()
+          return Promise.reject(err)
+        })
     },
   },
   install: {
@@ -302,18 +289,15 @@ export default {
       setSpinnerText('Publishing app...')
       startSpinner()
 
-      return createTempPath(id).then(tempPath =>
-        listLocalFiles(root)
-        .tap(files => log.debug('Compressing files:', '\n' + files.join('\n')))
-        .then(files => compressFiles(files, tempPath))
-        .then(({file}) => publishApp(file))
-        .then(() => deleteTempFile(tempPath))
+      return listLocalFiles(root)
+        .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
+        .then(createVinylStream)
+        .then(publishApp)
         .finally(() => stopSpinner())
         .then(() => log.info(`Published app ${id} successfully`))
         .catch(res => res.error && res.error.code === 'app_version_already_exists'
           ? log.error(`Version ${manifest.version} already published!`)
           : Promise.reject(res))
-      )
     },
   },
   settings: {
