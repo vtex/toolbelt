@@ -133,7 +133,7 @@ const promptAppUninstall = (app) => {
 }
 
 const createVinylStream = (files) => {
-  return vfs.src(files, {base: root})
+  return vfs.src(files, {cwd: root, cwdbase: true})
 }
 
 const workspaceMasterMessage = `${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace`
