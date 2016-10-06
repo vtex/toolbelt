@@ -1,13 +1,14 @@
 import chalk from 'chalk'
 import jp from 'jsonpath'
 import log from '../logger'
+import {join} from 'path'
 import moment from 'moment'
 import Table from 'cli-table'
 import inquirer from 'inquirer'
 import debounce from 'debounce'
-import vfs from 'vinyl-fs'
 import {Promise} from 'bluebird'
 import {uniqBy, prop} from 'ramda'
+import {createReadStream} from 'fs'
 import {createInterface} from 'readline'
 import {AppsClient, RegistryClient} from '@vtex/api'
 import courier from '../courier'
@@ -114,11 +115,11 @@ const installApp = (id) => {
   )
 }
 
-const publishApp = (stream, isDevelopment = false) => {
+const publishApp = (files, isDevelopment = false) => {
   return registryClient().publishApp(
     getAccount(),
     getWorkspace(),
-    stream,
+    files,
     isDevelopment
   )
 }
@@ -132,9 +133,10 @@ const promptAppUninstall = (app) => {
   .then(({confirm}) => confirm)
 }
 
-const createVinylStream = (files) => {
-  return vfs.src(files, {cwd: root, cwdbase: true})
-}
+const mapFileObject = files => files.map(path => ({
+  path,
+  contents: createReadStream(join(root, path)),
+}))
 
 const workspaceMasterMessage = `${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace`
 
@@ -190,8 +192,8 @@ export default {
 
       return listLocalFiles(root)
         .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
-        .then(createVinylStream)
-        .then(stream => publishApp(stream, true))
+        .then(mapFileObject)
+        .then(files => publishApp(files, true))
         .then(keepAppAlive)
         .tap(() => log.debug('Starting watch...'))
         .then(() => watch(root, sendChanges))
@@ -291,7 +293,7 @@ export default {
 
       return listLocalFiles(root)
         .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
-        .then(createVinylStream)
+        .then(mapFileObject)
         .then(publishApp)
         .finally(() => stopSpinner())
         .then(() => log.info(`Published app ${id} successfully`))

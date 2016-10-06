@@ -7,7 +7,7 @@ import {Promise, promisify} from 'bluebird'
 const bbGlob = promisify(glob)
 
 export function listLocalFiles (root) {
-  return bbGlob('{*/**,*.json}', {
+  return bbGlob('{manifest.json,*/**}', {
     cwd: root,
     nodir: true,
     ignore: getIgnoredPaths(root),
