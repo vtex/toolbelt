@@ -78,7 +78,7 @@ const sendChanges = (() => {
 
 const keepAppAlive = () => {
   let exitPromise
-  const rcApp = `${id}+rc`
+  const rcApp = `${id}-dev`
   return installApp(rcApp)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
