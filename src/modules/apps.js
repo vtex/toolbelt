@@ -78,7 +78,7 @@ const sendChanges = (() => {
 
 const keepAppAlive = () => {
   let exitPromise
-  const devApp = id.replace(/(-.*)?$/, '-dev')
+  const devApp = `${manifest.vendor}.${manifest.name}@${manifest.version.replace(/(-.*)?$/, '-dev')}`
   return installApp(devApp)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
