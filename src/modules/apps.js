@@ -56,7 +56,7 @@ const sendChanges = (() => {
         version,
         queue
       )
-      .then(() => installApp(`${vendor}.${name}@${version.replace(/-.*$/, '')}-dev`))
+      .then(() => installApp(`${vendor}.${name}@${version.replace(/(-.*)?$/, '-dev')}`))
       .then(() => allocateChangeLog(queue, moment().format('HH:mm:ss')))
       .then(() => { queue = [] })
       .catch(err => {
@@ -78,7 +78,7 @@ const sendChanges = (() => {
 
 const keepAppAlive = () => {
   let exitPromise
-  const devApp = id.replace(/-.*$/, '-dev')
+  const devApp = id.replace(/(-.*)?$/, '-dev')
   return installApp(devApp)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
