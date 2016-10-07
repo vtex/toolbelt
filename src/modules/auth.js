@@ -20,11 +20,7 @@ import {
 const [account, login, workspace] = [getAccount(), getLogin(), getWorkspace()]
 
 const client = (token) => {
-  return new VBaseClient({
-    endpointUrl: 'BETA',
-    authToken: token,
-    userAgent: userAgent,
-  })
+  return new VBaseClient(token, userAgent, 'BETA')
 }
 
 function promptAccount () {

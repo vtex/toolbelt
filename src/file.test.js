@@ -2,7 +2,6 @@ import test from 'ava'
 import path from 'path'
 import {
   listLocalFiles,
-  createTempPath,
   createChanges,
 } from './file'
 
@@ -17,14 +16,6 @@ test('list files in a directory ignoring everything except the folders and the m
   ]
   listLocalFiles(root)
   .then(files => t.is(files, expectedFiles))
-})
-
-test('creates a temporary folder and returns the path of the temporary file', t => {
-  const name = 'renderjs'
-  const version = '1.2.0'
-  const expectedPath = path.resolve(process.cwd(), 'temp/renderjs-1.2.0.zip')
-  createTempPath(name, version)
-  .then(path => t.is(path, expectedPath))
 })
 
 test('creates a set of changes', t => {

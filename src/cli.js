@@ -48,7 +48,8 @@ const main = () => {
 }
 
 const onError = e => {
-  const {statusCode, code} = e
+  const statusCode = e.response ? e.response.status : null
+  const code = e.code ? e.code : null
   if (statusCode) {
     if (statusCode === 401) {
       log.error('Oops! There was an authentication error. Please login again.')
@@ -58,19 +59,25 @@ const onError = e => {
     }
     if (statusCode >= 400) {
       try {
-        const {code, message, exception} = e.error
-        const {source, stackTrace} = exception
-        log.error('API:', message, {statusCode, code})
-        log.debug(source)
+        const statusText = e.response.statusText
+        const stackTrace = e.response.data
+        const source = e.config.url
+        log.error('API:', statusText, statusCode)
+        log.error(source)
         log.debug(stackTrace)
         return
       } catch (e) {}
     }
     log.error('Oops! There was an unexpected API error.')
     log.error(e.read ? e.read().toString('utf8') : e)
-  } else if (code && code === 'ENOTFOUND') {
-    log.error('Connection failure :(')
-    log.error('Please check your internet')
+  } else if (code) {
+    if (code === 'ENOTFOUND') {
+      log.error('Connection failure :(')
+      log.error('Please check your internet')
+    }
+    if (code === 'EAI_AGAIN') {
+      log.error('A temporary failure in name resolution occurred :(')
+    }
   } else {
     switch (e.name) {
       case MissingRequiredArgsError.name:
