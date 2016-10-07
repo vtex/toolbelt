@@ -78,8 +78,8 @@ const sendChanges = (() => {
 
 const keepAppAlive = () => {
   let exitPromise
-  const rcApp = `${id}-dev`
-  return installApp(rcApp)
+  const devApp = id.replace(/-.*$/, '-dev')
+  return installApp(devApp)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
       appsClient().updateAppTtl(
@@ -99,7 +99,7 @@ const keepAppAlive = () => {
       stopSpinner()
       clearTimeout(keepAliveInterval)
       log.info('Exiting...')
-      exitPromise = appsClient().uninstallApp(getAccount(), getWorkspace(), rcApp)
+      exitPromise = appsClient().uninstallApp(getAccount(), getWorkspace(), devApp)
       .finally(() => process.exit())
     })
   })
