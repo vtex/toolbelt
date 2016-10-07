@@ -145,11 +145,11 @@ export default {
       description: 'Promote this workspace to master',
       handler: function (name) {
         log.debug('Promoting workspace', name)
-        return inquirer.prompt({
+        return Promise.resolve(inquirer.prompt({
           type: 'confirm',
           name: 'confirm',
           message: `Are you sure you want to promote workspace ${chalk.green(name)} to master?`,
-        })
+        }))
         .then(({confirm}) => confirm || Promise.reject('User cancelled'))
         .then(() => client().promote(getAccount(), name))
         .tap(() => log.info(`Workspace ${chalk.green(name)} promoted successfully`))
