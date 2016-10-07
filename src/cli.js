@@ -11,6 +11,7 @@ import notify from './update'
 import {getToken} from './conf'
 import tree from './modules'
 
+global.Promise = Promise
 const run = unboundRun.bind(tree)
 
 // Setup logging

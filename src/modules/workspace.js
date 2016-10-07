@@ -64,8 +64,8 @@ export default {
         return client().create(getAccount(), name)
         .then(() => log.info(`Workspace ${chalk.green(name)} created successfully`))
         .catch(err =>
-          err.error && err.error.code === 'WorkspaceAlreadyExists'
-            ? log.error(err.error.message)
+          err.response && err.response.data.code === 'WorkspaceAlreadyExists'
+            ? log.error(err.response.data.message)
             : Promise.reject(err)
         )
       },
@@ -123,7 +123,7 @@ export default {
       handler: function (name) {
         return client().get(getAccount(), name)
         .catch(err => {
-          if (err.error && err.error.code === 'WorkspaceNotFound') {
+          if (err.response && err.response.data.code === 'WorkspaceNotFound') {
             return promptWorkspaceCreation(name)
             .then(confirm => {
               if (!confirm) {
@@ -166,7 +166,7 @@ export default {
         .delay(3000)
         .then(() => this.workspace.create.handler(workspace))
         .catch(err => {
-          if (err.error && err.error.code === 'WorkspaceAlreadyExists') {
+          if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
             return setTimeout(() => this.workspace.create.handler(workspace), 3000)
           }
           return Promise.reject(err)

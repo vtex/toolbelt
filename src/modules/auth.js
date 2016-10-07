@@ -78,8 +78,8 @@ function promptWorkspaceInput (account, token) {
   .then(({workspace}) => workspace)
   .tap(workspace => client(token).create(account, workspace))
   .catch(err => {
-    if (err.error && err.error.code === 'WorkspaceAlreadyExists') {
-      log.error(err.error.exception.message)
+    if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
+      log.error(err.response.data.message)
       return promptWorkspaceInput(account, token)
     }
     throw new Error(err)

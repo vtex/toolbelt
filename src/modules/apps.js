@@ -297,9 +297,9 @@ export default {
         .then(publishApp)
         .finally(() => stopSpinner())
         .then(() => log.info(`Published app ${id} successfully`))
-        .catch(res => res.error && res.error.code === 'app_version_already_exists'
+        .catch(err => err.response && err.response.data.code === 'app_version_already_exists'
           ? log.error(`Version ${manifest.version} already published!`)
-          : Promise.reject(res))
+          : Promise.reject(err))
     },
   },
   settings: {
