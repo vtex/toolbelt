@@ -1,15 +1,16 @@
 #!/usr/bin/env node
-import 'babel-polyfill'
-import 'any-promise/register/bluebird'
-import minimist from 'minimist'
 import chalk from 'chalk'
-import {without} from 'ramda'
-import {Promise} from 'bluebird'
-import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 import log from './logger'
-import notify from './update'
-import {getToken} from './conf'
 import tree from './modules'
+import {without} from 'ramda'
+import notify from './update'
+import minimist from 'minimist'
+import {getToken} from './conf'
+import {Promise} from 'bluebird'
+import 'any-promise/register/bluebird'
+import loginCmd from './modules/auth/login'
+import logoutCmd from './modules/auth/logout'
+import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 
 global.Promise = Promise
 const run = unboundRun.bind(tree)
@@ -28,10 +29,10 @@ const checkCommandExists = found => {
 }
 
 const checkLogin = found => {
-  const whitelist = [tree, tree.login, tree.logout]
+  const whitelist = [tree, loginCmd, logoutCmd]
   if (!getToken() && whitelist.indexOf(found.command) === -1) {
     log.debug('Requesting login before command:', process.argv.slice(2).join(' '))
-    return run({command: tree.login})
+    return run({command: loginCmd})
   }
 }
 
@@ -50,35 +51,33 @@ const main = () => {
 
 const onError = e => {
   const statusCode = e.response ? e.response.status : null
-  const code = e.code ? e.code : null
+  const code = e.code || null
   if (statusCode) {
     if (statusCode === 401) {
       log.error('Oops! There was an authentication error. Please login again.')
       // Try to login and re-issue the command.
-      return run({command: tree.login})
+      return run({command: loginCmd})
       .then(main) // TODO: catch with different handler for second error
     }
     if (statusCode >= 400) {
       try {
-        const statusText = e.response.statusText
-        const stackTrace = e.response.data
+        const {statusText, data: stackTrace} = e.response
+        const {message} = stackTrace
         const source = e.config.url
-        log.error('API:', statusText, statusCode)
-        log.error(source)
+        log.error('API:', statusCode, statusText)
+        log.error('Message:', message)
+        log.debug(source)
         log.debug(stackTrace)
-        return
       } catch (e) {}
+    } else {
+      log.error('Oops! There was an unexpected API error.')
+      log.error(e.read ? e.read().toString('utf8') : e)
     }
-    log.error('Oops! There was an unexpected API error.')
-    log.error(e.read ? e.read().toString('utf8') : e)
-  } else if (code) {
-    if (code === 'ENOTFOUND') {
-      log.error('Connection failure :(')
-      log.error('Please check your internet')
-    }
-    if (code === 'EAI_AGAIN') {
-      log.error('A temporary failure in name resolution occurred :(')
-    }
+  } else if (code && code === 'ENOTFOUND') {
+    log.error('Connection failure :(')
+    log.error('Please check your internet')
+  } else if (code && code === 'EAI_AGAIN') {
+    log.error('A temporary failure in name resolution occurred :(')
   } else {
     switch (e.name) {
       case MissingRequiredArgsError.name:
