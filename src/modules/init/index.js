@@ -1,15 +1,12 @@
-import {join} from 'path'
 import chalk from 'chalk'
+import {join} from 'path'
 import moment from 'moment'
-import log from '../logger'
+import log from '../../logger'
 import inquirer from 'inquirer'
-import {manifestPath} from '../manifest'
-import {mkdir, writeFile, readFile} from 'fs'
-import {Promise, promisify, mapSeries} from 'bluebird'
+import {writeManifest} from './utils'
+import {dirnameJoin} from '../../file'
+import {Promise, mapSeries} from 'bluebird'
 
-const bbMkdir = promisify(mkdir)
-const bbReadFile = promisify(readFile)
-const bbWriteFile = promisify(writeFile)
 const choices = [
   'render',
 ]
@@ -96,26 +93,6 @@ function createManifest (name, vendor, title = '', description = '') {
   }
 }
 
-function addRenderDeps (manifest) {
-  return {
-    ...manifest,
-    dependencies: {
-      ...manifest.dependencies,
-      'vtex.renderjs': '0.x',
-      'vtex.placeholder': '0.x',
-      'npm:react': '15.1.0',
-    },
-  }
-}
-
-function readManifest () {
-  return bbReadFile(manifestPath).then(JSON.parse)
-}
-
-function writeManifest (manifest) {
-  return bbWriteFile(manifestPath, JSON.stringify(manifest, null, 2))
-}
-
 export default {
   init: {
     description: 'Create basic files and folders for your VTEX app',
@@ -134,7 +111,7 @@ export default {
         return writeManifest(createManifest(name, vendor, title, description))
         .tap(() => log.info('Manifest file generated succesfully!'))
         .then(promptService)
-        .then(service => this.init[service].handler())
+        .then(service => require(join(__dirname, service)).default.handler())
         .tap(() => {
           console.log('')
           log.info(`${fullName} structure generated successfully.`)
@@ -148,25 +125,7 @@ export default {
       })
     },
     render: {
-      description: 'Create a new render bootstrap project',
-      handler: () => {
-        log.debug('Reading manifest file')
-        return readManifest()
-        .tap(() =>
-          log.debug('Adding render deps to manifest and creating render folder')
-        )
-        .then(manifest =>
-          Promise.all([
-            writeManifest(addRenderDeps(manifest)),
-            bbMkdir(join(process.cwd(), 'render')),
-          ])
-        )
-        .catch(err =>
-          err && err.code === 'ENOENT'
-            ? log.error('Manifest file not found.')
-            : Promise.reject(err)
-        )
-      },
+      module: dirnameJoin('modules/init/render'),
     },
   },
 }
