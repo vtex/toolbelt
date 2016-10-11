@@ -4,6 +4,7 @@ import init from './init'
 import setup from './setup'
 import {help} from 'findhelp'
 import {Promise} from 'bluebird'
+import {dirnameJoin} from '../file'
 import workspace from './workspace'
 import pkg from '../../package.json'
 import {greeting} from '../greeting'
@@ -14,6 +15,9 @@ export default {
   ...workspace,
   ...setup,
   ...init,
+  use: {
+    module: dirnameJoin('modules/workspace/use'),
+  },
   'options': [
     {
       'short': 'h',

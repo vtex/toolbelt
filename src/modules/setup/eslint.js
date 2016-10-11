@@ -1,7 +1,7 @@
 import fs from 'fs'
 import chalk from 'chalk'
 import {curry} from 'ramda'
-import log from '../logger'
+import log from '../../logger'
 import inquirer from 'inquirer'
 import {basename, dirname, join} from 'path'
 import {Promise, promisify, mapSeries} from 'bluebird'
@@ -62,32 +62,28 @@ const handleLinkError = curry((origin, dest, asset, preConfirm, err) => {
 })
 
 export default {
-  setup: {
-    eslint: {
-      description: 'Setup a local eslint environment',
-      options: [
-        {
-          short: 'y',
-          long: 'yes',
-          description: 'Auto confirm prompts',
-          type: 'boolean',
-        },
-      ],
-      handler: (options) => {
-        log.info('Linking eslint setup...')
-        const preConfirm = options.y || options.yes
-        const root = process.cwd()
-        const pkg = join(__dirname, '../..')
-        return mkdir(join(root, 'node_modules'))
-        .then(() => mkdir(join(root, 'node_modules/.bin')))
-        .catch(err => {
-          return err.code && err.code === 'EEXIST'
-            ? Promise.resolve()
-            : Promise.reject(err)
-        })
-        .then(() => linkEslint(pkg, root, preConfirm))
-        .then(() => log.info('Successfully linked eslint setup!'))
-      },
+  description: 'Setup a local eslint environment',
+  options: [
+    {
+      short: 'y',
+      long: 'yes',
+      description: 'Auto confirm prompts',
+      type: 'boolean',
     },
+  ],
+  handler: (options) => {
+    log.info('Linking eslint setup...')
+    const preConfirm = options.y || options.yes
+    const root = process.cwd()
+    const pkg = join(__dirname, '../..')
+    return mkdir(join(root, 'node_modules'))
+    .then(() => mkdir(join(root, 'node_modules/.bin')))
+    .catch(err => {
+      return err.code && err.code === 'EEXIST'
+        ? Promise.resolve()
+        : Promise.reject(err)
+    })
+    .then(() => linkEslint(pkg, root, preConfirm))
+    .then(() => log.info('Successfully linked eslint setup!'))
   },
 }

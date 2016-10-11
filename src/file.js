@@ -6,6 +6,10 @@ import {Promise, promisify} from 'bluebird'
 
 const bbGlob = promisify(glob)
 
+export function dirnameJoin (filePath) {
+  return path.resolve(__dirname, filePath)
+}
+
 export function listLocalFiles (root) {
   return bbGlob('{manifest.json,*/**}', {
     cwd: root,

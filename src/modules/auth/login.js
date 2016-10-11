@@ -1,21 +1,20 @@
 import chalk from 'chalk'
-import log from '../logger'
+import log from '../../logger'
 import inquirer from 'inquirer'
 import validator from 'validator'
-import userAgent from '../user-agent'
-import {startUserAuth} from '../auth'
 import {VBaseClient} from '@vtex/api'
-import {Promise, all, mapSeries} from 'bluebird'
+import userAgent from '../../user-agent'
+import {startUserAuth} from '../../auth'
+import {Promise, mapSeries, all} from 'bluebird'
 import {
-  clear,
   getLogin,
-  saveLogin,
   saveToken,
+  saveLogin,
   getAccount,
   saveAccount,
   getWorkspace,
   saveWorkspace,
-} from '../conf'
+} from '../../conf'
 
 const [account, login, workspace] = [getAccount(), getLogin(), getWorkspace()]
 
@@ -139,43 +138,32 @@ function saveCredentials ({login, account, token, workspace}) {
 }
 
 export default {
-  login: {
-    description: 'Log into a VTEX account',
-    handler: () => {
-      return Promise.resolve(login)
-      .then(login => login ? promptUsePrevious() : false)
-      .then(prev => prev
-        ? [{login}, {account}, {workspace}]
-        : mapSeries([promptLogin, promptAccount, () => ({})], a => a())
-      )
-      .spread(({login}, {account}, {workspace}) => {
-        log.debug('Start login', {login, account, workspace})
-        return all([
-          login,
-          account,
-          startUserAuth(login, promptEmailCode, promptPassword),
-          workspace,
-        ])
-      })
-      .spread((login, account, token, workspace) => {
-        const actualWorkspace = workspace || promptWorkspace(account, token)
-        return all([login, account, token, actualWorkspace])
-      })
-      .spread((login, account, token, workspace) => {
-        const credentials = {login, account, token, workspace}
-        log.debug('Login successful, saving credentials', credentials)
-        saveCredentials(credentials)
-        log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
-      })
-    },
-  },
-  logout: {
-    description: 'Logout of the current VTEX account',
-    handler: () => {
-      log.debug('Clearing config file')
-      clear()
-      log.info('See you soon!')
-      return Promise.resolve()
-    },
+  description: 'Log into a VTEX account',
+  handler: () => {
+    return Promise.resolve(login)
+    .then(login => login ? promptUsePrevious() : false)
+    .then(prev => prev
+      ? [{login}, {account}, {workspace}]
+      : mapSeries([promptLogin, promptAccount, () => ({})], a => a())
+    )
+    .spread(({login}, {account}, {workspace}) => {
+      log.debug('Start login', {login, account, workspace})
+      return all([
+        login,
+        account,
+        startUserAuth(login, promptEmailCode, promptPassword),
+        workspace,
+      ])
+    })
+    .spread((login, account, token, workspace) => {
+      const actualWorkspace = workspace || promptWorkspace(account, token)
+      return all([login, account, token, actualWorkspace])
+    })
+    .spread((login, account, token, workspace) => {
+      const credentials = {login, account, token, workspace}
+      log.debug('Login successful, saving credentials', credentials)
+      saveCredentials(credentials)
+      log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
+    })
   },
 }
