@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "bin": "lib/cli.js",
   "scripts": {
-    "watch": "rimraf lib/ && babel src --out-dir=lib --watch",
+    "watch": "run-s clean babel",
+    "babel": "babel src --out-dir=lib --watch",
     "clean": "rimraf lib/",
     "build": "babel src --out-dir=lib --ignore=*.test.js",
     "lint": "eslint src",
@@ -14,7 +15,6 @@
     "test-watch": "ava src/*.test.js src/**/*.test.js --watch",
     "prepublish": "run-s clean test build",
     "uninstall": "node scripts/uninstall.js",
-    "exe": "chmod +x lib/cli.js",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "engines": {
