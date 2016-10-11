@@ -56,7 +56,7 @@
     "eslint-plugin-react": "^5.0.1",
     "eventsource": "^0.2.1",
     "fast-async": "^6.0.34",
-    "findhelp": "^0.1.4",
+    "findhelp": "^0.2.0",
     "glob": "^7.0.5",
     "inquirer": "^1.0.3",
     "jsonpath": "^0.2.6",
