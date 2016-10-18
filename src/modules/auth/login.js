@@ -15,11 +15,12 @@ import {
   getWorkspace,
   saveWorkspace,
 } from '../../conf'
+import endpoint from '../../endpoint'
 
 const [account, login, workspace] = [getAccount(), getLogin(), getWorkspace()]
 
 const client = (token) => {
-  return new VBaseClient(token, userAgent, 'BETA')
+  return new VBaseClient(token, userAgent, endpoint('vbase'))
 }
 
 function promptAccount () {

@@ -5,12 +5,13 @@ import {manifest} from '../../manifest'
 import userAgent from '../../user-agent'
 import {AppsClient, RegistryClient} from '@vtex/api'
 import {getToken, getAccount, getWorkspace} from '../../conf'
+import endpoint from '../../endpoint'
 
 export const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
-export const appsClient = () => new AppsClient(getToken(), userAgent, 'BETA')
+export const appsClient = () => new AppsClient(getToken(), userAgent, endpoint('api'))
 
-export const registryClient = () => new RegistryClient(getToken(), userAgent, 'BETA')
+export const registryClient = () => new RegistryClient(getToken(), userAgent, endpoint('api'))
 
 export const installApp = (id) => {
   const [vendorAndName, version] = id.split('@')
