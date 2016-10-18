@@ -32,7 +32,7 @@ export default {
     }
 
     log.debug('Starting to uninstall app', app)
-    const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}$`)
+    const appRegex = new RegExp(`^${vendorPattern}.${namePattern}$`)
     if (!appRegex.test(app)) {
       log.error('Invalid app format, please use <vendor>.<name>')
       return Promise.resolve()

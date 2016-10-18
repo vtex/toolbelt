@@ -22,7 +22,7 @@ export default {
       ? optionalApp
       : `${manifest.vendor}.${manifest.name}@${manifest.version}`
     log.debug('Starting to install app', app)
-    const appRegex = new RegExp(`^${vendorPattern}\.${namePattern}@${wildVersionPattern}$`)
+    const appRegex = new RegExp(`^${vendorPattern}.${namePattern}@${wildVersionPattern}$`)
     if (!appRegex.test(app)) {
       log.error('Invalid app format, please use <vendor>.<name>@<version>')
       return Promise.resolve()
