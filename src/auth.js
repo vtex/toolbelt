@@ -2,8 +2,10 @@ import userAgent from './user-agent'
 import {VTEXIDClient} from '@vtex/api'
 import {Promise} from 'bluebird'
 import log from './logger'
+import endpoint from './endpoint'
 
-const vtexid = new VTEXIDClient('token', userAgent)
+const options = {authToken: 'token', userAgent}
+const vtexid = new VTEXIDClient(endpoint('vtexid'), options)
 
 export function isVtexUser (email) {
   return email.indexOf('@vtex.com') >= 0

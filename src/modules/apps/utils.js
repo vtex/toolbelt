@@ -9,9 +9,11 @@ import endpoint from '../../endpoint'
 
 export const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
-export const appsClient = () => new AppsClient(getToken(), userAgent, endpoint('api'))
+const appsOptions = {authToken: getToken(), userAgent}
+export const appsClient = () => new AppsClient(endpoint('api'), appsOptions)
 
-export const registryClient = () => new RegistryClient(getToken(), userAgent, endpoint('api'))
+const registryOptions = {authToken: getToken(), userAgent}
+export const registryClient = () => new RegistryClient(endpoint('api'), registryOptions)
 
 export const installApp = (id) => {
   const [vendorAndName, version] = id.split('@')

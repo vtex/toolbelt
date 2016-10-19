@@ -19,9 +19,7 @@ import endpoint from '../../endpoint'
 
 const [account, login, workspace] = [getAccount(), getLogin(), getWorkspace()]
 
-const client = (token) => {
-  return new VBaseClient(token, userAgent, endpoint('vbase'))
-}
+const client = (authToken) => new VBaseClient(endpoint('vbase'), {authToken, userAgent})
 
 function promptAccount () {
   const message = 'Please enter a valid account.'
