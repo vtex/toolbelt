@@ -12,6 +12,10 @@ import loginCmd from './modules/auth/login'
 import logoutCmd from './modules/auth/logout'
 import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 
+if (process.env.NODE_ENV === 'development') {
+  require('longjohn')
+}
+
 global.Promise = Promise
 const run = unboundRun.bind(tree)
 
