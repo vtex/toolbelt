@@ -50,7 +50,7 @@ const sendChanges = (() => {
       .catch(err => {
         timeStop()
         stopSpinner()
-        return Promise.reject(err)
+        throw err
       })
     },
     200
@@ -74,8 +74,13 @@ const keepAppAlive = () => {
         getAccount(),
         getWorkspace(),
         id,
-      )
-      .catch(Promise.reject)
+      ).catch(e => {
+        log.error(`Error on keep alive request, will try again in ${KEEP_ALIVE_INTERVAL / 1000}s`)
+        log.debug(e)
+        if (e.response) {
+          log.debug(e.response.data)
+        }
+      })
     }, KEEP_ALIVE_INTERVAL)
     createInterface({
       input: process.stdin,
