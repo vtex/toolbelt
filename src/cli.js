@@ -56,6 +56,7 @@ const main = () => {
 const onError = e => {
   const statusCode = e.response ? e.response.status : null
   const code = e.code || null
+
   if (statusCode) {
     if (statusCode === 401) {
       log.error('Oops! There was an authentication error. Please login again.')
@@ -77,25 +78,38 @@ const onError = e => {
       log.error('Oops! There was an unexpected API error.')
       log.error(e.read ? e.read().toString('utf8') : e)
     }
-  } else if (code && code === 'ENOTFOUND') {
+    return
+  }
+
+  if (code && code === 'ENOTFOUND') {
     log.error('Connection failure :(')
     log.error('Please check your internet')
-  } else if (code && code === 'EAI_AGAIN') {
-    log.error('A temporary failure in name resolution occurred :(')
-  } else {
-    switch (e.name) {
-      case MissingRequiredArgsError.name:
-        log.error('Missing required arguments:', chalk.blue(e.message))
-        break
-      case 'CommandNotFound':
-        log.error('Command not found:', chalk.blue(process.argv.slice(2)))
-        break
-      default:
-        log.error('Something exploded :(')
-        log.error(e)
-    }
+    return
   }
+
+  if (code && code === 'EAI_AGAIN') {
+    log.error('A temporary failure in name resolution occurred :(')
+    return
+  }
+
+  switch (e.name) {
+    case MissingRequiredArgsError.name:
+      log.error('Missing required arguments:', chalk.blue(e.message))
+      break
+    case 'CommandNotFound':
+      log.error('Command not found:', chalk.blue(process.argv.slice(2)))
+      break
+    default:
+      log.error('Something exploded :(')
+      log.error(e)
+  }
+
   process.exit()
 }
 
 Promise.try(main).catch(onError)
+
+process.on('unhandledRejection', e => {
+  log.error('Unhandled rejection', e)
+  process.exit()
+})
