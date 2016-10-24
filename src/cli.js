@@ -69,43 +69,45 @@ const onError = e => {
       .then(main) // TODO: catch with different handler for second error
     }
     if (statusCode >= 400) {
-      try {
-        const {statusText, data: stackTrace} = e.response
-        const {message} = stackTrace
-        const source = e.config.url
-        log.error('API:', statusCode, statusText)
+      const {statusText, data, data: {message} = {}} = e.response
+      const source = e.config.url
+      log.error('API:', statusCode, statusText)
+      if (message) {
         log.error('Message:', message)
-        log.debug(source)
-        log.debug(stackTrace)
-      } catch (e) {}
+      }
+      log.debug(source)
+      if (data) {
+        log.debug(data)
+      }
     } else {
       log.error('Oops! There was an unexpected API error.')
       log.error(e.read ? e.read().toString('utf8') : e)
     }
-    return
-  }
-
-  if (code && code === 'ENOTFOUND') {
-    log.error('Connection failure :(')
-    log.error('Please check your internet')
-    return
-  }
-
-  if (code && code === 'EAI_AGAIN') {
-    log.error('A temporary failure in name resolution occurred :(')
-    return
-  }
-
-  switch (e.name) {
-    case MissingRequiredArgsError.name:
-      log.error('Missing required arguments:', chalk.blue(e.message))
-      break
-    case 'CommandNotFound':
-      log.error('Command not found:', chalk.blue(process.argv.slice(2)))
-      break
-    default:
-      log.error('Something exploded :(')
-      log.error(e)
+  } else if (code) {
+    switch (code) {
+      case 'ENOTFOUND':
+        log.error('Connection failure :(')
+        log.error('Please check your internet')
+        break
+      case 'EAI_AGAIN':
+        log.error('A temporary failure in name resolution occurred :(')
+        break
+      default:
+        log.error('Something exploded :(')
+        log.error(e)
+    }
+  } else {
+    switch (e.name) {
+      case MissingRequiredArgsError.name:
+        log.error('Missing required arguments:', chalk.blue(e.message))
+        break
+      case 'CommandNotFound':
+        log.error('Command not found:', chalk.blue(process.argv.slice(2)))
+        break
+      default:
+        log.error('Something exploded :(')
+        log.error(e)
+    }
   }
 
   process.exit()
