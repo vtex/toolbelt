@@ -12,16 +12,20 @@ import loginCmd from './modules/auth/login'
 import logoutCmd from './modules/auth/logout'
 import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 
-if (process.env.NODE_ENV === 'development') {
-  require('longjohn')
-}
-
 global.Promise = Promise
 const run = unboundRun.bind(tree)
 
 // Setup logging
 const VERBOSE = '--verbose'
 log.level = process.argv.indexOf(VERBOSE) >= 0 ? 'debug' : 'info'
+
+if (process.env.NODE_ENV === 'development') {
+  try {
+    require('longjohn')
+  } catch (e) {
+    log.debug('Couldn\'t require longjohn. If you want long stack traces, run: npm install -g longjohn')
+  }
+}
 
 // Show update notification if newer version is available
 notify()
