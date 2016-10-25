@@ -19,8 +19,9 @@ export function listLocalFiles (root) {
   })
   .then(files =>
     Promise.all(
-      files.map(file => bbStat(path.join(root, file))
-      .then(stats => ({file, stats})))
+      files.map(file =>
+        bbStat(path.join(root, file)).then(stats => ({file, stats}))
+      )
     )
   )
   .then(filesStats =>
