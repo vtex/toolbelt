@@ -115,7 +115,4 @@ const onError = e => {
 
 Promise.try(main).catch(onError)
 
-process.on('unhandledRejection', e => {
-  log.error('Unhandled rejection', e)
-  process.exit()
-})
+process.on('unhandledRejection', onError)
