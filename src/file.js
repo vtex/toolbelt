@@ -5,6 +5,7 @@ import chokidar from 'chokidar'
 import {Promise, promisify} from 'bluebird'
 
 const bbGlob = promisify(glob)
+const bbStat = promisify(fs.stat)
 
 export function dirnameJoin (filePath) {
   return path.resolve(__dirname, filePath)
@@ -16,6 +17,17 @@ export function listLocalFiles (root) {
     nodir: true,
     ignore: getIgnoredPaths(root),
   })
+  .then(files =>
+    Promise.all(
+      files.map(file => bbStat(path.join(root, file))
+      .then(stats => ({file, stats})))
+    )
+  )
+  .then(filesStats =>
+    filesStats.reduce((acc, {file, stats}) => {
+      return stats.size > 0 ? [...acc, file] : acc
+    }, [])
+  )
 }
 
 export function normalizePath (filePath) {
