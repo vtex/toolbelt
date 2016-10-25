@@ -5,6 +5,7 @@ import chokidar from 'chokidar'
 import {Promise, promisify} from 'bluebird'
 
 const bbGlob = promisify(glob)
+const bbStat = promisify(fs.stat)
 
 export function dirnameJoin (filePath) {
   return path.resolve(__dirname, filePath)
@@ -16,6 +17,21 @@ export function listLocalFiles (root) {
     nodir: true,
     ignore: getIgnoredPaths(root),
   })
+  .then(files =>
+    Promise.all(
+      files.map(file =>
+        bbStat(path.join(root, file)).then(stats => ({file, stats}))
+      )
+    )
+  )
+  .then(filesStats =>
+    filesStats.reduce((acc, {file, stats}) => {
+      if (stats.size > 0) {
+        acc.push(file)
+      }
+      return acc
+    }, [])
+  )
 }
 
 export function normalizePath (filePath) {
@@ -75,9 +91,13 @@ export function watch (root, sendChanges) {
   })
   return new Promise((resolve, reject) => {
     watcher
-    .on('add', f => sendSaveChanges(root, f, sendChanges))
-    .on('change', f => sendSaveChanges(root, f, sendChanges))
-    .on('unlink', f => sendRemoveChanges(root, f, sendChanges))
+    .on('add', (file, {size}) => size > 0 ? sendSaveChanges(root, file, sendChanges) : null)
+    .on('change', (file, {size}) => {
+      return size > 0
+        ? sendSaveChanges(root, file, sendChanges)
+        : sendRemoveChanges(root, file, sendChanges)
+    })
+    .on('unlink', file => sendRemoveChanges(root, file, sendChanges))
     .on('error', reject)
     .on('ready', resolve)
   })
