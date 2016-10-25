@@ -87,9 +87,13 @@ export function watch (root, sendChanges) {
   })
   return new Promise((resolve, reject) => {
     watcher
-    .on('add', f => sendSaveChanges(root, f, sendChanges))
-    .on('change', f => sendSaveChanges(root, f, sendChanges))
-    .on('unlink', f => sendRemoveChanges(root, f, sendChanges))
+    .on('add', (file, {size}) => size > 0 ? sendSaveChanges(root, file, sendChanges) : null)
+    .on('change', (file, {size}) => {
+      return size > 0
+        ? sendSaveChanges(root, file, sendChanges)
+        : sendRemoveChanges(root, file, sendChanges)
+    })
+    .on('unlink', file => sendRemoveChanges(root, file, sendChanges))
     .on('error', reject)
     .on('ready', resolve)
   })
