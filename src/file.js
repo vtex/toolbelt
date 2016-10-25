@@ -26,7 +26,10 @@ export function listLocalFiles (root) {
   )
   .then(filesStats =>
     filesStats.reduce((acc, {file, stats}) => {
-      return stats.size > 0 ? [...acc, file] : acc
+      if (stats.size > 0) {
+        acc.push(file)
+      }
+      return acc
     }, [])
   )
 }
