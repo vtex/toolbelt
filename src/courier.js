@@ -2,12 +2,15 @@ import chalk from 'chalk'
 import log from './logger'
 import moment from 'moment'
 import {timeStop} from './time'
+import endpoint from './endpoint'
 import stripAnsi from 'strip-ansi'
 import {manifest} from './manifest'
 import EventSource from 'eventsource'
 import {consumeChangeLog} from './apps'
 import {clearLine, cursorTo} from 'readline'
 import {setSpinnerText, stopSpinner, isSpinnerActive} from './spinner'
+
+const courierHost = endpoint('courier')
 
 const levelFormat = {
   debug: log.debug,
@@ -67,7 +70,7 @@ const originMatch = (origin) => {
 }
 
 const listen = (account, workspace, authToken) => {
-  let es = new EventSource(`http://courier.vtex.com/${account}/${workspace}/app-events?level=${log.level}`, {
+  let es = new EventSource(`${courierHost}/${account}/${workspace}/app-events?level=${log.level}`, {
     'Authorization': `token ${authToken}`,
   })
   es.onopen = () => log.debug(`courier: connected with level ${log.level}`)
