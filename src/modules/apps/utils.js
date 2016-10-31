@@ -6,12 +6,13 @@ import userAgent from '../../user-agent'
 import {AppsClient, RegistryClient} from '@vtex/api'
 import {getToken, getAccount, getWorkspace} from '../../conf'
 import endpoint from '../../endpoint'
+import timeout from '../../timeout'
 
 export const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
-export const appsClient = () => new AppsClient(endpoint('api'), {authToken: getToken(), userAgent})
+export const appsClient = () => new AppsClient(endpoint('api'), {authToken: getToken(), userAgent, timeout})
 
-export const registryClient = () => new RegistryClient(endpoint('api'), {authToken: getToken(), userAgent})
+export const registryClient = () => new RegistryClient(endpoint('api'), {authToken: getToken(), userAgent, timeout})
 
 export const installApp = (id) => {
   const [vendorAndName, version] = id.split('@')

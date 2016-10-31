@@ -16,10 +16,11 @@ import {
   saveWorkspace,
 } from '../../conf'
 import endpoint from '../../endpoint'
+import timeout from '../../timeout'
 
 const [account, login, workspace] = [getAccount(), getLogin(), getWorkspace()]
 
-const client = (authToken) => new VBaseClient(endpoint('vbase'), {authToken, userAgent})
+const client = (authToken) => new VBaseClient(endpoint('vbase'), {authToken, userAgent, timeout})
 
 function promptAccount () {
   const message = 'Please enter a valid account.'
