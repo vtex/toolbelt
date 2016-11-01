@@ -28,7 +28,7 @@ function promptAccount () {
     inquirer.prompt({
       name: 'account',
       message: 'Account:',
-      validate: (s) => /^\s*[\w\-]+\s*$/.test(s) || message,
+      validate: (s) => /^\s*[\w-]+\s*$/.test(s) || message,
       filter: (s) => s.trim(),
     })
   )
@@ -70,7 +70,7 @@ function promptWorkspaceInput (account, token) {
     inquirer.prompt({
       name: 'workspace',
       message: 'New workspace name:',
-      validate: s => /^(\s*|\s*[\w\-]+\s*)$/.test(s) || message,
+      validate: s => /^(\s*|\s*[\w-]+\s*)$/.test(s) || message,
       filter: s => s.trim(),
     })
   )
