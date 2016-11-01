@@ -75,7 +75,7 @@ export default {
     log.info('Linking eslint setup...')
     const preConfirm = options.y || options.yes
     const root = process.cwd()
-    const pkg = join(__dirname, '../..')
+    const pkg = join(__dirname, '../../..')
     return mkdir(join(root, 'node_modules'))
     .then(() => mkdir(join(root, 'node_modules/.bin')))
     .catch(err => {
