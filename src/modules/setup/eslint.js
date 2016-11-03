@@ -40,7 +40,7 @@ function promptOverwrite (message) {
 function overwriteFile (origin, dest, asset) {
   const destFilePath = join(dest, asset)
   return unlink(destFilePath)
-  .then(symlink(join(origin, asset), destFilePath))
+  .then(() => symlink(join(origin, asset), destFilePath))
   .tap(() => log.warn(`Overwrote ${destFilePath}`))
 }
 
