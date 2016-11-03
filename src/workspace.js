@@ -1,3 +1,4 @@
 export function getWorkspaceURL (account, workspace) {
-  return `http://${account}.myvtex.com/?vtex_workspace=${workspace}`
+  const env = process.env.VTEX_ENV === 'beta' ? '.beta' : ''
+  return `http://${account}${env}.myvtex.com/?vtex_workspace=${workspace}`
 }
