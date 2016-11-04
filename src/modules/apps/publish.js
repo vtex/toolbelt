@@ -1,22 +1,15 @@
 import log from '../../logger'
 import {Promise} from 'bluebird'
 import {manifest} from '../../manifest'
-import {getWorkspace} from '../../conf'
 import {listLocalFiles} from '../../file'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
-import {workspaceMasterMessage, id, publishApp, mapFileObject} from './utils'
+import {id, publishApp, mapFileObject} from './utils'
 
 const root = process.cwd()
 
 export default {
   description: 'Publish this app',
   handler: () => {
-    const workspace = getWorkspace()
-    if (workspace === 'master') {
-      log.error(workspaceMasterMessage)
-      return Promise.resolve()
-    }
-
     log.debug('Starting to publish app')
     setSpinnerText('Publishing app...')
     startSpinner()
