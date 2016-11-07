@@ -10,7 +10,7 @@ export default {
   handler: async (app, field) => {
     const response = await appsClient().getAppSettings(
       getAccount(), getWorkspace(), app)
-    if (typeof field === 'object') {
+    if (field === null) {
       console.log(response)
     } else {
       console.log(jp.value(response, '$.' + field))
