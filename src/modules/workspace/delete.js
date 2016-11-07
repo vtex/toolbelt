@@ -5,13 +5,36 @@ import inquirer from 'inquirer'
 import {Promise} from 'bluebird'
 import {getWorkspace, getAccount} from '../../conf'
 
-const promptWorkspaceDeletion = (name) => {
+const ARGS_START_INDEX = 3
+
+function promptWorkspaceDeletion (name) {
   return inquirer.prompt({
     type: 'confirm',
     name: 'confirm',
     message: `Are you sure you want to delete workspace ${chalk.green(name)}?`,
   })
   .then(({confirm}) => confirm)
+}
+
+function deleteWorkspaces (names, preConfirm, force) {
+  const name = names.shift()
+  log.debug('Starting to delete workspace', name)
+  if (!force && name === getWorkspace()) {
+    log.error(`You're currently using the workspace ${chalk.green(name)}, please change your workspace before deleting`)
+    return Promise.resolve()
+  }
+
+  return Promise.try(() => preConfirm || promptWorkspaceDeletion(name))
+  .then(confirm => confirm || Promise.reject('User cancelled'))
+  .then(() => client().delete(getAccount(), name))
+  .tap(() =>
+    log.info(`Workspace ${chalk.green(name)} deleted successfully`)
+  )
+  .then(() =>
+    names.length > 0
+      ? deleteWorkspaces(names, preConfirm, force)
+      : Promise.resolve()
+  )
 }
 
 export default {
@@ -32,32 +55,10 @@ export default {
     },
   ],
   handler: function (name, options) {
-    const names = options._ ? [name, ...options._.slice(3)] : [name]
+    const names = options._ ? [name, ...options._.slice(ARGS_START_INDEX)] : [name]
     const preConfirm = options.y || options.yes
     const force = options.f || options.force
-    const deleteWorkspace = (names, preConfirm) => {
-      const name = names.shift()
-      if (!force && name === getWorkspace()) {
-        log.error(`You're currently using the workspace ${chalk.green(name)}, please change your workspace before deleting`)
-        return Promise.resolve()
-      }
-
-      return Promise.try(() =>
-        preConfirm || promptWorkspaceDeletion(name)
-      )
-      .then(confirm => confirm || Promise.reject('User cancelled'))
-      .then(() => client().delete(getAccount(), name))
-      .tap(() =>
-        log.info(`Workspace ${chalk.green(name)} deleted successfully`)
-      )
-      .then(() =>
-        names.length > 0
-          ? deleteWorkspace(names, preConfirm)
-          : Promise.resolve()
-      )
-    }
-
     log.debug('Deleting workspace(s)', names)
-    return deleteWorkspace(names, preConfirm)
+    return deleteWorkspaces(names, preConfirm, force)
   },
 }
