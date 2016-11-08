@@ -55,7 +55,7 @@ export default {
     },
   ],
   handler: function (name, options) {
-    const names = options._ ? [name, ...options._.slice(ARGS_START_INDEX)] : [name]
+    const names = [name, ...options._.slice(ARGS_START_INDEX)]
     const preConfirm = options.y || options.yes
     const force = options.f || options.force
     log.debug('Deleting workspace(s)', names)

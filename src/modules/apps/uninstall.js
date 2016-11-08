@@ -64,7 +64,7 @@ export default {
       return Promise.resolve()
     }
 
-    const apps = options._ ? [optionalApp, ...options._.slice(ARGS_START_INDEX)] : [optionalApp]
+    const apps = [optionalApp, ...options._.slice(ARGS_START_INDEX)]
     const preConfirm = options.y || options.yes
     log.debug('Uninstalling app(s)', apps)
     return uninstallApps(apps, preConfirm)

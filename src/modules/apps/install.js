@@ -44,7 +44,7 @@ export default {
       return Promise.resolve()
     }
 
-    const apps = options._ ? [optionalApp, ...options._.slice(ARGS_START_INDEX)] : [optionalApp]
+    const apps = [optionalApp, ...options._.slice(ARGS_START_INDEX)]
     log.debug('Installing app(s)', apps)
     return installApps(apps)
   },
