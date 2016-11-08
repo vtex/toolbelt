@@ -14,7 +14,7 @@ const promptAppUninstall = (app) => {
   .then(({confirm}) => confirm)
 }
 
-function uninstallApps (apps, preConfirm) {
+function uninstallApps (apps = [], preConfirm) {
   const app = apps.shift() || `${manifest.vendor}.${manifest.name}`
   log.debug('Starting to uninstall app', app)
   const appRegex = new RegExp(`^${vendorPattern}.${namePattern}$`)

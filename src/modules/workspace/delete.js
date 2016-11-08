@@ -16,7 +16,7 @@ function promptWorkspaceDeletion (name) {
   .then(({confirm}) => confirm)
 }
 
-function deleteWorkspaces (names, preConfirm, force) {
+function deleteWorkspaces (names = [], preConfirm, force) {
   const name = names.shift()
   log.debug('Starting to delete workspace', name)
   if (!force && name === getWorkspace()) {

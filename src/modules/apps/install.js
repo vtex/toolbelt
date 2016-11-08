@@ -10,7 +10,7 @@ import {
 
 const ARGS_START_INDEX = 2
 
-function installApps (apps) {
+function installApps (apps = []) {
   const app = apps.shift() || `${manifest.vendor}.${manifest.name}@${manifest.version}`
   log.debug('Starting to install app', app)
   const appRegex = new RegExp(`^${vendorPattern}.${namePattern}@${wildVersionPattern}$`)
