@@ -8,6 +8,8 @@ import {manifest} from './manifest'
 import EventSource from 'eventsource'
 import {consumeChangeLog} from './apps'
 import {clearLine, cursorTo} from 'readline'
+import {locatorByMajor} from './locator'
+import {__, any, contains, map} from 'ramda'
 import {setSpinnerText, stopSpinner, isSpinnerActive} from './spinner'
 
 const courierHost = endpoint('courier')
@@ -18,6 +20,8 @@ const levelFormat = {
   warning: log.warn,
   error: log.error,
 }
+
+let timeoutId
 
 const clearAbove = () => {
   clearLine(process.stdout, 0)
@@ -44,9 +48,9 @@ const stopAndLog = (log) => {
   console.log(timedLog)
 }
 
-const logToConsole = (level, origin, message) => {
+const logToConsole = (level, origin, message, timeout, action) => {
   const isLogLevelInfo = log.level === 'info'
-  const {message: text, timeout} = typeof message === 'string'
+  const {message: text, timeout: msgTimeout} = typeof message === 'string'
     ? {message} : message
   if (isLogLevelInfo && isSpinnerActive()) {
     if (level === 'error') {
@@ -54,7 +58,12 @@ const logToConsole = (level, origin, message) => {
       clearAbove()
       return console.log(`\n${text}\n`)
     }
-    setSpinnerText(text, timeout)
+
+    if (timeout) {
+      timeoutId = setTimeout(action, msgTimeout || timeout)
+    }
+
+    setSpinnerText(text, msgTimeout || timeout)
     return
   }
 
@@ -63,38 +72,60 @@ const logToConsole = (level, origin, message) => {
   levelFormat[level](`[${time}] ${text}`)
 }
 
-const originMatch = (origin) => {
-  const {vendor, name, version} = manifest
-  const local = `${vendor}.${name}@${version.substring(0, 0)}`
-  return local === origin.substring(0, origin.indexOf('@') + 1)
+const getOriginByManifest = () => {
+  const {name, vendor, version} = manifest
+  return `${vendor}.${name}@${version}`
 }
 
-const listen = (account, workspace, authToken) => {
-  let es = new EventSource(`${courierHost}/${account}/${workspace}/app-events?level=${log.level}`, {
+const originMatch = (msgOrigin, origin = []) => {
+  if (origin.length === 0) {
+    origin.push(getOriginByManifest())
+  }
+  return any(contains(__, locatorByMajor(msgOrigin)), map(locatorByMajor, origin))
+}
+
+const listen = (account, workspace, authToken, {timeout: {duration, action}, origin, callback}) => {
+  const es = new EventSource(`${courierHost}/${account}/${workspace}/app-events?level=${log.level}`, {
     'Authorization': `token ${authToken}`,
   })
-  es.onopen = () => log.debug(`courier: connected with level ${log.level}`)
-  es.addEventListener('system', async (msg) => {
-    let {message, origin} = JSON.parse(msg.data)
-    if (!originMatch(origin)) {
+
+  es.onopen = () => {
+    log.debug(`courier: connected with level ${log.level}`)
+    timeoutId = setTimeout(action, duration)
+  }
+
+  es.addEventListener('system', (msg) => {
+    clearTimeout(timeoutId)
+    const {message, origin: msgOrigin} = JSON.parse(msg.data)
+    if (!originMatch(msgOrigin, origin)) {
       return
     }
 
     if (message === 'workspace:changed') {
       stopAndLog(consumeChangeLog())
+      if (callback) {
+        callback()
+      }
     }
+
+    timeoutId = setTimeout(action, duration)
   })
+
   es.addEventListener('message', (msg) => {
-    let {level, origin, message} = JSON.parse(msg.data)
-    if (!originMatch(origin)) {
+    clearTimeout(timeoutId)
+    const {level, origin: msgOrigin, message} = JSON.parse(msg.data)
+    if (!originMatch(msgOrigin, origin)) {
       return
     }
 
     clearAbove()
-    logToConsole(level, origin, message)
+    logToConsole(level, origin, message, duration, action)
   })
+
   es.onerror = (err) => {
+    clearTimeout(timeoutId)
     log.error(`Connection to courier server has failed with status ${err.status}`)
+    timeoutId = setTimeout(action, duration)
   }
 }
 
