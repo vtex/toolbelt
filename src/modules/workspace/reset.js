@@ -8,7 +8,7 @@ export default {
   description: 'Delete and create a workspace',
   handler: function (name) {
     log.debug('Resetting workspace', name)
-    const workspace = typeof name !== 'string' ? getWorkspace() : name
+    const workspace = name || getWorkspace()
     return deleteCmd.handler(workspace, {yes: true, force: true})
     .delay(3000)
     .then(() => createCmd.handler(workspace))

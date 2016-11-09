@@ -4,7 +4,6 @@ import {appsClient} from './utils'
 import {getAccount, getWorkspace} from '../../conf'
 
 export default {
-  optionalArgs: 'query',
   description: 'List your installed VTEX apps',
   handler: () => {
     log.debug('Starting to list apps')
