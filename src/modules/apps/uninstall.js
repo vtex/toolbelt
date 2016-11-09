@@ -1,8 +1,12 @@
 import log from '../../logger'
 import inquirer from 'inquirer'
-import {getWorkspace, getAccount} from '../../conf'
+import {head, tail} from 'ramda'
+import courier from '../../courier'
+import {clearAbove} from '../../terminal'
 import {workspaceMasterMessage, appsClient} from './utils'
+import {getWorkspace, getAccount, getToken} from '../../conf'
 import {manifest, vendorPattern, namePattern} from '../../manifest'
+import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 
 const ARGS_START_INDEX = 2
 const promptAppUninstall = (app) => {
@@ -14,8 +18,22 @@ const promptAppUninstall = (app) => {
   .then(({confirm}) => confirm)
 }
 
-function uninstallApps (apps = [], preConfirm) {
-  const app = apps.shift() || `${manifest.vendor}.${manifest.name}`
+function courierCallback (apps) {
+  let counter = 0
+  return () => {
+    clearAbove()
+    const app = apps[counter]
+    counter += 1
+    log.info(`Uninstaled app ${app} successfully`)
+    if (counter === apps.length) {
+      process.exit()
+    }
+  }
+}
+
+function uninstallApps (apps, preConfirm) {
+  const app = head(apps)
+  const decApp = tail(apps)
   log.debug('Starting to uninstall app', app)
   const appRegex = new RegExp(`^${vendorPattern}.${namePattern}$`)
   if (!appRegex.test(app)) {
@@ -25,6 +43,12 @@ function uninstallApps (apps = [], preConfirm) {
 
   return Promise.try(() => preConfirm || promptAppUninstall(app))
   .then(confirm => confirm || Promise.reject('User cancelled'))
+  .tap(() => {
+    if (log.level === 'info') {
+      setSpinnerText(`Uninstalling app ${app}`)
+    }
+    startSpinner()
+  })
   .then(() =>
     appsClient().uninstallApp(
       getAccount(),
@@ -32,17 +56,20 @@ function uninstallApps (apps = [], preConfirm) {
       app
     )
   )
-  .then(() => log.info(`Uninstalled app ${app} successfully`))
   .then(() =>
-    apps.length > 0
-      ? uninstallApps(apps, preConfirm)
+    decApp.length > 0
+      ? uninstallApps(decApp, preConfirm)
       : Promise.resolve()
   )
   .catch(err => {
+    stopSpinnerForced()
     if (err.statusCode === 409) {
       return log.error(`App ${app} not installed`)
     }
-    log.warn(`The following apps were not uninstalled: ${[app, ...apps].join(', ')}`)
+    if (apps.length > 1 && !err.toolbeltWarning) {
+      log.warn(`The following apps were not uninstalled: ${apps.join(', ')}`)
+      err.toolbeltWarning = true
+    }
     return Promise.reject(err)
   })
 }
@@ -65,8 +92,18 @@ export default {
       return Promise.resolve()
     }
 
-    const apps = [optionalApp, ...options._.slice(ARGS_START_INDEX)]
+    const app = optionalApp || `${manifest.vendor}.${manifest.name}`
+    const apps = [app, ...options._.slice(ARGS_START_INDEX)]
     const preConfirm = options.y || options.yes
+    const callback = courierCallback(apps)
+    courier.listen(getAccount(), workspace, getToken(), {
+      callback,
+      origin: apps,
+      timeout: {
+        duration: 6000,
+        action: callback,
+      },
+    })
     log.debug('Uninstalling app(s)', apps)
     return uninstallApps(apps, preConfirm)
   },
