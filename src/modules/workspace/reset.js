@@ -9,7 +9,7 @@ export default {
   handler: function (name) {
     log.debug('Resetting workspace', name)
     const workspace = name || getWorkspace()
-    return deleteCmd.handler(workspace, {yes: true, force: true})
+    return deleteCmd.handler(workspace, {_: [], yes: true, force: true})
     .delay(3000)
     .then(() => createCmd.handler(workspace))
     .catch(err => {
