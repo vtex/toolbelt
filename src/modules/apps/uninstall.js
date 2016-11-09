@@ -42,6 +42,7 @@ function uninstallApps (apps = [], preConfirm) {
     if (err.statusCode === 409) {
       return log.error(`App ${app} not installed`)
     }
+    log.warn(`The following apps were not uninstalled: ${[app, ...apps].join(', ')}`)
     return Promise.reject(err)
   })
 }

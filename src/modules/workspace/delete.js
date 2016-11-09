@@ -35,6 +35,10 @@ function deleteWorkspaces (names = [], preConfirm, force) {
       ? deleteWorkspaces(names, preConfirm, force)
       : Promise.resolve()
   )
+  .catch(err => {
+    log.warn(`The following workspaces were not deleted: ${[name, ...names].join(', ')}`)
+    return Promise.reject(err)
+  })
 }
 
 export default {

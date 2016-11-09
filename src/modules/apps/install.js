@@ -30,6 +30,7 @@ function installApps (apps = []) {
     if (err.statusCode === 409) {
       return log.error(`App ${app} already installed`)
     }
+    log.warn(`The following apps were not installed: ${[app, ...apps].join(', ')}`)
     return Promise.reject(err)
   })
 }
