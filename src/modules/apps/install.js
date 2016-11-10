@@ -1,6 +1,10 @@
 import log from '../../logger'
-import {getWorkspace} from '../../conf'
+import {head, tail} from 'ramda'
+import courier from '../../courier'
+import {clearAbove} from '../../terminal'
 import {workspaceMasterMessage, installApp} from './utils'
+import {getAccount, getWorkspace, getToken} from '../../conf'
+import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 import {
   manifest,
   namePattern,
@@ -10,8 +14,22 @@ import {
 
 const ARGS_START_INDEX = 2
 
-function installApps (apps = []) {
-  const app = apps.shift() || `${manifest.vendor}.${manifest.name}@${manifest.version}`
+function courierCallback (apps) {
+  let counter = 0
+  return () => {
+    clearAbove()
+    const app = apps[counter]
+    counter += 1
+    log.info(`Installed app ${app} successfully`)
+    if (counter === apps.length) {
+      process.exit()
+    }
+  }
+}
+
+function installApps (apps) {
+  const app = head(apps)
+  const decApps = tail(apps)
   log.debug('Starting to install app', app)
   const appRegex = new RegExp(`^${vendorPattern}.${namePattern}@${wildVersionPattern}$`)
   if (!appRegex.test(app)) {
@@ -19,18 +37,26 @@ function installApps (apps = []) {
     return Promise.resolve()
   }
 
+  if (log.level === 'info') {
+    setSpinnerText(`Installing app ${app}`)
+  }
+  startSpinner()
+
   return installApp(app)
-  .then(() => log.info(`Installed app ${app} successfully`))
   .then(() =>
-    apps.length > 0
-      ? installApps(apps)
+    decApps.length > 0
+      ? installApps(decApps)
       : Promise.resolve()
   )
   .catch(err => {
+    stopSpinnerForced()
     if (err.statusCode === 409) {
       return log.error(`App ${app} already installed`)
     }
-    log.warn(`The following apps were not installed: ${[app, ...apps].join(', ')}`)
+    if (apps.length > 1 && !err.toolbeltWarning) {
+      log.warn(`The following apps were not installed: ${apps.join(', ')}`)
+      err.toolbeltWarning = true
+    }
     return Promise.reject(err)
   })
 }
@@ -45,7 +71,17 @@ export default {
       return Promise.resolve()
     }
 
-    const apps = [optionalApp, ...options._.slice(ARGS_START_INDEX)]
+    const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
+    const apps = [app, ...options._.slice(ARGS_START_INDEX)]
+    const callback = courierCallback(apps)
+    courier.listen(getAccount(), workspace, getToken(), {
+      callback,
+      origin: apps,
+      timeout: {
+        duration: 6000,
+        action: callback,
+      },
+    })
     log.debug('Installing app(s)', apps)
     return installApps(apps)
   },

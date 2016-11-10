@@ -50,3 +50,12 @@ export function stopSpinner () {
 export function isSpinnerActive () {
   return counter > 0
 }
+
+export function stopSpinnerForced () {
+  if (counter === 0) {
+    return
+  }
+  counter = 0
+  clearSpinnerTimeout()
+  spinner.stop()
+}
