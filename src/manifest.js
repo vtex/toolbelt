@@ -9,8 +9,6 @@ export const namePattern = '[\\w_-]+'
 
 export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 
-export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
-
 export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
 
 const R_OK = fs.constants ? fs.constants.R_OK : fs.R_OK // Node v6 breaking change

@@ -7,9 +7,21 @@ import {id, publishApp, mapFileObject} from './utils'
 
 const root = process.cwd()
 
+function automaticTag (version) {
+  return version.indexOf('-') > 0 ? undefined : 'latest'
+}
+
 export default {
   description: 'Publish this app',
-  handler: () => {
+  options: [
+    {
+      short: 't',
+      long: 'tag',
+      description: 'Apply a tag to the release',
+      type: 'string',
+    },
+  ],
+  handler: (options) => {
     log.debug('Starting to publish app')
     setSpinnerText('Publishing app...')
     startSpinner()
@@ -17,7 +29,7 @@ export default {
     return listLocalFiles(root)
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(mapFileObject)
-    .then(publishApp)
+    .then(files => publishApp(files, options.tag || automaticTag(manifest.version)))
     .finally(() => stopSpinner())
     .then(() => log.info(`Published app ${id} successfully`))
     .catch(err =>
