@@ -5,9 +5,9 @@ import {timeStop} from './time'
 import endpoint from './endpoint'
 import stripAnsi from 'strip-ansi'
 import {manifest} from './manifest'
+import {clearAbove} from './terminal'
 import EventSource from 'eventsource'
 import {consumeChangeLog} from './apps'
-import {clearLine, cursorTo} from 'readline'
 import {locatorByMajor} from './locator'
 import {__, any, contains, map} from 'ramda'
 import {setSpinnerText, stopSpinner, isSpinnerActive} from './spinner'
@@ -22,11 +22,6 @@ const levelFormat = {
 }
 
 let timeoutId
-
-const clearAbove = () => {
-  clearLine(process.stdout, 0)
-  cursorTo(process.stdout, 0)
-}
 
 const stopAndLog = (log) => {
   const timeEnd = timeStop()
