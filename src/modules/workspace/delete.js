@@ -2,10 +2,13 @@ import chalk from 'chalk'
 import log from '../../logger'
 import {client} from './utils'
 import inquirer from 'inquirer'
+import {head, tail} from 'ramda'
 import {Promise} from 'bluebird'
 import {getWorkspace, getAccount} from '../../conf'
 
 const ARGS_START_INDEX = 3
+const account = getAccount()
+const workspace = getWorkspace()
 
 function promptWorkspaceDeletion (name) {
   return inquirer.prompt({
@@ -17,26 +20,30 @@ function promptWorkspaceDeletion (name) {
 }
 
 function deleteWorkspaces (names = [], preConfirm, force) {
-  const name = names.shift()
+  const name = head(names)
+  const decNames = tail(names)
   log.debug('Starting to delete workspace', name)
-  if (!force && name === getWorkspace()) {
+  if (!force && name === workspace) {
     log.error(`You're currently using the workspace ${chalk.green(name)}, please change your workspace before deleting`)
     return Promise.resolve()
   }
 
   return Promise.try(() => preConfirm || promptWorkspaceDeletion(name))
   .then(confirm => confirm || Promise.reject('User cancelled'))
-  .then(() => client().delete(getAccount(), name))
+  .then(() => client().delete(account, name))
   .tap(() =>
     log.info(`Workspace ${chalk.green(name)} deleted successfully`)
   )
   .then(() =>
-    names.length > 0
-      ? deleteWorkspaces(names, preConfirm, force)
+    decNames.length > 0
+      ? deleteWorkspaces(decNames, preConfirm, force)
       : Promise.resolve()
   )
   .catch(err => {
-    log.warn(`The following workspaces were not deleted: ${[name, ...names].join(', ')}`)
+    if (names.length > 1 && !err.toolbeltWarning) {
+      log.warn(`The following workspace(s) were not deleted: ${names.join(', ')}`)
+      err.toolbeltWarning = true
+    }
     return Promise.reject(err)
   })
 }
