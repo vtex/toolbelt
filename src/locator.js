@@ -1,5 +1,9 @@
 export function locatorByMajor (locator) {
   const versionIndex = locator.indexOf('@')
-  return versionIndex > -1
-    ? locator.substring(0, versionIndex + 2) : locator
+  const majorIndex = versionIndex + 2
+  const hasVersion = /\d/.test(locator[majorIndex])
+  if (versionIndex > -1 && hasVersion) {
+    return locator.substring(0, majorIndex)
+  }
+  return locator
 }

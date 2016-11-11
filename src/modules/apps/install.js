@@ -1,5 +1,4 @@
 import log from '../../logger'
-import {head, tail} from 'ramda'
 import courier from '../../courier'
 import {clearAbove} from '../../terminal'
 import {workspaceMasterMessage, installApp} from './utils'
@@ -9,10 +8,13 @@ import {
   manifest,
   namePattern,
   vendorPattern,
-  wildVersionPattern,
 } from '../../manifest'
 
 const ARGS_START_INDEX = 2
+
+function defaultTag (app) {
+  return app.indexOf('@') < 0 ? `${app}@latest` : app
+}
 
 function courierCallback (apps) {
   let counter = 0
@@ -35,13 +37,13 @@ function courierAction (apps) {
   }
 }
 
-function installApps (apps) {
-  const app = head(apps)
-  const decApps = tail(apps)
+function installApps (apps, accessor = 0) {
+  const app = defaultTag(apps[accessor])
+  const nextAccessor = accessor + 1
   log.debug('Starting to install app', app)
-  const appRegex = new RegExp(`^${vendorPattern}.${namePattern}@${wildVersionPattern}$`)
+  const appRegex = new RegExp(`^${vendorPattern}.${namePattern}@.+$`)
   if (!appRegex.test(app)) {
-    log.error('Invalid app format, please use <vendor>.<name>@<version>')
+    log.error('Invalid app format, please use <vendor>.<name>[@<version>]')
     return Promise.resolve()
   }
 
@@ -51,9 +53,10 @@ function installApps (apps) {
   startSpinner()
 
   return installApp(app)
+  .then(({id}) => (apps[accessor] = id))
   .then(() =>
-    decApps.length > 0
-      ? installApps(decApps)
+    nextAccessor < apps.length
+      ? installApps(apps, nextAccessor)
       : Promise.resolve()
   )
   .catch(err => {
