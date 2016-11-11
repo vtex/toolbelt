@@ -27,6 +27,14 @@ function courierCallback (apps) {
   }
 }
 
+function courierAction (apps) {
+  return () => {
+    stopSpinnerForced()
+    apps.forEach(app => log.info(`Installed app ${app} successfully`))
+    process.exit()
+  }
+}
+
 function installApps (apps) {
   const app = head(apps)
   const decApps = tail(apps)
@@ -73,13 +81,12 @@ export default {
 
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)]
-    const callback = courierCallback(apps)
     courier.listen(getAccount(), workspace, getToken(), {
-      callback,
       origin: apps,
+      callback: courierCallback(apps),
       timeout: {
         duration: 6000,
-        action: callback,
+        action: courierAction(apps),
       },
     })
     log.debug('Installing app(s)', apps)

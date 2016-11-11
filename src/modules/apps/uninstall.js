@@ -31,6 +31,14 @@ function courierCallback (apps) {
   }
 }
 
+function courierAction (apps) {
+  return () => {
+    stopSpinnerForced()
+    apps.forEach(app => log.info(`Uninstalled app ${app} successfully`))
+    process.exit()
+  }
+}
+
 function uninstallApps (apps, preConfirm) {
   const app = head(apps)
   const decApp = tail(apps)
@@ -95,13 +103,12 @@ export default {
     const app = optionalApp || `${manifest.vendor}.${manifest.name}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)]
     const preConfirm = options.y || options.yes
-    const callback = courierCallback(apps)
     courier.listen(getAccount(), workspace, getToken(), {
-      callback,
       origin: apps,
+      callback: courierCallback(apps),
       timeout: {
         duration: 6000,
-        action: callback,
+        action: courierAction(apps),
       },
     })
     log.debug('Uninstalling app(s)', apps)
