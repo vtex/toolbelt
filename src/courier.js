@@ -54,7 +54,7 @@ const logToConsole = (level, origin, message, timeout, action) => {
       return console.log(`\n${text}\n`)
     }
 
-    if (timeout) {
+    if (timeout && action) {
       timeoutId = setTimeout(action, msgTimeout || timeout)
     }
 
@@ -79,14 +79,15 @@ const originMatch = (msgOrigin, origin = []) => {
   return any(contains(__, locatorByMajor(msgOrigin)), map(locatorByMajor, origin))
 }
 
-const listen = (account, workspace, authToken, {timeout: {duration, action}, origin, callback}) => {
+const listen = (account, workspace, authToken, {timeout: {duration, action}, origin, callback} = {timeout: {}}) => {
+  const hasTimeout = duration && action
   const es = new EventSource(`${courierHost}/${account}/${workspace}/app-events?level=${log.level}`, {
     'Authorization': `token ${authToken}`,
   })
 
   es.onopen = () => {
     log.debug(`courier: connected with level ${log.level}`)
-    timeoutId = setTimeout(action, duration)
+    timeoutId = hasTimeout ? setTimeout(action, duration) : null
   }
 
   es.addEventListener('system', (msg) => {
@@ -103,7 +104,7 @@ const listen = (account, workspace, authToken, {timeout: {duration, action}, ori
       }
     }
 
-    timeoutId = setTimeout(action, duration)
+    timeoutId = hasTimeout ? setTimeout(action, duration) : null
   })
 
   es.addEventListener('message', (msg) => {
@@ -120,7 +121,7 @@ const listen = (account, workspace, authToken, {timeout: {duration, action}, ori
   es.onerror = (err) => {
     clearTimeout(timeoutId)
     log.error(`Connection to courier server has failed with status ${err.status}`)
-    timeoutId = setTimeout(action, duration)
+    timeoutId = hasTimeout ? setTimeout(action, duration) : null
   }
 }
 
