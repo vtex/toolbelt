@@ -14,7 +14,6 @@ import {watch, listLocalFiles} from '../../file'
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {
-  id,
   publishApp,
   installApp,
   mapFileObject,
@@ -26,22 +25,25 @@ const root = process.cwd()
 
 const pathProp = prop('path')
 
+const version = `dev.${getWorkspace()}`
+
+const id = `${manifest.vendor}.${manifest.name}@${version}`
+
 const sendChanges = (() => {
   let queue = []
   const publishPatch = debounce(
-    (account, workspace, vendor, name, version) => {
+    () => {
       setSpinnerText('Sending changes')
       startSpinner()
       timeStart()
       return registryClient().publishAppPatch(
-        account,
-        workspace,
-        vendor,
-        name,
+        getAccount(),
+        manifest.vendor,
+        manifest.name,
         version,
         queue
       )
-      .then(() => installApp(`${vendor}.${name}@${version.replace(/(-.*)?$/, '-dev')}`))
+      .then(() => installApp(id))
       .then(() => allocateChangeLog(queue, moment().format('HH:mm:ss')))
       .then(() => { queue = [] })
       .catch(err => {
@@ -57,9 +59,42 @@ const sendChanges = (() => {
       return
     }
     queue = uniqBy(pathProp, queue.concat(changes).reverse())
-    return publishPatch(getAccount(), getWorkspace(), manifest.vendor, manifest.name, manifest.version)
+    return publishPatch()
   }
 })()
+
+const keepAppAlive = () => {
+  let exitPromise
+  return installApp(id)
+  .then(() => {
+    const keepAliveInterval = setInterval(() => {
+      appsClient().updateAppTtl(
+        getAccount(),
+        getWorkspace(),
+        id,
+      ).catch(e => {
+        log.error(`Error on keep alive request, will try again in ${KEEP_ALIVE_INTERVAL / 1000}s`)
+        log.debug(e)
+        if (e.response) {
+          log.debug(e.response.data)
+        }
+      })
+    }, KEEP_ALIVE_INTERVAL)
+    createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    }).on('SIGINT', () => {
+      if (exitPromise) {
+        return
+      }
+      stopSpinner()
+      clearTimeout(keepAliveInterval)
+      log.info('Exiting...')
+      exitPromise = appsClient().uninstallApp(getAccount(), getWorkspace(), id)
+      .finally(() => process.exit())
+    })
+  })
+}
 
 export default {
   description: 'Send the files to the registry and watch for changes',
@@ -71,7 +106,7 @@ export default {
     }
 
     const account = getAccount()
-    log.info('Watching app', `${id}`)
+    log.info('Watching app', id)
     console.log(
       chalk.green('Your URL:'),
       chalk.blue(getWorkspaceURL(account, workspace))
@@ -85,7 +120,7 @@ export default {
     return listLocalFiles(root)
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(mapFileObject)
-    .then(files => publishApp(files, true))
+    .then(files => publishApp(files, version))
     .then(() =>
       installApp(`${manifest.vendor}.${manifest.name}@${manifest.version.replace(/(-.*)?$/, '-dev')}`)
     )
