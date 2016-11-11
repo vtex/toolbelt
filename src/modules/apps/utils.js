@@ -24,11 +24,12 @@ export const installApp = (id) => {
   )
 }
 
-export const publishApp = (files, tag = undefined) => {
+export const publishApp = (files, isDevelopment = false) => {
   return registryClient().publishApp(
     getAccount(),
+    getWorkspace(),
     files,
-    tag
+    isDevelopment
   )
 }
 
