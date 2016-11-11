@@ -3,7 +3,6 @@ import {
   vendorPattern,
   namePattern,
   versionPattern,
-  wildVersionPattern,
   validateAppManifest,
 } from './manifest'
 
@@ -29,15 +28,6 @@ test('validates an app version', t => {
   t.false(versionRegex.test('0.1.0_beta'))
   t.true(versionRegex.test('0.1.0'))
   t.true(versionRegex.test('0.1.0-beta'))
-})
-
-test('validates an app version with a wildcard', t => {
-  const wildVersionRegex = new RegExp(`^${wildVersionPattern}$`)
-  t.false(wildVersionRegex.test('x.1.0'))
-  t.false(wildVersionRegex.test('0.1.x_beta'))
-  t.true(wildVersionRegex.test('0.x'))
-  t.true(wildVersionRegex.test('0.1.x'))
-  t.true(wildVersionRegex.test('0.1.x-beta'))
 })
 
 test('validates an app manifest', t => {
