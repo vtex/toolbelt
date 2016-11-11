@@ -14,7 +14,6 @@ import {watch, listLocalFiles} from '../../file'
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {
-  id,
   publishApp,
   installApp,
   appsClient,
@@ -29,22 +28,25 @@ const KEEP_ALIVE_INTERVAL = 5000
 
 const pathProp = prop('path')
 
+const version = `dev.${getWorkspace()}`
+
+const id = `${manifest.vendor}.${manifest.name}@${version}`
+
 const sendChanges = (() => {
   let queue = []
   const publishPatch = debounce(
-    (account, workspace, vendor, name, version) => {
+    () => {
       setSpinnerText('Sending changes')
       startSpinner()
       timeStart()
       return registryClient().publishAppPatch(
-        account,
-        workspace,
-        vendor,
-        name,
+        getAccount(),
+        manifest.vendor,
+        manifest.name,
         version,
         queue
       )
-      .then(() => installApp(`${vendor}.${name}@${version.replace(/(-.*)?$/, '-dev')}`))
+      .then(() => installApp(id))
       .then(() => allocateChangeLog(queue, moment().format('HH:mm:ss')))
       .then(() => { queue = [] })
       .catch(err => {
@@ -60,14 +62,13 @@ const sendChanges = (() => {
       return
     }
     queue = uniqBy(pathProp, queue.concat(changes).reverse())
-    return publishPatch(getAccount(), getWorkspace(), manifest.vendor, manifest.name, manifest.version)
+    return publishPatch()
   }
 })()
 
 const keepAppAlive = () => {
   let exitPromise
-  const devApp = `${manifest.vendor}.${manifest.name}@${manifest.version.replace(/(-.*)?$/, '-dev')}`
-  return installApp(devApp)
+  return installApp(id)
   .then(() => {
     const keepAliveInterval = setInterval(() => {
       appsClient().updateAppTtl(
@@ -92,7 +93,7 @@ const keepAppAlive = () => {
       stopSpinner()
       clearTimeout(keepAliveInterval)
       log.info('Exiting...')
-      exitPromise = appsClient().uninstallApp(getAccount(), getWorkspace(), devApp)
+      exitPromise = appsClient().uninstallApp(getAccount(), getWorkspace(), id)
       .finally(() => process.exit())
     })
   })
@@ -108,7 +109,7 @@ export default {
     }
 
     const account = getAccount()
-    log.info('Watching app', `${id}`)
+    log.info('Watching app', id)
     console.log(
       chalk.green('Your URL:'),
       chalk.blue(getWorkspaceURL(account, workspace))
@@ -122,7 +123,7 @@ export default {
     return listLocalFiles(root)
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(mapFileObject)
-    .then(files => publishApp(files, true))
+    .then(files => publishApp(files, version))
     .then(keepAppAlive)
     .tap(() => log.debug('Starting watch...'))
     .then(() => watch(root, sendChanges))
