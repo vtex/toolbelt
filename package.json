@@ -52,7 +52,7 @@
     "eslint": "^3.4.0",
     "eslint-config-vtex": "^4.0.0",
     "eslint-config-vtex-react": "^1.0.2",
-    "eslint-plugin-react": "^5.0.1",
+    "eslint-plugin-react": "^6.7.0",
     "eventsource": "^0.2.1",
     "fast-async": "^6.0.34",
     "findhelp": "^0.3.0",
