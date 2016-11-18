@@ -47,19 +47,22 @@ const logToConsole = (level, origin, message, timeout, action) => {
   const isLogLevelInfo = log.level === 'info'
   const {message: text, timeout: msgTimeout} = typeof message === 'string'
     ? {message} : message
-  if (isLogLevelInfo && isSpinnerActive()) {
-    if (level === 'error') {
-      stopAndLog(consumeChangeLog())
-      clearAbove()
-      return console.log(`\n${text}\n`)
-    }
+  if (isSpinnerActive()) {
+    clearAbove()
+    if (isLogLevelInfo) {
+      if (level === 'error') {
+        stopAndLog(consumeChangeLog())
+        clearAbove()
+        return console.log(`\n${text}\n`)
+      }
 
-    if (timeout && action) {
-      timeoutId = setTimeout(action, msgTimeout || timeout)
-    }
+      if (timeout && action) {
+        timeoutId = setTimeout(action, msgTimeout || timeout)
+      }
 
-    setSpinnerText(text, msgTimeout || timeout)
-    return
+      setSpinnerText(text, msgTimeout || timeout)
+      return
+    }
   }
 
   const format = isLogLevelInfo ? 'HH:mm:ss' : 'HH:mm:ss:SSS'
@@ -114,7 +117,6 @@ const listen = (account, workspace, authToken, {timeout: {duration, action}, ori
       return
     }
 
-    clearAbove()
     logToConsole(level, origin, message, duration, action)
   })
 

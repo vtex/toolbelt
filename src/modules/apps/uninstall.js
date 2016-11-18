@@ -2,6 +2,7 @@ import log from '../../logger'
 import inquirer from 'inquirer'
 import {head, tail} from 'ramda'
 import courier from '../../courier'
+import {createInterface} from 'readline'
 import {clearAbove} from '../../terminal'
 import {workspaceMasterMessage, appsClient} from './utils'
 import {getWorkspace, getAccount, getToken} from '../../conf'
@@ -9,11 +10,11 @@ import {manifest, vendorPattern, namePattern} from '../../manifest'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 
 const ARGS_START_INDEX = 2
-const promptAppUninstall = (app) => {
+const promptAppUninstall = (apps) => {
   return inquirer.prompt({
     type: 'confirm',
     name: 'confirm',
-    message: `Are you sure you want to uninstall the app ${app}?`,
+    message: `Are you sure you want to uninstall the apps ${apps.join(', ')}?`,
   })
   .then(({confirm}) => confirm)
 }
@@ -49,20 +50,15 @@ function uninstallApps (apps, preConfirm) {
     return Promise.resolve()
   }
 
-  return Promise.try(() => preConfirm || promptAppUninstall(app))
-  .then(confirm => confirm || Promise.reject('User cancelled'))
-  .tap(() => {
-    if (log.level === 'info') {
-      setSpinnerText(`Uninstalling app ${app}`)
-    }
-    startSpinner()
-  })
-  .then(() =>
-    appsClient().uninstallApp(
-      getAccount(),
-      getWorkspace(),
-      app
-    )
+  if (log.level === 'info') {
+    setSpinnerText(`Uninstalling app ${app}`)
+  }
+  startSpinner()
+
+  return appsClient().uninstallApp(
+    getAccount(),
+    getWorkspace(),
+    app
   )
   .then(() =>
     decApp.length > 0
@@ -100,6 +96,9 @@ export default {
       return Promise.resolve()
     }
 
+    createInterface({input: process.stdin, output: process.stdout})
+    .on('SIGINT', () => process.exit())
+
     const app = optionalApp || `${manifest.vendor}.${manifest.name}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)]
     const preConfirm = options.y || options.yes
@@ -112,6 +111,8 @@ export default {
       },
     })
     log.debug('Uninstalling app(s)', apps)
-    return uninstallApps(apps, preConfirm)
+    return Promise.try(() => preConfirm || promptAppUninstall(apps))
+    .then(confirm => confirm || Promise.reject('User cancelled'))
+    .then(() => uninstallApps(apps, preConfirm))
   },
 }
