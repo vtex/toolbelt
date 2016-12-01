@@ -17,15 +17,12 @@ import {
   id,
   publishApp,
   installApp,
-  appsClient,
   mapFileObject,
   registryClient,
   workspaceMasterMessage,
 } from './utils'
 
 const root = process.cwd()
-
-const KEEP_ALIVE_INTERVAL = 5000
 
 const pathProp = prop('path')
 
@@ -64,40 +61,6 @@ const sendChanges = (() => {
   }
 })()
 
-const keepAppAlive = () => {
-  let exitPromise
-  const devApp = `${manifest.vendor}.${manifest.name}@${manifest.version.replace(/(-.*)?$/, '-dev')}`
-  return installApp(devApp)
-  .then(() => {
-    const keepAliveInterval = setInterval(() => {
-      appsClient().updateAppTtl(
-        getAccount(),
-        getWorkspace(),
-        id,
-      ).catch(e => {
-        log.error(`Error on keep alive request, will try again in ${KEEP_ALIVE_INTERVAL / 1000}s`)
-        log.debug(e)
-        if (e.response) {
-          log.debug(e.response.data)
-        }
-      })
-    }, KEEP_ALIVE_INTERVAL)
-    createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    }).on('SIGINT', () => {
-      if (exitPromise) {
-        return
-      }
-      stopSpinner()
-      clearTimeout(keepAliveInterval)
-      log.info('Exiting...')
-      exitPromise = appsClient().uninstallApp(getAccount(), getWorkspace(), devApp)
-      .finally(() => process.exit())
-    })
-  })
-}
-
 export default {
   description: 'Send the files to the registry and watch for changes',
   handler: () => {
@@ -123,9 +86,23 @@ export default {
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(mapFileObject)
     .then(files => publishApp(files, true))
-    .then(keepAppAlive)
+    .then(() =>
+      installApp(`${manifest.vendor}.${manifest.name}@${manifest.version.replace(/(-.*)?$/, '-dev')}`)
+    )
     .tap(() => log.debug('Starting watch...'))
     .then(() => watch(root, sendChanges))
+    .then(() => {
+      createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      }).on('SIGINT', () => {
+        stopSpinner()
+        log.info('Your app is still in development mode.')
+        log.info('You can uninstall it with:')
+        log.info(`vtex uninstall ${manifest.vendor}.${manifest.name}`)
+        process.exit()
+      })
+    })
     .catch(err => {
       stopSpinner()
       return Promise.reject(err)
