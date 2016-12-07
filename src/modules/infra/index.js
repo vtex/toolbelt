@@ -4,6 +4,7 @@ import semver from 'semver'
 import Table from 'cli-table'
 import log from '../../logger'
 import {getAccount, getWorkspace} from '../../conf'
+import inquirer from 'inquirer'
 
 const http = axios.create({
   baseURL: 'http://router.aws-us-east-1.vtex.io',
@@ -20,12 +21,17 @@ export default {
           long: 'available',
           description: 'List services available to install',
           type: 'bool',
+        }, {
+          short: 'f',
+          long: 'filter',
+          description: 'Only list versions containing this word',
+          type: 'string',
         },
       ],
       handler: async function (name, options) {
         if (options.a) {
           if (name) {
-            await printAvailableServiceVersions(name)
+            await printAvailableServiceVersions(name, options.f)
           } else {
             await printAvailableServices()
           }
@@ -35,12 +41,47 @@ export default {
       },
     },
     install: {
+      requiredArgs: 'name',
       description: 'Install a service',
-      handler: function () {
+      handler: async function (name) {
+        const account = getAccount()
+        const workspace = getWorkspace()
 
+        const availableRes = await http.get(`/_services/${name}`)
+        const [stable, prerelease] = getLastStableAndPrerelease(availableRes.data)
+
+        const installedRes = await http.get(`/${account}/${workspace}/services`)
+        const installedService = installedRes.data.find(s => s.name === name)
+
+        const [newVersion, message] = getVersionAndMessage(name, installedService ? installedService.version : null, stable, prerelease)
+        const {confirm} = await inquirer.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message,
+        })
+
+        if (confirm) {
+          await http.post(`/${account}/${workspace}/services`, {
+            name: name,
+            version: newVersion,
+          })
+          log.info('Installation completed')
+        } else {
+          log.error('User cancelled')
+        }
       },
     },
   },
+}
+
+function getVersionAndMessage (service, currentVersion, latestStable, latestPrerelease) {
+  if (currentVersion) {
+    if (semver.prerelease(currentVersion) !== null) {
+      return [latestPrerelease, `Update ${chalk.bold.cyan(service)} from ${chalk.yellow(currentVersion)} to ${chalk.yellow(latestPrerelease)}?`]
+    }
+    return [latestStable, `Update ${chalk.bold.cyan(service)} from ${chalk.green(currentVersion)} to ${chalk.green(latestStable)}?`]
+  }
+  return [latestStable, `Install ${chalk.bold.cyan(service)} version ${chalk.green(latestStable)}?`]
 }
 
 async function printAvailableServices () {
@@ -56,13 +97,16 @@ async function printAvailableServices () {
   console.log(table.toString())
 }
 
-async function printAvailableServiceVersions (name) {
+async function printAvailableServiceVersions (name, filter) {
   const srv = await http.get('/_services/' + name)
   log.info(`Available versions of ${chalk.bold.cyan(name)} (last 20)`)
   const region = Object.keys(srv.data.versions)[0]
   const versions = srv.data.versions[region]
+    .filter(v => !filter || v.indexOf(filter) >= 0)
     .map(semver.valid)
     .filter(v => v !== null)
+    .sort(semver.compare)
+    .reverse()
     .slice(0, 20)
   for (let v of versions) {
     if (semver.prerelease(v) !== null) {
