@@ -2,6 +2,7 @@ import apps from './apps'
 import auth from './auth'
 import init from './init'
 import setup from './setup'
+import infra from './infra'
 import {help} from 'findhelp'
 import {Promise} from 'bluebird'
 import {dirnameJoin} from '../file'
@@ -15,6 +16,7 @@ export default {
   ...workspace,
   ...setup,
   ...init,
+  ...infra,
   use: {
     module: dirnameJoin('modules/workspace/use'),
   },
