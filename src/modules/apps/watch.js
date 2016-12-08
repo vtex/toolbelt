@@ -122,7 +122,7 @@ export default {
     .then(mapFileObject)
     .then(files => publishApp(files, version))
     .then(() =>
-      installApp(`${manifest.vendor}.${manifest.name}@${manifest.version.replace(/(-.*)?$/, '-dev')}`)
+      installApp(id)
     )
     .tap(() => log.debug('Starting watch...'))
     .then(() => watch(root, sendChanges))
