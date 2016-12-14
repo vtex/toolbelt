@@ -1,14 +1,11 @@
-import axios from 'axios'
+/* @flow */
 import chalk from 'chalk'
 import semver from 'semver'
 import Table from 'cli-table'
 import log from '../../logger'
 import {getAccount, getWorkspace} from '../../conf'
+import {router} from '../../clients'
 import inquirer from 'inquirer'
-
-const http = axios.create({
-  baseURL: 'http://router.aws-us-east-1.vtex.io',
-})
 
 export default {
   infra: {
@@ -52,10 +49,10 @@ export default {
         if (version) {
           message = `Install ${chalk.bold.cyan(service)} version ${chalk.green(version)}?`
         } else {
-          const availableRes = await http.get(`/_services/${name}`)
+          const availableRes = await router().getAvailableVersions(name)
           const [stable, prerelease] = getLastStableAndPrerelease(availableRes.data)
 
-          const installedRes = await http.get(`/${account}/${workspace}/services`)
+          const installedRes = await router().getInstalledServices(account, workspace)
           const installedService = installedRes.data.find(s => s.name === name)
 
           const [v, m] = getVersionAndMessage(name, installedService ? installedService.version : null, stable, prerelease)
@@ -69,10 +66,7 @@ export default {
         })
 
         if (confirm) {
-          await http.post(`/${account}/${workspace}/services`, {
-            name: service,
-            version: `v${version}`,
-          })
+          await router().installService(account, workspace, service, version)
           log.info('Installation completed')
         } else {
           log.error('User cancelled')
@@ -93,7 +87,7 @@ function getVersionAndMessage (service, currentVersion, latestStable, latestPrer
 }
 
 async function printAvailableServices () {
-  const srv = await http.get('/_services')
+  const srv = await router().listAvailableServices()
   const table = new Table({
     head: ['Name', 'Last stable', 'Last prerelease'],
   })
@@ -106,7 +100,7 @@ async function printAvailableServices () {
 }
 
 async function printAvailableServiceVersions (name, filter) {
-  const srv = await http.get('/_services/' + name)
+  const srv = await router().getAvailableVersions(name)
   log.info(`Available versions of ${chalk.bold.cyan(name)} (last 20)`)
   const region = Object.keys(srv.data.versions)[0]
   const versions = srv.data.versions[region]
@@ -128,7 +122,7 @@ async function printAvailableServiceVersions (name, filter) {
 async function printInstalledServices () {
   const account = getAccount()
   const workspace = getWorkspace()
-  const res = await http.get(`/${account}/${workspace}/services`)
+  const res = await router().listInstalledServices(account, workspace)
   const table = new Table({
     head: ['Name', 'Version'],
   })
