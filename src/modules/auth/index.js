@@ -7,4 +7,7 @@ export default {
   logout: {
     module: dirnameJoin('modules/auth/logout'),
   },
+  switch: {
+    module: dirnameJoin('modules/auth/switch'),
+  },
 }

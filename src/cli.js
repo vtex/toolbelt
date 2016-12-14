@@ -10,6 +10,7 @@ import {Promise} from 'bluebird'
 import 'any-promise/register/bluebird'
 import loginCmd from './modules/auth/login'
 import logoutCmd from './modules/auth/logout'
+import switchCmd from './modules/auth/switch'
 import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 
 global.Promise = Promise
@@ -37,7 +38,7 @@ const checkCommandExists = found => {
 }
 
 const checkLogin = found => {
-  const whitelist = [tree, loginCmd, logoutCmd]
+  const whitelist = [tree, loginCmd, logoutCmd, switchCmd]
   if (!getToken() && whitelist.indexOf(found.command) === -1) {
     log.debug('Requesting login before command:', process.argv.slice(2).join(' '))
     return run({command: loginCmd})
