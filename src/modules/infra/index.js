@@ -47,13 +47,21 @@ export default {
         const account = getAccount()
         const workspace = getWorkspace()
 
-        const availableRes = await http.get(`/_services/${name}`)
-        const [stable, prerelease] = getLastStableAndPrerelease(availableRes.data)
+        let message
+        let [service, version] = name.split('@')
+        if (version) {
+          message = `Install ${chalk.bold.cyan(service)} version ${chalk.green(version)}?`
+        } else {
+          const availableRes = await http.get(`/_services/${name}`)
+          const [stable, prerelease] = getLastStableAndPrerelease(availableRes.data)
 
-        const installedRes = await http.get(`/${account}/${workspace}/services`)
-        const installedService = installedRes.data.find(s => s.name === name)
+          const installedRes = await http.get(`/${account}/${workspace}/services`)
+          const installedService = installedRes.data.find(s => s.name === name)
 
-        const [newVersion, message] = getVersionAndMessage(name, installedService ? installedService.version : null, stable, prerelease)
+          const [v, m] = getVersionAndMessage(name, installedService ? installedService.version : null, stable, prerelease)
+          version = v
+          message = m
+        }
         const {confirm} = await inquirer.prompt({
           type: 'confirm',
           name: 'confirm',
@@ -62,8 +70,8 @@ export default {
 
         if (confirm) {
           await http.post(`/${account}/${workspace}/services`, {
-            name: name,
-            version: newVersion,
+            name: service,
+            version: `v${version}`,
           })
           log.info('Installation completed')
         } else {
