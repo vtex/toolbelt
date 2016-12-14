@@ -63,39 +63,6 @@ const sendChanges = (() => {
   }
 })()
 
-const keepAppAlive = () => {
-  let exitPromise
-  return installApp(id)
-  .then(() => {
-    const keepAliveInterval = setInterval(() => {
-      appsClient().updateAppTtl(
-        getAccount(),
-        getWorkspace(),
-        id,
-      ).catch(e => {
-        log.error(`Error on keep alive request, will try again in ${KEEP_ALIVE_INTERVAL / 1000}s`)
-        log.debug(e)
-        if (e.response) {
-          log.debug(e.response.data)
-        }
-      })
-    }, KEEP_ALIVE_INTERVAL)
-    createInterface({
-      input: process.stdin,
-      output: process.stdout,
-    }).on('SIGINT', () => {
-      if (exitPromise) {
-        return
-      }
-      stopSpinner()
-      clearTimeout(keepAliveInterval)
-      log.info('Exiting...')
-      exitPromise = appsClient().uninstallApp(getAccount(), getWorkspace(), id)
-      .finally(() => process.exit())
-    })
-  })
-}
-
 export default {
   description: 'Send the files to the registry and watch for changes',
   handler: () => {
