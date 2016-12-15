@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import log from '../../logger'
-import {client} from './utils'
+import {workspaces} from '../../clients'
 import {getAccount} from '../../conf'
 
 export default {
@@ -8,7 +8,7 @@ export default {
   description: 'Create a new workspace with this name',
   handler: (name) => {
     log.debug('Creating workspace', name)
-    return client().create(getAccount(), name)
+    return workspaces().create(getAccount(), name)
     .then(() => log.info(`Workspace ${chalk.green(name)} created successfully`))
     .catch(err =>
       err.response && err.response.data.code === 'WorkspaceAlreadyExists'

@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import log from '../../logger'
-import {client} from './utils'
+import {workspaces} from '../../clients'
 import inquirer from 'inquirer'
 import {Promise} from 'bluebird'
 import createCmd from './create'
@@ -22,7 +22,7 @@ export default {
   requiredArgs: 'name',
   description: 'Use a workspace to perform operations',
   handler: function (name) {
-    return client().get(getAccount(), name)
+    return workspaces().get(getAccount(), name)
     .catch(err => {
       if (err.response && err.response.data.code === 'WorkspaceNotFound') {
         return promptWorkspaceCreation(name)

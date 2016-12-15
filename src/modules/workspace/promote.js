@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import useCmd from './use'
-import {client} from './utils'
+import {workspaces} from '../../clients'
 import log from '../../logger'
 import inquirer from 'inquirer'
 import {Promise} from 'bluebird'
@@ -19,7 +19,7 @@ export default {
       })
     )
     .then(({confirm}) => confirm || Promise.reject('User cancelled'))
-    .then(() => client().promote(getAccount(), name))
+    .then(() => workspaces().promote(getAccount(), name))
     .tap(() => log.info(`Workspace ${chalk.green(name)} promoted successfully`))
     .then(() => useCmd.handler('master'))
   },

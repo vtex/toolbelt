@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import log from '../../logger'
-import {client} from './utils'
+import {workspaces} from '../../clients'
 import inquirer from 'inquirer'
 import {head, tail} from 'ramda'
 import {Promise} from 'bluebird'
@@ -30,7 +30,7 @@ function deleteWorkspaces (names = [], preConfirm, force) {
 
   return Promise.try(() => preConfirm || promptWorkspaceDeletion(name))
   .then(confirm => confirm || Promise.reject('User cancelled'))
-  .then(() => client().delete(account, name))
+  .then(() => workspaces().delete(account, name))
   .tap(() =>
     log.info(`Workspace ${chalk.green(name)} deleted successfully`)
   )
