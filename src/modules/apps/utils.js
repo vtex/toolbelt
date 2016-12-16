@@ -2,22 +2,15 @@ import chalk from 'chalk'
 import {join} from 'path'
 import {createReadStream} from 'fs'
 import {manifest} from '../../manifest'
-import userAgent from '../../user-agent'
-import {AppsClient, RegistryClient} from '@vtex/api'
-import {getToken, getAccount, getWorkspace} from '../../conf'
-import endpoint from '../../endpoint'
-import timeout from '../../timeout'
+import {appEngine, appRegistry} from '../../clients'
+import {getAccount, getWorkspace} from '../../conf'
 
 export const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
-
-export const appsClient = () => new AppsClient(endpoint('api'), {authToken: getToken(), userAgent, timeout})
-
-export const registryClient = () => new RegistryClient(endpoint('api'), {authToken: getToken(), userAgent, timeout})
 
 export const installApp = (id) => {
   const [vendorAndName, version] = id.split('@')
   const [vendor, name] = vendorAndName.split('.')
-  return appsClient().installApp(
+  return appEngine().installApp(
     getAccount(),
     getWorkspace(),
     {vendor, name, version}
@@ -25,7 +18,7 @@ export const installApp = (id) => {
 }
 
 export const publishApp = (files, tag = undefined) => {
-  return registryClient().publishApp(
+  return appRegistry().publishApp(
     getAccount(),
     files,
     tag

@@ -2,8 +2,7 @@ import chalk from 'chalk'
 import log from '../../logger'
 import inquirer from 'inquirer'
 import validator from 'validator'
-import {VBaseClient} from '@vtex/api'
-import userAgent from '../../user-agent'
+import {workspaces} from '../../clients'
 import {startUserAuth} from '../../auth'
 import {Promise, mapSeries, all} from 'bluebird'
 import {
@@ -15,12 +14,8 @@ import {
   getWorkspace,
   saveWorkspace,
 } from '../../conf'
-import endpoint from '../../endpoint'
-import timeout from '../../timeout'
 
 const [account, login, workspace] = [getAccount(), getLogin(), getWorkspace()]
-
-const client = (authToken) => new VBaseClient(endpoint('vbase'), {authToken, userAgent, timeout})
 
 function promptAccount () {
   const message = 'Please enter a valid account.'
@@ -75,7 +70,7 @@ function promptWorkspaceInput (account, token) {
     })
   )
   .then(({workspace}) => workspace)
-  .tap(workspace => client(token).create(account, workspace))
+  .tap(workspace => workspaces().create(account, workspace))
   .catch(err => {
     if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
       log.error(err.response.data.message)
@@ -88,7 +83,7 @@ function promptWorkspaceInput (account, token) {
 function promptWorkspace (account, token) {
   const newWorkspace = 'Create new workspace...'
   const master = `master ${chalk.red('(read-only)')}`
-  return client(token).list(account)
+  return workspaces().list(account)
   .then(workspaces => {
     const workspaceList = [
       newWorkspace,

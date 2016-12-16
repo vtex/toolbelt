@@ -1,24 +1,24 @@
 import Table from 'cli-table'
 import log from '../../logger'
-import {appsClient} from './utils'
+import {appEngine} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
 
 export default {
   description: 'List your installed VTEX apps',
   handler: () => {
     log.debug('Starting to list apps')
-    return appsClient().listApps(
+    return appEngine().listApps(
       getAccount(),
       getWorkspace()
     )
     .then(res => {
-      if (res.length === 0) {
+      if (res.data.length === 0) {
         return log.info('You have no installed apps')
       }
       const table = new Table({
         head: ['Vendor', 'Name', 'Version'],
       })
-      res.forEach(r => {
+      res.data.forEach(r => {
         table.push([
           r.vendor,
           r.name,

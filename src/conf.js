@@ -19,19 +19,19 @@ export function saveWorkspace (workspace) {
   return conf.set('workspace', workspace)
 }
 
-export function getAccount () {
+export function getAccount (): string {
   return conf.get('account')
 }
 
-export function getLogin () {
+export function getLogin (): string {
   return conf.get('login')
 }
 
-export function getToken () {
+export function getToken (): string {
   return conf.get('token')
 }
 
-export function getWorkspace () {
+export function getWorkspace (): string {
   return conf.get('workspace')
 }
 
