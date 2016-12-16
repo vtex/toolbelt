@@ -15,6 +15,7 @@ export function listLocalFiles (root) {
   return bbGlob('{manifest.json,*/**}', {
     cwd: root,
     nodir: true,
+    follow: true,
     ignore: getIgnoredPaths(root),
   })
   .then(files =>
