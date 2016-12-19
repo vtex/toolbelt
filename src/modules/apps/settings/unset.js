@@ -1,7 +1,8 @@
 import jp from 'jsonpath'
 import log from '../../../logger'
 import {getWorkspace, getAccount} from '../../../conf'
-import {workspaceMasterMessage, appsClient} from '../utils'
+import {appEngine} from '../../../clients'
+import {workspaceMasterMessage} from '../utils'
 
 export default {
   description: 'Unset a value',
@@ -15,7 +16,7 @@ export default {
 
     const patch = {}
     jp.value(patch, '$.' + field, null)
-    const response = await appsClient().patchAppSettings(
+    const response = await appEngine().patchAppSettings(
       getAccount(), getWorkspace(), app, patch)
     console.log(response)
   },

@@ -1,10 +1,8 @@
 /* @flow */
-import Multipart from 'multipart-stream'
 import {createGzip} from 'zlib'
-import {basename} from 'path'
-import mime from 'mime-types'
 import Stream from 'stream'
 import {Client} from '@vtex/api'
+import archiver from 'archiver'
 
 type File = {
   path: string,
@@ -31,7 +29,7 @@ export default class AppRegistryClient extends Client {
   }
 
   /**
-   * Sends an app as a streaming, gzipped multipart/mixed HTTP POST request.
+   * Sends an app as a zip file.
    * @param account
    * @param files An array of {path, contents}, where contents can be a String, a Buffer or a ReadableStream.
    * @return Promise
@@ -44,25 +42,16 @@ export default class AppRegistryClient extends Client {
     if (indexOfManifest === -1) {
       throw new Error('No manifest.json file found in files.')
     }
-    const sortedFiles = files.splice(indexOfManifest, 1).concat(files)
-    const multipart = new Multipart()
-    const boundary = multipart.boundary
-    sortedFiles.forEach(({path, contents}) => multipart.addPart({
-      headers: {
-        'Content-Disposition': `inline; filename="${path}"`,
-        'Content-Type': mime.contentType(basename(path)),
-      },
-      body: contents,
-    }))
-    const gz = createGzip()
+    const archive = archiver('zip')
+    files.forEach(({contents, path}) => archive.append(contents, {name: path}))
+    archive.finalize()
     return this.http({
       method: 'POST',
       url: routes.Registry(account),
-      data: multipart.pipe(gz),
+      data: archive,
       params: tag ? {tag} : {},
       headers: {
-        'Content-Encoding': 'gzip',
-        'Content-Type': `multipart/mixed; boundary=${boundary}`,
+        'Content-Type': 'application/octet-stream',
       },
     })
   }

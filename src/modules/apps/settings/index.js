@@ -1,5 +1,5 @@
 import jp from 'jsonpath'
-import {appsClient} from '../utils'
+import {appEngine} from '../../../clients'
 import {dirnameJoin} from '../../../file'
 import {getWorkspace, getAccount} from '../../../conf'
 
@@ -8,7 +8,7 @@ export default {
   requiredArgs: 'app',
   optionalArgs: 'field',
   handler: async (app, field) => {
-    const response = await appsClient().getAppSettings(
+    const response = await appEngine().getAppSettings(
       getAccount(), getWorkspace(), app)
     if (field === null) {
       console.log(response)

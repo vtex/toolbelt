@@ -17,9 +17,9 @@ import {
   publishApp,
   installApp,
   mapFileObject,
-  registryClient,
   workspaceMasterMessage,
 } from './utils'
+import {appRegistry} from '../../clients'
 
 const root = process.cwd()
 
@@ -36,7 +36,7 @@ const sendChanges = (() => {
       setSpinnerText('Sending changes')
       startSpinner()
       timeStart()
-      return registryClient().publishAppPatch(
+      return appRegistry().publishAppPatch(
         getAccount(),
         manifest.vendor,
         manifest.name,

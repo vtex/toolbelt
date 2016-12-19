@@ -4,9 +4,10 @@ import {head, tail} from 'ramda'
 import courier from '../../courier'
 import {createInterface} from 'readline'
 import {clearAbove} from '../../terminal'
-import {workspaceMasterMessage, appsClient} from './utils'
+import {workspaceMasterMessage} from './utils'
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {manifest, vendorPattern, namePattern} from '../../manifest'
+import {appEngine} from '../../clients'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 
 const ARGS_START_INDEX = 2
@@ -55,7 +56,7 @@ function uninstallApps (apps, preConfirm) {
   }
   startSpinner()
 
-  return appsClient().uninstallApp(
+  return appEngine().uninstallApp(
     getAccount(),
     getWorkspace(),
     app
