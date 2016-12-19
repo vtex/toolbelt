@@ -65,7 +65,7 @@
     "pad": "^1.0.0",
     "ramda": "^0.22.0",
     "strip-ansi": "^3.0.1",
-    "update-notifier": "^0.7.0",
+    "update-notifier": "^1.0.3",
     "validator": "^6.0.0",
     "winston": "^2.2.0"
   },
