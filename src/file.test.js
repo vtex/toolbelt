@@ -5,7 +5,7 @@ import {
   createChanges,
 } from './file'
 
-const FIXTURES_PATH = '../test/fixtures/file-test'
+const FIXTURES_PATH = './test/fixtures/file-test'
 const root = path.resolve(FIXTURES_PATH)
 
 test('list files in a directory ignoring everything except the folders and the manifest file', t => {
