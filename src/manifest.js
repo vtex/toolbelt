@@ -15,7 +15,7 @@ export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
 
 const R_OK = fs.constants ? fs.constants.R_OK : fs.R_OK // Node v6 breaking change
 
-const isManifestReadable = () => {
+export const isManifestReadable = () => {
   try {
     fs.accessSync(manifestPath, R_OK) // Throws if check fails
     return true
