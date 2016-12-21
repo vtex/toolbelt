@@ -76,7 +76,7 @@
     "ava": "^0.17.0",
     "babel-cli": "^6.16.0",
     "babel-core": "^6.16.0",
-    "babel-plugin-transform-object-rest-spread": "^6.16.0",
+    "babel-plugin-transform-object-rest-spread": "^6.20.0",
     "babel-preset-es2015-node4": "^2.1.0",
     "babel-register": "^6.16.3",
     "coveralls": "^2.11.9",
