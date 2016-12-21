@@ -8,12 +8,10 @@ import {getAccount, getWorkspace} from '../../conf'
 export const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
 export const installApp = (id) => {
-  const [vendorAndName, version] = id.split('@')
-  const [vendor, name] = vendorAndName.split('.')
   return appEngine().installApp(
     getAccount(),
     getWorkspace(),
-    {vendor, name, version}
+    {id}
   )
 }
 
