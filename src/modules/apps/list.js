@@ -1,13 +1,13 @@
 import Table from 'cli-table'
 import log from '../../logger'
-import {appEngine} from '../../clients'
+import {apps} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
 
 export default {
   description: 'List your installed VTEX apps',
   handler: () => {
     log.debug('Starting to list apps')
-    return appEngine().listApps(
+    return apps().listApps(
       getAccount(),
       getWorkspace()
     )

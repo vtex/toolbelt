@@ -7,7 +7,7 @@ import {clearAbove} from '../../terminal'
 import {workspaceMasterMessage} from './utils'
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {manifest, vendorPattern, namePattern} from '../../manifest'
-import {appEngine} from '../../clients'
+import {apps as client} from '../../clients'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 
 const ARGS_START_INDEX = 2
@@ -56,7 +56,7 @@ function uninstallApps (apps, preConfirm) {
   }
   startSpinner()
 
-  return appEngine().uninstallApp(
+  return client().uninstallApp(
     getAccount(),
     getWorkspace(),
     app

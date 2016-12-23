@@ -2,13 +2,13 @@ import chalk from 'chalk'
 import {join} from 'path'
 import {createReadStream} from 'fs'
 import {manifest} from '../../manifest'
-import {appEngine, appRegistry} from '../../clients'
+import {apps, registry} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
 
 export const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
 export const installApp = (id) => {
-  return appEngine().installApp(
+  return apps().installApp(
     getAccount(),
     getWorkspace(),
     {id}
@@ -16,7 +16,7 @@ export const installApp = (id) => {
 }
 
 export const publishApp = (files, tag = undefined) => {
-  return appRegistry().publishApp(
+  return registry().publishApp(
     getAccount(),
     files,
     tag

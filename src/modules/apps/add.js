@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import log from '../../logger'
 import semverDiff from 'semver-diff'
 import {readFile, writeFile} from 'fs'
-import {registryClient} from './utils'
+import {registry} from '../../clients'
 import latestVersion from 'latest-version'
 import {Promise, promisify} from 'bluebird'
 import {getAccount, getWorkspace} from '../../conf'
@@ -44,7 +44,7 @@ function pickLatestVersion (versions) {
 
 function appsLatestVersion (app) {
   const [vendor, name] = app.split('.')
-  return registryClient()
+  return registry()
   .listVersionsByApp(getAccount(), getWorkspace(), vendor, name)
   .then(pickLatestVersion)
   .then(wildVersionByMajor)
