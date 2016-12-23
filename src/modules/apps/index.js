@@ -1,6 +1,9 @@
 import {dirnameJoin} from '../../file'
 
 export default {
+  add: {
+    module: dirnameJoin('modules/apps/add'),
+  },
   watch: {
     module: dirnameJoin('modules/apps/watch'),
   },
