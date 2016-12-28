@@ -1,6 +1,12 @@
 import {dirnameJoin} from '../../file'
 
 export default {
+  link: {
+    module: dirnameJoin('modules/apps/link'),
+  },
+  unlink: {
+    module: dirnameJoin('modules/apps/unlink'),
+  },
   add: {
     module: dirnameJoin('modules/apps/add'),
   },

@@ -33,7 +33,7 @@ export default {
     .finally(() => stopSpinner())
     .then(() => log.info(`Published app ${id} successfully`))
     .catch(err =>
-      err.response && err.response.data.code === 'app_version_already_exists'
+      err.response && err.response.data.code === 'duplicate_publication'
         ? log.error(`Version ${manifest.version} already published!`)
         : Promise.reject(err)
     )

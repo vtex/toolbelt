@@ -39,19 +39,14 @@ export function normalizePath (filePath) {
   return path.normalize(filePath).replace(/\\/g, '/')
 }
 
-export function createSaveChange (root, file) {
-  return {
-    content: fs.readFileSync(path.resolve(root, file)).toString('base64'),
-    encoding: 'base64',
-  }
-}
-
-export function createChanges (root, batch) {
-  return Object.keys(batch).map(file => {
-    const path = normalizePath(file)
-    return batch[file] === 'save'
-      ? { path: path, action: 'save', ...createSaveChange(root, file) }
-      : { path: path, action: 'remove' }
+export const createChanges = (changes) => {
+  return changes.map(({path: filePath, action}) => {
+    return {
+      path: filePath.replace('\\', '/'),
+      content: action === 'save'
+        ? fs.readFileSync(path.resolve(process.cwd(), filePath)).toString('base64')
+        : null,
+    }
   })
 }
 
@@ -94,6 +89,7 @@ export function watch (root, sendChanges) {
     watcher
     .on('add', (file, {size}) => size > 0 ? sendSaveChanges(root, file, sendChanges) : null)
     .on('change', (file, {size}) => {
+      console.log(size)
       return size > 0
         ? sendSaveChanges(root, file, sendChanges)
         : sendRemoveChanges(root, file, sendChanges)
@@ -105,9 +101,9 @@ export function watch (root, sendChanges) {
 }
 
 export function sendSaveChanges (root, file, sendChanges) {
-  return sendChanges(createChanges(root, { [file]: 'save' }))
+  return sendChanges(createChanges([{ path: file, action: 'save' }]))
 }
 
 export function sendRemoveChanges (root, file, sendChanges) {
-  return sendChanges(createChanges(root, { [file]: 'remove' }))
+  return sendChanges(createChanges([{ path: file, action: 'remove' }]))
 }
