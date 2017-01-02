@@ -12,7 +12,11 @@ import {
   wildVersionPattern,
 } from '../../manifest'
 
+let isSuccesful = true
 const ARGS_START_INDEX = 2
+const invalidAppMessage = 'Invalid app format, please use <vendor>.<name>@<version>'
+
+class InterruptionException extends Error {}
 
 function courierCallback (apps) {
   let counter = 0
@@ -30,7 +34,9 @@ function courierCallback (apps) {
 function courierAction (apps) {
   return () => {
     stopSpinnerForced()
-    apps.forEach(app => log.info(`Installed app ${app} successfully`))
+    if (isSuccesful) {
+      apps.forEach(app => log.info(`Installed app ${app} successfully`))
+    }
     process.exit()
   }
 }
@@ -39,18 +45,17 @@ function installApps (apps) {
   const app = head(apps)
   const decApps = tail(apps)
   log.debug('Starting to install app', app)
-  const appRegex = new RegExp(`^${vendorPattern}.${namePattern}@${wildVersionPattern}$`)
-  if (!appRegex.test(app)) {
-    log.error('Invalid app format, please use <vendor>.<name>@<version>')
-    return Promise.resolve()
-  }
+  const appRegex = new RegExp(`^${vendorPattern}\\.${namePattern}@${wildVersionPattern}$`)
+  let appPromise = appRegex.test(app)
+    ? installApp(app)
+    : Promise.reject(new InterruptionException(invalidAppMessage))
 
   if (log.level === 'info') {
     setSpinnerText(`Installing app ${app}`)
   }
   startSpinner()
 
-  return installApp(app)
+  return appPromise
   .then(() =>
     decApps.length > 0
       ? installApps(decApps)
@@ -61,7 +66,7 @@ function installApps (apps) {
     if (err.statusCode === 409) {
       return log.error(`App ${app} already installed`)
     }
-    if (apps.length > 1 && !err.toolbeltWarning) {
+    if (apps.length > 0 && !err.toolbeltWarning) {
       log.warn(`The following apps were not installed: ${apps.join(', ')}`)
       err.toolbeltWarning = true
     }
@@ -91,5 +96,13 @@ export default {
     })
     log.debug('Installing app(s)', apps)
     return installApps(apps)
+    .catch(err => {
+      isSuccesful = false
+      if (err instanceof InterruptionException) {
+        log.error(err.message)
+        return Promise.resolve()
+      }
+      return Promise.reject(err)
+    })
   },
 }

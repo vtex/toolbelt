@@ -9,7 +9,9 @@ import {getWorkspace, getAccount, getToken} from '../../conf'
 import {manifest, vendorPattern, namePattern} from '../../manifest'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 
+let isSuccesful = true
 const ARGS_START_INDEX = 2
+const invalidAppMessage = 'Invalid app format, please use <vendor>.<name>'
 const promptAppUninstall = (apps) => {
   return inquirer.prompt({
     type: 'confirm',
@@ -18,6 +20,8 @@ const promptAppUninstall = (apps) => {
   })
   .then(({confirm}) => confirm)
 }
+
+class InterruptionException extends Error {}
 
 function courierCallback (apps) {
   let counter = 0
@@ -35,7 +39,9 @@ function courierCallback (apps) {
 function courierAction (apps) {
   return () => {
     stopSpinnerForced()
-    apps.forEach(app => log.info(`Uninstalled app ${app} successfully`))
+    if (isSuccesful) {
+      apps.forEach(app => log.info(`Uninstalled app ${app} successfully`))
+    }
     process.exit()
   }
 }
@@ -44,22 +50,17 @@ function uninstallApps (apps, preConfirm) {
   const app = head(apps)
   const decApp = tail(apps)
   log.debug('Starting to uninstall app', app)
-  const appRegex = new RegExp(`^${vendorPattern}.${namePattern}$`)
-  if (!appRegex.test(app)) {
-    log.error('Invalid app format, please use <vendor>.<name>')
-    return Promise.resolve()
-  }
+  const appRegex = new RegExp(`^${vendorPattern}\\.${namePattern}$`)
+  let appPromise = appRegex.test(app)
+    ? appsClient().uninstallApp(getAccount(), getWorkspace(), app)
+    : Promise.reject(new InterruptionException(invalidAppMessage))
 
   if (log.level === 'info') {
     setSpinnerText(`Uninstalling app ${app}`)
   }
   startSpinner()
 
-  return appsClient().uninstallApp(
-    getAccount(),
-    getWorkspace(),
-    app
-  )
+  return appPromise
   .then(() =>
     decApp.length > 0
       ? uninstallApps(decApp, preConfirm)
@@ -70,7 +71,7 @@ function uninstallApps (apps, preConfirm) {
     if (err.statusCode === 409) {
       return log.error(`App ${app} not installed`)
     }
-    if (apps.length > 1 && !err.toolbeltWarning) {
+    if (apps.length > 0 && !err.toolbeltWarning) {
       log.warn(`The following apps were not uninstalled: ${apps.join(', ')}`)
       err.toolbeltWarning = true
     }
@@ -114,5 +115,13 @@ export default {
     return Promise.try(() => preConfirm || promptAppUninstall(apps))
     .then(confirm => confirm || Promise.reject('User cancelled'))
     .then(() => uninstallApps(apps, preConfirm))
+    .catch(err => {
+      isSuccesful = false
+      if (err instanceof InterruptionException) {
+        log.error(err.message)
+        return Promise.resolve()
+      }
+      return Promise.reject(err)
+    })
   },
 }
