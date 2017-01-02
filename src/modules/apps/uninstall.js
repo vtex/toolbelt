@@ -81,7 +81,7 @@ function uninstallApps (apps, preConfirm) {
 
 export default {
   optionalArgs: 'app',
-  description: 'Uninstall an app on the current directory or a specified one',
+  description: 'Uninstall an app on the current directory or a specified set of apps',
   options: [
     {
       short: 'y',

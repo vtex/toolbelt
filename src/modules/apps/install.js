@@ -76,7 +76,7 @@ function installApps (apps) {
 
 export default {
   optionalArgs: 'app',
-  description: 'Install an app on the current directory or a specified one',
+  description: 'Install an app on the current directory or a specified set of apps',
   handler: (optionalApp, options) => {
     const workspace = getWorkspace()
     if (workspace === 'master') {

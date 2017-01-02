@@ -115,7 +115,7 @@ function addApps (apps) {
 
 export default {
   requiredArgs: 'app',
-  description: 'Add an app to the manifest dependencies',
+  description: 'Add a set of apps to the manifest dependencies',
   handler: (app, options) => {
     const apps = [app, ...options._.slice(ARGS_START_INDEX)]
     log.debug('Adding app(s)', apps)
