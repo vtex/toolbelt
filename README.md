@@ -42,13 +42,16 @@ $ vtex
 
   Commands:
 
-    login                  Log into a VTEX account
-    logout                 Logout of the current VTEX account
-    list [query]           List your installed VTEX apps
-    watch [log-level]      Send the files to the registry and watch for changes
-    install <app>          Install the specified app
-    uninstall <app>        Uninstall the specified app
-    publish                Publish this app
+    login                 Log into a VTEX account
+    logout                Logout of the current VTEX account
+    switch <account>      Switch to another VTEX account
+    add <app>             Add a set of apps to the manifest dependencies
+    watch                 Send the files to the registry and watch for changes
+    publish               Publish this app
+    install [app]         Install an app on the current directory or a specified set of apps
+    uninstall [app]       Uninstall an app on the current directory or a specified set of apps
+    list                  List your installed VTEX apps
+    use <name>            Use a workspace to perform operations
 
     settings <app> [field]                     Get app settings
     settings set <app> <field> <value>         Set a value
@@ -56,11 +59,15 @@ $ vtex
 
     workspace list               List workspaces on this account
     workspace create <name>      Create a new workspace with this name
-    workspace delete <name>      Delete this workspace
-    workspace use <name>         Use a workspace to perform operations
+    workspace delete <name>      Delete a single or various workspaces
     workspace promote <name>     Promote this workspace to master
+    workspace use <name>         Use a workspace to perform operations
+    workspace reset [name]       Delete and create a workspace
 
     setup eslint      Setup a local eslint environment
+
+    init             Create basic files and folders for your VTEX app
+    init render      Create a new render bootstrap project
 
   Options:
 
@@ -94,7 +101,7 @@ Or, similarly, if you are a _zsh_ user:
 echo "source $(npm get prefix)/node_modules/vtex/scripts/prompt.bash" >> .zshrc
 ```
 
-Disclaimer: _fish_ is not yet supported.
+If you use _fish_, you may want to check out our [`vtex-fish` repo](https://github.com/vtex/vtex-fish)
 
 ---
 
@@ -104,11 +111,12 @@ Disclaimer: _fish_ is not yet supported.
 
 You can use `vtex login` to login with your VTEX ID credentials or `vtex logout` if you're already logged in and want to change credentials.
 
-When logging in, you will be asked for **3** things:
+When logging in, you will be asked for **4** things:
 
-- The `account` name of the store you wish to work on
 - Your VTEX ID `e-mail`
+- The `account` name of the store you wish to work on
 - Your VTEX ID `password`
+- The workspace you want to work on
 
 If you wish to work on another `account`, logout and login again with that `account`.
 
@@ -128,7 +136,6 @@ Toolbelt will upload all your app files to the developer environment, print an U
 ## How do I ignore specific files or directories in my app so that they are not uploaded?
 
 Create a `.vtexignore` file containing, on each line, paths you wish to ignore.
-If no `.vtexignore` is found, your [.gitignore](http://git-scm.com/docs/gitignore) file is used instead.
 
 
 ## How do I publish my App to the VTEX App Store?
