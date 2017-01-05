@@ -39,7 +39,7 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "@vtex/api": "^0.12.4",
+    "@vtex/api": "^0.12.5",
     "any-promise": "^1.3.0",
     "archiver": "^1.3.0",
     "babel-eslint": "^7.0.0",
