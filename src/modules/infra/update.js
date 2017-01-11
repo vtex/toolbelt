@@ -4,6 +4,7 @@ import {getAccount, getWorkspace} from '../../conf'
 import {router} from '../../clients'
 import inquirer from 'inquirer'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
+import {getTag} from './util'
 import pad from 'pad'
 
 export default {
@@ -62,9 +63,4 @@ export default {
     stopSpinner()
     console.log('All updates installed')
   },
-}
-
-function getTag (version: string): string {
-  const segments = semver.prerelease(version)
-  return segments ? segments[0] : null
 }

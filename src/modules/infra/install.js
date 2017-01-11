@@ -2,61 +2,136 @@ import semver from 'semver'
 import chalk from 'chalk'
 import log from '../../logger'
 import {getAccount, getWorkspace} from '../../conf'
+import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {router} from '../../clients'
 import inquirer from 'inquirer'
-import {getLastStableAndPrerelease} from './util'
-
-const cl = {
-  service: chalk.bold.cyan,
-  pre: chalk.yellow,
-  stable: chalk.green,
-}
+import {getTag} from './util'
 
 export default {
   requiredArgs: 'name',
   description: 'Install a service',
   handler: async function (name) {
-    const [account, workspace] = [getAccount(), getWorkspace()]
-    const [service, version] = name.split('@')
-    if (version) {
-      install(account, workspace, service, version,
-        `Install ${cl.service(service)} version ${cl.stable(version)}?`)
-    } else {
-      const availableRes = await router().getAvailableVersions(name)
-      const [stable, prerelease] = getLastStableAndPrerelease(availableRes)
+    try {
+      const [account, workspace] = [getAccount(), getWorkspace()]
+      const [service, suffix] = name.split('@')
 
-      const installedRes = await router().listInstalledServices(account, workspace)
-      const installedService = installedRes.find(s => s.name === name)
+      setSpinnerText('Getting versions')
+      startSpinner()
+      const [available, installed] = await Promise.all([
+        router().getAvailableVersions(service).then(data => data.versions['aws-us-east-1']),
+        router().listInstalledServices(account, workspace)
+          .then(data => data.find(s => s.name === service))
+          .then(s => s ? s.version : s),
+      ])
+      stopSpinner()
 
-      const [version, message] = getVersionAndMessage(
-        name, installedService ? installedService.version : null, stable, prerelease)
-      install(account, workspace, service, version, message)
+      const newVersion = getNewVersion(service, suffix, installed, available)
+      if (!newVersion) {
+        log.error(`No suitable version for ${name}`)
+        return
+      }
+
+      if (newVersion === installed) {
+        console.log(`${service}  ${chalk.yellow(installed)}`)
+        console.log()
+        log.info('Service is up to date.')
+        return
+      }
+
+      if (installed) {
+        const [from, to] = versionDiff(installed, newVersion)
+        console.log(`${service}  ${from} -> ${to}`)
+      } else {
+        console.log(`${service}  ${chalk.green(newVersion)}`)
+      }
+
+      console.log()
+      const {confirm} = await inquirer.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Apply update?',
+      })
+
+      if (!confirm) {
+        return
+      }
+
+      await router().installService(account, workspace, service, newVersion)
+      log.info('Installation complete')
+    }finally {
+      stopSpinner()
     }
   },
 }
 
-async function install (account: string, workspace: string, service: string, version: string, message: string) {
-  const {confirm} = await inquirer.prompt({
-    type: 'confirm',
-    name: 'confirm',
-    message,
-  })
-
-  if (confirm) {
-    version = version.indexOf('v') === 0 ? version : 'v' + version
-    await router().installService(account, workspace, service, version)
-    log.info('Installation completed')
-  } else {
-    log.error('User cancelled')
+function getNewVersion (service: string, suffix: string, installed: string, available: string[]): string {
+  if (semver.validRange(suffix, true)) {
+    return findVersion(available, v => semver.satisfies(v, suffix, true))
   }
+
+  if (suffix) {
+    if (semver.valid(suffix)) {
+      if (!available.find(v => v === suffix)) {
+        return undefined
+      }
+      return suffix
+    }
+
+    if (suffix === 'stable') {
+      suffix = null
+    }
+    return findVersion(available, v => getTag(v) === null)
+  }
+
+  if (!installed) {
+    return findVersion(available, v => semver.prerelease(v) === null)
+  }
+
+  const tag = getTag(installed)
+  if (!tag) {
+    return findVersion(available, v => semver.prerelease(v) === null)
+  }
+
+  return findVersion(available, v => getTag(v) === tag)
 }
 
-function getVersionAndMessage (service, currentVersion, latestStable, latestPrerelease) {
-  if (currentVersion) {
-    if (semver.prerelease(currentVersion) !== null) {
-      return [latestPrerelease, `Update ${cl.service(service)} from ${cl.pre(currentVersion)} to ${cl.pre(latestPrerelease)}?`]
+function findVersion (pool: string[], predicate: (version: string) => boolean): string {
+  return pool.filter(v => semver.valid(v)).filter(predicate).sort(semver.rcompare).shift()
+}
+
+function versionDiff (a, b) {
+  a = semver(a)
+  b = semver(b)
+
+  let [aMain, bMain] = diff([a.major, a.minor, a.patch], [b.major, b.minor, b.patch])
+  let [aPre, bPre] = diff(a.prerelease, b.prerelease)
+
+  return [
+    stitch(aMain, aPre),
+    stitch(bMain, bPre),
+  ]
+}
+
+const stitch = (main, prerelease) =>
+  prerelease.length > 0 ? main + '-' + prerelease : main
+
+const diff = (a, b) => {
+  let from = []
+  let to = []
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    let ai = a[i]
+    let bi = b[i]
+    if (ai !== bi) {
+      if (ai !== undefined) {
+        from.push(chalk.red(ai))
+      }
+      if (bi !== undefined) {
+        to.push(chalk.green(bi))
+      }
+    } else {
+      from.push(ai)
+      to.push(bi)
     }
-    return [latestStable, `Update ${cl.service(service)} from ${cl.stable(currentVersion)} to ${cl.stable(latestStable)}?`]
   }
-  return [latestStable, `Install ${cl.service(service)} version ${cl.stable(latestStable)}?`]
+  return [from.join('.'), to.join('.')]
 }

@@ -11,3 +11,8 @@ export function getLastStableAndPrerelease (service) {
   const stable = versions.find(v => semver.prerelease(v) === null) || ''
   return [stable, prerelease]
 }
+
+export function getTag (version: string): string {
+  const segments = semver.prerelease(version)
+  return segments ? segments[0] : null
+}
