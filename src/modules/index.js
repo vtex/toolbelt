@@ -26,6 +26,11 @@ export default {
       'long': 'help',
       'description': 'show help information',
       'type': 'boolean',
+    }, {
+      'short': 'w',
+      'long': 'workspace',
+      'description': 'use a different workspace',
+      'type': 'string',
     },
   ],
   handler: function (options) {

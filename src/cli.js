@@ -5,7 +5,7 @@ import tree from './modules'
 import {without} from 'ramda'
 import notify from './update'
 import minimist from 'minimist'
-import {getToken} from './conf'
+import {getToken, override} from './conf'
 import {Promise} from 'bluebird'
 import 'any-promise/register/bluebird'
 import loginCmd from './modules/auth/login'
@@ -50,6 +50,11 @@ const main = () => {
   .tap(checkCommandExists)
   .tap(checkLogin)
   .then(command => {
+    const args = command.args[command.args.length - 1]
+    if (args.w || args.workspace) {
+      override('workspace', args.w || args.workspace)
+    }
+
     const maybePromise = run(command)
     if (!maybePromise || !maybePromise.then) {
       log.warn('Command handlers should return a Promise.')
