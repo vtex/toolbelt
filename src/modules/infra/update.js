@@ -4,7 +4,7 @@ import {getAccount, getWorkspace} from '../../conf'
 import {router} from '../../clients'
 import inquirer from 'inquirer'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
-import {getTag} from './util'
+import {getTag, diffVersions} from './util'
 import pad from 'pad'
 
 export default {
@@ -21,7 +21,7 @@ export default {
     stopSpinner()
 
     const updates = {}
-    const colSize = Math.max(...installedRes.map(i => i.name.length)) + 2
+    const colSize = Math.max(...installedRes.map(i => i.name.length))
     installedRes.forEach(installed => {
       const tag = getTag(installed.version)
 
@@ -29,15 +29,16 @@ export default {
         .filter(v => getTag(v) === tag).sort(semver.rcompare)[0]
       const current = installed.version
 
-      const fromTo = current === latest
-        ? chalk.yellow(current)
-        : chalk.white.bgRed(current) + ' ' + chalk.white.bgGreen(latest)
-
       if (current !== latest) {
         updates[installed.name] = latest
       }
 
-      console.log(pad(installed.name, colSize) + fromTo)
+      if (current === latest) {
+        console.log(`${pad(installed.name, colSize)}  ${chalk.yellow(current)}`)
+      } else {
+        const [from, to] = diffVersions(current, latest)
+        console.log(`${pad(installed.name, colSize)}  ${from} ${chalk.gray('->')} ${to}`)
+      }
     })
 
     console.log('')

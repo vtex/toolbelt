@@ -5,7 +5,7 @@ import {getAccount, getWorkspace} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {router} from '../../clients'
 import inquirer from 'inquirer'
-import {getTag} from './util'
+import {getTag, diffVersions} from './util'
 
 export default {
   requiredArgs: 'name',
@@ -39,8 +39,8 @@ export default {
       }
 
       if (installed) {
-        const [from, to] = versionDiff(installed, newVersion)
-        console.log(`${service}  ${from} -> ${to}`)
+        const [from, to] = diffVersions(installed, newVersion)
+        console.log(`${service}  ${from} ${chalk.gray('->')} ${to}`)
       } else {
         console.log(`${service}  ${chalk.green(newVersion)}`)
       }
@@ -97,41 +97,4 @@ function getNewVersion (service: string, suffix: string, installed: string, avai
 
 function findVersion (pool: string[], predicate: (version: string) => boolean): string {
   return pool.filter(v => semver.valid(v)).filter(predicate).sort(semver.rcompare).shift()
-}
-
-function versionDiff (a, b) {
-  a = semver(a)
-  b = semver(b)
-
-  let [aMain, bMain] = diff([a.major, a.minor, a.patch], [b.major, b.minor, b.patch])
-  let [aPre, bPre] = diff(a.prerelease, b.prerelease)
-
-  return [
-    stitch(aMain, aPre),
-    stitch(bMain, bPre),
-  ]
-}
-
-const stitch = (main, prerelease) =>
-  prerelease.length > 0 ? main + '-' + prerelease : main
-
-const diff = (a, b) => {
-  let from = []
-  let to = []
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    let ai = a[i]
-    let bi = b[i]
-    if (ai !== bi) {
-      if (ai !== undefined) {
-        from.push(chalk.red(ai))
-      }
-      if (bi !== undefined) {
-        to.push(chalk.green(bi))
-      }
-    } else {
-      from.push(ai)
-      to.push(bi)
-    }
-  }
-  return [from.join('.'), to.join('.')]
 }
