@@ -8,5 +8,8 @@ export default {
     install: {
       module: dirnameJoin('modules/infra/install'),
     },
+    update: {
+      module: dirnameJoin('modules/infra/update'),
+    },
   },
 }
