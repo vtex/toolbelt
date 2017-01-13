@@ -39,7 +39,7 @@ export function normalizePath (filePath) {
   return path.normalize(filePath).replace(/\\/g, '/')
 }
 
-export const createChanges = (changes) => {
+export const addChangeContent = (changes) => {
   return changes.map(({path: filePath, action}) => {
     return {
       path: filePath.replace('\\', '/'),
@@ -101,9 +101,9 @@ export function watch (root, sendChanges) {
 }
 
 export function sendSaveChanges (root, file, sendChanges) {
-  return sendChanges(createChanges([{ path: file, action: 'save' }]))
+  return sendChanges(addChangeContent([{ path: file, action: 'save' }]))
 }
 
 export function sendRemoveChanges (root, file, sendChanges) {
-  return sendChanges(createChanges([{ path: file, action: 'remove' }]))
+  return sendChanges(addChangeContent([{ path: file, action: 'remove' }]))
 }

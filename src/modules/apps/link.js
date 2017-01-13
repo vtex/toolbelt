@@ -11,7 +11,7 @@ import {createInterface} from 'readline'
 import {allocateChangeLog} from '../../apps'
 import {timeStart, timeStop} from '../../time'
 import {getWorkspaceURL} from '../../workspace'
-import {watch, listLocalFiles, createChanges} from '../../file'
+import {watch, listLocalFiles, addChangeContent} from '../../file'
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {
@@ -33,22 +33,25 @@ const mapFilesToChanges = (files) => {
 const sendChanges = (() => {
   let queue = []
   const publishPatch = debounce(
-    (account, workspace, data) => {
-      setSpinnerText('Sending changes')
-      startSpinner()
+    async (account, workspace, data) => {
       timeStart()
 
       const locator = toMajorLocator(data.vendor, data.name, data.version)
 
       console.log(queue)
-      return appEngineClient().link(account, workspace, locator, queue)
-      .then(() => allocateChangeLog(queue, moment().format('HH:mm:ss')))
-      .then(() => { queue = [] })
-      .catch(err => {
-        timeStop()
+
+      try {
+        setSpinnerText(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
+        startSpinner()
+        await appEngineClient().link(account, workspace, locator, queue)
         stopSpinner()
+
+        allocateChangeLog(queue, moment().format('HH:mm:ss'))
+        queue = []
+      } catch (err) {
+        timeStop()
         throw err
-      })
+      }
     },
     200
   )
@@ -63,7 +66,7 @@ const sendChanges = (() => {
 
 export default {
   description: 'Send the files to the registry and watch for changes',
-  handler: () => {
+  handler: async () => {
     const workspace = getWorkspace()
     if (workspace === 'master') {
       log.error(workspaceMasterMessage)
@@ -76,39 +79,32 @@ export default {
       chalk.green('Your URL:'),
       chalk.blue(getWorkspaceURL(account, workspace))
     )
-    courier.listen(account, workspace, getToken())
-    if (log.level === 'info') {
-      setSpinnerText('Sending files')
-    }
-    startSpinner()
 
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
-    return listLocalFiles(root)
-    .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
-    .then(mapFilesToChanges)
-    .then(createChanges)
-    .then((changes) => appEngineClient().link(
+    const paths = await listLocalFiles(root)
+    log.debug('Sending files:', '\n' + paths.join('\n'))
+    const changes = addChangeContent(mapFilesToChanges(paths))
+
+    setSpinnerText(`Sending ${changes.length} file` + (changes.length > 1 ? 's' : ''))
+    startSpinner()
+    await appEngineClient().link(
       account,
       workspace,
       majorLocator,
       changes,
-    ))
-    .tap(() => log.debug('Starting link...'))
-    .then(() => watch(root, sendChanges))
-    .then(() => {
-      createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      }).on('SIGINT', () => {
-        stopSpinner()
-        log.info('Your app is still in development mode.')
-        log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
-        process.exit()
-      })
-    })
-    .catch(err => {
-      stopSpinner()
-      return Promise.reject(err)
+    )
+    stopSpinner()
+
+    courier.log(account, workspace, log.level)
+
+    await watch(root, sendChanges)
+    createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    }).on('SIGINT', () => {
+      log.info('Your app is still in development mode.')
+      log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
+      process.exit()
     })
   },
 }

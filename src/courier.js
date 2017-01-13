@@ -13,6 +13,7 @@ import {__, any, contains, map} from 'ramda'
 import {setSpinnerText, stopSpinner, isSpinnerActive} from './spinner'
 
 const courierHost = endpoint('courier')
+const colossusHost = endpoint('colossus')
 
 const levelFormat = {
   debug: log.debug,
@@ -127,7 +128,26 @@ const listen = (account, workspace, authToken, {timeout: {duration, action}, ori
   }
 }
 
+const consumeAppLogs = (account: string, workspace: string, level: string) => {
+  const es = new EventSource(`${colossusHost}/${account}/${workspace}/logs?level=${level}`)
+
+  es.onopen = () => {
+    log.debug(`logs: connected with level ${level}`)
+  }
+
+  es.addEventListener('message', (msg) => {
+    const {message, level} = JSON.parse(msg.data)
+    const color = level === 'error' ? chalk.red : chalk.blue
+    console.log(`${color('remote')}: ${message}`)
+  })
+
+  es.onerror = (err) => {
+    log.error(`Connection to log server has failed with status ${err.status}`)
+  }
+}
+
 export default {
   logLevels: Object.keys(levelFormat),
   listen: listen,
+  log: consumeAppLogs,
 }
