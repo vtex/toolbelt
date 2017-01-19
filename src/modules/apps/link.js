@@ -12,7 +12,7 @@ import {allocateChangeLog} from '../../apps'
 import {timeStart, timeStop} from '../../time'
 import {getWorkspaceURL} from '../../workspace'
 import {watch, listLocalFiles, addChangeContent} from '../../file'
-import {getWorkspace, getAccount, getToken} from '../../conf'
+import {getWorkspace, getAccount} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {
   id,
@@ -38,13 +38,9 @@ const sendChanges = (() => {
 
       const locator = toMajorLocator(data.vendor, data.name, data.version)
 
-      console.log(queue)
-
       try {
-        setSpinnerText(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
-        startSpinner()
+        log.info(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
         await appEngineClient().link(account, workspace, locator, queue)
-        stopSpinner()
 
         allocateChangeLog(queue, moment().format('HH:mm:ss'))
         queue = []

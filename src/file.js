@@ -89,7 +89,6 @@ export function watch (root, sendChanges) {
     watcher
     .on('add', (file, {size}) => size > 0 ? sendSaveChanges(root, file, sendChanges) : null)
     .on('change', (file, {size}) => {
-      console.log(size)
       return size > 0
         ? sendSaveChanges(root, file, sendChanges)
         : sendRemoveChanges(root, file, sendChanges)
