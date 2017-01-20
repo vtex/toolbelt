@@ -62,7 +62,7 @@
     "latest-version": "^2.0.0",
     "minimist": "^1.2.0",
     "moment": "^2.13.0",
-    "ora": "^0.4.0",
+    "ora": "^1.1.0",
     "pad": "^1.0.0",
     "ramda": "^0.22.0",
     "semver-diff": "^2.1.0",
