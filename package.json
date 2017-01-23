@@ -57,7 +57,7 @@
     "fast-async": "^6.0.34",
     "findhelp": "^0.3.0",
     "glob": "^7.0.5",
-    "inquirer": "^2.0.0",
+    "inquirer": "^3.0.0",
     "jsonpath": "^0.2.6",
     "latest-version": "^2.0.0",
     "minimist": "^1.2.0",
