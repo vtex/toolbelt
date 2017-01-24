@@ -26,7 +26,7 @@ const pathProp = prop('path')
 
 const mapFilesToChanges = (files) => {
   const changes = files.map(path => ({path, action: 'save'}))
-  changes.push({ path: '*', action: 'remove'})
+  changes.unshift({ path: '*', action: 'remove'})
   return changes
 }
 
