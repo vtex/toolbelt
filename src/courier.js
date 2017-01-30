@@ -130,13 +130,12 @@ const listen = (account, workspace, authToken, {timeout: {duration, action}, ori
 
 const consumeAppLogs = (account: string, workspace: string, level: string) => {
   const es = new EventSource(`${colossusHost}/${account}/${workspace}/logs?level=${level}`)
-
   es.onopen = () => {
     log.debug(`logs: connected with level ${level}`)
   }
 
   es.addEventListener('message', (msg) => {
-    const {message, level} = JSON.parse(msg.data)
+    const {body: {message}, level} = JSON.parse(msg.data)
     const color = level === 'error' ? chalk.red : chalk.blue
     console.log(`${color('remote')}: ${message}`)
   })
