@@ -32,7 +32,7 @@ function courierCallback (apps) {
 function courierAction (apps) {
   return () => {
     stopSpinnerForced()
-    apps.forEach(app => log.info(`Installed app ${app} successfully`))
+    apps.forEach(message => log.info(message))
     process.exit()
   }
 }
@@ -53,7 +53,7 @@ function installApps (apps, accessor = 0) {
   startSpinner()
 
   return installApp(app)
-  .then(({id}) => (apps[accessor] = id))
+  .then(({message}) => (apps[accessor] = message))
   .then(() =>
     nextAccessor < apps.length
       ? installApps(apps, nextAccessor)
