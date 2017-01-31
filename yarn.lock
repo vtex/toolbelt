@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@vtex/api@^0.12.5":
-  version "0.12.5"
-  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-0.12.5.tgz#9f6e632bf52485c7566528dbaebfdaa54c2d6181"
+"@vtex/api@0.12.11":
+  version "0.12.11"
+  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-0.12.11.tgz#3c00c6d1429564f5b912c44308a6f4c437ce1cc0"
   dependencies:
     archiver "^1.3.0"
     axios "^0.14.0"
