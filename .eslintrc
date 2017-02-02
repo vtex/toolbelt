@@ -2,6 +2,7 @@
   "parser": "babel-eslint",
   "extends": [
     "vtex",
+    "vtex-react",
     "plugin:flowtype/recommended",
     "plugin:import/recommended"
   ],
