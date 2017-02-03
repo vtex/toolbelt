@@ -10,6 +10,9 @@
     "flowtype",
     "import"
   ],
+  "rules": {
+    "no-duplicate-imports": 0
+  },
   "env": {
     "browser": true,
     "node": true,

@@ -2,8 +2,7 @@ import chalk from 'chalk'
 import {prop} from 'ramda'
 import Table from 'cli-table'
 import log from '../../logger'
-import {appEngineClient} from './utils'
-import {getAccount, getWorkspace} from '../../conf'
+import {apps} from '../../clients'
 import {parseLocator} from '../../locator'
 
 function renderTable (apps, title, emptyMessage) {
@@ -29,14 +28,8 @@ export default {
   handler: () => {
     log.debug('Starting to list apps')
     return Promise.all([
-      appEngineClient().listApps(
-        getAccount(),
-        getWorkspace()
-      ).then(prop('data')),
-      appEngineClient().listLinks(
-        getAccount(),
-        getWorkspace()
-      ).then((linkedApps) => linkedApps.map(parseLocator)),
+      apps().listApps().then(prop('data')),
+      apps().listLinks().then((linkedApps) => linkedApps.map(parseLocator)),
     ])
     .spread((installedApps, linkedApps) => {
       renderTable(installedApps.map(({app}) => parseLocator(app)), 'Installed Apps', 'You have no installed apps')

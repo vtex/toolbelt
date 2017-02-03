@@ -56,11 +56,7 @@ function uninstallApps (apps, preConfirm) {
   }
   startSpinner()
 
-  return client().uninstallApp(
-    getAccount(),
-    getWorkspace(),
-    app
-  )
+  return client().uninstallApp(app)
   .then(() =>
     decApp.length > 0
       ? uninstallApps(decApp, preConfirm)

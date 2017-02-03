@@ -3,12 +3,14 @@ import {head, tail} from 'ramda'
 import courier from '../../courier'
 import {createInterface} from 'readline'
 import {clearAbove} from '../../terminal'
-import {workspaceMasterMessage, appEngineClient} from './utils'
+import {workspaceMasterMessage} from './utils'
+import {apps} from '../../clients'
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {manifest, vendorPattern, namePattern, wildVersionPattern} from '../../manifest'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 
 const ARGS_START_INDEX = 2
+const appsClient = apps
 
 function courierCallback (apps) {
   let counter = 0
@@ -46,11 +48,7 @@ function unlinkApps (apps) {
   }
   startSpinner()
 
-  return appEngineClient().unlink(
-    getAccount(),
-    getWorkspace(),
-    app
-  )
+  return appsClient().unlink(app)
   .then(() =>
     decApp.length > 0
       ? unlinkApps(decApp)

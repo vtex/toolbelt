@@ -1,4 +1,4 @@
-import {vtexid} from './clients.js'
+import {vtexid} from './clients'
 import {Promise} from 'bluebird'
 import log from './logger'
 

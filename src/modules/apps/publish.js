@@ -3,7 +3,8 @@ import {Promise} from 'bluebird'
 import {manifest} from '../../manifest'
 import {listLocalFiles} from '../../file'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
-import {id, publishApp, mapFileObject} from './utils'
+import {registry} from '../../clients'
+import {id, mapFileObject} from './utils'
 
 const root = process.cwd()
 
@@ -29,7 +30,7 @@ export default {
     return listLocalFiles(root)
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(mapFileObject)
-    .then(files => publishApp(files, options.tag || automaticTag(manifest.version)))
+    .then(files => registry().publishApp(files, options.tag || automaticTag(manifest.version)))
     .finally(() => stopSpinner())
     .then(() => log.info(`Published app ${id} successfully`))
     .catch(err =>

@@ -14,12 +14,10 @@ import {watch, listLocalFiles} from '../../file'
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {
-  publishApp,
-  installApp,
   mapFileObject,
   workspaceMasterMessage,
 } from './utils'
-import {registry} from '../../clients'
+import {registry, apps} from '../../clients'
 
 const root = process.cwd()
 
@@ -43,7 +41,7 @@ const sendChanges = (() => {
         version,
         queue
       )
-      .then(() => installApp(id))
+      .then(() => apps().installApp(id))
       .then(() => allocateChangeLog(queue, moment().format('HH:mm:ss')))
       .then(() => { queue = [] })
       .catch(err => {
@@ -87,9 +85,9 @@ export default {
     return listLocalFiles(root)
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(mapFileObject)
-    .then(files => publishApp(files, version))
+    .then(files => registry().publishApp(files, version))
     .then(() =>
-      installApp(id)
+      apps().installApp(id)
     )
     .tap(() => log.debug('Starting watch...'))
     .then(() => watch(root, sendChanges))

@@ -1,7 +1,6 @@
 import semver from 'semver'
 import chalk from 'chalk'
 import log from '../../logger'
-import {getAccount, getWorkspace} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {router} from '../../clients'
 import inquirer from 'inquirer'
@@ -12,14 +11,13 @@ export default {
   description: 'Install a service',
   handler: async function (name) {
     try {
-      const [account, workspace] = [getAccount(), getWorkspace()]
       const [service, suffix] = name.split('@')
 
       setSpinnerText('Getting versions')
       startSpinner()
       const [available, installed] = await Promise.all([
         router().getAvailableVersions(service).then(data => data.versions['aws-us-east-1']),
-        router().listInstalledServices(account, workspace)
+        router().listInstalledServices()
           .then(data => data.find(s => s.name === service))
           .then(s => s ? s.version : s),
       ])
@@ -56,7 +54,7 @@ export default {
         return
       }
 
-      await router().installService(account, workspace, service, newVersion)
+      await router().installService(service, newVersion)
       log.info('Installation complete')
     }finally {
       stopSpinner()

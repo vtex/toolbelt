@@ -1,7 +1,8 @@
 import log from '../../logger'
 import courier from '../../courier'
 import {clearAbove} from '../../terminal'
-import {workspaceMasterMessage, installApp} from './utils'
+import {workspaceMasterMessage} from './utils'
+import {apps} from '../../clients'
 import {getAccount, getWorkspace, getToken} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 import {
@@ -11,6 +12,7 @@ import {
 } from '../../manifest'
 
 const ARGS_START_INDEX = 2
+const appsClient = apps
 
 function defaultTag (app) {
   return app.indexOf('@') < 0 ? `${app}@latest` : app
@@ -52,7 +54,7 @@ function installApps (apps, accessor = 0) {
   }
   startSpinner()
 
-  return installApp(app)
+  return appsClient().installApp(app)
   .then(({message}) => (apps[accessor] = message))
   .then(() =>
     nextAccessor < apps.length

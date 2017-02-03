@@ -69,12 +69,10 @@ async function printAvailableServiceVersions (name, filter) {
 }
 
 async function printInstalledServices () {
-  const account = getAccount()
-  const workspace = getWorkspace()
   const table = new Table({
     head: ['Name', 'Version'],
   })
-  const res = await router().listInstalledServices(account, workspace)
+  const res = await router().listInstalledServices()
   for (let service of res) {
     const version = semver.valid(service.version)
     const styledVersion = semver.prerelease(version) !== null
@@ -85,6 +83,6 @@ async function printInstalledServices () {
       styledVersion,
     ])
   }
-  log.info(`Services installed on ${chalk.cyan(account)}/${chalk.cyan(workspace)}`)
+  log.info(`Services installed on ${chalk.cyan(getAccount())}/${chalk.cyan(getWorkspace())}`)
   console.log(table.toString())
 }

@@ -5,7 +5,6 @@ import {readFile, writeFile} from 'fs'
 import {registry} from '../../clients'
 import latestVersion from 'latest-version'
 import {Promise, promisify} from 'bluebird'
-import {getAccount, getWorkspace} from '../../conf'
 import {head, tail, last, reduce, prop, split, compose, concat, __} from 'ramda'
 import {
   namePattern,
@@ -45,7 +44,7 @@ function pickLatestVersion (versions) {
 function appsLatestVersion (app) {
   const [vendor, name] = app.split('.')
   return registry()
-  .listVersionsByApp(getAccount(), getWorkspace(), vendor, name)
+  .listVersionsByApp(vendor, name)
   .then(pickLatestVersion)
   .then(wildVersionByMajor)
   .catch(err => {
