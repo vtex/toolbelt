@@ -3,7 +3,9 @@ import {head, tail} from 'ramda'
 import courier from '../../courier'
 import {createInterface} from 'readline'
 import {clearAbove} from '../../terminal'
-import {workspaceMasterMessage, appEngineClient} from './utils'
+import {workspaceMasterMessage} from './utils'
+import {apps} from '../../clients'
+const {unlink} = apps
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {manifest, vendorPattern, namePattern, wildVersionPattern} from '../../manifest'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
@@ -46,11 +48,7 @@ function unlinkApps (apps) {
   }
   startSpinner()
 
-  return appEngineClient().unlink(
-    getAccount(),
-    getWorkspace(),
-    app
-  )
+  return unlink(app)
   .then(() =>
     decApp.length > 0
       ? unlinkApps(decApp)

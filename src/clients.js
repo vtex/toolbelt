@@ -1,33 +1,23 @@
 /* @flow */
-import AppRegistryClient from '@vtex/api/lib/AppRegistryClient'
-import AppEngineClient from '@vtex/api/lib/AppEngineClient'
-import WorkspacesClient from '@vtex/api/lib/WorkspacesClient'
-import RouterClient from '@vtex/api/lib/RouterClient'
-import VTEXIDClient from '@vtex/api/lib/VTEXIDClient'
+import {Registry, Apps, Workspaces, Router, ID} from '@vtex/api'
 import endpoint from './endpoint'
 import {version} from '../package.json'
+import {getAccount, getWorkspace} from './conf'
 
 const options = {
+  account: getAccount(),
+  workspace: getWorkspace(),
   authToken: 'abc123',
   userAgent: `Toolbelt/${version}`,
+  region: 'aws-us-east-1',
 }
 
-export function registry (): AppRegistryClient {
-  return new AppRegistryClient(endpoint('registry'), options)
-}
+export const registry = Registry({...options, endpoint: endpoint('registry')})
 
-export function apps (): AppEngineClient {
-  return new AppEngineClient(endpoint('apps'), options)
-}
+export const apps = Apps({...options, endpoint: endpoint('apps')})
 
-export function workspaces (): WorkspacesClient {
-  return new WorkspacesClient(endpoint('workspaces'), options)
-}
+export const workspaces = Workspaces({...options, endpoint: endpoint('workspaces')})
 
-export function router (): RouterClient {
-  return new RouterClient(endpoint('router'), options)
-}
+export const router = Router({...options, endpoint: endpoint('router')})
 
-export function vtexid (): VTEXIDClient {
-  return new VTEXIDClient(endpoint('vtexid'), options)
-}
+export const vtexid = new ID(endpoint('vtexid'), options)

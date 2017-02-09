@@ -14,12 +14,12 @@ import {watch, listLocalFiles} from '../../file'
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {
-  publishApp,
-  installApp,
   mapFileObject,
   workspaceMasterMessage,
 } from './utils'
-import {registry} from '../../clients'
+import {registry, apps} from '../../clients'
+const {publishApp, publishAppPatch} = registry
+const {installApp} = apps
 
 const root = process.cwd()
 
@@ -36,7 +36,7 @@ const sendChanges = (() => {
       setSpinnerText('Sending changes')
       startSpinner()
       timeStart()
-      return registry().publishAppPatch(
+      return publishAppPatch(
         getAccount(),
         manifest.vendor,
         manifest.name,

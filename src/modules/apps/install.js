@@ -1,7 +1,8 @@
 import log from '../../logger'
 import courier from '../../courier'
 import {clearAbove} from '../../terminal'
-import {workspaceMasterMessage, installApp} from './utils'
+import {workspaceMasterMessage} from './utils'
+import {apps} from '../../clients'
 import {getAccount, getWorkspace, getToken} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 import {
@@ -11,6 +12,7 @@ import {
 } from '../../manifest'
 
 const ARGS_START_INDEX = 2
+const {installApp} = apps
 
 function defaultTag (app) {
   return app.indexOf('@') < 0 ? `${app}@latest` : app

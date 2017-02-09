@@ -1,7 +1,7 @@
 import semver from 'semver'
 import chalk from 'chalk'
-import {getAccount, getWorkspace} from '../../conf'
 import {router} from '../../clients'
+const {listAvailableServices, listInstalledServices, installService} = router
 import inquirer from 'inquirer'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {getTag, diffVersions} from './util'
@@ -12,10 +12,9 @@ export default {
   handler: async function () {
     setSpinnerText('Getting available updates')
     startSpinner()
-    const [account, workspace] = [getAccount(), getWorkspace()]
     const [availableRes, installedRes] = await Promise.all([
-      router().listAvailableServices(),
-      router().listInstalledServices(account, workspace),
+      listAvailableServices(),
+      listInstalledServices(),
     ])
 
     stopSpinner()
@@ -60,7 +59,7 @@ export default {
     setSpinnerText('Installing')
     startSpinner()
     await Promise.all(Object.keys(updates)
-      .map(name => router().installService(account, workspace, name, updates[name])))
+      .map(name => installService(name, updates[name])))
     stopSpinner()
     console.log('All updates installed')
   },

@@ -4,6 +4,7 @@ import log from '../../logger'
 import Table from 'cli-table'
 import {getAccount, getWorkspace} from '../../conf'
 import {router} from '../../clients'
+const {listAvailableServices, listInstalledServices, getAvailableVersions} = router
 import {getLastStableAndPrerelease} from './util'
 
 export default {
@@ -36,7 +37,7 @@ export default {
 }
 
 async function printAvailableServices () {
-  const srv = await router().listAvailableServices()
+  const srv = await listAvailableServices()
   const table = new Table({
     head: ['Name', 'Last stable', 'Last prerelease'],
   })
@@ -49,7 +50,7 @@ async function printAvailableServices () {
 }
 
 async function printAvailableServiceVersions (name, filter) {
-  const srv = await router().getAvailableVersions(name)
+  const srv = await getAvailableVersions(name)
   log.info(`Available versions of ${chalk.bold.cyan(name)} (last 20)`)
   const region = Object.keys(srv.versions)[0]
   srv.versions[region]
@@ -69,12 +70,10 @@ async function printAvailableServiceVersions (name, filter) {
 }
 
 async function printInstalledServices () {
-  const account = getAccount()
-  const workspace = getWorkspace()
   const table = new Table({
     head: ['Name', 'Version'],
   })
-  const res = await router().listInstalledServices(account, workspace)
+  const res = await listInstalledServices()
   for (let service of res) {
     const version = semver.valid(service.version)
     const styledVersion = semver.prerelease(version) !== null
@@ -85,6 +84,6 @@ async function printInstalledServices () {
       styledVersion,
     ])
   }
-  log.info(`Services installed on ${chalk.cyan(account)}/${chalk.cyan(workspace)}`)
+  log.info(`Services installed on ${chalk.cyan(getAccount())}/${chalk.cyan(getWorkspace())}`)
   console.log(table.toString())
 }

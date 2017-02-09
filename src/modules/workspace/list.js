@@ -9,7 +9,7 @@ export default {
   handler: async () => {
     log.debug('Listing workspaces')
     const currentWorkspace = getWorkspace()
-    const res = await workspaces().list(getAccount())
+    const res = await workspaces.list(getAccount())
     const table = new Table({
       head: ['Name', 'Last Modified', 'State'],
     })

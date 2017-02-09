@@ -16,9 +16,10 @@ import {getWorkspace, getAccount} from '../../conf'
 import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {
   id,
-  appEngineClient,
   workspaceMasterMessage,
 } from './utils'
+import {apps} from '../../clients'
+const {link} = apps
 
 const root = process.cwd()
 
@@ -33,14 +34,14 @@ const mapFilesToChanges = (files) => {
 const sendChanges = (() => {
   let queue = []
   const publishPatch = debounce(
-    async (account, workspace, data) => {
+    async (data) => {
       timeStart()
 
       const locator = toMajorLocator(data.vendor, data.name, data.version)
 
       try {
         log.info(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
-        await appEngineClient().link(account, workspace, locator, queue)
+        await link(locator, queue)
 
         allocateChangeLog(queue, moment().format('HH:mm:ss'))
         queue = []
@@ -56,7 +57,7 @@ const sendChanges = (() => {
       return
     }
     queue = uniqBy(pathProp, queue.concat(changes).reverse())
-    return publishPatch(getAccount(), getWorkspace(), manifest)
+    return publishPatch(manifest)
   }
 })()
 
@@ -83,12 +84,7 @@ export default {
 
     setSpinnerText(`Sending ${changes.length} file` + (changes.length > 1 ? 's' : ''))
     startSpinner()
-    await appEngineClient().link(
-      account,
-      workspace,
-      majorLocator,
-      changes,
-    )
+    await link(majorLocator, changes)
     stopSpinner()
 
     courier.log(account, workspace, log.level)

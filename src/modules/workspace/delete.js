@@ -30,7 +30,7 @@ function deleteWorkspaces (names = [], preConfirm, force) {
 
   return Promise.try(() => preConfirm || promptWorkspaceDeletion(name))
   .then(confirm => confirm || Promise.reject('User cancelled'))
-  .then(() => workspaces().delete(account, name))
+  .then(() => workspaces.delete(account, name))
   .tap(() =>
     log.info(`Workspace ${chalk.green(name)} deleted successfully`)
   )
