@@ -135,11 +135,9 @@ const consumeAppLogs = (account: string, workspace: string, level: string) => {
   }
 
   es.addEventListener('message', (msg) => {
-    const {body: {message}, level, subject} = JSON.parse(msg.data)
-    if (subject.startsWith(`${manifest.vendor}.${manifest.name}`)) {
-      const color = level === 'error' ? chalk.red : chalk.blue
-      console.log(`${color('remote')}: ${message}`)
-    }
+    const {body: {message}, level} = JSON.parse(msg.data)
+    const color = level === 'error' ? chalk.red : chalk.blue
+    console.log(`${color('remote')}: ${message}`)
   })
 
   es.onerror = (err) => {
