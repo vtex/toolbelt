@@ -19,7 +19,7 @@ export default {
       })
     )
     .then(({confirm}) => confirm || Promise.reject('User cancelled'))
-    .then(() => workspaces().promote(getAccount(), name))
+    .then(() => workspaces.promote(getAccount(), name))
     .tap(() => log.info(`Workspace ${chalk.green(name)} promoted successfully`))
     .then(() => useCmd.handler('master'))
   },

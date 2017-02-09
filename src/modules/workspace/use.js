@@ -22,7 +22,7 @@ export default {
   requiredArgs: 'name',
   description: 'Use a workspace to perform operations',
   handler: function (name) {
-    return workspaces().get(getAccount(), name)
+    return workspaces.get(getAccount(), name)
     .catch(err => {
       if (err.response && err.response.data.code === 'WorkspaceNotFound') {
         return promptWorkspaceCreation(name)

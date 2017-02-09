@@ -30,7 +30,7 @@ export default {
     return listLocalFiles(root)
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(mapFileObject)
-    .then(files => registry().publishApp(files, options.tag || automaticTag(manifest.version)))
+    .then(files => registry.publishApp(files, options.tag || automaticTag(manifest.version)))
     .finally(() => stopSpinner())
     .then(() => log.info(`Published app ${id} successfully`))
     .catch(err =>

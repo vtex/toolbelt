@@ -1,6 +1,6 @@
 const env = process.env.VTEX_ENV === 'beta' ? 'BETA' : 'STABLE'
 
-export default function (api = 'api') {
+export default function endpoint (api = 'api') {
   switch (api.toLowerCase()) {
     case 'vtexid':
       return process.env.VTEX_VTEXID_ENDPOINT || env

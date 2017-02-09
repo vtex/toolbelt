@@ -12,7 +12,7 @@ import {
 } from '../../manifest'
 
 const ARGS_START_INDEX = 2
-const appsClient = apps
+const {installApp} = apps
 
 function defaultTag (app) {
   return app.indexOf('@') < 0 ? `${app}@latest` : app
@@ -54,7 +54,7 @@ function installApps (apps, accessor = 0) {
   }
   startSpinner()
 
-  return appsClient().installApp(app)
+  return installApp(app)
   .then(({message}) => (apps[accessor] = message))
   .then(() =>
     nextAccessor < apps.length

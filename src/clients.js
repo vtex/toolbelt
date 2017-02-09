@@ -1,5 +1,4 @@
 /* @flow */
-import type {RegistryInstance, AppsInstance, WorkspacesInstance, RouterInstance} from '@vtex/api'
 import {Registry, Apps, Workspaces, Router, ID} from '@vtex/api'
 import endpoint from './endpoint'
 import {version} from '../package.json'
@@ -13,22 +12,12 @@ const options = {
   region: 'aws-us-east-1',
 }
 
-export function registry (): RegistryInstance {
-  return Registry({...options, endpoint: endpoint('registry')})
-}
+export const registry = Registry({...options, endpoint: endpoint('registry')})
 
-export function apps (): AppsInstance {
-  return Apps({...options, endpoint: endpoint('apps')})
-}
+export const apps = Apps({...options, endpoint: endpoint('apps')})
 
-export function workspaces (): WorkspacesInstance {
-  return Workspaces({...options, endpoint: endpoint('workspaces')})
-}
+export const workspaces = Workspaces({...options, endpoint: endpoint('workspaces')})
 
-export function router (): RouterInstance {
-  return Router({...options, endpoint: endpoint('router')})
-}
+export const router = Router({...options, endpoint: endpoint('router')})
 
-export function vtexid (): ID {
-  return new ID(endpoint('vtexid'), options)
-}
+export const vtexid = new ID(endpoint('vtexid'), options)

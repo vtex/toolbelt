@@ -7,7 +7,7 @@ export default {
   handler: async (app, field) => {
     const patch = {}
     jp.value(patch, '$.' + field, null)
-    const response = await apps().patchAppSettings(app, patch)
+    const response = await apps.patchAppSettings(app, patch)
     console.log(response)
   },
 }

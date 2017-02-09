@@ -7,7 +7,7 @@ export default {
   requiredArgs: 'app',
   optionalArgs: 'field',
   handler: async (app, field) => {
-    const response = await apps().getAppSettings(app)
+    const response = await apps.getAppSettings(app)
     if (field === null) {
       console.log(response)
     } else {

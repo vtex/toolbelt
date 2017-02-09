@@ -70,7 +70,7 @@ function promptWorkspaceInput (account, token) {
     })
   )
   .then(({workspace}) => workspace)
-  .tap(workspace => workspaces().create(account, workspace))
+  .tap(workspace => workspaces.create(account, workspace))
   .catch(err => {
     if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
       log.error(err.response.data.message)
@@ -83,7 +83,7 @@ function promptWorkspaceInput (account, token) {
 function promptWorkspace (account, token) {
   const newWorkspace = 'Create new workspace...'
   const master = `master ${chalk.red('(read-only)')}`
-  return workspaces().list(account)
+  return workspaces.list(account)
   .then(workspaces => {
     const workspaceList = [
       newWorkspace,

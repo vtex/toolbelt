@@ -3,6 +3,7 @@ import {prop} from 'ramda'
 import Table from 'cli-table'
 import log from '../../logger'
 import {apps} from '../../clients'
+const {listApps, listLinks} = apps
 import {parseLocator} from '../../locator'
 
 function renderTable (apps, title, emptyMessage) {
@@ -28,8 +29,8 @@ export default {
   handler: () => {
     log.debug('Starting to list apps')
     return Promise.all([
-      apps().listApps().then(prop('data')),
-      apps().listLinks().then((linkedApps) => linkedApps.map(parseLocator)),
+      listApps().then(prop('data')),
+      listLinks().then((linkedApps) => linkedApps.map(parseLocator)),
     ])
     .spread((installedApps, linkedApps) => {
       renderTable(installedApps.map(({app}) => parseLocator(app)), 'Installed Apps', 'You have no installed apps')

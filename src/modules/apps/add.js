@@ -43,7 +43,7 @@ function pickLatestVersion (versions) {
 
 function appsLatestVersion (app) {
   const [vendor, name] = app.split('.')
-  return registry()
+  return registry
   .listVersionsByApp(vendor, name)
   .then(pickLatestVersion)
   .then(wildVersionByMajor)

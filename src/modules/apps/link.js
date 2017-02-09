@@ -19,6 +19,7 @@ import {
   workspaceMasterMessage,
 } from './utils'
 import {apps} from '../../clients'
+const {link} = apps
 
 const root = process.cwd()
 
@@ -40,7 +41,7 @@ const sendChanges = (() => {
 
       try {
         log.info(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
-        await apps().link(locator, queue)
+        await link(locator, queue)
 
         allocateChangeLog(queue, moment().format('HH:mm:ss'))
         queue = []
@@ -83,7 +84,7 @@ export default {
 
     setSpinnerText(`Sending ${changes.length} file` + (changes.length > 1 ? 's' : ''))
     startSpinner()
-    await apps().link(majorLocator, changes)
+    await link(majorLocator, changes)
     stopSpinner()
 
     courier.log(account, workspace, log.level)

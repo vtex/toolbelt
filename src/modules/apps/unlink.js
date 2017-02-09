@@ -5,12 +5,12 @@ import {createInterface} from 'readline'
 import {clearAbove} from '../../terminal'
 import {workspaceMasterMessage} from './utils'
 import {apps} from '../../clients'
+const {unlink} = apps
 import {getWorkspace, getAccount, getToken} from '../../conf'
 import {manifest, vendorPattern, namePattern, wildVersionPattern} from '../../manifest'
 import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
 
 const ARGS_START_INDEX = 2
-const appsClient = apps
 
 function courierCallback (apps) {
   let counter = 0
@@ -48,7 +48,7 @@ function unlinkApps (apps) {
   }
   startSpinner()
 
-  return appsClient().unlink(app)
+  return unlink(app)
   .then(() =>
     decApp.length > 0
       ? unlinkApps(decApp)

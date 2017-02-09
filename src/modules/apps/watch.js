@@ -18,6 +18,8 @@ import {
   workspaceMasterMessage,
 } from './utils'
 import {registry, apps} from '../../clients'
+const {publishApp, publishAppPatch} = registry
+const {installApp} = apps
 
 const root = process.cwd()
 
@@ -34,14 +36,14 @@ const sendChanges = (() => {
       setSpinnerText('Sending changes')
       startSpinner()
       timeStart()
-      return registry().publishAppPatch(
+      return publishAppPatch(
         getAccount(),
         manifest.vendor,
         manifest.name,
         version,
         queue
       )
-      .then(() => apps().installApp(id))
+      .then(() => installApp(id))
       .then(() => allocateChangeLog(queue, moment().format('HH:mm:ss')))
       .then(() => { queue = [] })
       .catch(err => {
@@ -85,9 +87,9 @@ export default {
     return listLocalFiles(root)
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(mapFileObject)
-    .then(files => registry().publishApp(files, version))
+    .then(files => publishApp(files, version))
     .then(() =>
-      apps().installApp(id)
+      installApp(id)
     )
     .tap(() => log.debug('Starting watch...'))
     .then(() => watch(root, sendChanges))
