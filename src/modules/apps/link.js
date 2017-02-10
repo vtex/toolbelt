@@ -13,7 +13,6 @@ import {timeStart, timeStop} from '../../time'
 import {getWorkspaceURL} from '../../workspace'
 import {watch, listLocalFiles, addChangeContent} from '../../file'
 import {getWorkspace, getAccount} from '../../conf'
-import {startSpinner, setSpinnerText, stopSpinner} from '../../spinner'
 import {
   id,
   workspaceMasterMessage,
