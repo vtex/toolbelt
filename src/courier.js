@@ -136,7 +136,7 @@ const consumeAppLogs = (account, workspace, level) => {
 
   es.addEventListener('message', (msg) => {
     const {body: {message}} = JSON.parse(msg.data)
-    log.log(level, `${message.trim()}`)
+    log.log(level, `${message.replace(/\n\s*$/, '')}`)
   })
 
   es.onerror = (err) => {
