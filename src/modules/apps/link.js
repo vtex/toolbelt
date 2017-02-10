@@ -72,24 +72,22 @@ export default {
 
     const account = getAccount()
     log.info('Linking app', `${id}`)
-    console.log(
-      chalk.green('Your URL:'),
-      chalk.blue(getWorkspaceURL(account, workspace))
-    )
-
+    courier.log(account, workspace, log.level)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
     const paths = await listLocalFiles(root)
-    log.debug('Sending files:', '\n' + paths.join('\n'))
+    log.debug('Sending files:')
+    paths.forEach(p => log.debug(p))
     const changes = addChangeContent(mapFilesToChanges(paths))
 
-    setSpinnerText(`Sending ${changes.length} file` + (changes.length > 1 ? 's' : ''))
-    startSpinner()
-    await link(majorLocator, changes)
-    stopSpinner()
+    log.info(`Sending ${changes.length} file` + (changes.length > 1 ? 's' : ''))
 
-    courier.log(account, workspace, log.level)
+    await link(majorLocator, changes)
 
     await watch(root, sendChanges)
+
+    log.info(chalk.green('Success! Your app is ready at:'))
+    log.info(chalk.yellow(getWorkspaceURL(account, workspace)))
+
     createInterface({
       input: process.stdin,
       output: process.stdout,
