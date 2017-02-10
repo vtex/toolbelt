@@ -131,17 +131,16 @@ const listen = (account, workspace, authToken, {timeout: {duration, action}, ori
 const consumeAppLogs = (account, workspace, level) => {
   const es = new EventSource(`${colossusHost}/${account}/${workspace}/logs?level=${level}`)
   es.onopen = () => {
-    log.debug(`Connected to logs with level ${level} ${chalk.blue('[io]')}`)
+    log.debug(`Connected to logs with level ${level}`)
   }
 
   es.addEventListener('message', (msg) => {
-    const {body: {message}, level: msgLevel} = JSON.parse(msg.data)
-    const color = msgLevel === 'error' ? chalk.red : chalk.blue
-    log.log(level, `${message.trim()} ${color('[io]')}`)
+    const {body: {message}} = JSON.parse(msg.data)
+    log.log(level, `${message.trim()}`)
   })
 
   es.onerror = (err) => {
-    log.error(`Connection to log server has failed with status ${err.status} ${chalk.red('[io]')}`)
+    log.error(`Connection to log server has failed with status ${err.status}`)
   }
 }
 
