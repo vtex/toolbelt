@@ -135,8 +135,10 @@ const consumeAppLogs = (account, workspace, level) => {
   }
 
   es.addEventListener('message', (msg) => {
-    const {body: {message}} = JSON.parse(msg.data)
-    log.log(level, `${message.replace(/\n\s*$/, '')}`)
+    const {body: {message}, subject} = JSON.parse(msg.data)
+    if (subject.startsWith(`${manifest.vendor}.${manifest.name}`) || subject.startsWith('-')) {
+      log.log(level, `${message.replace(/\n\s*$/, '')}`)
+    }
   })
 
   es.onerror = (err) => {
