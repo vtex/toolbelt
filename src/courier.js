@@ -137,7 +137,7 @@ const consumeAppLogs = (account: string, workspace: string, level: string) => {
   es.addEventListener('message', (msg) => {
     const {body: {message}, level} = JSON.parse(msg.data)
     const color = level === 'error' ? chalk.red : chalk.blue
-    log.debug(`${message} ${color('[io]')}`)
+    log.debug(`${message.trim()} ${color('[io]')}`)
   })
 
   es.onerror = (err) => {
