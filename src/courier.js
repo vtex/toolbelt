@@ -128,16 +128,16 @@ const listen = (account, workspace, authToken, {timeout: {duration, action}, ori
   }
 }
 
-const consumeAppLogs = (account: string, workspace: string, level: string) => {
+const consumeAppLogs = (account, workspace, level) => {
   const es = new EventSource(`${colossusHost}/${account}/${workspace}/logs?level=${level}`)
   es.onopen = () => {
     log.debug(`Connected to logs with level ${level} ${chalk.blue('[io]')}`)
   }
 
   es.addEventListener('message', (msg) => {
-    const {body: {message}, level} = JSON.parse(msg.data)
-    const color = level === 'error' ? chalk.red : chalk.blue
-    log.debug(`${message.trim()} ${color('[io]')}`)
+    const {body: {message}, level: msgLevel} = JSON.parse(msg.data)
+    const color = msgLevel === 'error' ? chalk.red : chalk.blue
+    log.log(level, `${message.trim()} ${color('[io]')}`)
   })
 
   es.onerror = (err) => {
