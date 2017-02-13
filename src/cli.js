@@ -100,6 +100,9 @@ const onError = e => {
         break
       default:
         log.error('Something exploded :(')
+        if (e.config && e.config.url && e.config.method) {
+          log.error(`${e.config.method} ${e.config.url}`)
+        }
         log.error(e)
     }
   } else {
