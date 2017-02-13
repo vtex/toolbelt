@@ -54,7 +54,7 @@ function installApps (apps, accessor = 0) {
   }
   startSpinner()
 
-  return installApp({id: app})
+  return installApp(app)
   .then(({message}) => (apps[accessor] = message))
   .then(() =>
     nextAccessor < apps.length
