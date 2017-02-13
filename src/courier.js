@@ -137,7 +137,7 @@ const consumeAppLogs = (account, workspace, level) => {
   es.addEventListener('message', (msg) => {
     const {body: {message}, level, subject} = JSON.parse(msg.data)
     if (subject.startsWith(`${manifest.vendor}.${manifest.name}`) || subject.startsWith('-')) {
-      log.log(level, `${message.replace(/\n\s*$/, '')}`)
+      log.log(levelAdapter[level] || level, `${message.replace(/\n\s*$/, '')}`)
     }
   })
 
@@ -150,4 +150,8 @@ export default {
   logLevels: Object.keys(levelFormat),
   listen: listen,
   log: consumeAppLogs,
+}
+
+const levelAdapter = {
+  warning: 'warn',
 }
