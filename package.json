@@ -59,7 +59,7 @@
     "glob": "^7.0.5",
     "inquirer": "^2.0.0",
     "jsonpath": "^0.2.6",
-    "latest-version": "^2.0.0",
+    "latest-version": "^3.0.0",
     "minimist": "^1.2.0",
     "moment": "^2.13.0",
     "ora": "^0.4.0",
