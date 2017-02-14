@@ -11,7 +11,8 @@
     "import"
   ],
   "rules": {
-    "no-duplicate-imports": 0
+    "no-duplicate-imports": 0,
+    "import/no-unresolved": 0
   },
   "env": {
     "browser": true,
