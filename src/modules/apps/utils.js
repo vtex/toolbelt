@@ -1,15 +1,14 @@
 import chalk from 'chalk'
 import {createReadStream} from 'fs'
 import {join} from 'path'
-import {manifest} from '../../manifest'
 
-export const id = `${manifest.vendor}.${manifest.name}@${manifest.version}`
+export const id = (manifest) => `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
-export const mapFileObject = (files) => {
+export const mapFileObject = (files, root = process.cwd()) => {
   return files.map(path => {
     return {
       path,
-      contents: createReadStream(join(process.cwd(), path)),
+      contents: createReadStream(join(root, path)),
     }
   })
 }
