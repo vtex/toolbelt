@@ -24,6 +24,13 @@ function publishApp (path, tag, manifest) {
   .then(files => registry.publishApp(files, tag))
   .finally(() => stopSpinner())
   .then(() => log.info(`Published app ${id(manifest)} successfully`))
+  .catch(e => {
+    if (e.response && /already published/.test(e.response.data.message)) {
+      log.error(e.response.data.message)
+      return Promise.resolve()
+    }
+    throw e
+  })
 }
 
 function publishApps (paths, tag, accessor = 0) {
