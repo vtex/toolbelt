@@ -1,24 +1,31 @@
 #!/usr/bin/env node
 import chalk from 'chalk'
-import log from './logger'
-import tree from './modules'
+import moment from 'moment'
 import {without} from 'ramda'
-import notify from './update'
 import minimist from 'minimist'
-import {getToken, override} from './conf'
 import {Promise} from 'bluebird'
 import 'any-promise/register/bluebird'
+import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
+
+import log from './logger'
+import tree from './modules'
+import notify from './update'
+import {getToken, override} from './conf'
 import loginCmd from './modules/auth/login'
 import logoutCmd from './modules/auth/logout'
 import switchCmd from './modules/auth/switch'
-import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 
 global.Promise = Promise
 const run = unboundRun.bind(tree)
 
 // Setup logging
 const VERBOSE = '--verbose'
-log.level = process.argv.indexOf(VERBOSE) >= 0 ? 'debug' : 'info'
+if (process.argv.indexOf(VERBOSE) >= 0) {
+  log.level = 'debug'
+  log.default.transports.console.timestamp = function () {
+    return chalk.grey(moment().format('HH:mm:ss.SSS'))
+  }
+}
 
 if (process.env.NODE_ENV === 'development') {
   try {
