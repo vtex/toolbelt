@@ -1,10 +1,12 @@
 import chalk from 'chalk'
-import log from '../../logger'
+import {ID} from '@vtex/api'
 import inquirer from 'inquirer'
 import validator from 'validator'
-import {workspaces} from '../../clients'
-import {startUserAuth} from '../../auth'
 import {Promise, mapSeries, all} from 'bluebird'
+
+import log from '../../logger'
+import endpoint from '../../endpoint'
+import {version} from '../../../package.json'
 import {
   getLogin,
   saveToken,
@@ -15,7 +17,61 @@ import {
   saveWorkspace,
 } from '../../conf'
 
+let workspaces = safeGetClient('workspaces')
+
+const vtexid = new ID(endpoint('vtexid'), {
+  authToken: 'abc123',
+  userAgent: `Toolbelt/${version}`,
+})
 const [account, login, workspace] = [getAccount(), getLogin(), getWorkspace()]
+
+function safeGetClient (client) {
+  const clients = '../../clients.js'
+  try {
+    delete require.cache[require.resolve(clients)]
+    return require(clients)[client]
+  } catch (e) {}
+}
+
+function isVtexUser (email) {
+  return email.indexOf('@vtex.com') >= 0
+}
+
+function handleAuthResult (result) {
+  if (result.authStatus !== 'Success') {
+    return Promise.reject(result.authStatus)
+  }
+  return result.authCookie.Value
+}
+
+function vtexUserAuth (email, prompt) {
+  let token
+  return vtexid.getTemporaryToken()
+  .then(t => { token = t })
+  .then(() => [token, email])
+  .tap(() => log.debug('Sending code to email', {token, email}))
+  .spread(vtexid.sendCodeToEmail.bind(vtexid))
+  .then(prompt)
+  .then(({code}) => [token, email, code])
+  .tap(() => log.debug('Getting auth token with email code', {token, email}))
+  .spread(vtexid.getEmailCodeAuthenticationToken.bind(vtexid))
+  .then(handleAuthResult)
+}
+
+function userAuth (email, prompt) {
+  let token
+  return vtexid.getTemporaryToken()
+  .then(t => { token = t })
+  .then(prompt)
+  .then(({password}) => [token, email, password])
+  .tap(() => log.debug('Getting auth token with password', {token, email}))
+  .spread(vtexid.getPasswordAuthenticationToken.bind(vtexid))
+  .then(handleAuthResult)
+}
+
+function startUserAuth (email, promptCode, promptPass) {
+  return isVtexUser(email) ? vtexUserAuth(email, promptCode) : userAuth(email, promptPass)
+}
 
 function promptAccount () {
   const message = 'Please enter a valid account.'
@@ -125,7 +181,7 @@ function promptUsePrevious () {
   .then(({confirm}) => confirm)
 }
 
-function saveCredentials ({login, account, token, workspace}) {
+function saveCredentials (login, account, token, workspace) {
   saveLogin(login)
   saveAccount(account)
   saveToken(token)
@@ -151,13 +207,14 @@ export default {
       ])
     })
     .spread((login, account, token, workspace) => {
+      saveCredentials(login, account, token, workspace)
+      workspaces = safeGetClient('workspaces')
       const actualWorkspace = workspace || promptWorkspace(account, token)
       return all([login, account, token, actualWorkspace])
     })
     .spread((login, account, token, workspace) => {
-      const credentials = {login, account, token, workspace}
-      log.debug('Login successful, saving credentials', credentials)
-      saveCredentials(credentials)
+      saveWorkspace(workspace)
+      log.debug('Login successful', login, account, token, workspace)
       log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
     })
   },

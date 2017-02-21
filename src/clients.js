@@ -1,5 +1,5 @@
 /* @flow */
-import {Registry, Apps, Workspaces, Router, ID} from '@vtex/api'
+import {Registry, Apps, Workspaces, Router} from '@vtex/api'
 import endpoint from './endpoint'
 import {version} from '../package.json'
 import {getAccount, getWorkspace} from './conf'
@@ -19,5 +19,3 @@ export const apps = Apps({...options, endpoint: endpoint('apps')})
 export const workspaces = Workspaces({...options, endpoint: endpoint('workspaces')})
 
 export const router = Router({...options, endpoint: endpoint('router')})
-
-export const vtexid = new ID(endpoint('vtexid'), options)

@@ -17,7 +17,7 @@ export function saveToken (token) {
   conf.set('token', token)
 }
 
-export function saveWorkspace (workspace) {
+export function saveWorkspace (workspace = 'master') {
   return conf.set('workspace', workspace)
 }
 
