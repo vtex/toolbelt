@@ -64,7 +64,7 @@
     "minimist": "^1.2.0",
     "moment": "^2.13.0",
     "msgpack-lite": "^0.1.26",
-    "object-hash": "^1.1.5",
+    "object-hash": "^1.1.6",
     "ora": "^0.4.0",
     "pad": "^1.0.0",
     "ramda": "^0.22.0",
