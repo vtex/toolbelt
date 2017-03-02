@@ -71,7 +71,7 @@ export default {
 
     const account = getAccount()
     log.info('Linking app', `${id(manifest)}`)
-    courier.log(account, workspace, log.level)
+    courier.log(account, workspace, log.level, `${manifest.vendor}.${manifest.name}@${manifest.version}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
     const paths = await listLocalFiles(root)
     log.debug('Sending files:')
