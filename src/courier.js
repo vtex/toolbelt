@@ -11,6 +11,7 @@ import {consumeChangeLog} from './apps'
 import {locatorByMajor} from './locator'
 import {__, any, contains, map} from 'ramda'
 import {setSpinnerText, stopSpinner, isSpinnerActive} from './spinner'
+import {} from './conf'
 
 const courierHost = endpoint('courier')
 const colossusHost = endpoint('colossus')
@@ -128,16 +129,17 @@ const listen = (account, workspace, authToken, {timeout: {duration, action}, ori
   }
 }
 
-const consumeAppLogs = (account, workspace, level) => {
+const consumeAppLogs = (account, workspace, level, id) => {
   const es = new EventSource(`${colossusHost}/${account}/${workspace}/logs?level=${level}`)
   es.onopen = () => {
     log.debug(`Connected to logs with level ${level}`)
   }
 
   es.addEventListener('message', (msg) => {
-    const {body: {message}, level, subject} = JSON.parse(msg.data)
+    const {body: {message}, level, subject, sender} = JSON.parse(msg.data)
     if (subject.startsWith(`${manifest.vendor}.${manifest.name}`) || subject.startsWith('-')) {
-      log.log(levelAdapter[level] || level, `${message.replace(/\n\s*$/, '')}`)
+      const suffix = id === sender ? '' : ' ' + chalk.gray(sender)
+      log.log(levelAdapter[level] || level, `${message.replace(/\n\s*$/, '')}${suffix}`)
     }
   })
 
