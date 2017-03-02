@@ -50,7 +50,7 @@
     "configstore": "^2.0.0",
     "debounce": "^1.0.0",
     "es6-error": "^4.0.0",
-    "eslint": "^3.4.0",
+    "eslint": "^3.8.1",
     "eslint-config-vtex": "^4.0.0",
     "eslint-config-vtex-react": "^2.1.0",
     "eslint-plugin-react": "^6.7.1",
