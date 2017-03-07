@@ -1,7 +1,5 @@
 import chalk from 'chalk'
 
-const changesQueue = []
-
 export function changesToString (changes, time) {
   return changes.reduce((acc, change) => {
     const prefix = chalk.dim(
@@ -12,12 +10,4 @@ export function changesToString (changes, time) {
     }
     return acc + `${prefix}${chalk.yellow('U')} ${change.path}`
   }, '')
-}
-
-export function allocateChangeLog (changes, time) {
-  changesQueue.push(changesToString(changes, time))
-}
-
-export function consumeChangeLog () {
-  return changesQueue.shift()
 }

@@ -1,10 +1,7 @@
 import log from '../../logger'
-import courier from '../../courier'
-import {clearAbove} from '../../terminal'
 import {workspaceMasterMessage} from './utils'
 import {apps} from '../../clients'
-import {getAccount, getWorkspace, getToken} from '../../conf'
-import {startSpinner, setSpinnerText, stopSpinnerForced} from '../../spinner'
+import {getWorkspace} from '../../conf'
 import {
   manifest,
   namePattern,
@@ -18,27 +15,6 @@ function defaultTag (app) {
   return app.indexOf('@') < 0 ? `${app}@latest` : app
 }
 
-function courierCallback (apps) {
-  let counter = 0
-  return () => {
-    clearAbove()
-    const app = apps[counter]
-    counter += 1
-    log.info(`Installed app ${app} successfully`)
-    if (counter === apps.length) {
-      process.exit()
-    }
-  }
-}
-
-function courierAction (apps) {
-  return () => {
-    stopSpinnerForced()
-    apps.forEach(message => log.info(message))
-    process.exit()
-  }
-}
-
 function installApps (apps, accessor = 0) {
   const app = defaultTag(apps[accessor])
   const nextAccessor = accessor + 1
@@ -49,20 +25,15 @@ function installApps (apps, accessor = 0) {
     return Promise.resolve()
   }
 
-  if (log.level === 'info') {
-    setSpinnerText(`Installing app ${app}`)
-  }
-  startSpinner()
-
   return installApp(app)
   .then(({message}) => (apps[accessor] = message))
+  .tap(() => log.info(`Installed app ${app} successfully`))
   .then(() =>
     nextAccessor < apps.length
       ? installApps(apps, nextAccessor)
       : Promise.resolve()
   )
   .catch(err => {
-    stopSpinnerForced()
     if (err.statusCode === 409) {
       return log.error(`App ${app} already installed`)
     }
@@ -86,14 +57,6 @@ export default {
 
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)]
-    courier.listen(getAccount(), workspace, getToken(), {
-      origin: apps,
-      callback: courierCallback(apps),
-      timeout: {
-        duration: 6000,
-        action: courierAction(apps),
-      },
-    })
     log.debug('Installing app(s)', apps)
     return installApps(apps)
   },

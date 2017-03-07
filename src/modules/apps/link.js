@@ -1,16 +1,14 @@
-import chalk from 'chalk'
 import moment from 'moment'
 import {toMajorLocator} from '../../locator'
 import log from '../../logger'
 import debounce from 'debounce'
 import {Promise} from 'bluebird'
 import {uniqBy, prop} from 'ramda'
-import courier from '../../courier'
+import {listen} from '../../courier'
 import {manifest} from '../../manifest'
 import {createInterface} from 'readline'
-import {allocateChangeLog} from '../../apps'
+import {changesToString} from '../../apps'
 import {timeStart, timeStop} from '../../time'
-import {getWorkspaceURL} from '../../workspace'
 import {watch, listLocalFiles, addChangeContent} from '../../file'
 import {getWorkspace, getAccount} from '../../conf'
 import {
@@ -40,9 +38,8 @@ const sendChanges = (() => {
 
       try {
         log.info(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
+        console.log(changesToString(queue, moment().format('HH:mm:ss')))
         await link(locator, queue)
-
-        allocateChangeLog(queue, moment().format('HH:mm:ss'))
         queue = []
       } catch (err) {
         timeStop()
@@ -71,7 +68,7 @@ export default {
 
     const account = getAccount()
     log.info('Linking app', `${id(manifest)}`)
-    courier.log(account, workspace, log.level, `${manifest.vendor}.${manifest.name}@${manifest.version}`)
+    listen(account, workspace, log.level, `${manifest.vendor}.${manifest.name}@${manifest.version}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
     const paths = await listLocalFiles(root)
     log.debug('Sending files:')
@@ -83,9 +80,6 @@ export default {
     await link(majorLocator, changes)
 
     await watch(root, sendChanges)
-
-    log.info(chalk.green('Success! Your app is ready at:'))
-    log.info(chalk.yellow(getWorkspaceURL(account, workspace)))
 
     createInterface({
       input: process.stdin,
