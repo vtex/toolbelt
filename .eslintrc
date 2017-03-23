@@ -3,16 +3,25 @@
   "extends": [
     "vtex",
     "vtex-react",
-    "plugin:flowtype/recommended",
     "plugin:import/recommended"
   ],
-  "plugins": [
-    "flowtype",
-    "import"
-  ],
+  "plugins": ["import"],
   "rules": {
-    "no-duplicate-imports": 0,
-    "import/no-unresolved": 0
+    "space-before-function-paren": [
+      "error",
+      {
+        "anonymous": "always",
+        "named": "always"
+      }
+    ],
+    "import/no-unresolved": [
+      "error",
+      {
+        "commonjs": true,
+        "amd": true,
+        "ignore": ["^[a-zA-Z\\.@-]+$"]
+      }
+    ]
   },
   "env": {
     "browser": true,

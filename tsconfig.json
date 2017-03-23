@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "types": [
+      "node",
+      "axios",
+      "bluebird",
+      "bluebird-global"
+    ],
+    "lib": [
+      "es2015",
+      "es2016",
+      "es2017"
+    ],
+    "outDir": "lib",
+    "allowJs": false,
+    "sourceMap": false,
+    "target": "es2015",
+    "module": "commonjs",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "typeRoots": ["node_modules/@types"]
+  },
+  "typeAcquisition": {
+    "enable": false
+  },
+  "include": [
+    "./**/*",
+    "./typings.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
