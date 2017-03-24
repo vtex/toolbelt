@@ -11,14 +11,16 @@ const {installApp} = apps
 const ARGS_START_INDEX = 2
 
 const appIdValidator = (app: string): Bluebird<void | never> => {
-  const appRegex = new RegExp(`^${vendorPattern}.${namePattern}@.+$`)
+  const appRegex = new RegExp(`^${vendorPattern}\\.${namePattern}@.+$`)
   return Promise.resolve(appRegex.test(app))
     .then((isAppValid: boolean) => {
       if (isAppValid) {
         return
       }
+      const err = new Error()
+      err.name = 'InterruptionError'
       log.error('Invalid app format, please use <vendor>.<name>[@<version>]')
-      throw new Error()
+      throw err
     })
 }
 
@@ -35,6 +37,7 @@ const installApps = (apps: string[]): Bluebird<void | never> => {
         log.warn(`The following apps were not installed: ${apps.join(', ')}`)
         err.toolbeltWarning = true
       }
+      throw err
     })
 }
 

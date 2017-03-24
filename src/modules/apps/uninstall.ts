@@ -22,14 +22,16 @@ const promptAppUninstall = (apps: string[]): Bluebird<boolean> =>
   .then<boolean>(prop('confirm'))
 
 const appIdValidator = (app: string): Bluebird<void | never> => {
-  const appRegex = new RegExp(`^${vendorPattern}.${namePattern}$`)
+  const appRegex = new RegExp(`^${vendorPattern}\\.${namePattern}$`)
   return Promise.resolve(appRegex.test(app))
     .then((isAppValid: boolean) => {
       if (isAppValid) {
         return
       }
+      const err = new Error()
+      err.name = 'InterruptionError'
       log.error('Invalid app format, please use <vendor>.<name>')
-      throw new Error()
+      throw err
     })
 }
 
@@ -48,6 +50,7 @@ const uninstallApps = (apps: string[], preConfirm: boolean): Bluebird<void | nev
         log.warn(`The following apps were not uninstalled: ${apps.join(', ')}`)
         err.toolbeltWarning = true
       }
+      throw err
     })
 }
 

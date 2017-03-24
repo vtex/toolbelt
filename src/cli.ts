@@ -117,6 +117,8 @@ const onError = e => {
       case 'CommandNotFound':
         log.error('Command not found:', chalk.blue(...process.argv.slice(2)))
         break
+      case 'InterruptionError':
+        break
       default:
         log.error('Something exploded :(')
         if (isVerbose) {

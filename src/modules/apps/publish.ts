@@ -18,18 +18,18 @@ const automaticTag = (version: string): string =>
 const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
   const spinner = ora('Publishing app...').start()
   return listLocalFiles(path)
-  .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
-  .then(files => mapFileObject(files, path))
-  .then(files => registry.publishApp(files, tag))
-  .finally(() => spinner.stop())
-  .then(() => log.info(`Published app ${id(manifest)} successfully`))
-  .catch(e => {
-    if (e.response && /already published/.test(e.response.data.message)) {
-      log.error(e.response.data.message.split('The').join(' -'))
-      return Promise.resolve()
-    }
-    throw e
-  })
+    .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
+    .then(files => mapFileObject(files, path))
+    .then(files => registry.publishApp(files, tag))
+    .finally(() => spinner.stop())
+    .then(() => log.info(`Published app ${id(manifest)} successfully`))
+    .catch(e => {
+      if (e.response && /already published/.test(e.response.data.message)) {
+        log.error(e.response.data.message.split('The').join(' -'))
+        return Promise.resolve()
+      }
+      throw e
+    })
 }
 
 const publishApps = (paths: string[], tag: string, accessor = 0): Bluebird<void | never> => {
