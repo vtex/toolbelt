@@ -4,17 +4,32 @@ import * as Bluebird from 'bluebird'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
-import {manifest} from '../../manifest'
 import {workspaceMasterMessage} from './utils'
+import {vendorPattern, namePattern, manifest} from '../../manifest'
 
 const {unlink} = apps
 const ARGS_START_INDEX = 2
+
+const appIdValidator = (app: string): Bluebird<void | never> => {
+  const appRegex = new RegExp(`^${vendorPattern}\\.${namePattern}@.+$`)
+  return Promise.resolve(appRegex.test(app))
+    .then((isAppValid: boolean) => {
+      if (isAppValid) {
+        return
+      }
+      const err = new Error()
+      err.name = 'InterruptionError'
+      log.error('Invalid app format, please use <vendor>.<name>[@<version>]')
+      throw err
+    })
+}
 
 const unlinkApps = (apps: string[]): Bluebird<void | never> => {
   const app = head(apps)
   const decApp = tail(apps)
   log.debug('Starting to unlink app', app)
-  return unlink(app)
+  return appIdValidator(app)
+    .then(() => unlink(app))
     .tap(() => log.info(`Unlinked app ${app} successfully`))
     .then(() => decApp.length > 0 ? unlinkApps(decApp) : Promise.resolve())
     .catch(err => {
@@ -25,7 +40,7 @@ const unlinkApps = (apps: string[]): Bluebird<void | never> => {
         log.warn(`The following apps were not unlinked: ${apps.join(', ')}`)
         err.toolbeltWarning = true
       }
-      return Promise.reject(err)
+      throw err
     })
 }
 
