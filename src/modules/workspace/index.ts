@@ -3,6 +3,7 @@ import {dirnameJoin} from '../../file'
 export default {
   workspace: {
     list: {
+      alias: 'ls',
       module: dirnameJoin('modules/workspace/list'),
     },
     create: {
