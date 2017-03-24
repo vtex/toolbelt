@@ -5,6 +5,7 @@ import log from './logger'
 import endpoint from './endpoint'
 import {manifest} from './manifest'
 
+let prevMsg = ''
 const levelAdapter = {warning: 'warn'}
 const colossusHost = endpoint('colossus')
 
@@ -21,8 +22,14 @@ export const listen = (account: string, workspace: string, level: string, id: st
       body: {message, code},
     }: Message = JSON.parse(msg.data)
     if (subject.startsWith(`${manifest.vendor}.${manifest.name}`) || subject.startsWith('-')) {
+      const logLevel = levelAdapter[msgLevel] || msgLevel
       const suffix = id === sender ? '' : ' ' + chalk.gray(sender)
-      log.log(levelAdapter[msgLevel] || msgLevel, `${(message || code || '').replace(/\n\s*$/, '')}${suffix}`)
+      const formattedMsg = (message || code || '').replace(/\n\s*$/, '')
+      if (prevMsg === formattedMsg) {
+        return
+      }
+      prevMsg = formattedMsg
+      log.log(logLevel, `${formattedMsg}${suffix}`)
     }
   })
 
