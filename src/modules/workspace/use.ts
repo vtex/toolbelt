@@ -26,7 +26,7 @@ export default {
   handler: (name: string) => {
     return workspaces.get(getAccount(), name)
       .catch(err => {
-        if (err.response && err.response.data.code === 'WorkspaceNotFound') {
+        if (err.response && err.response.status === 404) {
           return promptWorkspaceCreation(name)
             .then(confirm => {
               if (!confirm) {
