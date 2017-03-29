@@ -4,6 +4,9 @@ import {name as pkgName} from '../package.json'
 
 const conf = new Configstore(pkgName)
 
+export const saveRegistryAccount = (registry: string): void =>
+  conf.set('registryAccount', registry)
+
 export const saveAccount = (account: string): void =>
   conf.set('account', account)
 
@@ -15,6 +18,9 @@ export const saveToken = (token: string): void =>
 
 export const saveWorkspace = (workspace = 'master') =>
   conf.set('workspace', workspace)
+
+export const getRegistryAccount = (): string =>
+  conf.get('registryAccount')
 
 export const getAccount = (): string =>
   conf.get('account')

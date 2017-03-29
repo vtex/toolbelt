@@ -6,6 +6,7 @@ import {readFileSync} from 'fs-promise'
 
 import log from '../../logger'
 import {registry} from '../../clients'
+import {getRegistryAccount} from '../../conf'
 import {id, mapFileObject} from './utils'
 import {listLocalFiles} from '../../file'
 
@@ -16,13 +17,14 @@ const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
 const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
-  const spinner = ora('Publishing app...').start()
+  const registryAccount = getRegistryAccount()
+  const spinner = ora(`Publishing app to registry ${registryAccount}...` ).start()
   return listLocalFiles(path)
     .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
     .then(files => mapFileObject(files, path))
     .then(files => registry.publishApp(files, tag))
     .finally(() => spinner.stop())
-    .then(() => log.info(`Published app ${id(manifest)} successfully`))
+    .then(() => log.info(`Published app ${id(manifest)} to registry ${registryAccount}  successfully`))
     .catch(e => {
       if (e.response && /already published/.test(e.response.data.message)) {
         log.error(e.response.data.message.split('The').join(' -'))

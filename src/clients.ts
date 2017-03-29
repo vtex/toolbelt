@@ -3,7 +3,7 @@ import {Registry, Apps, Workspaces, Router} from '@vtex/api'
 import endpoint from './endpoint'
 import envTimeout from './timeout'
 import {version} from '../package.json'
-import {getAccount, getWorkspace} from './conf'
+import {getRegistryAccount, saveRegistryAccount, getAccount, getWorkspace} from './conf'
 
 const DEFAULT_TIMEOUT = 15000
 const options = {
@@ -15,7 +15,8 @@ const options = {
   timeout: envTimeout || DEFAULT_TIMEOUT,
 }
 
+saveRegistryAccount('smartcheckout')
 export const apps = Apps({...options, endpoint: endpoint('apps')})
 export const router = Router({...options, endpoint: endpoint('router')})
-export const registry = Registry({...options, endpoint: endpoint('registry')})
+export const registry = Registry({...options, account: getRegistryAccount(), endpoint: endpoint('registry')})
 export const workspaces = Workspaces({...options, endpoint: endpoint('workspaces')})
