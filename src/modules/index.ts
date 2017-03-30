@@ -5,6 +5,7 @@ import auth from './auth'
 import init from './init'
 import setup from './setup'
 import infra from './infra'
+import io from './io'
 import {dirnameJoin} from '../file'
 import workspace from './workspace'
 import {greeting} from '../greeting'
@@ -17,6 +18,7 @@ export default {
   ...setup,
   ...init,
   ...infra,
+  ...io,
   use: {
     module: dirnameJoin('modules/workspace/use'),
   },
