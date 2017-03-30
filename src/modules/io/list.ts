@@ -9,28 +9,38 @@ import {router} from '../../clients'
 
 const {listAvailableIoVersions, getInstalledIoVersion} = router
 
-const listAllAvailableIoVersions = (): Bluebird<void> =>
+function hasTag (version: string, tag: string): boolean {
+  const pre: Array<string> = semver.prerelease(version)
+  return (tag === 'stable' && !pre) || (contains(tag, pre || []))
+}
+
+const listAllAvailableIoVersions = (tag: string): Bluebird<void> =>
   listAvailableIoVersions()
     .then((availableIoVersions: IoVersions[]) => {
-      const allServicesKeys = ["Version"];
-      const rows = [];
-      availableIoVersions.forEach(({version, tested, services}) => {
-        const validVersion = semver.valid(version)
-        const styledVersion = tested ? chalk.green(validVersion) : chalk.bold.yellow(validVersion)
-        const serviceKeys = Object.keys(services)
-        const row = [styledVersion];
-        serviceKeys.forEach(serviceKey => {
-          if(!contains(serviceKey, allServicesKeys))
-            allServicesKeys.push(serviceKey)
-          const index = allServicesKeys.indexOf(serviceKey)
-          const version = services[serviceKey];
-          row[index] = version
+      const allServicesKeys = ['Version']
+      const rows = []
+      availableIoVersions
+        .filter(v => !tag || hasTag(v.version, tag))
+        .sort((a, b) => semver.compare(b.version, a.version))
+        .slice(0, 10)
+        .forEach(({version, tested, services}) => {
+          const validVersion = semver.valid(version)
+          const styledVersion = tested ? chalk.green(validVersion) : chalk.bold.yellow(validVersion)
+          const serviceKeys = Object.keys(services)
+          const row = [styledVersion]
+          serviceKeys.forEach(serviceKey => {
+            if (!contains(serviceKey, allServicesKeys)) {
+              allServicesKeys.push(serviceKey)
+            }
+            const index = allServicesKeys.indexOf(serviceKey)
+            const version = services[serviceKey]
+            row[index] = version
+          })
+          rows.push(row)
         })
-        rows.push(row)
-      })
       const table = new Table({head: allServicesKeys})
       rows.forEach(item => {
-        table.push(item);
+        table.push(item)
       })
       return table
     })
@@ -43,16 +53,16 @@ const printInstalledIoVersion = (): Bluebird<void> =>
   getInstalledIoVersion()
     .then((installed: IoVersions) => {
 
-        const allServicesKeys = ["Version"];
+        const allServicesKeys = ['Version']
         const validVersion = semver.valid(installed.version)
         const styledVersion = installed.tested ? chalk.green(validVersion) : chalk.bold.yellow(validVersion)
         const serviceKeys = Object.keys(installed.services)
-        const row = [styledVersion];
+        const row = [styledVersion]
         serviceKeys.forEach(serviceKey => {
-          if(!contains(serviceKey, allServicesKeys))
+          if (!contains(serviceKey, allServicesKeys))
             allServicesKeys.push(serviceKey)
           const index = allServicesKeys.indexOf(serviceKey)
-          const version = installed.services[serviceKey];
+          const version = installed.services[serviceKey]
           row[index] = version
         })
         const table = new Table({head: allServicesKeys})
@@ -72,10 +82,16 @@ export default {
       long: 'available',
       description: 'List services available to install',
       type: 'bool',
-    }
+    }, {
+      short: 't',
+      long: 'tag',
+      description: 'Filter by tag',
+      type: 'string',
+    },
   ],
   handler: (options) => {
     const available = options.a || options.available
-    return available ? listAllAvailableIoVersions() : printInstalledIoVersion();
+    const tag = options.t || options.tag || 'stable'
+    return available ? listAllAvailableIoVersions(tag) : printInstalledIoVersion()
   },
 }
