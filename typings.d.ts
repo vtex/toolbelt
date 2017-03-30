@@ -44,6 +44,14 @@ interface InfraInstalledResources {
   version: string,
 }
 
+interface IoVersions {
+  version: string,
+  tested: boolean,
+  services: {
+    [name: string]: string,
+  }
+}
+
 interface InfraUpdate {
   [name: string]: {
     latest: string,
