@@ -62,7 +62,10 @@ export default {
       .tap((batch: Batch[]) =>
         log.info(`Sending ${batch.length} file` + (batch.length > 1 ? 's' : '')),
       )
-      .then((batch: Batch[]) => link(majorLocator, batch))
+      .tap((batch: Batch[]) => link(majorLocator, batch))
+      .tap((batch: Batch[]) =>
+        log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent'),
+      )
       .then(() => watch(root, sendChanges))
       .then(() =>
         createInterface({input: process.stdin, output: process.stdout})
