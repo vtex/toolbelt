@@ -130,6 +130,10 @@ const onError = e => {
   process.exit()
 }
 
-main().catch(onError)
+try {
+  main().catch(onError)
+} catch (e) {
+  onError(e)
+}
 
 process.on('unhandledRejection', onError)
