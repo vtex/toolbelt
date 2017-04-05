@@ -3,7 +3,7 @@ import * as Bluebird from 'bluebird'
 
 import log from '../../logger'
 import {apps} from '../../clients'
-import {getWorkspace, getRegistryAccount} from '../../conf'
+import {getWorkspace} from '../../conf'
 import {workspaceMasterMessage} from './utils'
 import {manifest, namePattern, vendorPattern} from '../../manifest'
 
@@ -27,10 +27,9 @@ const appIdValidator = (app: string): Bluebird<void | never> => {
 const installApps = (apps: string[]): Bluebird<void | never> => {
   const app = head(apps)
   const decApp = tail(apps)
-  const registry = getRegistryAccount()
-  log.debug('Starting to install app', app, 'from registry', registry)
+  log.debug('Starting to install app', app)
   return appIdValidator(app)
-    .then(() => installApp(app, registry))
+    .then(() => installApp(app))
     .tap(() => log.info(`Installed app ${app} successfully`))
     .then(() => decApp.length > 0 ? installApps(decApp) : Promise.resolve())
     .catch(err => {
