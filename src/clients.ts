@@ -7,7 +7,7 @@ import {getRegistryAccount, saveRegistryAccount, getAccount, getWorkspace, getTo
 
 const DEFAULT_TIMEOUT = 15000
 const options = {
-  authToken: 'abc123',
+  authToken: getToken(),
   account: getAccount(),
   region: 'aws-us-east-1',
   userAgent: `Toolbelt/${version}`,
