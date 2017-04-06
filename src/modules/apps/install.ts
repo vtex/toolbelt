@@ -5,7 +5,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
 import {workspaceMasterMessage} from './utils'
-import { manifest, namePattern, vendorPattern, isManifestReadable } from '../../manifest'
+import {manifest, namePattern, vendorPattern, isManifestReadable } from '../../manifest'
 
 const {installApp} = apps
 const ARGS_START_INDEX = 2
@@ -65,6 +65,6 @@ export default {
     const apps = [app, ...options._.slice(ARGS_START_INDEX)]
 
     log.debug('Installing app(s)', apps)
-    return installApps(apps);
+    return installApps(apps)
   },
 }
