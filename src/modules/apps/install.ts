@@ -24,14 +24,14 @@ const appIdValidator = (app: string): Bluebird<void | never> => {
     })
 }
 
-const installApps = (apps: string[]): Bluebird<void | never> => {
+const installApps = (apps: string[], reg: string): Bluebird<void | never> => {
   const app = head(apps)
   const decApp = tail(apps)
   log.debug('Starting to install app', app)
   return appIdValidator(app)
-    .then(() => installApp(app))
+    .then(() => installApp(app, reg))
     .tap(() => log.info(`Installed app ${app} successfully`))
-    .then(() => decApp.length > 0 ? installApps(decApp) : Promise.resolve())
+    .then(() => decApp.length > 0 ? installApps(decApp, reg) : Promise.resolve())
     .catch(err => {
       // A warn message will display the apps not installed.
       if (!err.toolbeltWarning) {
@@ -46,6 +46,14 @@ const installApps = (apps: string[]): Bluebird<void | never> => {
 export default {
   optionalArgs: 'app',
   description: 'Install an app on the current directory or a specified one',
+  options: [
+    {
+      short: 'r',
+      long: 'registry',
+      description: 'Specify the registry for the app',
+      type: 'string',
+    },
+  ],
   handler: (optionalApp: string, options) => {
     const workspace = getWorkspace()
     if (workspace === 'master') {
@@ -63,8 +71,7 @@ export default {
 
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
-
     log.debug('Installing app(s)', apps)
-    return installApps(apps)
+    return installApps(apps, options.r || options.registry)
   },
 }

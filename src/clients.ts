@@ -21,6 +21,11 @@ const interceptor = (client) => new Proxy({}, {
   },
 })
 
+export const accountRegistry = (acc: string): Registry => {
+  if (!acc) acc = getAccount();
+  return Registry({...options, account: acc, endpoint: endpoint('registry')})
+}
+
 const [apps, router, registry, workspaces] = getToken()
   ? [
     Apps({...options, endpoint: endpoint('apps')}),
