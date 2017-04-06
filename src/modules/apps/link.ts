@@ -6,7 +6,7 @@ import {createInterface} from 'readline'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {listen} from '../../courier'
-import {manifest} from '../../manifest'
+import { manifest, isManifestReadable } from '../../manifest'
 import {changesToString} from '../../apps'
 import {toMajorLocator} from '../../locator'
 import {id, workspaceMasterMessage} from './utils'
@@ -51,6 +51,14 @@ export default {
       log.error(workspaceMasterMessage)
       return Promise.resolve()
     }
+
+    if (!isManifestReadable()) {
+      const err = new Error()
+      err.name = 'InterruptionError'
+      log.error('No app was found, please fix the manifest.json to update the registry.')
+      throw err
+    }
+
     log.info('Linking app', `${id(manifest)}`)
     listen(account, workspace, log.level, `${manifest.vendor}.${manifest.name}@${manifest.version}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)

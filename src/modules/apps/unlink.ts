@@ -5,7 +5,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
 import {workspaceMasterMessage} from './utils'
-import {vendorPattern, namePattern, manifest} from '../../manifest'
+import { vendorPattern, namePattern, manifest, isManifestReadable } from '../../manifest'
 
 const {unlink} = apps
 const ARGS_START_INDEX = 2
@@ -25,7 +25,7 @@ const appIdValidator = (app: string): Bluebird<void | never> => {
 }
 
 const unlinkApps = (apps: string[]): Bluebird<void | never> => {
-  const app = head(apps)
+  const app = String(head(apps))
   const decApp = tail(apps)
   log.debug('Starting to unlink app', app)
   return appIdValidator(app)
@@ -36,10 +36,12 @@ const unlinkApps = (apps: string[]): Bluebird<void | never> => {
       if (err.statusCode === 409) {
         return log.error(`App ${app} not linked`)
       }
-      if (apps.length > 1 && !err.toolbeltWarning) {
+      // A warn message will display the workspaces not deleted.
+      if (!err.toolbeltWarning) {
         log.warn(`The following apps were not unlinked: ${apps.join(', ')}`)
-        err.toolbeltWarning = true
       }
+      // the warn message is only displayed the first time the err occurs.
+      err.toolbeltWarning = true;
       throw err
     })
 }
@@ -53,6 +55,15 @@ export default {
       log.error(workspaceMasterMessage)
       return Promise.resolve()
     }
+
+    // No app arguments and no manifest file.
+    if (!optionalApp && !isManifestReadable()) {
+      const err = new Error()
+      err.name = 'InterruptionError'
+      log.error('No app was found, please fix the manifest.json or use <vendor>.<name>[@<version>]')
+      throw err
+    }
+
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)]
     log.debug('Unlinking app(s)', apps)

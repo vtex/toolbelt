@@ -95,7 +95,7 @@ const addApp = (app: string): Bluebird<void> => {
 }
 
 const addApps = (apps: string[]): Bluebird<void | never> => {
-  const app = head(apps)
+  const app = String(head(apps))
   const decApps = tail(apps)
   log.debug('Starting to add app', app)
   const appRegex = new RegExp(`^(${vendorPattern}\\.|npm:)${namePattern}(@${wildVersionPattern})?$`)
@@ -105,10 +105,12 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
   return appPromise
     .then(() => decApps.length > 0 ? addApps(decApps) : Promise.resolve())
     .catch(err => {
-      if (apps.length > 0 && !err.toolbeltWarning) {
+      // A warn message will display the workspaces not deleted.
+      if (!err.toolbeltWarning) {
         log.warn(`The following app(s) were not added: ${apps.join(', ')}`)
-        err.toolbeltWarning = true
       }
+      // the warn message is only displayed the first time the err occurs.
+      err.toolbeltWarning = true;
       return Promise.reject(err)
     })
 }
