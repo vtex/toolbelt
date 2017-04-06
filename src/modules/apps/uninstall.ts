@@ -36,7 +36,7 @@ const appIdValidator = (app: string): Bluebird<void | never> => {
 }
 
 const uninstallApps = (apps: string[], preConfirm: boolean): Bluebird<void | never> => {
-  const app = head(apps)
+  const app = String(head(apps))
   const decApp = tail(apps)
   log.debug('Starting to uninstall app', app)
   return appIdValidator(app)
