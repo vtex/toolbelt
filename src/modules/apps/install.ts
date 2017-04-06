@@ -5,7 +5,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
 import {workspaceMasterMessage} from './utils'
-import {manifest, namePattern, vendorPattern, isManifestReadable } from '../../manifest'
+import {manifest, namePattern, vendorPattern, isManifestReadable} from '../../manifest'
 
 const {installApp} = apps
 const ARGS_START_INDEX = 2
@@ -25,7 +25,7 @@ const appIdValidator = (app: string): Bluebird<void | never> => {
 }
 
 const installApps = (apps: string[]): Bluebird<void | never> => {
-  const app = String(head(apps))
+  const app = head(apps)
   const decApp = tail(apps)
   log.debug('Starting to install app', app)
   return appIdValidator(app)
@@ -36,9 +36,9 @@ const installApps = (apps: string[]): Bluebird<void | never> => {
       // A warn message will display the apps not installed.
       if (!err.toolbeltWarning) {
         log.warn(`The following apps were not installed: ${apps.join(', ')}`)
+        // the warn message is only displayed the first time the err occurs.
+        err.toolbeltWarning = true
       }
-      // the warn message is only displayed the first time the err occurs.
-      err.toolbeltWarning = true
       throw err
     })
 }
@@ -62,7 +62,7 @@ export default {
     }
 
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)]
+    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 
     log.debug('Installing app(s)', apps)
     return installApps(apps)

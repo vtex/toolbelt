@@ -5,7 +5,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
 import {workspaceMasterMessage} from './utils'
-import { vendorPattern, namePattern, manifest, isManifestReadable } from '../../manifest'
+import {vendorPattern, namePattern, manifest, isManifestReadable} from '../../manifest'
 
 const {unlink} = apps
 const ARGS_START_INDEX = 2
@@ -25,7 +25,7 @@ const appIdValidator = (app: string): Bluebird<void | never> => {
 }
 
 const unlinkApps = (apps: string[]): Bluebird<void | never> => {
-  const app = String(head(apps))
+  const app = head(apps)
   const decApp = tail(apps)
   log.debug('Starting to unlink app', app)
   return appIdValidator(app)
@@ -39,9 +39,9 @@ const unlinkApps = (apps: string[]): Bluebird<void | never> => {
       // A warn message will display the workspaces not deleted.
       if (!err.toolbeltWarning) {
         log.warn(`The following apps were not unlinked: ${apps.join(', ')}`)
+        // the warn message is only displayed the first time the err occurs.
+        err.toolbeltWarning = true;
       }
-      // the warn message is only displayed the first time the err occurs.
-      err.toolbeltWarning = true;
       throw err
     })
 }
@@ -65,7 +65,7 @@ export default {
     }
 
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)]
+    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     log.debug('Unlinking app(s)', apps)
     return unlinkApps(apps)
   },

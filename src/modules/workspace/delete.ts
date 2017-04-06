@@ -22,7 +22,7 @@ const promptWorkspaceDeletion = (name: string): Bluebird<boolean> =>
   .then<boolean>(prop('confirm'))
 
 const deleteWorkspaces = (names = [], preConfirm: boolean, force: boolean): Bluebird<void | never> => {
-  const name = String(head(names))
+  const name = head(names)
   const decNames = tail(names)
   log.debug('Starting to delete workspace', name)
   if (!force && name === workspace) {
@@ -42,9 +42,9 @@ const deleteWorkspaces = (names = [], preConfirm: boolean, force: boolean): Blue
       // A warn message will display the workspaces not deleted.
       if (!err.toolbeltWarning) {
         log.warn(`The following workspace(s) were not deleted: ${names.join(', ')}`)
+        // the warn message is only displayed the first time the err occurs.
+        err.toolbeltWarning = true
       }
-      // the warn message is only displayed the first time the err occurs.
-      err.toolbeltWarning = true
       return Promise.reject(err)
     })
 }
@@ -73,7 +73,7 @@ export default {
     log.debug('Deleting workspace(s)', names)
     return deleteWorkspaces(names, preConfirm, force)
           .catch(err => {
-            if (err.message === "User cancelled") {
+            if (err.message === 'User cancelled') {
               log.error(err.message)
               return Promise.resolve()
             }

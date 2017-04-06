@@ -95,7 +95,7 @@ const addApp = (app: string): Bluebird<void> => {
 }
 
 const addApps = (apps: string[]): Bluebird<void | never> => {
-  const app = String(head(apps))
+  const app = head(apps)
   const decApps = tail(apps)
   log.debug('Starting to add app', app)
   const appRegex = new RegExp(`^(${vendorPattern}\\.|npm:)${namePattern}(@${wildVersionPattern})?$`)
@@ -108,9 +108,9 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
       // A warn message will display the workspaces not deleted.
       if (!err.toolbeltWarning) {
         log.warn(`The following app(s) were not added: ${apps.join(', ')}`)
+        // the warn message is only displayed the first time the err occurs.
+        err.toolbeltWarning = true
       }
-      // the warn message is only displayed the first time the err occurs.
-      err.toolbeltWarning = true;
       return Promise.reject(err)
     })
 }
@@ -119,7 +119,7 @@ export default {
   requiredArgs: 'app',
   description: 'Add an app to the manifest dependencies',
   handler: (app: string, options) => {
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)]
+    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     log.debug('Adding app(s)', apps)
     return addApps(apps)
       .then(() => log.info('App(s) added succesfully!'))
