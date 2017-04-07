@@ -72,12 +72,12 @@ export default {
     const force = options.f || options.force
     log.debug('Deleting workspace(s)', names)
     return deleteWorkspaces(names, preConfirm, force)
-          .catch(err => {
-            if (err.message === 'User cancelled') {
-              log.error(err.message)
-              return Promise.resolve()
-            }
-            return Promise.reject(err)
-          })
+      .catch(err => {
+        if (err.message === 'User cancelled') {
+          log.error(err.message)
+          return Promise.resolve()
+        }
+        return Promise.reject(err)
+      })
   },
 }
