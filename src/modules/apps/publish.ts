@@ -54,7 +54,7 @@ export default {
   ],
   handler: (path: string, options) => {
     log.debug('Starting to publish app')
-    const paths = [path || root, ...options._.slice(ARGS_START_INDEX)]
+    const paths = [path || root, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     return publishApps(paths, options.tag)
   },
 }

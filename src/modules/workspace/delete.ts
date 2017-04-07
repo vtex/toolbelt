@@ -30,7 +30,7 @@ const deleteWorkspaces = (names = [], preConfirm: boolean, force: boolean): Blue
     return Promise.resolve()
   }
   return Promise.resolve(preConfirm || promptWorkspaceDeletion(name))
-    .then<boolean>(confirm => confirm || Promise.reject('User cancelled'))
+    .then<boolean>(confirm => confirm || Promise.reject(new Error('User cancelled')))
     .then(() => workspaces.delete(account, name))
     .tap(() => log.info(`Workspace ${chalk.green(name)} deleted successfully`))
     .then(() =>
@@ -39,8 +39,10 @@ const deleteWorkspaces = (names = [], preConfirm: boolean, force: boolean): Blue
         : Promise.resolve(),
     )
     .catch(err => {
-      if (names.length > 1 && !err.toolbeltWarning) {
+      // A warn message will display the workspaces not deleted.
+      if (!err.toolbeltWarning) {
         log.warn(`The following workspace(s) were not deleted: ${names.join(', ')}`)
+        // the warn message is only displayed the first time the err occurs.
         err.toolbeltWarning = true
       }
       return Promise.reject(err)
@@ -70,5 +72,12 @@ export default {
     const force = options.f || options.force
     log.debug('Deleting workspace(s)', names)
     return deleteWorkspaces(names, preConfirm, force)
+      .catch(err => {
+        if (err.message === 'User cancelled') {
+          log.error(err.message)
+          return Promise.resolve()
+        }
+        return Promise.reject(err)
+      })
   },
 }

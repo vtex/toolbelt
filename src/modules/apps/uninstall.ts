@@ -6,7 +6,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
 import {workspaceMasterMessage} from './utils'
-import {manifest, vendorPattern, namePattern} from '../../manifest'
+import {manifest, vendorPattern, namePattern, isManifestReadable} from '../../manifest'
 
 const {uninstallApp} = apps
 const ARGS_START_INDEX = 2
@@ -46,9 +46,11 @@ const uninstallApps = (apps: string[], preConfirm: boolean): Bluebird<void | nev
       decApp.length > 0 ? uninstallApps(decApp, preConfirm) : Promise.resolve(),
     )
     .catch(err => {
-      if (apps.length > 1 && !err.toolbeltWarning) {
+       // A warn message will display the workspaces not deleted.
+      if (!err.toolbeltWarning) {
         log.warn(`The following apps were not uninstalled: ${apps.join(', ')}`)
-        err.toolbeltWarning = true
+        // the warn message is only displayed the first time the err occurs.
+        err.toolbeltWarning = true;
       }
       throw err
     })
@@ -71,12 +73,28 @@ export default {
       log.error(workspaceMasterMessage)
       return Promise.resolve()
     }
+
+    // No app arguments and no manifest file.
+    if (!optionalApp && !isManifestReadable()) {
+      const err = new Error()
+      err.name = 'InterruptionError'
+      log.error('No app was found, please fix the manifest.json or use <vendor>.<name>[@<version>]')
+      throw err
+    }
+
     const app = optionalApp || `${manifest.vendor}.${manifest.name}`
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)]
+    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     const preConfirm = options.y || options.yes
     log.debug('Uninstalling app(s)', apps)
     return Promise.resolve(preConfirm || promptAppUninstall(apps))
-      .then(confirm => confirm || Promise.reject('User cancelled'))
+      .then(confirm => confirm || Promise.reject(new Error('User cancelled')))
       .then(() => uninstallApps(apps, preConfirm))
+      .catch(err => {
+        if (err.message === 'User cancelled') {
+          log.error(err.message)
+          return Promise.resolve()
+        }
+        return Promise.reject(err)
+      })
   },
 }

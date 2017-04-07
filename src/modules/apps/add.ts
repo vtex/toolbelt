@@ -105,8 +105,10 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
   return appPromise
     .then(() => decApps.length > 0 ? addApps(decApps) : Promise.resolve())
     .catch(err => {
-      if (apps.length > 0 && !err.toolbeltWarning) {
+      // A warn message will display the workspaces not deleted.
+      if (!err.toolbeltWarning) {
         log.warn(`The following app(s) were not added: ${apps.join(', ')}`)
+        // the warn message is only displayed the first time the err occurs.
         err.toolbeltWarning = true
       }
       return Promise.reject(err)
@@ -117,7 +119,7 @@ export default {
   requiredArgs: 'app',
   description: 'Add an app to the manifest dependencies',
   handler: (app: string, options) => {
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)]
+    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     log.debug('Adding app(s)', apps)
     return addApps(apps)
       .then(() => log.info('App(s) added succesfully!'))

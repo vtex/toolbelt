@@ -5,7 +5,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
 import {workspaceMasterMessage} from './utils'
-import {manifest, namePattern, vendorPattern} from '../../manifest'
+import {manifest, namePattern, vendorPattern, isManifestReadable} from '../../manifest'
 
 const {installApp} = apps
 const ARGS_START_INDEX = 2
@@ -33,8 +33,10 @@ const installApps = (apps: string[]): Bluebird<void | never> => {
     .tap(() => log.info(`Installed app ${app} successfully`))
     .then(() => decApp.length > 0 ? installApps(decApp) : Promise.resolve())
     .catch(err => {
-      if (apps.length > 1 && !err.toolbeltWarning) {
+      // A warn message will display the apps not installed.
+      if (!err.toolbeltWarning) {
         log.warn(`The following apps were not installed: ${apps.join(', ')}`)
+        // the warn message is only displayed the first time the err occurs.
         err.toolbeltWarning = true
       }
       throw err
@@ -50,8 +52,18 @@ export default {
       log.error(workspaceMasterMessage)
       return Promise.resolve()
     }
+
+    // No app arguments and no manifest file.
+    if (!optionalApp && !isManifestReadable()) {
+      const err = new Error()
+      err.name = 'InterruptionError'
+      log.error('No app was found, please fix the manifest.json or use <vendor>.<name>[@<version>]')
+      throw err
+    }
+
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)]
+    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+
     log.debug('Installing app(s)', apps)
     return installApps(apps)
   },
