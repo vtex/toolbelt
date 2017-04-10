@@ -72,6 +72,6 @@ export default {
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     log.debug('Installing app(s)', apps)
-    return installApps(apps, options.r || options.registry)
+    return installApps(apps, options.r || options.registry || 'smartcheckout')
   },
 }
