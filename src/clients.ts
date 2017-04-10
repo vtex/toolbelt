@@ -21,23 +21,25 @@ const interceptor = (client) => new Proxy({}, {
   },
 })
 
-const [apps, router, registry, workspaces] = getToken()
+const accountRegistry = (account: string = 'smartcheckout'): Registry => {
+  return Registry({...options, account, endpoint: endpoint('registry')})
+}
+
+const [apps, router, workspaces] = getToken()
   ? [
     Apps({...options, endpoint: endpoint('apps')}),
     Router({...options, endpoint: endpoint('router')}),
-    Registry({...options, endpoint: endpoint('registry')}),
     Workspaces({...options, endpoint: endpoint('workspaces')}),
   ]
   : [
     interceptor('apps'),
     interceptor('router') ,
-    interceptor('registry'),
     interceptor('workspaces'),
   ]
 
 export {
   apps,
   router,
-  registry,
+  accountRegistry,
   workspaces
 }

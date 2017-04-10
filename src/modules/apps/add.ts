@@ -6,7 +6,7 @@ import * as latestVersion from 'latest-version'
 import {head, tail, last, reduce, prop, split, compose, concat, __} from 'ramda'
 
 import log from '../../logger'
-import {registry} from '../../clients'
+import {accountRegistry} from '../../clients'
 import {
   namePattern,
   manifestPath,
@@ -46,7 +46,7 @@ const pickLatestVersion = (versions: VersionByApp[]): string => {
 }
 
 const appsLatestVersion = (app: string): Bluebird<string | never> => {
-  return registry.listVersionsByApp(app)
+  return accountRegistry().listVersionsByApp(app)
     .then(prop('data'))
     .then(pickLatestVersion)
     .then(wildVersionByMajor)
