@@ -58,7 +58,7 @@ export const listLocalFiles = (root: string): Bluebird<string[]> =>
 export const addChangeContent = (changes: Change[]): Batch[] =>
   changes.map(({path: filePath, action}) => {
     return {
-      path: filePath.replace('\\', '/'),
+      path: filePath.split(path.sep).join('/'),
       content: action === 'save'
         ? readFileSync(path.resolve(process.cwd(), filePath)).toString('base64')
         : null,
