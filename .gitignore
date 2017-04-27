@@ -6,3 +6,4 @@ npm-debug.log
 .tern-project
 lib/
 temp/
+yarn-error.log
