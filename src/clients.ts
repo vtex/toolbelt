@@ -1,4 +1,4 @@
-import {Registry, Apps, Workspaces, Router} from '@vtex/api'
+import {Registry, Apps, Workspaces, Router, Colossus} from '@vtex/api'
 
 import endpoint from './endpoint'
 import envTimeout from './timeout'
@@ -25,21 +25,24 @@ const accountRegistry = (account: string = 'smartcheckout'): Registry => {
   return Registry({...options, account, endpoint: endpoint('registry')})
 }
 
-const [apps, router, workspaces] = getToken()
+const [apps, router, workspaces, colossus] = getToken()
   ? [
     Apps({...options, endpoint: endpoint('apps')}),
     Router({...options, endpoint: endpoint('router')}),
     Workspaces({...options, endpoint: endpoint('workspaces')}),
+    Colossus({...options}),
   ]
   : [
     interceptor('apps'),
     interceptor('router') ,
     interceptor('workspaces'),
+    interceptor('colossus'),
   ]
 
 export {
   apps,
   router,
   accountRegistry,
-  workspaces
+  workspaces,
+  colossus
 }

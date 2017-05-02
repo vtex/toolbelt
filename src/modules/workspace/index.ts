@@ -21,5 +21,8 @@ export default {
     reset: {
       module: dirnameJoin('modules/workspace/reset'),
     },
+    prepare: {
+      module: dirnameJoin('modules/workspace/prepare'),
+    },
   },
 }
