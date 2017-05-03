@@ -60,7 +60,7 @@ export default {
     }
 
     log.info('Linking app', `${id(manifest)}`)
-    listen(account, workspace, log.level, `${manifest.vendor}.${manifest.name}@${manifest.version}`)
+    listen(account, workspace, log.level, `${manifest.vendor}.${manifest.name}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
     return listLocalFiles(root)
       .tap(() => log.debug('Sending files:'))
