@@ -99,7 +99,7 @@
     "rimraf": "^2.6.1",
     "tslint": "^4.5.1",
     "tslint-config-vtex": "^1.2.0",
-    "tslint-eslint-rules": "^3.4.0",
+    "tslint-eslint-rules": "^4.0.0",
     "typescript": "^2.2.1"
   },
   "ava": {
