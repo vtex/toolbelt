@@ -32,7 +32,7 @@ export default {
       log.error('You\'re not logged in right now')
       return promptLogin()
       .then<any>(confirm =>
-        confirm ? loginCmd.handler() : log.error('User cancelled'),
+        confirm ? loginCmd.handler({workspace}) : log.error('User cancelled'),
       )
     } else if (previousAccount === account) {
       return Promise.resolve(

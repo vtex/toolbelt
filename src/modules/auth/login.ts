@@ -29,16 +29,13 @@ const workspacesClient = () => {
 }
 
 const startUserAuth = (account: string, workspace: string): Bluebird<string | never> => {
-  const state = randomstring.generate();
-  const returnUrlEncoded = encodeURIComponent(`/_toolbelt/callback?state=${state}&workspace=${workspace}`);
+  const state = randomstring.generate()
+  const returnUrlEncoded = encodeURIComponent(`/_toolbelt/callback?state=${state}&workspace=${workspace}`)
+  const url = `https://${account}.myvtex.com/admin/login/?workspace=${workspace}&ReturnUrl=${returnUrlEncoded}`
+  opn(url, {wait: false})
 
-  opn(`https://${account}.myvtex.com/admin/login/?workspace=${workspace}&ReturnUrl=${returnUrlEncoded}`)
-
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     const es = new EventSource(`https://${account}.myvtex.com/_toolbelt/sse/${state}?workspace=${workspace}`)
-    es.onopen = () =>
-      log.debug(`Connected to logs with level`)
-
     es.addEventListener('message', (msg: MessageJSON) => {
       const {
         body: token,
@@ -48,10 +45,10 @@ const startUserAuth = (account: string, workspace: string): Bluebird<string | ne
     })
 
     es.onerror = (err) => {
-      log.error(`Connection to log server has failed with status ${err.status}`)
+      log.error(`Connection to login server has failed with status ${err.status}`)
       reject(err)
     }
-  });
+  })
 }
 
 const promptWorkspaceInput = (account: string, token: string): Bluebird<string> =>
@@ -139,13 +136,13 @@ const saveCredentials = (login: string, account: string, token: string, workspac
 
 export default {
   description: 'Log into a VTEX account',
-   options: [
+  options: [
     {
       short: 'w',
       long: 'workspace',
       description: 'Login in a specific workspace',
       type: 'bool',
-    }
+    },
   ],
   handler: (options) => {
     return Promise.resolve(cachedLogin)
@@ -164,7 +161,7 @@ export default {
         ])
       })
       .spread((account: string, token: string, workspace: string) => {
-        var decodedToken = jwt.decode(token)
+        const decodedToken = jwt.decode(token)
         const login = decodedToken.sub
         saveCredentials(login, account, token, workspace)
         const actualWorkspace = workspace || promptWorkspace(account, token)
