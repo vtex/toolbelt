@@ -1,13 +1,12 @@
 import {prop} from 'ramda'
-import {ID} from '@vtex/api'
 import * as chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
-import * as validator from 'validator'
-
+import * as opn from 'opn'
+import * as  jwt from 'jsonwebtoken';
+import * as EventSource from 'eventsource'
+import * as randomstring from 'randomstring'
 import log from '../../logger'
-import endpoint from '../../endpoint'
-import {version} from '../../../package.json'
 import {
   getLogin,
   saveToken,
@@ -20,10 +19,6 @@ import {
 
 const {mapSeries, all} = Bluebird
 const [cachedAccount, cachedLogin, cachedWorkspace] = [getAccount(), getLogin(), getWorkspace()]
-const vtexid = new ID(endpoint('vtexid'), {
-  authToken: 'abc123',
-  userAgent: `Toolbelt/${version}`,
-})
 
 const workspacesClient = () => {
   const clients = '../../clients.js'
@@ -33,78 +28,30 @@ const workspacesClient = () => {
   return require(clients)['workspaces']
 }
 
-const isVtexUser = (email: string): boolean =>
-  email.indexOf('@vtex.com') >= 0
+const startUserAuth = (account: string, workspace: string): Bluebird<string | never> => {
+  const state = randomstring.generate();
+  const returnUrlEncoded = encodeURIComponent(`/_toolbelt/callback?state=${state}&workspace=${workspace}`);
 
-const handleAuthResult = (result): Bluebird<never> | string =>
-  result.authStatus !== 'Success'
-    ? Promise.reject(result.authStatus) : result.authCookie.Value
+  opn(`https://${account}.myvtex.com/admin/login/?workspace=${workspace}&ReturnUrl=${returnUrlEncoded}`)
 
-const vtexUserAuth = (email: string, prompt: () => Bluebird<string>): Bluebird<string | never> =>
-  vtexid.getTemporaryToken()
-    .then(token => {
-      log.debug('Sending code to email', {token, email})
-      return vtexid.sendCodeToEmail(token, email)
-        .then(prompt)
-        .tap(() => log.debug('Getting auth token with email code', {token, email}))
-        .then(code => vtexid.getEmailCodeAuthenticationToken(token, email, code))
-        .then(handleAuthResult)
+  return new Promise(async (resolve, reject) => {
+    const es = new EventSource(`https://${account}.myvtex.com/_toolbelt/sse/${state}?workspace=${workspace}`)
+    es.onopen = () =>
+      log.debug(`Connected to logs with level`)
+
+    es.addEventListener('message', (msg: MessageJSON) => {
+      const {
+        body: token,
+      }: Message = JSON.parse(msg.data)
+      es.close()
+      resolve(token)
     })
 
-const userAuth = (email: string, prompt: () => Bluebird<string>): Bluebird<string | never> =>
-  vtexid.getTemporaryToken()
-    .then(token =>
-      prompt()
-        .tap(() => log.debug('Getting auth token with password', {token, email}))
-        .then(password => vtexid.getPasswordAuthenticationToken(token, email, password))
-        .then<Bluebird<never> | string>(handleAuthResult),
-    )
-
-const startUserAuth = (email: string, promptCode: () => Bluebird<string>, promptPass: () => Bluebird<string>): Bluebird<string | never> =>
-  isVtexUser(email) ? vtexUserAuth(email, promptCode) : userAuth(email, promptPass)
-
-const promptAccount = (): Bluebird<string> =>
-  Promise.resolve(
-    inquirer.prompt({
-      name: 'account',
-      message: 'Account:',
-      filter: (s) => s.trim(),
-      validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
-    }),
-  )
-  .then<string>(prop('account'))
-
-const promptLogin = (): Bluebird<string> =>
-  Promise.resolve(
-    inquirer.prompt({
-      name: 'login',
-      message: 'Email:',
-      filter: s => s.trim(),
-      validate: s => validator.isEmail(s.trim()) || 'Please enter a valid email.',
-    }),
-  )
-  .then<string>(prop('login'))
-
-const promptPassword = (): Bluebird<string> =>
-  Promise.resolve(
-    inquirer.prompt({
-      type: 'password',
-      name: 'password',
-      message: 'Password:',
-    }),
-  )
-  .then<string>(prop('password'))
-
-const promptEmailCode = (): Bluebird<string> => {
-  console.log(chalk.blue('!'), 'Please check your email - we\'ve sent you a temporary code.')
-  return Promise.resolve(
-    inquirer.prompt({
-      name: 'code',
-      message: 'Code:',
-      validate: c => /\d{6}/.test(c) || 'Please enter the 6-digit numeric code you received in your email.',
-    }),
-  )
-  .then<string>(prop('code'))
+    es.onerror = (err) => {
+      log.error(`Connection to log server has failed with status ${err.status}`)
+      reject(err)
+    }
+  });
 }
 
 const promptWorkspaceInput = (account: string, token: string): Bluebird<string> =>
@@ -172,6 +119,17 @@ const promptUsePrevious = (): Bluebird<boolean> => {
   .then<boolean>(prop('confirm'))
 }
 
+const promptAccount = (): Bluebird<string> =>
+  Promise.resolve(
+    inquirer.prompt({
+      name: 'account',
+      message: 'Account:',
+      filter: (s) => s.trim(),
+      validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
+    }),
+  )
+  .then<string>(prop('account'))
+
 const saveCredentials = (login: string, account: string, token: string, workspace: string): void => {
   saveLogin(login)
   saveAccount(account)
@@ -181,24 +139,33 @@ const saveCredentials = (login: string, account: string, token: string, workspac
 
 export default {
   description: 'Log into a VTEX account',
-  handler: () => {
+   options: [
+    {
+      short: 'w',
+      long: 'workspace',
+      description: 'Login in a specific workspace',
+      type: 'bool',
+    }
+  ],
+  handler: (options) => {
     return Promise.resolve(cachedLogin)
-      .then(login => login ? promptUsePrevious() : false)
+      .then((login) => login ? promptUsePrevious() : false)
       .then(prev =>
         prev
-          ? [cachedLogin, cachedAccount, cachedWorkspace]
-          : mapSeries([promptLogin, promptAccount, () => null], fn => fn()),
+          ? [cachedAccount, cachedWorkspace]
+          : mapSeries([promptAccount, () => cachedWorkspace], fn => fn()),
       )
-      .spread((login: string, account: string, workspace: string) => {
-        log.debug('Start login', {login, account, workspace})
+      .spread((account: string, workspace: string) => {
+        log.debug('Start login', {account, workspace})
         return all([
-          login,
           account,
-          startUserAuth(login, promptEmailCode, promptPassword),
+          startUserAuth(account, options.w || options.workspace || 'master'),
           workspace,
         ])
       })
-      .spread((login: string, account: string, token: string, workspace: string) => {
+      .spread((account: string, token: string, workspace: string) => {
+        var decodedToken = jwt.decode(token)
+        const login = decodedToken.sub
         saveCredentials(login, account, token, workspace)
         const actualWorkspace = workspace || promptWorkspace(account, token)
         return all([login, account, token, actualWorkspace])
