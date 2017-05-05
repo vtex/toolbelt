@@ -77,11 +77,9 @@ export const watch = (root: string, sendChanges: Function): Bluebird<string> => 
     persistent: true,
     ignoreInitial: true,
     ignored: getIgnoredPaths(root),
-    usePolling: process.platform === 'win32',
-    awaitWriteFinish: {
-      stabilityThreshold: 50,
-      pollInterval: 10,
-    },
+    usePolling: true,
+    awaitWriteFinish: true,
+    atomic: true,
   })
   return new Promise((resolve, reject) => {
     watcher
