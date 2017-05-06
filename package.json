@@ -56,7 +56,7 @@
     "eslint-config-vtex": "^5.1.0",
     "eslint-config-vtex-react": "^2.1.0",
     "eslint-plugin-import": "^2.2.0",
-    "eslint-plugin-react": "^6.10.0",
+    "eslint-plugin-react": "^7.0.0",
     "eventsource": "^0.2.2",
     "findhelp": "^0.3.0",
     "fs-promise": "^2.0.0",
