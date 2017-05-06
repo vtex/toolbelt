@@ -59,7 +59,7 @@
     "eslint-plugin-react": "^6.10.0",
     "eventsource": "^0.2.2",
     "findhelp": "^0.3.0",
-    "fs-promise": "^2.0.0",
+    "fs-promise": "^2.0.3",
     "globby": "^6.1.0",
     "inquirer": "^3.0.6",
     "jsonpath": "^0.2.11",
