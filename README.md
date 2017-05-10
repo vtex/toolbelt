@@ -1,5 +1,7 @@
 # VTEX Toolbelt
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/vtex/toolbelt.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt)
 
 All you need to start using the VTEX platform.
