@@ -3,7 +3,7 @@ import * as chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
 import * as opn from 'opn'
-import * as  jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken'
 import * as EventSource from 'eventsource'
 import * as randomstring from 'randomstring'
 import log from '../../logger'
@@ -17,16 +17,8 @@ import {
   saveWorkspace,
 } from '../../conf'
 
-const {mapSeries, all} = Bluebird
 const [cachedAccount, cachedLogin, cachedWorkspace] = [getAccount(), getLogin(), getWorkspace()]
-
-const workspacesClient = () => {
-  const clients = '../../clients.js'
-  try {
-    delete require.cache[require.resolve(clients)]
-  } catch (e) {}
-  return require(clients)['workspaces']
-}
+const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`
 
 const startUserAuth = (account: string, workspace: string): Bluebird<string | never> => {
   const state = randomstring.generate()
@@ -51,80 +43,21 @@ const startUserAuth = (account: string, workspace: string): Bluebird<string | ne
   })
 }
 
-const promptWorkspaceInput = (account: string, token: string): Bluebird<string> =>
-  Promise.resolve(
-    inquirer.prompt({
-      name: 'workspace',
-      filter: s => s.trim(),
-      message: 'New workspace name:',
-      validate: s => /^(\s*|\s*[\w-]+\s*)$/.test(s) || 'Please enter a valid workspace.',
-    })
-    .then(({workspace}: {workspace: string}) => workspace),
-  )
-  .tap(workspace => workspacesClient().create(account, workspace))
-  .catch(err => {
-    if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
-      log.error(err.response.data.message)
-      return promptWorkspaceInput(account, token)
-    }
-    throw new Error(err)
+const promptUsePrevious = (): Bluebird<boolean> =>
+  inquirer.prompt({
+    type: 'confirm',
+    name: 'confirm',
+    message: `Do you want to use the previous login details? (${details})`,
   })
-
-const promptWorkspace = (account: string, token: string): Bluebird<string> => {
-  const newWorkspace = 'Create new workspace...'
-  const master = `master ${chalk.red('(read-only)')}`
-  return workspacesClient().list(account)
-    .then(workspaces =>
-      inquirer.prompt({
-        type: 'list',
-        name: 'workspace',
-        message: 'Workspaces:',
-        choices: [
-          newWorkspace,
-          master,
-          ...workspaces.map(w => w.name).filter(w => w !== 'master'),
-          new inquirer.Separator(),
-        ],
-      }),
-    )
-    .then(({workspace}: {workspace: string}) => {
-      switch (workspace) {
-        case master:
-          return 'master'
-        case newWorkspace:
-          return promptWorkspaceInput(account, token)
-        default:
-          return workspace
-      }
-    })
-}
-
-const promptUsePrevious = (): Bluebird<boolean> => {
-  log.info(
-    'Found previous credential!',
-    `\n${chalk.bold('Email:')} ${chalk.green(cachedLogin)}`,
-    `\n${chalk.bold('Account:')} ${chalk.green(cachedAccount)}`,
-    `\n${chalk.bold('Workspace:')} ${chalk.green(cachedWorkspace)}`,
-  )
-  return Promise.resolve(
-    inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Do you want to log in with the previous credential?',
-    }),
-  )
   .then<boolean>(prop('confirm'))
-}
 
 const promptAccount = (): Bluebird<string> =>
-  Promise.resolve(
-    inquirer.prompt({
-      name: 'account',
-      message: 'Account:',
-      filter: (s) => s.trim(),
-      validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
-    }),
-  )
+  inquirer.prompt({
+    name: 'account',
+    message: 'Account:',
+    filter: (s) => s.trim(),
+    validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
+  })
   .then<string>(prop('account'))
 
 const saveCredentials = (login: string, account: string, token: string, workspace: string): void => {
@@ -134,43 +67,38 @@ const saveCredentials = (login: string, account: string, token: string, workspac
   saveWorkspace(workspace)
 }
 
+const authAndSave = async (account, workspace): Promise<{login: string, token: string}> => {
+  const token = await startUserAuth(account, workspace)
+  const decodedToken = jwt.decode(token)
+  const login = decodedToken.sub
+  saveCredentials(login, account, token, workspace)
+  return {login, token}
+}
+
 export default {
   description: 'Log into a VTEX account',
   options: [
     {
+      short: 'a',
+      long: 'account',
+      description: 'Specify login account',
+      type: 'string',
+    },
+    {
       short: 'w',
       long: 'workspace',
-      description: 'Login in a specific workspace',
-      type: 'bool',
+      description: 'Specify login workspace',
+      type: 'string',
     },
   ],
-  handler: (options) => {
-    return Promise.resolve(cachedLogin)
-      .then((login) => login ? promptUsePrevious() : false)
-      .then(prev =>
-        prev
-          ? [cachedAccount, cachedWorkspace]
-          : mapSeries([promptAccount, () => cachedWorkspace], fn => fn()),
-      )
-      .spread((account: string, workspace: string) => {
-        log.debug('Start login', {account, workspace})
-        return all([
-          account,
-          startUserAuth(account, options.w || options.workspace || 'master'),
-          workspace,
-        ])
-      })
-      .spread((account: string, token: string, workspace: string) => {
-        const decodedToken = jwt.decode(token)
-        const login = decodedToken.sub
-        saveCredentials(login, account, token, workspace)
-        const actualWorkspace = workspace || promptWorkspace(account, token)
-        return all([login, account, token, actualWorkspace])
-      })
-      .spread((login: string, account: string, token: string, workspace: string) => {
-        saveWorkspace(workspace)
-        log.debug('Login successful', login, account, token, workspace)
-        log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
-      })
+  handler: async (options) => {
+    const optionAccount = options.a || options.account
+    const optionWorkspace = options.w || options.workspace
+    const usePrevious = !(optionAccount && optionWorkspace) && details && await promptUsePrevious()
+    const account = optionAccount || (usePrevious && cachedAccount) || await promptAccount()
+    const workspace = optionWorkspace || (usePrevious && cachedWorkspace) || 'master'
+    const {login, token} = await authAndSave(account, workspace)
+    log.debug('Login successful', login, account, token, workspace)
+    log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
   },
 }
