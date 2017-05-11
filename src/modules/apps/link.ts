@@ -3,6 +3,7 @@ import {uniqBy, prop} from 'ramda'
 import * as debounce from 'debounce'
 import {createInterface} from 'readline'
 
+import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {listen} from '../../courier'
@@ -53,10 +54,7 @@ export default {
     }
 
     if (!isManifestReadable()) {
-      const err = new Error()
-      err.name = 'InterruptionError'
-      log.error('No app was found, please fix the manifest.json to update the registry.')
-      throw err
+      throw new CommandError('No app was found, please fix the manifest.json to update the registry.')
     }
 
     log.info('Linking app', `${id(manifest)}`)

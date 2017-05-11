@@ -1,5 +1,6 @@
 import * as chalk from 'chalk'
 
+import {CommandError} from '../../errors'
 import log from '../../logger'
 import {getAccount} from '../../conf'
 import {workspaces} from '../../clients'
@@ -11,10 +12,7 @@ export default {
   description: 'Create a new workspace with this name',
   handler: (name: string) => {
     if (!VALID_WORKSPACE.test(name)) {
-      const err = new Error()
-      err.name = 'InterruptionError'
-      log.error('Whoops! That\'s not a valid workspace name. Please use only lowercase letters, numbers and hyphens.')
-      throw err
+      throw new CommandError('Whoops! That\'s not a valid workspace name. Please use only lowercase letters, numbers and hyphens.')
     }
     log.debug('Creating workspace', name)
     return workspaces.create(getAccount(), name)
