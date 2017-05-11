@@ -19,7 +19,7 @@
       {
         "commonjs": true,
         "amd": true,
-        "ignore": ["^[a-zA-Z\\.@-]+$"]
+        "ignore": ["^([a-zA-Z@]+[-\\.]?)+"]
       }
     ]
   },
