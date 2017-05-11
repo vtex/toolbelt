@@ -15,6 +15,7 @@ import loginCmd from './modules/auth/login'
 import logoutCmd from './modules/auth/logout'
 import switchCmd from './modules/auth/switch'
 import whoamiCmd from './modules/auth/whoami'
+import {CommandError} from './errors'
 
 global.Promise = Promise
 const run = unboundRun.bind(tree)
@@ -117,7 +118,10 @@ const onError = e => {
       case 'CommandNotFound':
         log.error('Command not found:', chalk.blue(...process.argv.slice(2)))
         break
-      case 'InterruptionError':
+      case CommandError.name:
+        if (e.message && e.message !== '') {
+          log.error(e.message)
+        }
         break
       default:
         log.error('Something exploded :(')

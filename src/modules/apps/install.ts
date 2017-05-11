@@ -1,6 +1,7 @@
 import {head, tail} from 'ramda'
 import * as Bluebird from 'bluebird'
 
+import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
@@ -17,10 +18,7 @@ const appIdValidator = (app: string): Bluebird<void | never> => {
       if (isAppValid) {
         return
       }
-      const err = new Error()
-      err.name = 'InterruptionError'
-      log.error('Invalid app format, please use <vendor>.<name>[@<version>]')
-      throw err
+      throw new CommandError('Invalid app format, please use <vendor>.<name>[@<version>]')
     })
 }
 
@@ -63,10 +61,7 @@ export default {
 
     // No app arguments and no manifest file.
     if (!optionalApp && !isManifestReadable()) {
-      const err = new Error()
-      err.name = 'InterruptionError'
-      log.error('No app was found, please fix the manifest.json or use <vendor>.<name>[@<version>]')
-      throw err
+      throw new CommandError('No app was found, please fix the manifest.json or use <vendor>.<name>[@<version>]')
     }
 
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`

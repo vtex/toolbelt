@@ -3,6 +3,7 @@ import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
 import {compose, flip, gt, length} from 'ramda'
 
+import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps, colossus} from '../../clients'
 import {listen, onEvent} from '../../courier'
@@ -27,10 +28,7 @@ const canGoLive = (): Bluebird<never | void> =>
       if (!result) {
         return
       }
-      const err = new Error()
-      err.name = 'InterruptionError'
-      log.error('You have links on your workspace, please unlink them before preparing for production')
-      throw err
+      throw new CommandError('You have links on your workspace, please unlink them before preparing for production')
     })
 
 const promptConfirm = (workspace: string): Bluebird<never | void> =>
@@ -45,9 +43,7 @@ const promptConfirm = (workspace: string): Bluebird<never | void> =>
     if (confirm) {
       return
     }
-    const err = new Error()
-    err.name = `InterruptionError`
-    throw err
+    throw new CommandError()
   })
 
 const waitCompletion = () => {
