@@ -1,48 +1,35 @@
-import {prop} from 'ramda'
 import * as chalk from 'chalk'
-import * as inquirer from 'inquirer'
-import * as Bluebird from 'bluebird'
 
+import {CommandError} from '../../errors'
 import log from '../../logger'
 import loginCmd from './login'
-import useCmd from '../workspace/use'
-import {getAccount, getWorkspace, saveAccount} from '../../conf'
+import {getAccount, getWorkspace} from '../../conf'
 
-const [previousAccount, workspace] = [getAccount(), getWorkspace()]
-
-const promptLogin = (): Bluebird<boolean> =>
-  Promise.resolve(
-    inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Log in?',
-    }),
-  )
-  .then<boolean>(prop('confirm'))
+const [previousAccount, previousWorkspace] = [getAccount(), getWorkspace()]
 
 export default {
   requiredArgs: 'account',
   description: 'Switch to another VTEX account',
-  handler: (account: string) => {
+  options: [
+    {
+      short: 'w',
+      long: 'workspace',
+      description: 'Specify login workspace',
+      type: 'string',
+    },
+  ],
+  handler: async (account: string, options) => {
     const isValidAccount = /^\s*[\w-]+\s*$/.test(account)
+    const workspace = options.w || options.workspace || previousWorkspace
+
     if (!isValidAccount) {
-      return Promise.resolve(log.error('Invalid account format'))
-    }
-    if (!previousAccount) {
-      log.error('You\'re not logged in right now')
-      return promptLogin()
-      .then<any>(confirm =>
-        confirm ? loginCmd.handler({workspace}) : log.error('User cancelled'),
-      )
+      throw new CommandError('Invalid account format')
+    } else if (!previousAccount) {
+      throw new CommandError('You\'re not logged in right now')
     } else if (previousAccount === account) {
-      return Promise.resolve(
-        log.warn(`You're already using the account ${chalk.blue(account)}`),
-      )
+      throw new CommandError(`You're already using the account ${chalk.blue(account)}`)
     }
-    return Promise.resolve(saveAccount(account))
-      .tap(() =>
-        log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(account)}`),
-      )
-      .then(() => useCmd.handler(workspace))
+    await loginCmd.handler({account, workspace})
+    log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(account)}`)
   },
 }
