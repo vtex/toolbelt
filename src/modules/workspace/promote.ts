@@ -18,8 +18,15 @@ const flippedGt = flip(gt)
 const hasLinks =
   compose<any[], number, boolean>(flippedGt(0), length)
 
-const isPromotable = (): Bluebird<never | void> =>
-  listLinks()
+const isMaster = Promise.method((workspace: string) => {
+  if (workspace === 'master') {
+    throw new CommandError(`It is not possible to promote workspace ${workspace} to master`)
+  }
+})
+
+const isPromotable = (workspace: string): Bluebird<never | void> =>
+  isMaster(workspace)
+    .then(listLinks())
     .then(hasLinks)
     .then(result => {
       if (!result) {
@@ -47,7 +54,7 @@ export default {
   description: 'Promote this workspace to master',
   handler: () => {
     log.debug('Promoting workspace', currentWorkspace)
-    return isPromotable()
+    return isPromotable(currentWorkspace)
       .then(() => promptConfirm(currentWorkspace))
       .then(() => promote(account, currentWorkspace))
       .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`))
