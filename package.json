@@ -55,7 +55,7 @@
     "es6-error": "^4.0.2",
     "eslint": "^3.17.1",
     "eslint-config-vtex": "^5.1.0",
-    "eslint-config-vtex-react": "^2.1.0",
+    "eslint-config-vtex-react": "^3.0.1",
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-react": "^7.0.0",
     "eventsource": "^1.0.1",
