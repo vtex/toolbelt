@@ -18,9 +18,9 @@ export default {
   description: 'List your workspace dependencies',
   options: [
     {
-      short: 'a',
-      long: 'apps',
-      description: 'Show only VTEX apps',
+      short: 'n',
+      long: 'npm',
+      description: 'Include deps from npm registry',
       type: 'boolean',
     },
     {
@@ -30,11 +30,11 @@ export default {
       type: 'boolean',
     },
   ],
-  handler: async ({a, apps, k, keys}) => {
+  handler: async ({n, npm, k, keys}) => {
     log.debug('Starting to list dependencies')
     const deps = await getDependencies()
     const keysOnly = k || keys
-    if (a || apps) {
+    if (!(n || npm)) {
       removeNpm(deps, !keysOnly)
     }
     const result = keysOnly ? Object.keys(deps) : deps
