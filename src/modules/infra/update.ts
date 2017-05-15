@@ -49,11 +49,9 @@ const createVersionMap = (availableRes: InfraAvailableResources, installedRes: I
       .filter(v => getTag(v) === tag)
       .sort(semver.rcompare)[0]
     if (currentVersion !== latestVersion) {
-      acc.update = {
-        [name]: {
-          latest: latestVersion,
-          current: currentVersion,
-        },
+      acc.update[name] = {
+        latest: latestVersion,
+        current: currentVersion,
       }
     } else {
       acc.latest[name] = currentVersion
