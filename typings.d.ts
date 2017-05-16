@@ -22,6 +22,7 @@ interface Manifest {
   settingsSchema?: {},
   description?: string,
   categories?: string[],
+  registries?: string[],
   mustUpdateAt?: string,
 }
 
