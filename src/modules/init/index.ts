@@ -32,7 +32,7 @@ const promptService = (): Bluebird<string> => {
 }
 
 const promptName = (): Bluebird<string> => {
-  const message = 'The app name should only contain number, letters, underscores and hyphen.'
+  const message = 'The app name should only contain numbers, lowercase letters, underscores and hyphens.'
   return Promise.resolve(
     inquirer.prompt({
       name: 'name',
@@ -45,7 +45,7 @@ const promptName = (): Bluebird<string> => {
 }
 
 const promptVendor = (): Bluebird<string> => {
-  const message = 'The vendor should only contain number, letters, underscores and hyphen.'
+  const message = 'The vendor should only contain numbers, lowercase letters, underscores and hyphens.'
   return Promise.resolve(
     inquirer.prompt({
       name: 'vendor',
