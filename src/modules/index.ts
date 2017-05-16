@@ -8,6 +8,7 @@ import infra from './infra'
 import io from './io'
 import {dirnameJoin} from '../file'
 import workspace from './workspace'
+import deps from './deps'
 import {greeting} from '../greeting'
 import * as pkg from '../../package.json'
 
@@ -15,6 +16,7 @@ export default {
   ...auth,
   ...apps,
   ...workspace,
+  ...deps,
   ...setup,
   ...init,
   ...infra,
