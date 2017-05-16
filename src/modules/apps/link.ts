@@ -47,39 +47,35 @@ const sendChanges = (() => {
 
 export default {
   description: 'Send the files to the registry and watch for changes',
-  handler: () => {
+  handler: async () => {
     if (workspace === 'master') {
-      log.error(workspaceMasterMessage)
-      return Promise.resolve()
+      throw new CommandError(workspaceMasterMessage)
     }
 
     if (!isManifestReadable()) {
-      throw new CommandError('No app was found, please fix the manifest.json to update the registry.')
+      throw new CommandError('No app was found. Do you have a valid manifest.json?')
     }
 
     log.info('Linking app', `${id(manifest)}`)
     listen(account, workspace, log.level, `${manifest.vendor}.${manifest.name}`)
+
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
-    return listLocalFiles(root)
-      .tap(() => log.debug('Sending files:'))
-      .tap((paths: string[]) => paths.forEach(p => log.debug(p)))
-      .then(mapFilesToChanges)
-      .then(addChangeContent)
-      .tap((batch: Batch[]) =>
-        log.info(`Sending ${batch.length} file` + (batch.length > 1 ? 's' : '')),
-      )
-      .tap((batch: Batch[]) => link(majorLocator, batch))
-      .tap((batch: Batch[]) =>
-        log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent'),
-      )
-      .then(() => watch(root, sendChanges))
-      .then(() =>
-        createInterface({input: process.stdin, output: process.stdout})
-          .on('SIGINT', () => {
-            log.info('Your app is still in development mode.')
-            log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
-            process.exit()
-          }),
-      )
+    const paths = await listLocalFiles(root)
+    const changes = mapFilesToChanges(paths)
+    const batch = addChangeContent(changes)
+
+    log.debug('Sending files:')
+    paths.forEach(log.debug.bind(log))
+    log.info(`Sending ${batch.length} file` + (batch.length > 1 ? 's' : ''))
+    await link(majorLocator, batch)
+    log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent')
+    await watch(root, sendChanges)
+
+    createInterface({input: process.stdin, output: process.stdout})
+      .on('SIGINT', () => {
+        log.info('Your app is still in development mode.')
+        log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
+        process.exit()
+      })
   },
 }
