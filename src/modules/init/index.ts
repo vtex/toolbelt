@@ -37,7 +37,7 @@ const promptName = (): Bluebird<string> => {
     inquirer.prompt({
       name: 'name',
       message: 'What\'s your VTEX app name?',
-      validate: s => /^[A-Za-z0-9\-_]+$/.test(s) || message,
+      validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
       filter: s => s.trim(),
     }),
   )
@@ -50,7 +50,7 @@ const promptVendor = (): Bluebird<string> => {
     inquirer.prompt({
       name: 'vendor',
       message: 'What\'s your VTEX app vendor?',
-      validate: s => /^[A-Za-z0-9\-_]+$/.test(s) || message,
+      validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
       filter: s => s.trim(),
     }),
   )
