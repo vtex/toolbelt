@@ -21,7 +21,7 @@ const interceptor = (client) => new Proxy({}, {
   },
 })
 
-const accountRegistry = (account: string = 'smartcheckout'): Registry => {
+const accountRegistry = (account: string): Registry => {
   return Registry({...options, account, endpoint: endpoint('registry')})
 }
 
@@ -44,5 +44,5 @@ export {
   router,
   accountRegistry,
   workspaces,
-  colossus
+  colossus,
 }

@@ -15,7 +15,7 @@ const root = process.cwd()
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
-const publisher = (account: string) => {
+const publisher = (account: string = 'smartcheckout') => {
   const reg = accountRegistry(account)
 
   const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
