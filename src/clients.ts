@@ -21,7 +21,7 @@ const interceptor = (client) => new Proxy({}, {
   },
 })
 
-const accountRegistry = (account: string): Registry => {
+const accountRegistry = (account: string = 'smartcheckout'): Registry => {
   return Registry({...options, account, endpoint: endpoint('registry')})
 }
 
