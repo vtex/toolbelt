@@ -6,7 +6,8 @@ import {apps} from '../../clients'
 
 const {getDependencies, updateDependencies} = apps
 
-const notHeader = /\n?\s\s\s\s.*,?|\n?\s\s\],/g
+const headers = /(\s\s".*":\s\[\]?,?)/g
+const notHeader = /^\s{4}/g
 
 export default {
   description: 'Update your workspace dependencies',
@@ -16,15 +17,18 @@ export default {
     const previousDeps = await getDependencies()
     const currentDeps = await updateDependencies()
     const diff = diffJson(previousDeps, currentDeps)
+
+    if (diff.length === 1 && !diff[0].added && !diff[0].removed) {
+      return log.info('No updates available.')
+    }
+
+    log.info('The following dependencies were updated successfully:')
+
     let lastValue = ''
     diff.forEach(({value, added, removed}: {value: string, added: boolean, removed: boolean}) => {
       if (!verbose && !(added || removed)) {
-        // Save the last header to show nested diffs with better context
-        return lastValue = value
-          .replace(notHeader, '')
-          .trim()
-          .split('\n')
-          .pop()
+        const matches = value.match(headers)
+        return lastValue = matches ? matches.pop() : ''
       }
       if (notHeader.test(value) && lastValue !== '') {
         process.stdout.write(chalk.gray(lastValue + '\n'))
@@ -33,7 +37,5 @@ export default {
       const color = added ? chalk.green : removed ? chalk.red : chalk.gray
       process.stdout.write(color(value))
     })
-    process.stdout.write('\n')
-    log.info('Finished updating dependencies')
   },
 }
