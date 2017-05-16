@@ -38,7 +38,7 @@ const unlinkApps = (apps: string[]): Bluebird<void | never> => {
       if (!err.toolbeltWarning) {
         log.warn(`The following apps were not unlinked: ${apps.join(', ')}`)
         // the warn message is only displayed the first time the err occurs.
-        err.toolbeltWarning = true;
+        err.toolbeltWarning = true
       }
       throw err
     })
