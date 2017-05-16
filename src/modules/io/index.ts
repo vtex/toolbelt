@@ -9,6 +9,6 @@ export default {
     install: {
       alias: 'i',
       module: dirnameJoin('modules/io/install'),
-    }
+    },
   },
 }

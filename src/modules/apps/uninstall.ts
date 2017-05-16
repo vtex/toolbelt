@@ -48,7 +48,7 @@ const uninstallApps = (apps: string[], preConfirm: boolean): Bluebird<void | nev
       if (!err.toolbeltWarning) {
         log.warn(`The following apps were not uninstalled: ${apps.join(', ')}`)
         // the warn message is only displayed the first time the err occurs.
-        err.toolbeltWarning = true;
+        err.toolbeltWarning = true
       }
       throw err
     })

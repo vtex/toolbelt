@@ -23,8 +23,8 @@ const listAllAvailableIoVersions = (tag: string): Bluebird<void> =>
         .filter(v => !tag || hasTag(v.version, tag))
         .sort((a, b) => semver.compare(b.version, a.version))
         .slice(0, 10)
-        .forEach(({version, tested, services}) => {
-          const validVersion = semver.valid(version)
+        .forEach(({version: ioVersion, tested, services}) => {
+          const validVersion = semver.valid(ioVersion)
           const styledVersion = tested ? chalk.green(validVersion) : chalk.bold.yellow(validVersion)
           const serviceKeys = Object.keys(services)
           const row = [styledVersion]
@@ -52,22 +52,22 @@ const listAllAvailableIoVersions = (tag: string): Bluebird<void> =>
 const printInstalledIoVersion = (): Bluebird<void> =>
   getInstalledIoVersion()
     .then((installed: IoVersions) => {
-
-        const allServicesKeys = ['Version']
-        const validVersion = semver.valid(installed.version)
-        const styledVersion = installed.tested ? chalk.green(validVersion) : chalk.bold.yellow(validVersion)
-        const serviceKeys = Object.keys(installed.services)
-        const row = [styledVersion]
-        serviceKeys.forEach(serviceKey => {
-          if (!contains(serviceKey, allServicesKeys))
-            allServicesKeys.push(serviceKey)
-          const index = allServicesKeys.indexOf(serviceKey)
-          const version = installed.services[serviceKey]
-          row[index] = version
-        })
-        const table = new Table({head: allServicesKeys})
-        table.push(row)
-        return table
+      const allServicesKeys = ['Version']
+      const validVersion = semver.valid(installed.version)
+      const styledVersion = installed.tested ? chalk.green(validVersion) : chalk.bold.yellow(validVersion)
+      const serviceKeys = Object.keys(installed.services)
+      const row = [styledVersion]
+      serviceKeys.forEach(serviceKey => {
+        if (!contains(serviceKey, allServicesKeys)) {
+          allServicesKeys.push(serviceKey)
+        }
+        const index = allServicesKeys.indexOf(serviceKey)
+        const version = installed.services[serviceKey]
+        row[index] = version
+      })
+      const table = new Table({head: allServicesKeys})
+      table.push(row)
+      return table
     })
     .then(table => {
       log.info(`io versions available to install`)

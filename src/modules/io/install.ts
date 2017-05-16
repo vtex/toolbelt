@@ -10,7 +10,6 @@ import {router} from '../../clients'
 
 const {listAvailableIoVersions, installIo, listInstalledServices} = router
 
-
 const promptInstall = (version: IoVersions): Bluebird<boolean> =>
   Promise.resolve(
     inquirer.prompt({
@@ -22,33 +21,32 @@ const promptInstall = (version: IoVersions): Bluebird<boolean> =>
   )
 
 const installVersion = (version: string): Bluebird<any> => {
-    const spinner = ora('Getting versions').start()
-    return Promise.all([listAvailableIoVersions(), listInstalledServices()])
-      .tap(() => spinner.stop())
-      .spread<[IoVersions, InfraInstalledResources[]]>((availableIoVersions: IoVersions[], installedResouces: InfraInstalledResources[]) => {
-          const foundVersion = find<IoVersions>(propEq('version', version))(availableIoVersions);
-
-          return [foundVersion, installedResouces]
-      })
-      .spread((version: IoVersions, installedResouces: InfraInstalledResources[]) => {
-        if(version) {
-            if(logVersionMap(version, installedResouces)) {
-            return promptInstall(version)
+  const spinner = ora('Getting versions').start()
+  return Promise.all([listAvailableIoVersions(), listInstalledServices()])
+    .tap(() => spinner.stop())
+    .spread<[IoVersions, InfraInstalledResources[]]>((availableIoVersions: IoVersions[], installedResouces: InfraInstalledResources[]) => {
+      const foundVersion = find<IoVersions>(propEq('version', version))(availableIoVersions)
+      return [foundVersion, installedResouces]
+    })
+    .spread((ioVersion: IoVersions, installedResources: InfraInstalledResources[]) => {
+      if (ioVersion) {
+        if (logVersionMap(ioVersion, installedResources)) {
+          return promptInstall(ioVersion)
             .then(confirm => {
-              if(confirm) {
-                return installIo(version.version)
+              if (confirm) {
+                return installIo(ioVersion.version)
                   .then(() => log.info('Installation complete'))
               }
             })
-          }
-        } else{
-          log.error(`No suitable version`)
-          return null;
         }
-      })
-      .catch(err => {
-        spinner.stop()
-        throw err
+      } else {
+        log.error(`No suitable version`)
+        return null
+      }
+    })
+    .catch(err => {
+      spinner.stop()
+      throw err
     })
 }
 
@@ -58,57 +56,52 @@ const hasTag = (version: string, tag: string): boolean => {
 }
 
 const logVersionMap = (ioVersion: IoVersions, installedResouces: InfraInstalledResources[]): boolean => {
+  let shouldUpdate = false
   const ioVersionServices = Object.keys(ioVersion.services).sort()
-  var shouldUpdate = false;
-  ioVersionServices.forEach((service) => {
-
-    var actualVersion = find<InfraInstalledResources>(propEq('name', service))(installedResouces);
-    if(actualVersion) {
-      if(actualVersion.version === ioVersion.services[service]) {
+  ioVersionServices.forEach(service => {
+    const actualVersion = find<InfraInstalledResources>(propEq('name', service))(installedResouces)
+    if (actualVersion) {
+      if (actualVersion.version === ioVersion.services[service]) {
         console.log(`${pad(service, 15)}  ${chalk.yellow(actualVersion.version)}`)
       } else {
-        shouldUpdate = true;
+        shouldUpdate = true
         console.log(`${pad(service, 15)}  ${actualVersion.version} ${chalk.gray('->')} ${chalk.green(ioVersion.services[service])}`)
       }
     } else {
-      shouldUpdate = true;
+      shouldUpdate = true
       console.log(`${pad(service, 15)}  NA ${chalk.gray('->')} ${chalk.green(ioVersion.services[service])}`)
     }
   })
-
-  console.log("")
-  return shouldUpdate;
+  console.log('')
+  return shouldUpdate
 }
 
 const installVersionByTag = (tag: string): Bluebird<{}> => {
   const spinner = ora('Getting versions').start()
   return Promise.all([listAvailableIoVersions(), listInstalledServices()])
     .tap(() => spinner.stop())
-    .spread((availableIoVersions : IoVersions[], installedResouces: InfraInstalledResources[]) => {
+    .spread((availableIoVersions: IoVersions[], installedResouces: InfraInstalledResources[]) => {
       const versionsByTag = availableIoVersions
-                               .filter(v => !tag || hasTag(v.version, tag))
-                               .sort((a, b) => semver.compare(b.version, a.version))
+        .filter(v => !tag || hasTag(v.version, tag))
+        .sort((a, b) => semver.compare(b.version, a.version))
 
-      if(versionsByTag.length == 0) {
+      if (versionsByTag.length === 0) {
         log.error(`No suitable version`)
-        return null;
+        return null
       }
 
-      const versionToInstall = versionsByTag[0];
-
-      if(logVersionMap(versionToInstall, installedResouces)) {
+      const versionToInstall = versionsByTag[0]
+      if (logVersionMap(versionToInstall, installedResouces)) {
         return promptInstall(versionToInstall)
           .then(confirm => {
-            if(confirm) {
+            if (confirm) {
               return installIo(versionToInstall.version)
                 .then(() => log.info('Installation complete'))
             }
           })
       }
-
-    });
+    })
 }
-
 
 export default {
   optionalArgs: 'version',
@@ -119,7 +112,7 @@ export default {
       long: 'tag',
       description: 'Install last version by Tag',
       type: 'string',
-    }
+    },
   ],
   handler: (version: string, options) => {
     const tag = options.t || options.tag
