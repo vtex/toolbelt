@@ -32,12 +32,12 @@ const promptService = (): Bluebird<string> => {
 }
 
 const promptName = (): Bluebird<string> => {
-  const message = 'The app name should only contain number, letters, underscores and hyphen.'
+  const message = 'The app name should only contain numbers, lowercase letters, underscores and hyphens.'
   return Promise.resolve(
     inquirer.prompt({
       name: 'name',
       message: 'What\'s your VTEX app name?',
-      validate: s => /^[A-Za-z0-9\-_]+$/.test(s) || message,
+      validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
       filter: s => s.trim(),
     }),
   )
@@ -45,12 +45,12 @@ const promptName = (): Bluebird<string> => {
 }
 
 const promptVendor = (): Bluebird<string> => {
-  const message = 'The vendor should only contain number, letters, underscores and hyphen.'
+  const message = 'The vendor should only contain numbers, lowercase letters, underscores and hyphens.'
   return Promise.resolve(
     inquirer.prompt({
       name: 'vendor',
       message: 'What\'s your VTEX app vendor?',
-      validate: s => /^[A-Za-z0-9\-_]+$/.test(s) || message,
+      validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
       filter: s => s.trim(),
     }),
   )
@@ -89,6 +89,7 @@ const createManifest = (name: string, vendor: string, title = '', description = 
     description,
     mustUpdateAt: `${Number(year) + 1}-${monthAndDay.join('-')}`,
     categories: [],
+    registries: ['smartcheckout'],
     settingsSchema: {},
     dependencies: {},
   }
