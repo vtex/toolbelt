@@ -28,7 +28,7 @@ const installApps = async (apps: string[], reg: string): Promise<void> => {
 
 export default {
   optionalArgs: 'app',
-  description: 'Install an app on the current directory or a specified one',
+  description: 'Install an app (defaults to the app in the current directory)',
   options: [
     {
       short: 'r',
@@ -49,13 +49,13 @@ export default {
 
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
-    log.debug('Installing app(s)', apps)
 
     // Only listen for install feedback if there's only one app
     if (apps.length === 1) {
       listenUntilBuildSuccess(app)
     }
 
+    log.debug('Installing app(s)', apps)
     return installApps(apps, options.r || options.registry || 'smartcheckout')
   },
 }
