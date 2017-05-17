@@ -25,7 +25,7 @@ const uninstallApps = async (apps: string[]): Promise<void> => {
   if (apps.length === 0) {
     return
   }
-  const app = validateApp(head(apps))
+  const app = validateApp(head(apps), true)
   try {
     log.debug('Starting to uninstall app', app)
     await uninstallApp(app)

@@ -49,11 +49,13 @@ export const validateAppManifest = (manifest: Manifest): Manifest => {
   return manifest
 }
 
-const appRegex = new RegExp(`^${vendorPattern}\\.${namePattern}@.+$`)
+const appName = new RegExp(`^${vendorPattern}\\.${namePattern}$`)
+const appLocator = new RegExp(`^${vendorPattern}\\.${namePattern}@.+$`)
 
-export const validateApp = (app: string) => {
-  if (!appRegex.test(app)) {
-    throw new CommandError('Invalid app format, please use <vendor>.<name>[@<version>]')
+export const validateApp = (app: string, skipVersion: boolean = false) => {
+  const regex = skipVersion ? appName : appLocator
+  if (!regex.test(app)) {
+    throw new CommandError(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`)
   }
   return app
 }
