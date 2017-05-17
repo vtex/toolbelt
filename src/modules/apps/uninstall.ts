@@ -1,12 +1,10 @@
 import * as inquirer from 'inquirer'
 import {head, tail} from 'ramda'
 
-import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps} from '../../clients'
-import {getWorkspace} from '../../conf'
-import {workspaceMasterMessage, listenUntilBuildSuccess} from './utils'
-import {manifest, validateApp, isManifestReadable} from '../../manifest'
+import {listenUntilBuildSuccess, validateAppAction} from './utils'
+import {manifest, validateApp} from '../../manifest'
 
 const {uninstallApp} = apps
 const ARGS_START_INDEX = 2
@@ -51,15 +49,7 @@ export default {
     },
   ],
   handler: async (optionalApp: string, options) => {
-    if (getWorkspace() === 'master') {
-      throw new CommandError(workspaceMasterMessage)
-    }
-
-    // No app arguments and no manifest file.
-    if (!optionalApp && !isManifestReadable()) {
-      throw new CommandError('No app was found, please fix the manifest.json or use <vendor>.<name>[@<version>]')
-    }
-
+    validateAppAction(optionalApp)
     const app = optionalApp || `${manifest.vendor}.${manifest.name}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     const preConfirm = options.y || options.yes

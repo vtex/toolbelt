@@ -3,15 +3,13 @@ import {uniqBy, prop} from 'ramda'
 import * as debounce from 'debounce'
 import {createInterface} from 'readline'
 
-import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {logAll} from '../../courier'
-import {manifest, isManifestReadable } from '../../manifest'
+import {manifest} from '../../manifest'
 import {changesToString} from '../../apps'
 import {toMajorLocator} from '../../locator'
-import {id, workspaceMasterMessage} from './utils'
-import {getWorkspace} from '../../conf'
+import {id, validateAppAction} from './utils'
 import {watch, listLocalFiles, addChangeContent} from '../../file'
 
 const {link} = apps
@@ -47,14 +45,7 @@ const sendChanges = (() => {
 export default {
   description: 'Send the files to the registry and watch for changes',
   handler: async () => {
-    if (getWorkspace() === 'master') {
-      throw new CommandError(workspaceMasterMessage)
-    }
-
-    if (!isManifestReadable()) {
-      throw new CommandError('No app was found. Do you have a valid manifest.json?')
-    }
-
+    validateAppAction()
     log.info('Linking app', `${id(manifest)}`)
     const unlisten = logAll(log.level, `${manifest.vendor}.${manifest.name}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)

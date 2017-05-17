@@ -4,6 +4,9 @@ import {createReadStream} from 'fs-promise'
 
 import log from '../../logger'
 import {logAll, onEvent} from '../../courier'
+import {getWorkspace} from '../../conf'
+import {CommandError} from '../../errors'
+import {isManifestReadable} from '../../manifest'
 
 export const id = (manifest: Manifest): string =>
   `${manifest.vendor}.${manifest.name}@${manifest.version}`
@@ -30,4 +33,15 @@ export const listenUntilBuildSuccess = (app) => {
       process.exit(0)
     })
   })
+}
+
+export const validateAppAction = (app?) => {
+  if (getWorkspace() === 'master') {
+    throw new CommandError(workspaceMasterMessage)
+  }
+
+  // No app arguments and no manifest file.
+  if (!app && !isManifestReadable()) {
+    throw new CommandError(`No app was found, please fix your manifest.json${app ? ' or use <vendor>.<name>[@<version>]' : ''}`)
+  }
 }
