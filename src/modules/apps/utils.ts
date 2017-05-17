@@ -30,7 +30,15 @@ export const listenUntilBuildSuccess = (app) => {
     const unlistenSuccess = onEvent('vtex.render-builder', 'build.success', () => {
       unlistenLogs()
       unlistenSuccess()
+      unlistenFail()
       process.exit(0)
+    })
+    const unlistenFail = onEvent('vtex.render-builder', 'build.fail', () => {
+      log.error('Build failed')
+      unlistenLogs()
+      unlistenSuccess()
+      unlistenFail()
+      process.exit(1)
     })
   })
 }
