@@ -58,7 +58,7 @@ export default {
       await promptAppUninstall(apps)
     }
 
-    // Only listen for install feedback if there's only one app
+    // Only listen for feedback if there's only one app
     if (apps.length === 1) {
       listenUntilBuildSuccess(app)
     }

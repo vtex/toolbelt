@@ -40,7 +40,7 @@ export default {
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 
-    // Only listen for install feedback if there's only one app
+    // Only listen for feedback if there's only one app
     if (apps.length === 1) {
       listenUntilBuildSuccess(app)
     }
