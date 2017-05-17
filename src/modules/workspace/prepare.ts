@@ -6,12 +6,11 @@ import {compose, flip, gt, length} from 'ramda'
 import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps, colossus} from '../../clients'
-import {listen, onEvent} from '../../courier'
-import {getAccount, getWorkspace} from '../../conf'
+import {logAll, onEvent} from '../../courier'
+import {getWorkspace} from '../../conf'
 
 const {listLinks} = apps
-const [account, currentWorkspace] = [getAccount(), getWorkspace()]
-
+const currentWorkspace = getWorkspace()
 const flippedGt = flip(gt)
 
 const hasLinks =
@@ -47,11 +46,11 @@ const promptConfirm = (workspace: string): Bluebird<never | void> =>
   })
 
 const waitCompletion = () => {
-  const logHandler = listen(account, currentWorkspace, log.level, 'production_requester')
-  const eventHandler = onEvent(account, currentWorkspace, 'vtex.prodman', 'production.ready', () => {
+  const unlistenLogs = logAll(log.level, 'production_requester')
+  const unlistenEvents = onEvent('vtex.prodman', 'production.ready', () => {
     log.info(`Workspace ${chalk.green(currentWorkspace)} is now production ready`)
-    logHandler.close()
-    eventHandler.close()
+    unlistenLogs()
+    unlistenEvents()
   })
 }
 
