@@ -1,44 +1,29 @@
 import {head, tail} from 'ramda'
-import * as Bluebird from 'bluebird'
 
 import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
 import {workspaceMasterMessage} from './utils'
-import {manifest, namePattern, vendorPattern, isManifestReadable} from '../../manifest'
+import {manifest, validateApp, isManifestReadable} from '../../manifest'
 
 const {installApp} = apps
 const ARGS_START_INDEX = 2
 
-const appIdValidator = (app: string): Bluebird<void | never> => {
-  const appRegex = new RegExp(`^${vendorPattern}\\.${namePattern}@.+$`)
-  return Promise.resolve(appRegex.test(app))
-    .then((isAppValid: boolean) => {
-      if (isAppValid) {
-        return
-      }
-      throw new CommandError('Invalid app format, please use <vendor>.<name>[@<version>]')
-    })
-}
-
-const installApps = (apps: string[], reg: string): Bluebird<void | never> => {
-  const app = head(apps)
-  const decApp = tail(apps)
-  log.debug('Starting to install app', app)
-  return appIdValidator(app)
-    .then(() => installApp(app, reg))
-    .tap(() => log.info(`Installed app ${app} successfully`))
-    .then(() => decApp.length > 0 ? installApps(decApp, reg) : Promise.resolve())
-    .catch(err => {
-      // A warn message will display the apps not installed.
-      if (!err.toolbeltWarning) {
-        log.warn(`The following apps were not installed: ${apps.join(', ')}`)
-        // the warn message is only displayed the first time the err occurs.
-        err.toolbeltWarning = true
-      }
-      throw err
-    })
+const installApps = async (apps: string[], reg: string): Promise<void> => {
+  if (apps.length === 0) {
+    return
+  }
+  const app = validateApp(head(apps))
+  try {
+    log.debug('Starting to install app', app)
+    await installApp(app, reg)
+  } catch (e) {
+    log.warn(`The following apps were not installed: ${apps.join(', ')}`)
+    throw e
+  }
+  log.info(`Installed app ${app} successfully`)
+  await installApps(tail(apps), reg)
 }
 
 export default {
@@ -55,8 +40,7 @@ export default {
   handler: (optionalApp: string, options) => {
     const workspace = getWorkspace()
     if (workspace === 'master') {
-      log.error(workspaceMasterMessage)
-      return Promise.resolve()
+      throw new CommandError(workspaceMasterMessage)
     }
 
     // No app arguments and no manifest file.
