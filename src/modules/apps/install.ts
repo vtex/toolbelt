@@ -4,7 +4,7 @@ import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {getWorkspace} from '../../conf'
-import {workspaceMasterMessage} from './utils'
+import {workspaceMasterMessage, listenUntilBuildSuccess} from './utils'
 import {manifest, validateApp, isManifestReadable} from '../../manifest'
 
 const {installApp} = apps
@@ -38,8 +38,7 @@ export default {
     },
   ],
   handler: (optionalApp: string, options) => {
-    const workspace = getWorkspace()
-    if (workspace === 'master') {
+    if (getWorkspace() === 'master') {
       throw new CommandError(workspaceMasterMessage)
     }
 
@@ -51,6 +50,12 @@ export default {
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     log.debug('Installing app(s)', apps)
+
+    // Only listen for install feedback if there's only one app
+    if (apps.length === 1) {
+      listenUntilBuildSuccess(app)
+    }
+
     return installApps(apps, options.r || options.registry || 'smartcheckout')
   },
 }
