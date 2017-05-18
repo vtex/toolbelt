@@ -5,7 +5,7 @@ import {createInterface} from 'readline'
 
 import log from '../../logger'
 import {apps} from '../../clients'
-import {logAll} from '../../courier'
+import {logAll} from '../../sse'
 import {manifest} from '../../manifest'
 import {changesToString} from '../../apps'
 import {toMajorLocator} from '../../locator'

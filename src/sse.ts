@@ -4,7 +4,8 @@ import {compose} from 'ramda'
 
 import log from './logger'
 import endpoint from './endpoint'
-import {getAccount, getWorkspace} from './conf'
+import {getAccount, getWorkspace, getToken} from './conf'
+import {userAgent} from './clients'
 
 const levelAdapter = {warning: 'warn'}
 const colossusHost = endpoint('colossus')
@@ -30,6 +31,14 @@ const parseMessage = (msg: MessageJSON): Message => {
   }
 }
 
+const createEventSource = (source: string) =>
+  new EventSource(source, {
+    headers: {
+      authorization: `bearer ${getToken()}`,
+      'user-agent': userAgent,
+    },
+  })
+
 export const withId = (id: string, router: boolean, callback: Function) => (msg: Message) => {
   if ((id && msg.subject.startsWith(id)) || (router && msg.subject.startsWith('-'))) {
     callback(msg)
@@ -38,7 +47,7 @@ export const withId = (id: string, router: boolean, callback: Function) => (msg:
 
 export const onLog = (logLevel: string, callback: (message: Message) => void): Function => {
   const source = `${colossusHost}/${getAccount()}/${getWorkspace()}/logs?level=${logLevel}`
-  const es = new EventSource(source)
+  const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)
   es.onmessage = compose(callback, parseMessage)
   es.onerror = onError(`${logLevel} log`)
@@ -47,7 +56,7 @@ export const onLog = (logLevel: string, callback: (message: Message) => void): F
 
 export const onEvent = (sender: string, key: string, callback: (message: Message) => void): Function => {
   const source = `${colossusHost}/${getAccount()}/${getWorkspace()}/events/${sender}:-:${key}`
-  const es = new EventSource(source)
+  const es = createEventSource(source)
   es.onopen = onOpen('event')
   es.onmessage = compose(callback, parseMessage)
   es.onerror = onError('event')
@@ -64,4 +73,23 @@ export const logAll = (logLevel, id) => {
       log.log(level, formatted)
     }
   }))
+}
+
+export const onAuth = (account: string, workspace: string, state: string) => {
+  const source = `https://${account}.myvtex.com/_toolbelt/sse/${state}?workspace=${workspace}`
+  const es = createEventSource(source)
+  return new Promise((resolve, reject) => {
+    es.addEventListener('message', (msg: MessageJSON) => {
+      const {
+        body: token,
+      }: Message = JSON.parse(msg.data)
+      es.close()
+      resolve(token)
+    })
+
+    es.onerror = (err) => {
+      log.error(`Connection to login server has failed with status ${err.status}`)
+      reject(err)
+    }
+  })
 }

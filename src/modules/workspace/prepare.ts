@@ -6,7 +6,7 @@ import {compose, flip, gt, length} from 'ramda'
 import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps, colossus} from '../../clients'
-import {logAll, onEvent} from '../../courier'
+import {logAll, onEvent} from '../../sse'
 import {getWorkspace} from '../../conf'
 
 const {listLinks} = apps

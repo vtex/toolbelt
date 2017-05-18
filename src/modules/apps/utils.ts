@@ -3,7 +3,7 @@ import * as chalk from 'chalk'
 import {createReadStream} from 'fs-promise'
 
 import log from '../../logger'
-import {logAll, onEvent} from '../../courier'
+import {logAll, onEvent} from '../../sse'
 import {getWorkspace} from '../../conf'
 import {CommandError} from '../../errors'
 import {isManifestReadable} from '../../manifest'
