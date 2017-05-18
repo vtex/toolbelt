@@ -17,7 +17,7 @@ const promptAppUninstall = (apps: string[]): Promise<void> =>
   })
   .then(({confirm}) => {
     if (!confirm) {
-      process.exit(1)
+      process.exit()
     }
   })
 

@@ -26,7 +26,7 @@ const isMaster = Promise.method((workspace: string) => {
 
 const isPromotable = (workspace: string): Bluebird<never | void> =>
   isMaster(workspace)
-    .then(listLinks())
+    .then(listLinks)
     .then(hasLinks)
     .then(result => {
       if (!result) {
@@ -35,19 +35,15 @@ const isPromotable = (workspace: string): Bluebird<never | void> =>
       throw new CommandError('You have links on your workspace, please unlink them before promoting')
     })
 
-const promptConfirm = (workspace: string): Bluebird<never | void> =>
-  Promise.resolve(
-    inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message: `Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`,
-    }),
-  )
-  .then(({confirm}) => {
-    if (confirm) {
-      return
+const promptConfirm = (workspace: string): Promise<any> =>
+  inquirer.prompt({
+    type: 'confirm',
+    name: 'confirm',
+    message: `Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`,
+  }).then(({confirm}) => {
+    if (!confirm) {
+      process.exit()
     }
-    throw new CommandError()
   })
 
 export default {
