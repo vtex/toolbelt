@@ -1,66 +1,46 @@
 import {head, tail} from 'ramda'
-import * as Bluebird from 'bluebird'
 
-import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps} from '../../clients'
-import {getWorkspace} from '../../conf'
-import {workspaceMasterMessage} from './utils'
-import {vendorPattern, namePattern, manifest, isManifestReadable} from '../../manifest'
+import {listenUntilBuildSuccess, validateAppAction} from './utils'
+import {manifest, validateApp} from '../../manifest'
 
 const {unlink} = apps
 const ARGS_START_INDEX = 2
 
-const appIdValidator = (app: string): Bluebird<void | never> => {
-  const appRegex = new RegExp(`^${vendorPattern}\\.${namePattern}@.+$`)
-  return Promise.resolve(appRegex.test(app))
-    .then((isAppValid: boolean) => {
-      if (isAppValid) {
-        return
-      }
-      throw new CommandError('Invalid app format, please use <vendor>.<name>[@<version>]')
-    })
-}
-
-const unlinkApps = (apps: string[]): Bluebird<void | never> => {
-  const app = head(apps)
-  const decApp = tail(apps)
-  log.debug('Starting to unlink app', app)
-  return appIdValidator(app)
-    .then(() => unlink(app))
-    .tap(() => log.info(`Unlinked app ${app} successfully`))
-    .then(() => decApp.length > 0 ? unlinkApps(decApp) : Promise.resolve())
-    .catch(err => {
-      if (err.statusCode === 409) {
-        return log.error(`App ${app} not linked`)
-      }
-      // A warn message will display the workspaces not deleted.
-      if (!err.toolbeltWarning) {
-        log.warn(`The following apps were not unlinked: ${apps.join(', ')}`)
-        // the warn message is only displayed the first time the err occurs.
-        err.toolbeltWarning = true
-      }
-      throw err
-    })
+const unlinkApps = async (apps: string[]): Promise<void> => {
+  if (apps.length === 0) {
+    return
+  }
+  const app = validateApp(head(apps))
+  try {
+    log.debug('Starting to install app', app)
+    await unlink(app)
+  } catch (e) {
+    if (e.statusCode === 409) {
+      log.warn(`App ${app} is currently not linked`)
+    } else {
+      log.warn(`The following apps were not unlinked: ${apps.join(', ')}`)
+      throw e
+    }
+  }
+  log.info(`Unlinked app ${app} successfully`)
+  await unlinkApps(tail(apps))
 }
 
 export default {
   optionalArgs: 'app',
   description: 'Unlink an app on the current directory or a specified one',
-  handler: (optionalApp: string, options) => {
-    const workspace = getWorkspace()
-    if (workspace === 'master') {
-      log.error(workspaceMasterMessage)
-      return Promise.resolve()
-    }
-
-    // No app arguments and no manifest file.
-    if (!optionalApp && !isManifestReadable()) {
-      throw new CommandError('No app was found, please fix the manifest.json or use <vendor>.<name>[@<version>]')
-    }
-
+  handler: async (optionalApp: string, options) => {
+    await validateAppAction(optionalApp)
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+
+    // Only listen for feedback if there's only one app
+    if (apps.length === 1) {
+      listenUntilBuildSuccess(app)
+    }
+
     log.debug('Unlinking app(s)', apps)
     return unlinkApps(apps)
   },

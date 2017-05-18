@@ -26,10 +26,6 @@ interface Manifest {
   mustUpdateAt?: string,
 }
 
-interface SSEHandler {
-  close ()
-}
-
 interface InstalledApp {
   app: string,
 }

@@ -5,12 +5,14 @@ import envTimeout from './timeout'
 import {version} from '../package.json'
 import {getAccount, getWorkspace, getToken} from './conf'
 
+export const userAgent = `Toolbelt/${version}`
+
 const DEFAULT_TIMEOUT = 15000
 const options = {
   authToken: getToken(),
   account: getAccount(),
   region: 'aws-us-east-1',
-  userAgent: `Toolbelt/${version}`,
+  userAgent,
   workspace: getWorkspace() || 'master',
   timeout: envTimeout || DEFAULT_TIMEOUT,
 }

@@ -3,6 +3,7 @@ import * as path from 'path'
 import {readFileSync, accessSync, constants} from 'fs-promise'
 
 import log from './logger'
+import {CommandError} from './errors'
 
 const readFileSyncUtf = (file: string): string =>
   readFileSync(file, 'utf8')
@@ -46,6 +47,17 @@ export const validateAppManifest = (manifest: Manifest): Manifest => {
     throw Error('The version format is invalid')
   }
   return manifest
+}
+
+const appName = new RegExp(`^${vendorPattern}\\.${namePattern}$`)
+const appLocator = new RegExp(`^${vendorPattern}\\.${namePattern}@.+$`)
+
+export const validateApp = (app: string, skipVersion: boolean = false) => {
+  const regex = skipVersion ? appName : appLocator
+  if (!regex.test(app)) {
+    throw new CommandError(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`)
+  }
+  return app
 }
 
 export const manifest = isManifestReadable()
