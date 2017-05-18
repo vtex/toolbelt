@@ -1,5 +1,6 @@
 import {join} from 'path'
 import * as chalk from 'chalk'
+import * as inquirer from 'inquirer'
 import {createReadStream} from 'fs-promise'
 
 import log from '../../logger'
@@ -15,7 +16,7 @@ export const mapFileObject = (files: string[], root = process.cwd()): BatchStrea
   files.map(path => ({path, contents: createReadStream(join(root, path))}))
 
 export const workspaceMasterMessage =
-  ` ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace`
+  `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`
 
 export const listenUntilBuildSuccess = (app) => {
   const timeout = setTimeout(() => {
@@ -43,9 +44,22 @@ export const listenUntilBuildSuccess = (app) => {
   })
 }
 
-export const validateAppAction = (app?) => {
+export const validateAppAction = async (app?) => {
   if (getWorkspace() === 'master') {
-    throw new CommandError(workspaceMasterMessage)
+    if (process.argv.indexOf('--force-master') >= 0) {
+      const {confirm} = await inquirer.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        default: false,
+        message: `Are you sure you want to force this operation on the master workspace?`,
+      })
+      if (!confirm) {
+        process.exit(1)
+      }
+      log.warn('Using master workspace. I hope you know what you\'re doing. 💥')
+    } else {
+      throw new CommandError(workspaceMasterMessage)
+    }
   }
 
   // No app arguments and no manifest file.

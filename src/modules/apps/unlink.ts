@@ -31,8 +31,8 @@ const unlinkApps = async (apps: string[]): Promise<void> => {
 export default {
   optionalArgs: 'app',
   description: 'Unlink an app on the current directory or a specified one',
-  handler: (optionalApp: string, options) => {
-    validateAppAction(optionalApp)
+  handler: async (optionalApp: string, options) => {
+    await validateAppAction(optionalApp)
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 

@@ -35,8 +35,8 @@ export default {
       type: 'string',
     },
   ],
-  handler: (optionalApp: string, options) => {
-    validateAppAction(optionalApp)
+  handler: async (optionalApp: string, options) => {
+    await validateAppAction(optionalApp)
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 

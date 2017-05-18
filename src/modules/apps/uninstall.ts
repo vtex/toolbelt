@@ -49,7 +49,7 @@ export default {
     },
   ],
   handler: async (optionalApp: string, options) => {
-    validateAppAction(optionalApp)
+    await validateAppAction(optionalApp)
     const app = optionalApp || `${manifest.vendor}.${manifest.name}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
     const preConfirm = options.y || options.yes

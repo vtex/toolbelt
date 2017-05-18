@@ -45,7 +45,7 @@ const sendChanges = (() => {
 export default {
   description: 'Send the files to the registry and watch for changes',
   handler: async () => {
-    validateAppAction()
+    await validateAppAction()
     log.info('Linking app', `${id(manifest)}`)
     const unlisten = logAll(log.level, `${manifest.vendor}.${manifest.name}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
