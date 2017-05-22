@@ -77,8 +77,8 @@ export default {
     },
   ],
   handler: async (options) => {
-    const optionAccount = options.a || options.account
-    const optionWorkspace = options.w || options.workspace
+    const optionAccount = options ? (options.a || options.account) : null
+    const optionWorkspace = options ? (options.w || options.workspace) : null
     const usePrevious = !(optionAccount && optionWorkspace) && details && await promptUsePrevious()
     const account = optionAccount || (usePrevious && cachedAccount) || await promptAccount()
     const workspace = optionWorkspace || (usePrevious && cachedWorkspace) || 'master'
