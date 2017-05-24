@@ -8,6 +8,7 @@ export default {
   handler: async () => {
     const debug = resolve(process.cwd(), 'service/debug.js')
     try {
+      process.env.VTEX_IO = 'false'
       const debugFn = require(debug)
       log.info('Running debug script:', debug)
       debugFn({
