@@ -14,7 +14,6 @@ export default {
   description: 'Generate manifest from package.json',
   handler: async () => {
     const pkg = await readJson(resolve(process.cwd(), 'package.json'))
-    console.log(pkg, resolve(process.cwd(), 'package.json'))
     const manifest = {
       ...pkg,
       dependencies: {
