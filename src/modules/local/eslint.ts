@@ -3,7 +3,7 @@ import {prop, curry} from 'ramda'
 import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
 import {basename, dirname, join} from 'path'
-import {mkdir, unlink, symlink} from 'fs-promise'
+import {mkdir, unlink, symlink} from 'fs-extra'
 
 import log from '../../logger'
 
