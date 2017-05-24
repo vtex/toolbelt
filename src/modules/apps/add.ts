@@ -1,7 +1,7 @@
 import * as chalk from 'chalk'
 import * as Bluebird from 'bluebird'
 import * as semverDiff from 'semver-diff'
-import {readFile, writeFile} from 'fs-promise'
+import {readFile, writeFile} from 'fs-extra'
 import * as latestVersion from 'latest-version'
 import {head, tail, last, reduce, prop, split, compose, concat, __} from 'ramda'
 

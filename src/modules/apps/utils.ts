@@ -1,7 +1,7 @@
 import {join} from 'path'
 import * as chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import {createReadStream} from 'fs-promise'
+import {createReadStream} from 'fs-extra'
 
 import log from '../../logger'
 import {logAll, onEvent} from '../../sse'

@@ -1,5 +1,5 @@
 import * as Bluebird from 'bluebird'
-import {writeFile} from 'fs-promise'
+import {writeFile} from 'fs-extra'
 
 import {manifestPath} from '../../manifest'
 

@@ -2,7 +2,7 @@ import * as ora from 'ora'
 import {resolve} from 'path'
 import * as Bluebird from 'bluebird'
 import {LoggerInstance} from 'winston'
-import {readFileSync} from 'fs-promise'
+import {readFileSync} from 'fs-extra'
 
 import log from '../../logger'
 import {accountRegistry} from '../../clients'
