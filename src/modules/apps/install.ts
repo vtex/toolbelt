@@ -4,6 +4,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {listenUntilBuildSuccess, validateAppAction} from './utils'
 import {manifest, validateApp} from '../../manifest'
+import {CommandError} from '../../errors'
 
 const {installApp} = apps
 const ARGS_START_INDEX = 2
@@ -12,7 +13,16 @@ const installApps = async (apps: string[], reg: string): Promise<void> => {
   if (apps.length === 0) {
     return
   }
-  const app = validateApp(head(apps))
+  var app;
+  try {
+    app = validateApp(head(apps), true)
+  } catch (e) {
+    if (!(e instanceof CommandError)) {
+      throw e
+    }
+    app = validateApp(head(apps), false)
+  }
+
   try {
     log.debug('Starting to install app', app)
     await installApp(app, reg)
