@@ -11,5 +11,8 @@ export default {
     manifest: {
       module: dirnameJoin('modules/local/manifest'),
     },
+    debug: {
+      module: dirnameJoin('modules/local/debug'),
+    },
   },
 }
