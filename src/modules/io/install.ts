@@ -105,7 +105,7 @@ const installVersionByTag = (tag: string): Bluebird<{}> => {
 
 export default {
   optionalArgs: 'version',
-  description: 'Install Io Version',
+  description: 'Install VTEX IO Version',
   options: [
     {
       short: 't',

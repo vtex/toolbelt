@@ -45,7 +45,7 @@ const listAllAvailableIoVersions = (tag: string): Bluebird<void> =>
       return table
     })
     .then(table => {
-      log.info(`io versions available to install`)
+      log.info(`VTEX IO versions available to install`)
       console.log(table.toString())
     })
 
@@ -70,12 +70,12 @@ const printInstalledIoVersion = (): Bluebird<void> =>
       return table
     })
     .then(table => {
-      log.info(`io versions available to install`)
+      log.info(`VTEX IO versions available to install`)
       console.log(table.toString())
     })
 
 export default {
-  description: 'List Io versions available to install',
+  description: 'List VTEX IO versions available to install',
   options: [
     {
       short: 'a',
