@@ -22,6 +22,10 @@ export default {
       },
     }
     delete manifest.vtexDependencies
+    if (manifest.vtexVersion) {
+      manifest.version = manifest.vtexVersion
+      delete manifest.vtexVersion
+    }
     log.debug('Generating manifest:', JSON.stringify(manifest, null, 2))
     await outputJson(resolve(process.cwd(), 'manifest.json'), manifest, {spaces: 2})
     log.info('Generated manifest.json successfully.')

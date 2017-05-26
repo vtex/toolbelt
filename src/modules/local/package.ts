@@ -16,6 +16,8 @@ export default {
   handler: async () => {
     const pkg = {
       ...manifest,
+      version: null,
+      vtexVersion: manifest.version,
       dependencies: reduce(npmReducer(manifest.dependencies), {}, keys(manifest.dependencies).sort()),
       vtexDependencies: reduce(vtexReducer(manifest.dependencies), {}, keys(manifest.dependencies).sort()),
     }
