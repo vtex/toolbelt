@@ -1,6 +1,6 @@
 import {join} from 'path'
 import * as Bluebird from 'bluebird'
-import {mkdir, readFile, writeFile} from 'fs-promise'
+import {mkdir, readFile, writeFile} from 'fs-extra'
 
 import log from '../../logger'
 import {writeManifest} from './utils'

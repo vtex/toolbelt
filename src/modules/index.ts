@@ -3,7 +3,7 @@ import {help} from 'findhelp'
 import apps from './apps'
 import auth from './auth'
 import init from './init'
-import setup from './setup'
+import local from './local'
 import infra from './infra'
 import io from './io'
 import {dirnameJoin} from '../file'
@@ -17,7 +17,7 @@ export default {
   ...apps,
   ...workspace,
   ...deps,
-  ...setup,
+  ...local,
   ...init,
   ...infra,
   ...io,

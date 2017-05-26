@@ -2,7 +2,7 @@ import * as path from 'path'
 import * as glob from 'globby'
 import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
-import {readFileSync, stat} from 'fs-promise'
+import {readFileSync, stat} from 'fs-extra'
 
 const defaultIgnored = [
   '.DS_Store',

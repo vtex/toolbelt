@@ -1,10 +1,11 @@
 import * as moment from 'moment'
 import {uniqBy, prop} from 'ramda'
 import * as debounce from 'debounce'
+import * as Bluebird from 'bluebird'
 import {createInterface} from 'readline'
 
 import log from '../../logger'
-import {apps} from '../../clients'
+import {apps, colossus} from '../../clients'
 import {logAll} from '../../sse'
 import {manifest} from '../../manifest'
 import {changesToString} from '../../apps'
@@ -42,10 +43,28 @@ const sendChanges = (() => {
   }
 })()
 
+const cleanCache = (): Bluebird<void> => {
+  return colossus.sendEvent('vtex.toolbelt', '-', 'cleanCache', {id: `${manifest.vendor}.${manifest.name}@.${manifest.version}`})
+}
+
 export default {
   description: 'Send the files to the registry and watch for changes',
-  handler: async () => {
+  options: [
+    {
+      short: 'c',
+      long: 'clean',
+      description: 'Clean builder cache',
+      type: 'boolean',
+    },
+  ],
+  handler: async (options) => {
     await validateAppAction()
+
+    if (options.c || options.clean) {
+      log.info('Requesting to clean cache in builder.')
+      await cleanCache()
+    }
+
     log.info('Linking app', `${id(manifest)}`)
     const unlisten = logAll(log.level, `${manifest.vendor}.${manifest.name}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)

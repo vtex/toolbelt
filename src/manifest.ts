@@ -1,6 +1,6 @@
 import {pipe} from 'ramda'
 import * as path from 'path'
-import {readFileSync, accessSync, constants} from 'fs-promise'
+import {readFileSync, accessSync, constants} from 'fs-extra'
 
 import log from './logger'
 import {CommandError} from './errors'
