@@ -6,7 +6,7 @@ import {createInterface} from 'readline'
 
 import log from '../../logger'
 import {apps, colossus} from '../../clients'
-import {logAll} from '../../sse'
+import {logAll, onEvent} from '../../sse'
 import {manifest} from '../../manifest'
 import {changesToString} from '../../apps'
 import {toMajorLocator} from '../../locator'
@@ -44,8 +44,13 @@ const sendChanges = (() => {
 })()
 
 const cleanCache = (): Bluebird<void> => {
-  return colossus.sendEvent('vtex.toolbelt', '-', 'cleanCache', {id: `${manifest.vendor}.${manifest.name}@.${manifest.version}`})
+  return colossus.sendEvent('vtex.toolbelt', '-', 'cleanCache', {
+    id: `${manifest.vendor}.${manifest.name}@.${manifest.version}`,
+    type: 'clean',
+  })
 }
+
+const CACHE_CLEAN_AWAIT_MS = 5000
 
 export default {
   description: 'Send the files to the registry and watch for changes',
@@ -59,14 +64,15 @@ export default {
   ],
   handler: async (options) => {
     await validateAppAction()
+    const unlisten = logAll(log.level, `${manifest.vendor}.${manifest.name}`)
 
     if (options.c || options.clean) {
       log.info('Requesting to clean cache in builder.')
-      await cleanCache()
+      cleanCache()
+      await Promise.delay(CACHE_CLEAN_AWAIT_MS)
     }
 
     log.info('Linking app', `${id(manifest)}`)
-    const unlisten = logAll(log.level, `${manifest.vendor}.${manifest.name}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
     const paths = await listLocalFiles(root)
     const changes = mapFilesToChanges(paths)
