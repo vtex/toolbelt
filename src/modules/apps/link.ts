@@ -6,7 +6,7 @@ import {createInterface} from 'readline'
 
 import log from '../../logger'
 import {apps, colossus} from '../../clients'
-import {logAll, onEvent} from '../../sse'
+import {logAll} from '../../sse'
 import {manifest} from '../../manifest'
 import {changesToString} from '../../apps'
 import {toMajorLocator} from '../../locator'
