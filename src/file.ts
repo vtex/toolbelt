@@ -83,7 +83,6 @@ export const sendRemoveChanges = (file: string, sendChanges: Function): void =>
   sendChanges(addChangeContent([{path: file, action: 'remove'}]))
 
 export const watch = (root: string, sendChanges: Function, folder?: string): Bluebird<string> => {
-  console.log(root, `${safeFolder(folder)}`)
   const watcher = chokidar.watch([`${safeFolder(folder)}`, '*.json'], {
     cwd: root,
     persistent: true,
