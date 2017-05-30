@@ -61,6 +61,12 @@ export default {
       description: 'Clean builder cache',
       type: 'boolean',
     },
+    {
+      short: 'o',
+      long: 'only',
+      description: 'Link only this folder',
+      type: 'string',
+    },
   ],
   handler: async (options) => {
     await validateAppAction()
@@ -74,7 +80,8 @@ export default {
 
     log.info('Linking app', `${id(manifest)}`)
     const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
-    const paths = await listLocalFiles(root)
+    const folder = options.o || options.only
+    const paths = await listLocalFiles(root, folder)
     const changes = mapFilesToChanges(paths)
     const batch = addChangeContent(changes)
 
@@ -83,7 +90,7 @@ export default {
     log.info(`Sending ${batch.length} file` + (batch.length > 1 ? 's' : ''))
     await link(majorLocator, batch)
     log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent')
-    await watch(root, sendChanges)
+    await watch(root, sendChanges, folder)
 
     createInterface({input: process.stdin, output: process.stdout})
       .on('SIGINT', () => {

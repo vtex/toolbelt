@@ -4,6 +4,8 @@ import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
 import {readFileSync, stat} from 'fs-extra'
 
+import log from './logger'
+
 const defaultIgnored = [
   '.DS_Store',
   'README.md',
@@ -13,6 +15,15 @@ const defaultIgnored = [
   'package.json',
   'node_modules/**',
 ]
+
+const services = ['render', 'masterdata', 'service']
+
+const safeFolder = folder => {
+  if (services.indexOf(folder) === -1) {
+    log.warn('Using unknown service', folder)
+  }
+  return folder ? './' + folder + '/**' : '*/**'
+}
 
 const getIgnoredPaths = (root: string): string[] => {
   try {
@@ -30,9 +41,9 @@ const getIgnoredPaths = (root: string): string[] => {
 export const dirnameJoin = (filePath: string): string =>
   path.resolve(__dirname, filePath)
 
-export const listLocalFiles = (root: string): Bluebird<string[]> =>
+export const listLocalFiles = (root: string, folder?: string): Bluebird<string[]> =>
   Promise.resolve(
-    glob('{manifest.json,*/**}', {
+    glob(`{manifest.json,${safeFolder(folder)}}`, {
       cwd: root,
       nodir: true,
       follow: true,
@@ -71,8 +82,9 @@ export const sendSaveChanges = (file: string, sendChanges: Function): void =>
 export const sendRemoveChanges = (file: string, sendChanges: Function): void =>
   sendChanges(addChangeContent([{path: file, action: 'remove'}]))
 
-export const watch = (root: string, sendChanges: Function): Bluebird<string> => {
-  const watcher = chokidar.watch(['*/**', '*.json'], {
+export const watch = (root: string, sendChanges: Function, folder?: string): Bluebird<string> => {
+  console.log(root, `${safeFolder(folder)}`)
+  const watcher = chokidar.watch([`${safeFolder(folder)}`, '*.json'], {
     cwd: root,
     persistent: true,
     ignoreInitial: true,
