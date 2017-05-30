@@ -32,7 +32,7 @@ const sendChanges = (() => {
         .tap(() => { queue = [] })
         .catch(err => { throw err })
     },
-    200,
+    50,
   )
   return (changes: Change[]) => {
     if (changes.length === 0) {

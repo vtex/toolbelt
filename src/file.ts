@@ -78,7 +78,9 @@ export const watch = (root: string, sendChanges: Function): Bluebird<string> => 
     ignoreInitial: true,
     ignored: getIgnoredPaths(root),
     usePolling: true,
-    awaitWriteFinish: true,
+    awaitWriteFinish: {
+      stabilityThreshold: 500,
+    },
     atomic: true,
   })
   return new Promise((resolve, reject) => {
