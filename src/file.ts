@@ -19,7 +19,7 @@ const defaultIgnored = [
 const services = ['render', 'masterdata', 'service']
 
 const safeFolder = folder => {
-  if (services.indexOf(folder) === -1) {
+  if (folder && services.indexOf(folder) === -1) {
     log.warn('Using unknown service', folder)
   }
   return folder ? './' + folder + '/**' : '*/**'
