@@ -50,7 +50,7 @@ export const validateAppManifest = (manifest: Manifest): Manifest => {
 }
 
 const appName = new RegExp(`^${vendorPattern}\\.${namePattern}$`)
-const appLocator = new RegExp(`^${vendorPattern}\\.${namePattern}@.+$`)
+const appLocator = new RegExp(`^${vendorPattern}\\.${namePattern}(?:@${wildVersionPattern})?$`)
 
 export const validateApp = (app: string, skipVersion: boolean = false) => {
   const regex = skipVersion ? appName : appLocator
