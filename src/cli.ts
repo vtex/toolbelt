@@ -11,6 +11,7 @@ import log from './logger'
 import tree from './modules'
 import notify from './update'
 import {getToken} from './conf'
+import initCmd from './modules/init/'
 import loginCmd from './modules/auth/login'
 import logoutCmd from './modules/auth/logout'
 import switchCmd from './modules/auth/switch'
@@ -44,7 +45,7 @@ const checkCommandExists = found =>
   !found.command ? Promise.reject({name: 'CommandNotFound'}) : null
 
 const checkLogin = found => {
-  const whitelist = [tree, loginCmd, logoutCmd, switchCmd, whoamiCmd]
+  const whitelist = [tree, loginCmd, logoutCmd, switchCmd, whoamiCmd, initCmd]
   if (!getToken() && whitelist.indexOf(found.command) === -1) {
     log.debug('Requesting login before command:', process.argv.slice(2).join(' '))
     return run({command: loginCmd})
