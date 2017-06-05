@@ -13,6 +13,7 @@ const installApps = async (apps: string[], reg: string): Promise<void> => {
     return
   }
   const app = validateApp(head(apps))
+
   try {
     log.debug('Starting to install app', app)
     await installApp(app, reg)
