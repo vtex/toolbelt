@@ -6,18 +6,13 @@ import log from '../../logger'
 import {writeManifest} from './utils'
 import {manifestPath} from '../../manifest'
 
-const helloWorld = `import React, {Component} from 'react'
+const helloWorld = `import React from 'react'
 
-// eslint-disable-next-line
-class HelloWorld extends Component {
-  render () {
-    return (
-      <div>
-        <h1>Hello world!</h1>
-      </div>
-    )
-  }
-}
+const HelloWorld = () => (
+  <div>
+    <h1>Hello world!</h1>
+  </div>
+)
 
 export default HelloWorld
 `
