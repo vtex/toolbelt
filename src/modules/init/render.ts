@@ -35,7 +35,6 @@ const addRenderDeps = (manifest: Manifest): Manifest => {
     ...manifest,
     dependencies: {
       ...manifest.dependencies,
-      'vtex.render-server': '0.x',
       'vtex.render-runtime': '0.x',
       'vtex.render-builder': '0.x',
     },
