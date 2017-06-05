@@ -3,10 +3,23 @@ import * as Bluebird from 'bluebird'
 import * as semverDiff from 'semver-diff'
 import {readFile, writeFile} from 'fs-extra'
 import * as latestVersion from 'latest-version'
-import {head, tail, last, reduce, prop, split, compose, concat, __} from 'ramda'
+import {
+  __,
+  map,
+  path,
+  head,
+  tail,
+  last,
+  prop,
+  curry,
+  split,
+  reduce,
+  concat,
+  compose,
+} from 'ramda'
 
 import log from '../../logger'
-import {accountRegistry} from '../../clients'
+import {accountRegistry, router} from '../../clients'
 import {
   namePattern,
   manifestPath,
@@ -17,7 +30,7 @@ import {
 } from '../../manifest'
 
 const ARGS_START_INDEX = 2
-const npmName = compose<string, string[], string>(last, split(':'))
+const unprefixName = compose<string, string[], string>(last, split(':'))
 const wildVersionByMajor = compose<string, string[], string, string>(concat(__, '.x'), head, split('.'))
 const invalidAppMessage =
   'Invalid app format, please use <vendor>.<name>, <vendor>.<name>@<version>, npm:<name> or npm:<name>@<version>'
@@ -37,26 +50,35 @@ const readManifest = (): Bluebird<Manifest | never> => {
 const extractVersionFromId =
   compose<VersionByApp, string, string[], string>(last, split('@'), prop('versionIdentifier'))
 
-const pickLatestVersion = (versions: VersionByApp[]): string => {
-  const start = extractVersionFromId(head(versions))
-  return reduce((acc: string, versionByApp: VersionByApp) => {
-    const version = extractVersionFromId(versionByApp)
+const pickLatestVersion = (versions: string[]): string => {
+  const start = head(versions)
+  return reduce((acc: string, version: string) => {
     return semverDiff(acc, version) ? version : acc
   }, start, tail(versions))
 }
 
+const handleError = curry((app: string, err: any) => {
+  if (err.response && err.response.status === 404) {
+    return Promise.reject(new InterruptionException(`App ${chalk.green(app)} not found`))
+  }
+  return Promise.reject(err)
+})
+
 const appsLatestVersion = (app: string): Bluebird<string | never> => {
   return accountRegistry().listVersionsByApp(app)
     .then(prop('data'))
+    .then(map(extractVersionFromId))
     .then(pickLatestVersion)
     .then(wildVersionByMajor)
-    .catch(err => {
-      if (err.response && err.response.status === 404) {
-        return Promise.reject(new InterruptionException(`App ${chalk.green(app)} not found`))
-      }
-      return Promise.reject(err)
-    })
+    .catch(handleError(app))
 }
+
+const infraLatestVersion = (app: string): Bluebird<string | never> =>
+  router.getAvailableVersions(app)
+    .then(path(['versions', 'aws-us-east-1']))
+    .then(pickLatestVersion)
+    .then(wildVersionByMajor)
+    .catch(handleError(app))
 
 const npmLatestVersion = (app: string): Bluebird<string | never> => {
   return latestVersion(app)
@@ -86,9 +108,10 @@ const addApp = (app: string): Bluebird<void> => {
     return updateManifestDependencies(appId, version)
   }
   const isNpm = app.startsWith('npm:')
-  const appName = isNpm ? npmName(app) : app
-  const versionRequest = isNpm
-    ? npmLatestVersion(appName)
+  const isInfra = app.startsWith('infra:')
+  const appName = app.includes(':') ? unprefixName(app) : app
+  const versionRequest = isNpm ? npmLatestVersion(appName)
+    : isInfra ? infraLatestVersion(appName)
     : appsLatestVersion(appName)
   return versionRequest
     .then((version: string) => updateManifestDependencies(app, version))
@@ -98,7 +121,7 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
   const app = head(apps)
   const decApps = tail(apps)
   log.debug('Starting to add app', app)
-  const appRegex = new RegExp(`^(${vendorPattern}\\.|npm:)${namePattern}(@${wildVersionPattern})?$`)
+  const appRegex = new RegExp(`^(${vendorPattern}\\.|(npm|infra):)${namePattern}(@${wildVersionPattern})?$`)
   const appPromise = appRegex.test(app)
     ? addApp(app)
     : Promise.reject(new InterruptionException(invalidAppMessage))
