@@ -8,13 +8,13 @@ import {manifestPath} from '../../manifest'
 
 const helloWorld = `import React from 'react'
 
-const HelloWorld = () => (
-  <div>
-    <h1>Hello world!</h1>
-  </div>
-)
-
-export default HelloWorld
+export default function HelloWorld () {
+  return (
+    <div>
+      <h1>Hello world!</h1>
+    </div>
+  )
+}
 `
 
 const makePlaceholdersFile = (vendor: string, name: string): string =>
