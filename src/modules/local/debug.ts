@@ -17,7 +17,7 @@ export default {
         authToken: getToken(),
       })
     } catch (e) {
-      if (e.message.startsWith('Cannot find module')) {
+      if (e.message.indexOf('service/debug.js') !== -1) {
         return log.error('No debug script found. Create one in ./service/debug.js exporting a function that receives ctx.')
       }
       throw e
