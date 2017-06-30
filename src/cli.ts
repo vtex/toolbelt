@@ -4,6 +4,7 @@ import * as chalk from 'chalk'
 import * as moment from 'moment'
 import * as Promise from 'bluebird'
 import * as minimist from 'minimist'
+import {all as clearCachedModules} from 'clear-module'
 import 'any-promise/register/bluebird'
 import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
 
@@ -73,7 +74,7 @@ const onError = e => {
     if (statusCode === 401) {
       log.error('Oops! There was an authentication error. Please login again.')
       // Try to login and re-issue the command.
-      return run({command: loginCmd}).then(main) // TODO: catch with different handler for second error
+      return run({command: loginCmd}).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
     }
     if (statusCode >= 400) {
       const {statusText, data} = e.response
