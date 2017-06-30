@@ -3,9 +3,9 @@ import * as chalk from 'chalk'
 import {CommandError} from '../../errors'
 import log from '../../logger'
 import loginCmd from './login'
-import {getAccount, getWorkspace} from '../../conf'
+import {getAccount} from '../../conf'
 
-const [previousAccount, previousWorkspace] = [getAccount(), getWorkspace()]
+const previousAccount = getAccount()
 
 export default {
   requiredArgs: 'account',
@@ -20,7 +20,7 @@ export default {
   ],
   handler: async (account: string, options) => {
     const isValidAccount = /^\s*[\w-]+\s*$/.test(account)
-    const workspace = options.w || options.workspace || previousWorkspace
+    const workspace = options.w || options.workspace || 'master'
 
     if (!isValidAccount) {
       throw new CommandError('Invalid account format')
