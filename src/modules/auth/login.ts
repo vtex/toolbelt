@@ -22,8 +22,8 @@ const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(ca
 
 const startUserAuth = (account: string, workspace: string): Bluebird<string | never> => {
   const state = randomstring.generate()
-  const returnUrlEncoded = encodeURIComponent(`/_toolbelt/callback?state=${state}&workspace=${workspace}`)
-  const url = `https://${account}.myvtex.com/admin/login/?workspace=${workspace}&ReturnUrl=${returnUrlEncoded}`
+  const returnUrlEncoded = encodeURIComponent(`/_toolbelt/callback?state=${state}`)
+  const url = `https://${workspace}--${account}.myvtex.com/admin/login/?ReturnUrl=${returnUrlEncoded}`
   opn(url, {wait: false})
   return onAuth(account, workspace, state)
 }
