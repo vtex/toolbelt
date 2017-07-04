@@ -1,9 +1,13 @@
 import {pipe} from 'ramda'
 import * as path from 'path'
-import {readFileSync, accessSync, constants} from 'fs-extra'
+import * as fs from 'fs-extra'
 
 import log from './logger'
 import {CommandError} from './errors'
+
+const {readFileSync, accessSync, constants} = fs
+
+const R_OK = constants ? constants.R_OK : fs['R_OK']
 
 const readFileSyncUtf = (file: string): string =>
   readFileSync(file, 'utf8')
@@ -16,7 +20,7 @@ export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
 
 export const isManifestReadable = (): boolean => {
   try {
-    accessSync(manifestPath, constants.R_OK) // Throws if check fails
+    accessSync(manifestPath, R_OK) // Throws if check fails
     return true
   } catch (e) {
     log.debug('manifest.json doesn\'t exist or is not readable')
