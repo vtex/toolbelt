@@ -1,18 +1,21 @@
-import * as jp from 'jsonpath'
+import {path} from 'ramda'
 
 import {apps} from '../../../clients'
 import {dirnameJoin} from '../../../file'
 
 const {getAppSettings} = apps
 
+const FIELDS_START_INDEX = 2
+
 export default {
   description: 'Get app settings',
   requiredArgs: 'app',
-  optionalArgs: 'field',
-  handler: (app: string, field: string) => {
+  optionalArgs: 'fields',
+  handler: (app: string, _, options) => {
+    const fields = options._.slice(FIELDS_START_INDEX)
     return getAppSettings(app)
-      .then(res => field === null ? res : jp.value(res, `$.${field}`))
-      .then(msg => JSON.stringify(msg, null, 2))
+      .then(settings => fields === null ? settings : path(fields, settings))
+      .then(value => JSON.stringify(value, null, 2))
       .tap(console.log)
   },
   set: {
