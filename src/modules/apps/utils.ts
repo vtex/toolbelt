@@ -18,29 +18,38 @@ export const mapFileObject = (files: string[], root = process.cwd()): BatchStrea
 export const workspaceMasterMessage =
   `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`
 
-export const listenUntilBuildSuccess = (app) => {
+export const listenBuildSuccess = (appOrKey, callback) => {
   const timeout = setTimeout(() => {
     unlistenStart()
-    process.exit(0)
+    unlistenSuccess()
+    unlistenFail()
+    callback()
   }, 5000)
-
-  const unlistenLogs = logAll(log.level, app.split('@')[0])
+  const unlistenLogs = logAll(log.level, appOrKey.split('@')[0])
   const unlistenStart = onEvent('vtex.render-builder', 'build.start', () => {
     clearTimeout(timeout)
     unlistenStart()
-    const unlistenSuccess = onEvent('vtex.render-builder', 'build.success', () => {
-      unlistenLogs()
-      unlistenSuccess()
-      unlistenFail()
-      process.exit(0)
-    })
-    const unlistenFail = onEvent('vtex.render-builder', 'build.fail', () => {
+  })
+  const unlistenSuccess = onEvent('vtex.render-builder', 'build.success', () => {
+    unlistenLogs()
+    unlistenSuccess()
+    unlistenFail()
+    callback()
+  })
+  const unlistenFail = onEvent('vtex.render-builder', 'build.fail', () => {
+    unlistenLogs()
+    unlistenSuccess()
+    unlistenFail()
+    callback(true)
+  })
+}
+
+export const listenUntilBuildSuccess = (appOrKey) => {
+  listenBuildSuccess(appOrKey, (err) => {
+    if (err) {
       log.error('Build failed')
-      unlistenLogs()
-      unlistenSuccess()
-      unlistenFail()
-      process.exit(1)
-    })
+    }
+    process.exit(err ? 1 : 0)
   })
 }
 

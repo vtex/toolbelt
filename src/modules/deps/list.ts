@@ -3,7 +3,7 @@ import {apps} from '../../clients'
 
 const {getDependencies} = apps
 const isNpm = dep => dep.startsWith('npm:')
-const removeNpm = (deps, inValues) => {
+export const removeNpm = (deps, inValues?) => {
   Object.keys(deps).forEach(key => {
     if (isNpm(key)) {
       return delete deps[key]
@@ -12,6 +12,7 @@ const removeNpm = (deps, inValues) => {
       deps[key] = deps[key].filter(d => !isNpm(d))
     }
   })
+  return deps
 }
 
 export default {
