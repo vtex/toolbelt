@@ -1,18 +1,8 @@
 import log from '../../logger'
 import {apps} from '../../clients'
+import {removeNpm} from './utils'
 
 const {getDependencies} = apps
-const isNpm = dep => dep.startsWith('npm:')
-const removeNpm = (deps, inValues) => {
-  Object.keys(deps).forEach(key => {
-    if (isNpm(key)) {
-      return delete deps[key]
-    }
-    if (inValues) {
-      deps[key] = deps[key].filter(d => !isNpm(d))
-    }
-  })
-}
 
 export default {
   description: 'List your workspace dependencies',
