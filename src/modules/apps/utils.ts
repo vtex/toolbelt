@@ -4,10 +4,10 @@ import * as inquirer from 'inquirer'
 import {createReadStream} from 'fs-extra'
 
 import log from '../../logger'
-import {logAll, onEvent} from '../../sse'
 import {getWorkspace} from '../../conf'
 import {CommandError} from '../../errors'
 import {isManifestReadable} from '../../manifest'
+import {listenBuildSuccess} from '../utils'
 
 export const id = (manifest: Manifest): string =>
   `${manifest.vendor}.${manifest.name}@${manifest.version}`
@@ -17,32 +17,6 @@ export const mapFileObject = (files: string[], root = process.cwd()): BatchStrea
 
 export const workspaceMasterMessage =
   `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`
-
-export const listenBuildSuccess = (appOrKey, callback) => {
-  const timeout = setTimeout(() => {
-    unlistenStart()
-    unlistenSuccess()
-    unlistenFail()
-    callback()
-  }, 5000)
-  const unlistenLogs = logAll(log.level, appOrKey.split('@')[0])
-  const unlistenStart = onEvent('vtex.render-builder', 'build.start', () => {
-    clearTimeout(timeout)
-    unlistenStart()
-  })
-  const unlistenSuccess = onEvent('vtex.render-builder', 'build.success', () => {
-    unlistenLogs()
-    unlistenSuccess()
-    unlistenFail()
-    callback()
-  })
-  const unlistenFail = onEvent('vtex.render-builder', 'build.fail', () => {
-    unlistenLogs()
-    unlistenSuccess()
-    unlistenFail()
-    callback(true)
-  })
-}
 
 export const listenUntilBuildSuccess = (appOrKey) => {
   listenBuildSuccess(appOrKey, (err) => {

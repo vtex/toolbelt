@@ -4,8 +4,8 @@ import * as chalk from 'chalk'
 import log from '../../logger'
 import {apps} from '../../clients'
 
-import {listenBuildSuccess} from '../apps/utils'
-import {removeNpm} from './list'
+import {listenBuildSuccess} from '../utils'
+import {removeNpm} from './utils'
 import {keys, compose} from 'ramda'
 
 const {getDependencies, updateDependencies} = apps
