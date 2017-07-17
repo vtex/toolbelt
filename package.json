@@ -65,7 +65,6 @@
     "fs-extra": "^3.0.1",
     "globby": "^6.1.0",
     "inquirer": "^3.0.6",
-    "jsonpath": "^0.2.11",
     "jsonwebtoken": "^7.4.0",
     "latest-version": "^3.0.0",
     "minimist": "^1.2.0",
