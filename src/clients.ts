@@ -23,8 +23,11 @@ const interceptor = (client) => new Proxy({}, {
   },
 })
 
-const accountRegistry = (account: string = 'smartcheckout'): Registry => {
-  return Registry({...options, account, endpoint: endpoint('registry')})
+const createClients = (customOptions) => {
+  return {
+    registry: Registry({...options, ...customOptions, endpoint: endpoint('registry')}),
+    colossus: Colossus({...options, ...customOptions}),
+  }
 }
 
 const [apps, router, workspaces, colossus] = getToken()
@@ -44,7 +47,7 @@ const [apps, router, workspaces, colossus] = getToken()
 export {
   apps,
   router,
-  accountRegistry,
   workspaces,
   colossus,
+  createClients,
 }

@@ -3,7 +3,8 @@ import {head, tail} from 'ramda'
 
 import log from '../../logger'
 import {apps} from '../../clients'
-import {listenUntilBuildSuccess, validateAppAction} from './utils'
+import {validateAppAction} from './utils'
+import {listenBuild} from '../utils'
 import {manifest, validateApp} from '../../manifest'
 
 const {uninstallApp} = apps
@@ -58,12 +59,11 @@ export default {
       await promptAppUninstall(apps)
     }
 
-    // Only listen for feedback if there's only one app
-    if (apps.length === 1) {
-      listenUntilBuildSuccess(app)
-    }
-
+    const doUninstall = () => uninstallApps(apps)
     log.debug('Uninstalling app(s)', apps)
-    return uninstallApps(apps)
+    // Only listen for feedback if there's only one app
+    return apps.length === 1
+      ? listenBuild(app, doUninstall)
+      : doUninstall()
   },
 }

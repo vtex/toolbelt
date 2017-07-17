@@ -2,7 +2,8 @@ import {head, tail} from 'ramda'
 
 import log from '../../logger'
 import {apps} from '../../clients'
-import {listenUntilBuildSuccess, validateAppAction} from './utils'
+import {validateAppAction} from './utils'
+import {listenBuild} from '../utils'
 import {manifest, validateApp} from '../../manifest'
 
 const {installApp} = apps
@@ -41,12 +42,12 @@ export default {
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 
-    // Only listen for feedback if there's only one app
-    if (apps.length === 1) {
-      listenUntilBuildSuccess(app)
-    }
-
+    const doInstall = () => installApps(apps, options.r || options.registry || 'smartcheckout')
     log.debug('Installing app(s)', apps)
-    return installApps(apps, options.r || options.registry || 'smartcheckout')
+
+    // Only listen for feedback if there's only one app
+    return apps.length === 1
+      ? listenBuild(app, doInstall)
+      : doInstall()
   },
 }
