@@ -1,12 +1,12 @@
 import {diffJson} from 'diff'
 import * as chalk from 'chalk'
+import {mapSeries} from 'bluebird'
+import {map, keys, compose} from 'ramda'
 
 import log from '../../logger'
 import {apps} from '../../clients'
-
-import {listenBuildSuccess} from '../utils'
+import {listenBuild} from '../utils'
 import {removeNpm} from './utils'
-import {keys, compose} from 'ramda'
 
 const {getDependencies, updateDependencies} = apps
 
@@ -17,25 +17,21 @@ export default {
   handler: async () => {
     log.debug('Starting to update dependencies')
 
-    listenBuildSuccess('deps_requester', (err) => {
-      if (err) {
-        process.exit(1)
-        return
-      }
+    const updateAndListen = () => listenBuild('deps_requester', updateDependencies)
 
-      log.info('The following dependencies were updated successfully:')
+    return mapSeries([getDependencies, updateAndListen], f => f())
+      .tap(() => log.info('The following dependencies were updated successfully:'))
+      .spread((previousDeps, currentDeps) => {
+        const [cleanPrevDeps, cleanCurrDeps] = map(cleanDeps, [previousDeps, currentDeps])
+        const diff = diffJson(cleanPrevDeps, cleanCurrDeps)
 
-      diff.forEach(({value, added, removed}: {value: string, added: boolean, removed: boolean}) => {
-        const color = added ? chalk.green : removed ? chalk.red : chalk.gray
-        process.stdout.write(color(value))
+        diff.forEach(({value, added, removed}: {value: string, added: boolean, removed: boolean}) => {
+          const color = added ? chalk.green : removed ? chalk.red : chalk.gray
+          process.stdout.write(color(value))
+        })
       })
-
-      process.exit(0)
-    })
-
-    const previousDeps = cleanDeps(await getDependencies())
-    const currentDeps = cleanDeps(await updateDependencies())
-    const diff = diffJson(previousDeps, currentDeps)
-
+      .catch(e => {
+        log.error(e.message)
+      })
   },
 }

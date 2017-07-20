@@ -19,7 +19,7 @@ import {
 } from 'ramda'
 
 import log from '../../logger'
-import {accountRegistry, router} from '../../clients'
+import {createClients, router} from '../../clients'
 import {
   namePattern,
   manifestPath,
@@ -65,7 +65,8 @@ const handleError = curry((app: string, err: any) => {
 })
 
 const appsLatestVersion = (app: string): Bluebird<string | never> => {
-  return accountRegistry().listVersionsByApp(app)
+  return createClients({account: 'smartcheckout'}).registry
+    .listVersionsByApp(app)
     .then(prop('data'))
     .then(map(extractVersionFromId))
     .then(pickLatestVersion)

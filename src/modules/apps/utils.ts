@@ -7,7 +7,6 @@ import log from '../../logger'
 import {getWorkspace} from '../../conf'
 import {CommandError} from '../../errors'
 import {isManifestReadable} from '../../manifest'
-import {listenBuildSuccess} from '../utils'
 
 export const id = (manifest: Manifest): string =>
   `${manifest.vendor}.${manifest.name}@${manifest.version}`
@@ -17,15 +16,6 @@ export const mapFileObject = (files: string[], root = process.cwd()): BatchStrea
 
 export const workspaceMasterMessage =
   `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`
-
-export const listenUntilBuildSuccess = (appOrKey) => {
-  listenBuildSuccess(appOrKey, (err) => {
-    if (err) {
-      log.error('Build failed')
-    }
-    process.exit(err ? 1 : 0)
-  })
-}
 
 export const validateAppAction = async (app?) => {
   if (getWorkspace() === 'master') {

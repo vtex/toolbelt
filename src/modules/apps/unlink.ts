@@ -2,7 +2,8 @@ import {head, tail} from 'ramda'
 
 import log from '../../logger'
 import {apps} from '../../clients'
-import {listenUntilBuildSuccess, validateAppAction} from './utils'
+import {validateAppAction} from './utils'
+import {listenBuild} from '../utils'
 import {manifest, validateApp} from '../../manifest'
 
 const {unlink} = apps
@@ -36,12 +37,11 @@ export default {
     const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
     const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 
-    // Only listen for feedback if there's only one app
-    if (apps.length === 1) {
-      listenUntilBuildSuccess(app)
-    }
-
+    const doUnlink = () => unlinkApps(apps)
     log.debug('Unlinking app(s)', apps)
-    return unlinkApps(apps)
+    // Only listen for feedback if there's only one app
+    return apps.length === 1
+      ? listenBuild(app, doUnlink)
+      : doUnlink()
   },
 }

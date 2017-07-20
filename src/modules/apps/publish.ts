@@ -5,9 +5,11 @@ import {LoggerInstance} from 'winston'
 import {readFileSync} from 'fs-extra'
 
 import log from '../../logger'
-import {accountRegistry} from '../../clients'
+import {createClients} from '../../clients'
 import {id, mapFileObject} from './utils'
 import {listLocalFiles} from '../../file'
+
+import {listenBuild} from '../utils'
 
 const ARGS_START_INDEX = 2
 const root = process.cwd()
@@ -16,16 +18,22 @@ const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
 const publisher = (account: string = 'smartcheckout') => {
-  const reg = accountRegistry(account)
+  const {registry, colossus} = createClients({account, workspace: 'master'})
+
+  const publishAndTriggerBuild = (appId, files, tag) =>
+    registry.publishApp(files, tag)
+      .then(() => colossus.sendEvent('vtex.toolbelt', '-', 'publish', {id: appId}))
 
   const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
     const spinner = ora('Publishing app...').start()
+    const appId = id(manifest)
+
     return listLocalFiles(path)
       .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
       .then(files => mapFileObject(files, path))
-      .then(files => reg.publishApp(files, tag))
+      .then(files => listenBuild(appId, () => publishAndTriggerBuild(appId, files, tag)))
       .finally(() => spinner.stop())
-      .then(() => log.info(`Published app ${id(manifest)} successfully at ${account}`))
+      .then(() => log.info(`Published app ${appId} successfully at ${account}`))
       .catch(e => {
         if (e.response && /already published/.test(e.response.data.message)) {
           log.error(e.response.data.message.split('The').join(' -'))
