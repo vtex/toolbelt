@@ -35,6 +35,8 @@ export default {
 
     if (prod) {
       await canGoLive()
+    } else if (currentWorkspace === 'master') {
+      throw new CommandError(`Cannot set workspace master to production=${pretty(prod)}`)
     }
 
     log.debug(`Setting workspace ${currentWorkspace} to production=${prod}`)
