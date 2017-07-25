@@ -11,6 +11,8 @@ import {manifest} from '../../manifest'
 import {changesToString} from '../../apps'
 import {toMajorLocator} from '../../locator'
 import {id, validateAppAction} from './utils'
+import startDebuggerTunnel from './debugger'
+import * as chalk from 'chalk'
 import {watch, listLocalFiles, addChangeContent} from '../../file'
 
 const {link} = apps
@@ -91,6 +93,8 @@ export default {
     await link(majorLocator, batch)
     log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent')
     await watch(root, sendChanges, folder)
+    let debuggerPort = await startDebuggerTunnel(manifest)
+    log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`);
 
     createInterface({input: process.stdin, output: process.stdout})
       .on('SIGINT', () => {
