@@ -14,7 +14,8 @@ export default {
       .then(() => createCmd.handler(workspace))
       .catch(err => {
         if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
-          return setTimeout(() => createCmd.handler(workspace), 3000)
+          setTimeout(() => createCmd.handler(workspace), 3000)
+          return
         }
         return Promise.reject(err)
       })

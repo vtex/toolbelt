@@ -2,10 +2,8 @@ import {Registry, Apps, Workspaces, Router, Colossus} from '@vtex/api'
 
 import endpoint from './endpoint'
 import envTimeout from './timeout'
-import {version} from '../package.json'
 import {getAccount, getWorkspace, getToken} from './conf'
-
-export const userAgent = `Toolbelt/${version}`
+import userAgent from './user-agent'
 
 const DEFAULT_TIMEOUT = 15000
 const options = {
@@ -17,31 +15,31 @@ const options = {
   timeout: envTimeout || DEFAULT_TIMEOUT,
 }
 
-const interceptor = (client) => new Proxy({}, {
+const interceptor = <T>(client): T => new Proxy({}, {
   get: (_, name) => () => {
     throw new Error(`Error trying to call ${client}.${name} before login.`)
   },
-})
+}) as T
 
 const createClients = (customOptions) => {
   return {
-    registry: Registry({...options, ...customOptions, endpoint: endpoint('registry')}),
-    colossus: Colossus({...options, ...customOptions}),
+    registry: new Registry({...options, ...customOptions, endpoint: endpoint('registry')}),
+    colossus: new Colossus({...options, ...customOptions}),
   }
 }
 
 const [apps, router, workspaces, colossus] = getToken()
   ? [
-    Apps({...options, endpoint: endpoint('apps')}),
-    Router({...options, endpoint: endpoint('router')}),
-    Workspaces({...options, endpoint: endpoint('workspaces')}),
-    Colossus({...options}),
+    new Apps({...options, endpoint: endpoint('apps')}),
+    new Router({...options, endpoint: endpoint('router')}),
+    new Workspaces({...options, endpoint: endpoint('workspaces')}),
+    new Colossus({...options}),
   ]
   : [
-    interceptor('apps'),
-    interceptor('router') ,
-    interceptor('workspaces'),
-    interceptor('colossus'),
+    interceptor<Apps>('apps'),
+    interceptor<Router>('router') ,
+    interceptor<Workspaces>('workspaces'),
+    interceptor<Colossus>('colossus'),
   ]
 
 export {

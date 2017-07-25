@@ -12,28 +12,18 @@ const flowEvents: BuildEvent[] = ['start', 'success', 'fail']
 const onBuildEvent = (appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
   const unlistenLogs = logAll(log.level, appOrKey.split('@')[0])
   const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent('vtex.render-builder', `build.${type}`, (message) => callback(type, message)))
-  const timeout = setTimeout(() => callback('timeout'), 5000)
+  const timer = setTimeout(() => callback('timeout'), 5000)
+
+  const unlistenMap: Record<BuildEvent, Function> = {
+    start: unlistenStart,
+    success: unlistenSuccess,
+    fail: unlistenFail,
+    logs: unlistenLogs,
+    timeout: () => clearTimeout(timer),
+  }
 
   return (...types: BuildEvent[]) => {
-    types.forEach(type => {
-      switch (type) {
-        case 'start':
-          unlistenStart()
-          break
-        case 'success':
-          unlistenSuccess()
-          break
-        case 'fail':
-          unlistenFail()
-          break
-        case 'timeout':
-          clearTimeout(timeout)
-          break
-        case 'logs':
-          unlistenLogs()
-          break
-      }
-    })
+    types.forEach(type => { unlistenMap[type]() })
   }
 }
 

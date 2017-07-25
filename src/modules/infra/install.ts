@@ -75,7 +75,7 @@ const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolea
 const getInstalledVersion = (service: string): Bluebird<string> =>
   listInstalledServices()
     .then(data => data.find(({name}) => name === service))
-    .then(s => s ? s.version : s)
+    .then(s => s && s.version)
 
 export default {
   requiredArgs: 'name',

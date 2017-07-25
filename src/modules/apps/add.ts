@@ -29,6 +29,8 @@ import {
   validateAppManifest,
 } from '../../manifest'
 
+import {RegistryAppVersionsListItem} from '@vtex/api'
+
 const ARGS_START_INDEX = 2
 const unprefixName = compose<string, string[], string>(last, split(':'))
 const wildVersionByMajor = compose<string, string[], string, string>(concat(__, '.x'), head, split('.'))
@@ -67,7 +69,7 @@ const handleError = curry((app: string, err: any) => {
 const appsLatestVersion = (app: string): Bluebird<string | never> => {
   return createClients({account: 'smartcheckout'}).registry
     .listVersionsByApp(app)
-    .then(prop('data'))
+    .then<RegistryAppVersionsListItem[]>(prop('data'))
     .then(map(extractVersionFromId))
     .then(pickLatestVersion)
     .then(wildVersionByMajor)
@@ -76,7 +78,7 @@ const appsLatestVersion = (app: string): Bluebird<string | never> => {
 
 const infraLatestVersion = (app: string): Bluebird<string | never> =>
   router.getAvailableVersions(app)
-    .then(path(['versions', 'aws-us-east-1']))
+    .then<string[]>(path(['versions', 'aws-us-east-1']))
     .then(pickLatestVersion)
     .then(wildVersionByMajor)
     .catch(handleError(app))

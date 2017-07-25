@@ -5,7 +5,7 @@ import {compose} from 'ramda'
 import log from './logger'
 import endpoint from './endpoint'
 import {getAccount, getWorkspace, getToken} from './conf'
-import {userAgent} from './clients'
+import userAgent from './user-agent'
 
 const levelAdapter = {warning: 'warn'}
 const colossusHost = endpoint('colossus')
@@ -75,14 +75,12 @@ export const logAll = (logLevel, id) => {
   }))
 }
 
-export const onAuth = (account: string, workspace: string, state: string) => {
+export const onAuth = (account: string, workspace: string, state: string): Promise<string> => {
   const source = `https://${account}.myvtex.com/_toolbelt/sse/${state}?workspace=${workspace}`
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
     es.addEventListener('message', (msg: MessageJSON) => {
-      const {
-        body: token,
-      }: Message = JSON.parse(msg.data)
+      const {body: token} = JSON.parse(msg.data) as {body: string}
       es.close()
       resolve(token)
     })
