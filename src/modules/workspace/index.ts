@@ -15,6 +15,9 @@ export default {
     promote: {
       module: dirnameJoin('modules/workspace/promote'),
     },
+    production: {
+      module: dirnameJoin('modules/workspace/production'),
+    },
     use: {
       module: dirnameJoin('modules/workspace/use'),
     },
