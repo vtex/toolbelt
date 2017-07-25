@@ -10,7 +10,7 @@ import {apps, workspaces} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
 
 const {listLinks} = apps
-const {promote} = workspaces
+const {promote, get} = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const flippedGt = flip(gt)
@@ -33,6 +33,11 @@ const isPromotable = (workspace: string): Bluebird<never | void> =>
         return
       }
       throw new CommandError('You have links on your workspace, please unlink them before promoting')
+    }).then(async () => {
+      const meta = await get(account, currentWorkspace)
+      if (!meta.production) {
+        throw new CommandError(`Workspace ${currentWorkspace} is not in production mode. Use the command "${chalk.yellow('vtex workspace production true')}" to set production mode.`)
+      }
     })
 
 const promptConfirm = (workspace: string): Promise<any> =>
