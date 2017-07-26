@@ -1,11 +1,14 @@
 import * as WebSocket from 'ws'
 import * as net from 'net'
-import * as streamToString from 'get-stream'
+import streamToString from 'get-stream'
 
 import log from '../../logger'
 import {getAccount, getWorkspace, getToken} from '../../conf'
 
 const keepAliveDelayMs = 3 * 60 * 1000
+
+const wsCloseCodeGoingAway = 1001
+const wsCloseCodeError = 1011
 
 function getErrorMessage (raw: string): string {
   try {
@@ -36,7 +39,7 @@ function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket:
     ws.on('close', end)
     ws.on('error', err => {
       end()
-      log.error(`WebSocket error: ${err.name}: ${err.message}`)
+      log.error(`Debugger websocket error: ${err.name}: ${err.message}`)
     })
 
     ws.on('unexpected-response', async (_, res) => {
@@ -57,7 +60,7 @@ function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket:
         socket.write(data)
       } catch (err) {
         end()
-        ws.close(1001)
+        ws.close(wsCloseCodeError)
       }
     })
 
@@ -72,7 +75,7 @@ function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket:
 
       socket.on('close', hadError => {
         end()
-        ws.close(hadError ? 1001 : 1000)
+        ws.close(hadError ? wsCloseCodeError : wsCloseCodeGoingAway)
       })
     })
   }
