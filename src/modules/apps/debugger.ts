@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws'
 import * as net from 'net'
-import streamToString from 'get-stream'
+import * as streamToString from 'get-stream'
 
 import log from '../../logger'
 import {getAccount, getWorkspace, getToken} from '../../conf'
