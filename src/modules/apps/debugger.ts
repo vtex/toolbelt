@@ -4,6 +4,7 @@ import * as streamToString from 'get-stream'
 
 import log from '../../logger'
 import {getAccount, getWorkspace, getToken} from '../../conf'
+import {toMajorRange} from '../../locator'
 
 const keepAliveDelayMs = 3 * 60 * 1000
 
@@ -81,8 +82,10 @@ function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket:
   }
 }
 
-export default function startDebuggerTunnel ({name, vendor}: Manifest, port: number = 5858): Promise<number> {
-  const endpoint = `ws://${name}.${vendor}.aws-us-east-1.vtex.io/${getAccount()}/${getWorkspace()}/_debug/attach`
+export default function startDebuggerTunnel (manifest: Manifest, port: number = 5858): Promise<number> {
+  const {name, vendor, version} = manifest
+  const majorRange = toMajorRange(version)
+  const endpoint = `ws://${name}.${vendor}.aws-us-east-1.vtex.io/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
 
   return new Promise((resolve, reject) => {
     const server = net.createServer()
@@ -90,7 +93,8 @@ export default function startDebuggerTunnel ({name, vendor}: Manifest, port: num
 
     server.on('error', err => {
       if (port < 5900) {
-        resolve(startDebuggerTunnel({name, vendor}, port + 1))
+        log.warn(`Port ${port} in use, will try to open tunnel on port ${port + 1}`)
+        resolve(startDebuggerTunnel(manifest, port + 1))
       } else {
         reject(err)
       }
