@@ -1,7 +1,10 @@
+export const toMajorRange = (version: string): string => {
+  return `${version.split('.')[0]}.x`
+}
+
 export const toMajorLocator = (vendor: string, name: string, version: string): string => {
-  const partialId = `${vendor}.${name}`
-  const majorRange = `${version.split('.')[0]}.x`
-  return `${partialId}@${majorRange}`
+  const majorRange = toMajorRange(version)
+  return `${vendor}.${name}@${majorRange}`
 }
 
 export const parseLocator = (locator: string): Manifest => {
