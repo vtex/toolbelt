@@ -141,20 +141,16 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
     })
 }
 
-export default {
-  requiredArgs: 'app',
-  description: 'Add an app to the manifest dependencies',
-  handler: (app: string, options) => {
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
-    log.debug('Adding app(s)', apps)
-    return addApps(apps)
-      .then(() => log.info('App(s) added succesfully!'))
-      .catch(err => {
-        if (err instanceof InterruptionException) {
-          log.error(err.message)
-          return Promise.resolve()
-        }
-        return Promise.reject(err)
-      })
-  },
+export default (app: string, options) => {
+  const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+  log.debug('Adding app(s)', apps)
+  return addApps(apps)
+    .then(() => log.info('App(s) added succesfully!'))
+    .catch(err => {
+      if (err instanceof InterruptionException) {
+        log.error(err.message)
+        return Promise.resolve()
+      }
+      return Promise.reject(err)
+    })
 }

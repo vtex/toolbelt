@@ -77,40 +77,36 @@ const getInstalledVersion = (service: string): Bluebird<string> =>
     .then(data => data.find(({name}) => name === service))
     .then(s => s && s.version)
 
-export default {
-  requiredArgs: 'name',
-  description: 'Install a service',
-  handler: (name: string) => {
-    const [service, suffix] = name.split('@')
-    const spinner = ora('Getting versions').start()
-    return Promise.all([
-      getInstalledVersion(service),
-      getAvailableVersions(service).then(path(['versions', VERSIONS_REGION])),
-    ])
-    .tap(() => spinner.stop())
-    .spread(getNewVersion(suffix))
-    .tap(logInstall(service))
-    .then((versions: [string, string]) => {
-      return hasNewVersion(versions)
-        ? Promise.resolve(console.log(''))
-            .then(promptInstall)
-            .then(confirm => {
-              if (!confirm) {
-                return
-              }
-              spinner.text = 'Installing'
-              spinner.start()
-              return installService(service, versions[1])
-            })
-            .then(() => {
-              spinner.stop()
-              log.info('Installation complete')
-            })
-        : null
-    })
-    .catch(err => {
-      spinner.stop()
-      throw err
-    })
-  },
+export default (name: string) => {
+  const [service, suffix] = name.split('@')
+  const spinner = ora('Getting versions').start()
+  return Promise.all([
+    getInstalledVersion(service),
+    getAvailableVersions(service).then(path(['versions', VERSIONS_REGION])),
+  ])
+  .tap(() => spinner.stop())
+  .spread(getNewVersion(suffix))
+  .tap(logInstall(service))
+  .then((versions: [string, string]) => {
+    return hasNewVersion(versions)
+      ? Promise.resolve(console.log(''))
+          .then(promptInstall)
+          .then(confirm => {
+            if (!confirm) {
+              return
+            }
+            spinner.text = 'Installing'
+            spinner.start()
+            return installService(service, versions[1])
+          })
+          .then(() => {
+            spinner.stop()
+            log.info('Installation complete')
+          })
+      : null
+  })
+  .catch(err => {
+    spinner.stop()
+    throw err
+  })
 }

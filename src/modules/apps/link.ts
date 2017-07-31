@@ -14,7 +14,7 @@ import {toMajorLocator} from '../../locator'
 import {id, validateAppAction} from './utils'
 import startDebuggerTunnel from './debugger'
 import * as chalk from 'chalk'
-import {watch, listLocalFiles, addChangeContent} from '../../file'
+import {watch, listLocalFiles, addChangeContent} from './file'
 
 const {link} = apps
 const root = process.cwd()
@@ -55,55 +55,38 @@ const cleanCache = (): Bluebird<void> => {
 
 const CACHE_CLEAN_AWAIT_MS = 5000
 
-export default {
-  description: 'Send the files to the registry and watch for changes',
-  options: [
-    {
-      short: 'c',
-      long: 'clean',
-      description: 'Clean builder cache',
-      type: 'boolean',
-    },
-    {
-      short: 'o',
-      long: 'only',
-      description: 'Link only this folder',
-      type: 'string',
-    },
-  ],
-  handler: async (options) => {
-    await validateAppAction()
-    const unlisten = logAll(currentContext, log.level, `${manifest.vendor}.${manifest.name}`)
+export default async (options) => {
+  await validateAppAction()
+  const unlisten = logAll(currentContext, log.level, `${manifest.vendor}.${manifest.name}`)
 
-    if (options.c || options.clean) {
-      log.info('Requesting to clean cache in builder.')
-      cleanCache()
-      await Promise.delay(CACHE_CLEAN_AWAIT_MS)
-    }
+  if (options.c || options.clean) {
+    log.info('Requesting to clean cache in builder.')
+    cleanCache()
+    await Promise.delay(CACHE_CLEAN_AWAIT_MS)
+  }
 
-    log.info('Linking app', `${id(manifest)}`)
-    const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
-    const folder = options.o || options.only
-    const paths = await listLocalFiles(root, folder)
-    const changes = mapFilesToChanges(paths)
-    const batch = addChangeContent(changes)
+  log.info('Linking app', `${id(manifest)}`)
+  const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
+  const folder = options.o || options.only
+  const paths = await listLocalFiles(root, folder)
+  const changes = mapFilesToChanges(paths)
+  const batch = addChangeContent(changes)
 
-    log.debug('Sending files:')
-    paths.forEach(p => log.debug(p))
-    log.info(`Sending ${batch.length} file` + (batch.length > 1 ? 's' : ''))
-    await link(majorLocator, batch)
-    log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent')
-    await watch(root, sendChanges, folder)
+  log.debug('Sending files:')
+  paths.forEach(p => log.debug(p))
+  log.info(`Sending ${batch.length} file` + (batch.length > 1 ? 's' : ''))
+  await link(majorLocator, batch)
+  log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent')
+  await watch(root, sendChanges, folder)
 
-    const debuggerPort = await startDebuggerTunnel(manifest)
-    log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
+  const debuggerPort = await startDebuggerTunnel(manifest)
+  log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
 
-    createInterface({input: process.stdin, output: process.stdout})
-      .on('SIGINT', () => {
-        unlisten()
-        log.info('Your app is still in development mode.')
-        log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
-        process.exit()
-      })
-  },
+  createInterface({input: process.stdin, output: process.stdout})
+    .on('SIGINT', () => {
+      unlisten()
+      log.info('Your app is still in development mode.')
+      log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
+      process.exit()
+    })
 }

@@ -38,32 +38,20 @@ const uninstallApps = async (apps: string[]): Promise<void> => {
   await uninstallApps(tail(apps))
 }
 
-export default {
-  optionalArgs: 'app',
-  description: 'Uninstall an app (defaults to the app in the current directory)',
-  options: [
-    {
-      short: 'y',
-      long: 'yes',
-      description: 'Auto confirm prompts',
-      type: 'boolean',
-    },
-  ],
-  handler: async (optionalApp: string, options) => {
-    await validateAppAction(optionalApp)
-    const app = optionalApp || `${manifest.vendor}.${manifest.name}`
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
-    const preConfirm = options.y || options.yes
+export default async (optionalApp: string, options) => {
+  await validateAppAction(optionalApp)
+  const app = optionalApp || `${manifest.vendor}.${manifest.name}`
+  const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+  const preConfirm = options.y || options.yes
 
-    if (!preConfirm) {
-      await promptAppUninstall(apps)
-    }
+  if (!preConfirm) {
+    await promptAppUninstall(apps)
+  }
 
-    const doUninstall = () => uninstallApps(apps)
-    log.debug('Uninstalling app(s)', apps)
-    // Only listen for feedback if there's only one app
-    return apps.length === 1
-      ? listenBuild(app, doUninstall)
-      : doUninstall()
-  },
+  const doUninstall = () => uninstallApps(apps)
+  log.debug('Uninstalling app(s)', apps)
+  // Only listen for feedback if there's only one app
+  return apps.length === 1
+    ? listenBuild(app, doUninstall)
+    : doUninstall()
 }

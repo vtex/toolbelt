@@ -67,33 +67,30 @@ const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
     Object.keys(update).map(name => installService(name, update[name].latest)),
   )
 
-export default {
-  description: 'Update all installed services',
-  handler: () => {
-    const spinner = ora('Getting available updates').start()
-    return Promise.all([listAvailableServices(), listInstalledServices()])
-      .tap(() => spinner.stop())
-      .spread(createVersionMap)
-      .tap(logVersionMap)
-      .then(({update}) => {
-        console.log('')
-        return hasUpdate(update)
-          ? promptUpdate()
-              .then(confirm => {
-                if (!confirm) {
-                  return
-                }
-                spinner.text = 'Installing'
-                spinner.start()
-                return installUpdates(update)
-              })
-              .then(() => spinner.stop())
-              .then(() => log.info('All updates were installed'))
-          : log.info('All up to date!')
-      })
-      .catch(err => {
-        spinner.stop()
-        throw err
-      })
-  },
+export default () => {
+  const spinner = ora('Getting available updates').start()
+  return Promise.all([listAvailableServices(), listInstalledServices()])
+    .tap(() => spinner.stop())
+    .spread(createVersionMap)
+    .tap(logVersionMap)
+    .then(({update}) => {
+      console.log('')
+      return hasUpdate(update)
+        ? promptUpdate()
+            .then(confirm => {
+              if (!confirm) {
+                return
+              }
+              spinner.text = 'Installing'
+              spinner.start()
+              return installUpdates(update)
+            })
+            .then(() => spinner.stop())
+            .then(() => log.info('All updates were installed'))
+        : log.info('All up to date!')
+    })
+    .catch(err => {
+      spinner.stop()
+      throw err
+    })
 }

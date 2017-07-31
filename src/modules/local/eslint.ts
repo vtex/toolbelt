@@ -60,29 +60,18 @@ const linkEslint = (origin: string, dest: string, preConfirm: boolean): Bluebird
   return mapSeries(symlinks, fn => fn())
 }
 
-export default {
-  description: 'Setup a local eslint environment',
-  options: [
-    {
-      short: 'y',
-      long: 'yes',
-      description: 'Auto confirm prompts',
-      type: 'boolean',
-    },
-  ],
-  handler: (options) => {
-    log.info('Linking eslint setup...')
-    const preConfirm = options.y || options.yes
-    const root = process.cwd()
-    const pkg = join(__dirname, '../../..')
-    return mkdir(join(root, 'node_modules'))
-      .then(() => mkdir(join(root, 'node_modules/.bin')))
-      .catch(err => {
-        return err.code && err.code === 'EEXIST'
-          ? Promise.resolve()
-          : Promise.reject(err)
-      })
-      .then(() => linkEslint(pkg, root, preConfirm))
-      .then(() => log.info('Successfully linked eslint setup!'))
-  },
+export default (options) => {
+  log.info('Linking eslint setup...')
+  const preConfirm = options.y || options.yes
+  const root = process.cwd()
+  const pkg = join(__dirname, '../../..')
+  return mkdir(join(root, 'node_modules'))
+    .then(() => mkdir(join(root, 'node_modules/.bin')))
+    .catch(err => {
+      return err.code && err.code === 'EEXIST'
+        ? Promise.resolve()
+        : Promise.reject(err)
+    })
+    .then(() => linkEslint(pkg, root, preConfirm))
+    .then(() => log.info('Successfully linked eslint setup!'))
 }

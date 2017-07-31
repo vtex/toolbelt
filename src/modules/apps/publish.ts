@@ -7,7 +7,7 @@ import {readFileSync} from 'fs-extra'
 import log from '../../logger'
 import {createClients} from '../../clients'
 import {id, mapFileObject} from './utils'
-import {listLocalFiles} from '../../file'
+import {listLocalFiles} from './file'
 
 import {listenBuild} from '../utils'
 
@@ -56,27 +56,9 @@ const publisher = (account: string = 'smartcheckout') => {
   return {publishApp, publishApps}
 }
 
-export default {
-  description: 'Publish the current app or a path containing an app',
-  optionalArgs: 'path',
-  options: [
-    {
-      short: 't',
-      long: 'tag',
-      description: 'Apply a tag to the release',
-      type: 'string',
-    },
-    {
-      short: 'r',
-      long: 'registry',
-      description: 'Specify the registry for the app registry',
-      type: 'string',
-    },
-  ],
-  handler: (path: string, options) => {
-    log.debug('Starting to publish app')
-    const paths = [path || root, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
-    const {publishApps} = publisher(options.r || options.registry)
-    return publishApps(paths, options.tag)
-  },
+export default (path: string, options) => {
+  log.debug('Starting to publish app')
+  const paths = [path || root, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+  const {publishApps} = publisher(options.r || options.registry)
+  return publishApps(paths, options.tag)
 }

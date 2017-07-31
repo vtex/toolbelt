@@ -103,19 +103,7 @@ const installVersionByTag = (tag: string): Bluebird<{}> => {
     })
 }
 
-export default {
-  optionalArgs: 'version',
-  description: 'Install VTEX IO Version',
-  options: [
-    {
-      short: 't',
-      long: 'tag',
-      description: 'Install last version by Tag',
-      type: 'string',
-    },
-  ],
-  handler: (version: string, options) => {
-    const tag = options.t || options.tag
-    return version ? installVersion(version) : installVersionByTag(tag)
-  },
+export default (version: string, options) => {
+  const tag = options.t || options.tag
+  return version ? installVersion(version) : installVersionByTag(tag)
 }

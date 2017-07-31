@@ -17,18 +17,14 @@ const castValue = value => {
   return isNaN(numberCast) ? parsedValue : numberCast
 }
 
-export default {
-  description: 'Set a value',
-  requiredArgs: ['app', 'fields', 'value'],
-  handler: (app: string, _field, _value, options) => {
-    const value = last(options._)
-    const fields = options._.slice(FIELDS_START_INDEX, options._.length - 1)
-    const realValue = castValue(value)
-    const commandSettings = assocPath(fields, realValue, {})
-    return getAppSettings(app)
-      .then(merge(__, commandSettings))
-      .then(newSettings => JSON.stringify(newSettings, null, 2))
-      .tap(newSettings => saveAppSettings(app, newSettings))
-      .tap(console.log)
-  },
+export default (app: string, _field, _value, options) => {
+  const value = last(options._)
+  const fields = options._.slice(FIELDS_START_INDEX, options._.length - 1)
+  const realValue = castValue(value)
+  const commandSettings = assocPath(fields, realValue, {})
+  return getAppSettings(app)
+    .then(merge(__, commandSettings))
+    .then(newSettings => JSON.stringify(newSettings, null, 2))
+    .tap(newSettings => saveAppSettings(app, newSettings))
+    .tap(console.log)
 }

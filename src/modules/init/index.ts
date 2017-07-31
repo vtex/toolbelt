@@ -7,7 +7,6 @@ import * as inquirer from 'inquirer'
 
 import log from '../../logger'
 import {writeManifest} from './utils'
-import {dirnameJoin} from '../../file'
 
 const choices = ['render']
 const {mapSeries} = Bluebird
@@ -95,41 +94,33 @@ const createManifest = (name: string, vendor: string, title = '', description = 
   }
 }
 
-export default {
-  init: {
-    description: 'Create basic files and folders for your VTEX app',
-    handler: () => {
-      log.debug('Prompting for app info')
-      log.info('Hello! I will help you generate basic files and folders for your app.')
-      return mapSeries([
-        promptName,
-        promptVendor,
-        promptTitle,
-        promptDescription,
-      ], f => f())
-        .spread((name: string, vendor: string, title: string, description: string) => {
-          log.debug('Creating manifest file')
-          const fullName = `${vendor}.${name}`
-          return writeManifest(createManifest(name, vendor, title, description))
-            .tap(() => log.info('Manifest file generated succesfully!'))
-            .then(promptService)
-            .then((service: string) =>
-              require(join(__dirname, service)).default.handler(),
-            )
-            .tap(() => {
-              console.log('')
-              log.info(`${fullName} structure generated successfully.`)
-              log.info(`Run ${chalk.bold.green('vtex link')} to start developing!`)
-            })
-            .catch(err =>
-              err && err.code === 'EEXIST'
-                ? log.error(`Folder ${fullName} already exists.`)
-                : Promise.reject(err),
-            )
+export default () => {
+  log.debug('Prompting for app info')
+  log.info('Hello! I will help you generate basic files and folders for your app.')
+  return mapSeries([
+    promptName,
+    promptVendor,
+    promptTitle,
+    promptDescription,
+  ], f => f())
+    .spread((name: string, vendor: string, title: string, description: string) => {
+      log.debug('Creating manifest file')
+      const fullName = `${vendor}.${name}`
+      return writeManifest(createManifest(name, vendor, title, description))
+        .tap(() => log.info('Manifest file generated succesfully!'))
+        .then(promptService)
+        .then((service: string) =>
+          require(join(__dirname, service)).default(),
+        )
+        .tap(() => {
+          console.log('')
+          log.info(`${fullName} structure generated successfully.`)
+          log.info(`Run ${chalk.bold.green('vtex link')} to start developing!`)
         })
-    },
-    render: {
-      module: dirnameJoin('modules/init/render'),
-    },
-  },
+        .catch(err =>
+          err && err.code === 'EEXIST'
+            ? log.error(`Folder ${fullName} already exists.`)
+            : Promise.reject(err),
+        )
+    })
 }

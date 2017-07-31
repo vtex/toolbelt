@@ -39,30 +39,27 @@ const addRenderDeps = (manifest: Manifest): Manifest => {
 const readManifest = (): Bluebird<Manifest> =>
   readFile(manifestPath, 'utf8').then(JSON.parse)
 
-export default {
-  description: 'Create a new render bootstrap project',
-  handler: () => {
-    log.debug('Reading manifest file')
-    const renderRoot = join(process.cwd(), 'render')
-    return readManifest()
-      .tap(() =>
-        log.debug('Adding render deps to manifest and creating render folder'),
-      )
-      .tap((manifest: Manifest) =>
-        Promise.all([writeManifest(addRenderDeps(manifest)), mkdir(renderRoot)]),
-      )
-      .then(({vendor, name}: Manifest) =>
-        Promise.all([
-          writeFile(
-            join(renderRoot, 'placeholders.json'),
-            makePlaceholdersFile(vendor, name),
-          ),
-          writeFile(join(renderRoot, 'index.js'), helloWorld),
-        ]),
-      )
-      .catch(err =>
-        err && err.code === 'ENOENT'
-          ? log.error('Manifest file not found.') : err,
-      )
-  },
+export default () => {
+  log.debug('Reading manifest file')
+  const renderRoot = join(process.cwd(), 'render')
+  return readManifest()
+    .tap(() =>
+      log.debug('Adding render deps to manifest and creating render folder'),
+    )
+    .tap((manifest: Manifest) =>
+      Promise.all([writeManifest(addRenderDeps(manifest)), mkdir(renderRoot)]),
+    )
+    .then(({vendor, name}: Manifest) =>
+      Promise.all([
+        writeFile(
+          join(renderRoot, 'placeholders.json'),
+          makePlaceholdersFile(vendor, name),
+        ),
+        writeFile(join(renderRoot, 'index.js'), helloWorld),
+      ]),
+    )
+    .catch(err =>
+      err && err.code === 'ENOENT'
+        ? log.error('Manifest file not found.') : err,
+    )
 }

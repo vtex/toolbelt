@@ -1875,14 +1875,14 @@ find-up@^2.0.0:
   dependencies:
     locate-path "^2.0.0"
 
-findhelp@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/findhelp/-/findhelp-0.3.0.tgz#aa9523e80b44a269b724a2e9b682253fc833feff"
+findhelp@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/findhelp/-/findhelp-1.0.1.tgz#c5ed25c348af931fd53fa43977ed8d7f1712bda4"
   dependencies:
     chalk "^1.1.3"
     es6-error "^3.0.0"
     pad "^1.0.0"
-    ramda "^0.21.0"
+    ramda "^0.24.1"
 
 findup-sync@~0.3.0:
   version "0.3.0"
@@ -3554,13 +3554,13 @@ querystringify@0.0.x:
   version "0.0.4"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-0.0.4.tgz#0cf7f84f9463ff0ae51c4c4b142d95be37724d9c"
 
-ramda@^0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.21.0.tgz#a001abedb3ff61077d4ff1d577d44de77e8d0a35"
-
 ramda@^0.23.0:
   version "0.23.0"
   resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.23.0.tgz#ccd13fff73497a93974e3e86327bfd87bd6e8e2b"
+
+ramda@^0.24.1:
+  version "0.24.1"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.24.1.tgz#c3b7755197f35b8dc3502228262c4c91ddb6b857"
 
 randomatic@^1.1.3:
   version "1.1.6"

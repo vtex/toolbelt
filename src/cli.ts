@@ -2,25 +2,23 @@
 import {without} from 'ramda'
 import * as chalk from 'chalk'
 import * as moment from 'moment'
-import * as Promise from 'bluebird'
-import * as minimist from 'minimist'
+import * as Bluebird from 'bluebird'
 import {all as clearCachedModules} from 'clear-module'
 import 'any-promise/register/bluebird'
-import {find, run as unboundRun, MissingRequiredArgsError} from 'findhelp'
+import {find, run as unboundRun, MissingRequiredArgsError, CommandNotFoundError} from 'findhelp'
+import * as path from 'path'
 
 import log from './logger'
-import tree from './modules'
+import tree from './modules/tree'
 import notify from './update'
 import {getToken} from './conf'
-import initCmd from './modules/init/'
-import loginCmd from './modules/auth/login'
-import logoutCmd from './modules/auth/logout'
-import switchCmd from './modules/auth/switch'
-import whoamiCmd from './modules/auth/whoami'
 import {CommandError} from './errors'
 
-global.Promise = Promise
-const run = unboundRun.bind(tree)
+global.Promise = Bluebird
+
+const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
+
+const loginCmd = tree['login']
 
 // Setup logging
 const VERBOSE = '--verbose'
@@ -42,28 +40,23 @@ if (process.env.NODE_ENV === 'development') {
 // Show update notification if newer version is available
 notify()
 
-const checkCommandExists = found =>
-  !found.command ? Promise.reject({name: 'CommandNotFound'}) : null
-
-const checkLogin = found => {
-  const whitelist = [tree, loginCmd, logoutCmd, switchCmd, whoamiCmd, initCmd]
-  if (!getToken() && whitelist.indexOf(found.command) === -1) {
-    log.debug('Requesting login before command:', process.argv.slice(2).join(' '))
+const checkLogin = args => {
+  const first = args[0]
+  const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init']
+  if (!getToken() && whitelist.indexOf(first) === -1) {
+    log.debug('Requesting login before command:', args.join(' '))
     return run({command: loginCmd})
   }
 }
 
-const main = () => {
-  return Promise.resolve(find(tree, without([VERBOSE], process.argv.slice(2)), minimist))
-    .tap(checkCommandExists)
-    .tap(checkLogin)
-    .then(command => {
-      const maybePromise = run(command)
-      if (!maybePromise || !maybePromise.then) {
-        log.warn('Command handlers should return a Promise.')
-      }
-      return maybePromise
-    })
+const main = async () => {
+  const args = process.argv.slice(2)
+
+  await checkLogin(args)
+
+  const command = await find(tree, without([VERBOSE], args))
+
+  await run(command)
 }
 
 const onError = e => {
@@ -117,7 +110,7 @@ const onError = e => {
       case MissingRequiredArgsError.name:
         log.error('Missing required arguments:', chalk.blue(e.message))
         break
-      case 'CommandNotFound':
+      case CommandNotFoundError.name:
         log.error('Command not found:', chalk.blue(...process.argv.slice(2)))
         break
       case CommandError.name:

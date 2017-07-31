@@ -11,18 +11,15 @@ const npmReducer = dependencies => (acc: {}, k: string): {} =>
 const vtexReducer = dependencies => (acc: {}, k: string): {} =>
   k.startsWith(PREFIX) ? acc : assoc(k, dependencies[k], acc)
 
-export default {
-  description: 'Generate package.json from manifest',
-  handler: async () => {
-    const pkg = {
-      ...manifest,
-      version: null,
-      vtexVersion: manifest.version,
-      dependencies: reduce(npmReducer(manifest.dependencies), {}, keys(manifest.dependencies).sort()),
-      vtexDependencies: reduce(vtexReducer(manifest.dependencies), {}, keys(manifest.dependencies).sort()),
-    }
-    log.debug('Generating package:', JSON.stringify(pkg, null, 2))
-    await outputJson(resolve(process.cwd(), 'package.json'), pkg, {spaces: 2})
-    log.info('Generated package.json successfully.')
-  },
+export default async () => {
+  const pkg = {
+    ...manifest,
+    version: null,
+    vtexVersion: manifest.version,
+    dependencies: reduce(npmReducer(manifest.dependencies), {}, keys(manifest.dependencies).sort()),
+    vtexDependencies: reduce(vtexReducer(manifest.dependencies), {}, keys(manifest.dependencies).sort()),
+  }
+  log.debug('Generating package:', JSON.stringify(pkg, null, 2))
+  await outputJson(resolve(process.cwd(), 'package.json'), pkg, {spaces: 2})
+  log.info('Generated package.json successfully.')
 }

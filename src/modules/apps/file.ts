@@ -4,7 +4,7 @@ import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
 import {readFileSync, stat} from 'fs-extra'
 
-import log from './logger'
+import log from '../../logger'
 
 const defaultIgnored = [
   '.DS_Store',
@@ -37,9 +37,6 @@ const getIgnoredPaths = (root: string): string[] => {
     return defaultIgnored
   }
 }
-
-export const dirnameJoin = (filePath: string): string =>
-  path.resolve(__dirname, filePath)
 
 export const listLocalFiles = (root: string, folder?: string): Bluebird<string[]> =>
   Promise.resolve(
@@ -76,10 +73,10 @@ export const addChangeContent = (changes: Change[]): Batch[] =>
     }
   })
 
-export const sendSaveChanges = (file: string, sendChanges: Function): void =>
+const sendSaveChanges = (file: string, sendChanges: Function): void =>
   sendChanges(addChangeContent([{path: file, action: 'save'}]))
 
-export const sendRemoveChanges = (file: string, sendChanges: Function): void =>
+const sendRemoveChanges = (file: string, sendChanges: Function): void =>
   sendChanges(addChangeContent([{path: file, action: 'remove'}]))
 
 export const watch = (root: string, sendChanges: Function, folder?: string): Bluebird<string | void> => {

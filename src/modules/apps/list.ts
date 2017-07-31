@@ -35,13 +35,10 @@ const renderTable = curry<string, string, any, void>(
   },
 )
 
-export default {
-  description: 'List your installed VTEX apps',
-  handler: () => {
-    log.debug('Starting to list apps')
-    return listApps()
-      .then(prop('data'))
-      .then(parseLocatorFromList)
-      .then(renderTable('Installed Apps', 'You have no installed apps'))
-  },
+export default () => {
+  log.debug('Starting to list apps')
+  return listApps()
+    .then(prop('data'))
+    .then(parseLocatorFromList)
+    .then(renderTable('Installed Apps', 'You have no installed apps'))
 }

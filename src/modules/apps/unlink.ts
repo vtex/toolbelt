@@ -29,19 +29,15 @@ const unlinkApps = async (apps: string[]): Promise<void> => {
   await unlinkApps(tail(apps))
 }
 
-export default {
-  optionalArgs: 'app',
-  description: 'Unlink an app on the current directory or a specified one',
-  handler: async (optionalApp: string, options) => {
-    await validateAppAction(optionalApp)
-    const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+export default async (optionalApp: string, options) => {
+  await validateAppAction(optionalApp)
+  const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
+  const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 
-    const doUnlink = () => unlinkApps(apps)
-    log.debug('Unlinking app(s)', apps)
-    // Only listen for feedback if there's only one app
-    return apps.length === 1
-      ? listenBuild(app, doUnlink)
-      : doUnlink()
-  },
+  const doUnlink = () => unlinkApps(apps)
+  log.debug('Unlinking app(s)', apps)
+  // Only listen for feedback if there's only one app
+  return apps.length === 1
+    ? listenBuild(app, doUnlink)
+    : doUnlink()
 }

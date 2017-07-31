@@ -51,14 +51,11 @@ const promptConfirm = (workspace: string): Promise<any> =>
     }
   })
 
-export default {
-  description: 'Promote this workspace to master',
-  handler: () => {
-    log.debug('Promoting workspace', currentWorkspace)
-    return isPromotable(currentWorkspace)
-      .then(() => promptConfirm(currentWorkspace))
-      .then(() => promote(account, currentWorkspace))
-      .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`))
-      .then(() => useCmd.handler('master'))
-  },
+export default () => {
+  log.debug('Promoting workspace', currentWorkspace)
+  return isPromotable(currentWorkspace)
+    .then(() => promptConfirm(currentWorkspace))
+    .then(() => promote(account, currentWorkspace))
+    .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`))
+    .then(() => useCmd('master'))
 }
