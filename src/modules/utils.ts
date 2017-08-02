@@ -1,6 +1,7 @@
 import {pathOr} from 'ramda'
 
 import {logAll, onEvent} from '../sse'
+import {currentContext} from '../conf'
 import log from '../logger'
 
 type BuildEvent = 'start' | 'success' | 'fail' | 'timeout' | 'logs'
@@ -9,9 +10,9 @@ const allEvents: BuildEvent[] = ['start', 'success', 'fail', 'timeout', 'logs']
 
 const flowEvents: BuildEvent[] = ['start', 'success', 'fail']
 
-const onBuildEvent = (appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
-  const unlistenLogs = logAll(log.level, appOrKey.split('@')[0])
-  const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent('vtex.render-builder', `build.${type}`, (message) => callback(type, message)))
+const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
+  const unlistenLogs = logAll(ctx, log.level, appOrKey.split('@')[0])
+  const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent(ctx, 'vtex.render-builder', `build.${type}`, (message) => callback(type, message)))
   const timer = setTimeout(() => callback('timeout'), 5000)
 
   const unlistenMap: Record<BuildEvent, Function> = {
@@ -27,11 +28,11 @@ const onBuildEvent = (appOrKey: string, callback: (type: BuildEvent, message?: M
   }
 }
 
-export const listenBuild = (appOrKey: string, triggerBuild: () => Promise<any>) => {
+export const listenBuild = (appOrKey: string, triggerBuild: () => Promise<any>, ctx: Context = currentContext) => {
   return new Promise((resolve, reject) => {
     let triggerResponse
 
-    const unlisten = onBuildEvent(appOrKey, (eventType, message) => {
+    const unlisten = onBuildEvent(ctx, appOrKey, (eventType, message) => {
       switch (eventType) {
         case 'start':
           unlisten('start', 'timeout')

@@ -94,6 +94,11 @@ interface VersionsByAppResponse {
   data: VersionByApp[],
 }
 
+type Context = {
+  account: string,
+  workspace: string,
+}
+
 declare module '*/package.json' {
   const name: string
   const version: string
