@@ -54,13 +54,10 @@ const waitCompletion = () => {
   })
 }
 
-export default {
-  description: 'Prepare this workspace to be production-ready',
-  handler: () => {
-    log.debug('Preparing workspace', currentWorkspace)
-    return canGoLive()
-      .then(() => promptConfirm(currentWorkspace))
-      .then(() => prepare())
-      .then(() => waitCompletion())
-  },
+export default () => {
+  log.debug('Preparing workspace', currentWorkspace)
+  return canGoLive()
+    .then(() => promptConfirm(currentWorkspace))
+    .then(() => prepare())
+    .then(() => waitCompletion())
 }

@@ -60,30 +60,13 @@ const authAndSave = async (account, workspace): Promise<{login: string, token: s
   return {login, token}
 }
 
-export default {
-  description: 'Log into a VTEX account',
-  options: [
-    {
-      short: 'a',
-      long: 'account',
-      description: 'Specify login account',
-      type: 'string',
-    },
-    {
-      short: 'w',
-      long: 'workspace',
-      description: 'Specify login workspace',
-      type: 'string',
-    },
-  ],
-  handler: async (options) => {
-    const optionAccount = options ? (options.a || options.account) : null
-    const optionWorkspace = options ? (options.w || options.workspace) : null
-    const usePrevious = !(optionAccount && optionWorkspace) && details && await promptUsePrevious()
-    const account = optionAccount || (usePrevious && cachedAccount) || await promptAccount()
-    const workspace = optionWorkspace || (usePrevious && cachedWorkspace) || 'master'
-    const {login, token} = await authAndSave(account, workspace)
-    log.debug('Login successful', login, account, token, workspace)
-    log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
-  },
+export default async (options) => {
+  const optionAccount = options ? (options.a || options.account) : null
+  const optionWorkspace = options ? (options.w || options.workspace) : null
+  const usePrevious = !(optionAccount && optionWorkspace) && details && await promptUsePrevious()
+  const account = optionAccount || (usePrevious && cachedAccount) || await promptAccount()
+  const workspace = optionWorkspace || (usePrevious && cachedWorkspace) || 'master'
+  const {login, token} = await authAndSave(account, workspace)
+  log.debug('Login successful', login, account, token, workspace)
+  log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
 }

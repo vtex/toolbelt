@@ -74,24 +74,8 @@ const printInstalledIoVersion = (): Bluebird<void> =>
       console.log(table.toString())
     })
 
-export default {
-  description: 'List VTEX IO versions available to install',
-  options: [
-    {
-      short: 'a',
-      long: 'available',
-      description: 'List services available to install',
-      type: 'bool',
-    }, {
-      short: 't',
-      long: 'tag',
-      description: 'Filter by tag',
-      type: 'string',
-    },
-  ],
-  handler: (options) => {
-    const available = options.a || options.available
-    const tag = options.t || options.tag || 'stable'
-    return available ? listAllAvailableIoVersions(tag) : printInstalledIoVersion()
-  },
+export default (options) => {
+  const available = options.a || options.available
+  const tag = options.t || options.tag || 'stable'
+  return available ? listAllAvailableIoVersions(tag) : printInstalledIoVersion()
 }

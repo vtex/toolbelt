@@ -64,27 +64,10 @@ const printInstalledServices = (): Bluebird<void> =>
       console.log(table.toString())
     })
 
-export default {
-  optionalArgs: 'name',
-  description: 'List installed services',
-  options: [
-    {
-      short: 'a',
-      long: 'available',
-      description: 'List services available to install',
-      type: 'bool',
-    }, {
-      short: 'f',
-      long: 'filter',
-      description: 'Only list versions containing this word',
-      type: 'string',
-    },
-  ],
-  handler: (name: string, options) => {
-    const filter = options.f || options.filter
-    const available = options.a || options.available
-    return available
-      ? (name ? printAvailableServiceVersions(name, filter) : printAvailableServices())
-      : printInstalledServices()
-  },
+export default (name: string, options) => {
+  const filter = options.f || options.filter
+  const available = options.a || options.available
+  return available
+    ? (name ? printAvailableServiceVersions(name, filter) : printAvailableServices())
+    : printInstalledServices()
 }

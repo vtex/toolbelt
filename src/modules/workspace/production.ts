@@ -18,29 +18,25 @@ const canGoLive = async (): Promise<void> => {
 
 const pretty = p => p ? chalk.green('true') : chalk.red('false')
 
-export default {
-  optionalArgs: 'production',
-  description: 'Set this workspace to production mode',
-  handler: async (production: any) => {
-    const prod = production === 'true'
-      ? true
-      : production === 'false'
-        ? false
-        : null
+export default async (production: any) => {
+  const prod = production === 'true'
+    ? true
+    : production === 'false'
+      ? false
+      : null
 
-    if (prod === null) {
-      const meta = await get(account, currentWorkspace)
-      return log.info(`Workspace ${chalk.green(currentWorkspace)} production=${pretty(meta.production)}`)
-    }
+  if (prod === null) {
+    const meta = await get(account, currentWorkspace)
+    return log.info(`Workspace ${chalk.green(currentWorkspace)} production=${pretty(meta.production)}`)
+  }
 
-    if (prod) {
-      await canGoLive()
-    } else if (currentWorkspace === 'master') {
-      throw new CommandError(`Cannot set workspace master to production=${pretty(prod)}`)
-    }
+  if (prod) {
+    await canGoLive()
+  } else if (currentWorkspace === 'master') {
+    throw new CommandError(`Cannot set workspace master to production=${pretty(prod)}`)
+  }
 
-    log.debug(`Setting workspace ${currentWorkspace} to production=${prod}`)
-    return set(account, currentWorkspace, {production: prod})
-      .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} set to production=${pretty(prod)}`))
-  },
+  log.debug(`Setting workspace ${currentWorkspace} to production=${prod}`)
+  return set(account, currentWorkspace, {production: prod})
+    .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} set to production=${pretty(prod)}`))
 }

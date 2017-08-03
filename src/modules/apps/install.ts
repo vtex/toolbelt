@@ -26,28 +26,16 @@ const installApps = async (apps: string[], reg: string): Promise<void> => {
   await installApps(tail(apps), reg)
 }
 
-export default {
-  optionalArgs: 'app',
-  description: 'Install an app (defaults to the app in the current directory)',
-  options: [
-    {
-      short: 'r',
-      long: 'registry',
-      description: 'Specify the registry for the app',
-      type: 'string',
-    },
-  ],
-  handler: async (optionalApp: string, options) => {
-    await validateAppAction(optionalApp)
-    const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
-    const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+export default async (optionalApp: string, options) => {
+  await validateAppAction(optionalApp)
+  const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
+  const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 
-    const doInstall = () => installApps(apps, options.r || options.registry || 'smartcheckout')
-    log.debug('Installing app(s)', apps)
+  const doInstall = () => installApps(apps, options.r || options.registry || 'smartcheckout')
+  log.debug('Installing app(s)', apps)
 
-    // Only listen for feedback if there's only one app
-    return apps.length === 1
-      ? listenBuild(app, doInstall)
-      : doInstall()
-  },
+  // Only listen for feedback if there's only one app
+  return apps.length === 1
+    ? listenBuild(app, doInstall)
+    : doInstall()
 }
