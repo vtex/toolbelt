@@ -7,7 +7,7 @@ import {CommandError} from '../../errors'
 import log from '../../logger'
 import {apps, colossus} from '../../clients'
 import {logAll, onEvent} from '../../sse'
-import {getWorkspace} from '../../conf'
+import {getWorkspace, currentContext} from '../../conf'
 
 const {listLinks} = apps
 const currentWorkspace = getWorkspace()
@@ -46,8 +46,8 @@ const promptConfirm = (workspace: string): Bluebird<never | void> =>
   })
 
 const waitCompletion = () => {
-  const unlistenLogs = logAll(log.level, 'production_requester')
-  const unlistenEvents = onEvent('vtex.prodman', 'production.ready', () => {
+  const unlistenLogs = logAll(currentContext, log.level, 'production_requester')
+  const unlistenEvents = onEvent(currentContext, 'vtex.prodman', 'production.ready', () => {
     log.info(`Workspace ${chalk.green(currentWorkspace)} is now production ready`)
     unlistenLogs()
     unlistenEvents()

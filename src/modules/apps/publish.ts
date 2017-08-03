@@ -18,7 +18,8 @@ const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
 const publisher = (account: string = 'smartcheckout') => {
-  const {registry, colossus} = createClients({account, workspace: 'master'})
+  const context = {account, workspace: 'master'}
+  const {registry, colossus} = createClients(context)
 
   const publishAndTriggerBuild = (appId, files, tag) =>
     registry.publishApp(files, tag)
@@ -31,7 +32,7 @@ const publisher = (account: string = 'smartcheckout') => {
     return listLocalFiles(path)
       .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
       .then(files => mapFileObject(files, path))
-      .then(files => listenBuild(appId, () => publishAndTriggerBuild(appId, files, tag)))
+      .then(files => listenBuild(appId, () => publishAndTriggerBuild(appId, files, tag), context))
       .finally(() => spinner.stop())
       .then(() => log.info(`Published app ${appId} successfully at ${account}`))
       .catch(e => {

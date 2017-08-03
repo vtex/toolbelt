@@ -4,7 +4,7 @@ import {compose} from 'ramda'
 
 import log from './logger'
 import endpoint from './endpoint'
-import {getAccount, getWorkspace, getToken} from './conf'
+import {getToken} from './conf'
 import userAgent from './user-agent'
 
 const levelAdapter = {warning: 'warn'}
@@ -45,8 +45,8 @@ export const withId = (id: string, router: boolean, callback: Function) => (msg:
   }
 }
 
-export const onLog = (logLevel: string, callback: (message: Message) => void): Function => {
-  const source = `${colossusHost}/${getAccount()}/${getWorkspace()}/logs?level=${logLevel}`
+export const onLog = (ctx: Context, logLevel: string, callback: (message: Message) => void): Function => {
+  const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)
   es.onmessage = compose(callback, parseMessage)
@@ -54,8 +54,8 @@ export const onLog = (logLevel: string, callback: (message: Message) => void): F
   return es.close.bind(es)
 }
 
-export const onEvent = (sender: string, key: string, callback: (message: Message) => void): Function => {
-  const source = `${colossusHost}/${getAccount()}/${getWorkspace()}/events/${sender}:-:${key}`
+export const onEvent = (ctx: Context, sender: string, key: string, callback: (message: Message) => void): Function => {
+  const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/events/${sender}:-:${key}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
   es.onmessage = compose(callback, parseMessage)
@@ -63,9 +63,9 @@ export const onEvent = (sender: string, key: string, callback: (message: Message
   return es.close.bind(es)
 }
 
-export const logAll = (logLevel, id) => {
+export const logAll = (context: Context, logLevel, id) => {
   let previous = ''
-  return onLog(logLevel, withId(id, true, ({sender, level, body: {message, code}}: Message) => {
+  return onLog(context, logLevel, withId(id, true, ({sender, level, body: {message, code}}: Message) => {
     const suffix = sender.startsWith(id) ? '' : ' ' + chalk.gray(sender)
     const formatted = (message || code || '').replace(/\n\s*$/, '') + suffix
     if (previous !== formatted) {

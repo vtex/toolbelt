@@ -30,3 +30,8 @@ export const getWorkspace = (): string =>
 
 export const clear = (): void =>
   conf.clear()
+
+export const currentContext: Context = {
+  account: getAccount(),
+  workspace: getWorkspace(),
+}

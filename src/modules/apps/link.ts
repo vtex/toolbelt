@@ -5,6 +5,7 @@ import * as Bluebird from 'bluebird'
 import {createInterface} from 'readline'
 
 import log from '../../logger'
+import {currentContext} from '../../conf'
 import {apps, colossus} from '../../clients'
 import {logAll} from '../../sse'
 import {manifest} from '../../manifest'
@@ -72,7 +73,7 @@ export default {
   ],
   handler: async (options) => {
     await validateAppAction()
-    const unlisten = logAll(log.level, `${manifest.vendor}.${manifest.name}`)
+    const unlisten = logAll(currentContext, log.level, `${manifest.vendor}.${manifest.name}`)
 
     if (options.c || options.clean) {
       log.info('Requesting to clean cache in builder.')
