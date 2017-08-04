@@ -182,10 +182,6 @@ export default {
       description: 'Delete and create a workspace',
       handler: './workspace/reset',
     },
-    prepare: {
-      description: 'Prepare this workspace to be production-ready',
-      handler: './workspace/prepare',
-    },
   },
   deps: {
     list: {

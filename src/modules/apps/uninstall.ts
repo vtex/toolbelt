@@ -4,7 +4,6 @@ import {head, tail} from 'ramda'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {validateAppAction} from './utils'
-import {listenBuild} from '../utils'
 import {manifest, validateApp} from '../../manifest'
 
 const {uninstallApp} = apps
@@ -48,10 +47,6 @@ export default async (optionalApp: string, options) => {
     await promptAppUninstall(apps)
   }
 
-  const doUninstall = () => uninstallApps(apps)
   log.debug('Uninstalling app(s)', apps)
-  // Only listen for feedback if there's only one app
-  return apps.length === 1
-    ? listenBuild(app, doUninstall)
-    : doUninstall()
+  return uninstallApps(apps)
 }
