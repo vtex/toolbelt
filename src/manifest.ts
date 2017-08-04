@@ -1,16 +1,16 @@
-import {pipe} from 'ramda'
+import {memoize} from 'ramda'
 import * as path from 'path'
-import * as fs from 'fs-extra'
+import {readFile} from 'fs-extra'
 
-import log from './logger'
 import {CommandError} from './errors'
 
-const {readFileSync, accessSync, constants} = fs
-
-const R_OK = constants ? constants.R_OK : fs['R_OK']
-
-const readFileSyncUtf = (file: string): string =>
-  readFileSync(file, 'utf8')
+const readFileUtf = async (file: string): Promise<string> => {
+  try {
+    return await readFile(file, 'utf8')
+  } catch (e) {
+    throw new CommandError(`Manifest file doesn't exist or is not readable. Please add a manifest.json file in the root of the app folder.`)
+  }
+}
 
 export const namePattern = '[\\w_-]+'
 export const vendorPattern = '[\\w_-]+'
@@ -18,17 +18,15 @@ export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
 export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
 
-export const isManifestReadable = (): boolean => {
+export const parseManifest = (content: string): Manifest => {
   try {
-    accessSync(manifestPath, R_OK) // Throws if check fails
-    return true
+    return JSON.parse(content)
   } catch (e) {
-    log.debug('manifest.json doesn\'t exist or is not readable')
-    return false
+    throw new CommandError('Malformed manifest.json file. ' + e)
   }
 }
 
-export const validateAppManifest = (manifest: Manifest): Manifest => {
+export const validateAppManifest = (manifest: Manifest) => {
   const vendorRegex = new RegExp(`^${vendorPattern}$`)
   const nameRegex = new RegExp(`^${namePattern}$`)
   const versionRegex = new RegExp(`^${versionPattern}$`)
@@ -48,7 +46,7 @@ export const validateAppManifest = (manifest: Manifest): Manifest => {
     throw new Error('Field \'vendor\' may contain only letters, numbers, underscores and hyphens')
   }
   if (!versionRegex.test(manifest.version)) {
-    throw Error('The version format is invalid')
+    throw new Error('The version format is invalid')
   }
   return manifest
 }
@@ -64,6 +62,8 @@ export const validateApp = (app: string, skipVersion: boolean = false) => {
   return app
 }
 
-export const manifest = isManifestReadable()
-  ? pipe<string, string, Manifest, Manifest>(readFileSyncUtf, JSON.parse, validateAppManifest)(manifestPath)
-  : {name: '', vendor: '', version: ''}
+export const getManifest = memoize(async (): Promise<Manifest> => {
+  const manifest = parseManifest(await readFileUtf(manifestPath))
+  validateAppManifest(manifest)
+  return manifest
+})

@@ -8,7 +8,7 @@ import log from '../../logger'
 import {currentContext} from '../../conf'
 import {apps, colossus} from '../../clients'
 import {logAll} from '../../sse'
-import {manifest} from '../../manifest'
+import {getManifest} from '../../manifest'
 import {changesToString} from '../../apps'
 import {toMajorLocator} from '../../locator'
 import {id, validateAppAction} from './utils'
@@ -37,16 +37,17 @@ const sendChanges = (() => {
     },
     50,
   )
-  return (changes: Change[]) => {
+  return async (changes: Change[]) => {
     if (changes.length === 0) {
       return
     }
     queue = uniqBy(pathProp, queue.concat(changes).reverse())
+    const manifest = getManifest()
     return publishPatch(manifest)
   }
 })()
 
-const cleanCache = (): Bluebird<void> => {
+const cleanCache = (manifest: Manifest): Bluebird<void> => {
   return colossus.sendEvent('vtex.toolbelt', '-', 'cleanCache', {
     id: `${manifest.vendor}.${manifest.name}@.${manifest.version}`,
     type: 'clean',
@@ -57,11 +58,12 @@ const CACHE_CLEAN_AWAIT_MS = 5000
 
 export default async (options) => {
   await validateAppAction()
+    const manifest = await getManifest()
   const unlisten = logAll(currentContext, log.level, `${manifest.vendor}.${manifest.name}`)
 
   if (options.c || options.clean) {
     log.info('Requesting to clean cache in builder.')
-    cleanCache()
+      cleanCache(manifest)
     await Promise.delay(CACHE_CLEAN_AWAIT_MS)
   }
 

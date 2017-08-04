@@ -2,7 +2,7 @@ import {outputJson} from 'fs-extra'
 import {reduce, keys, assoc} from 'ramda'
 import {resolve} from 'path'
 
-import {manifest} from '../../manifest'
+import {getManifest} from '../../manifest'
 import log from '../../logger'
 
 const PREFIX = 'npm:'
@@ -12,6 +12,7 @@ const vtexReducer = dependencies => (acc: {}, k: string): {} =>
   k.startsWith(PREFIX) ? acc : assoc(k, dependencies[k], acc)
 
 export default async () => {
+    const manifest = await getManifest()
   const pkg = {
     ...manifest,
     version: null,

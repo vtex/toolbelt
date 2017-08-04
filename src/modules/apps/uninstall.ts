@@ -4,7 +4,7 @@ import {head, tail} from 'ramda'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {validateAppAction} from './utils'
-import {manifest, validateApp} from '../../manifest'
+import {getManifest, validateApp} from '../../manifest'
 
 const {uninstallApp} = apps
 const ARGS_START_INDEX = 2
@@ -39,6 +39,7 @@ const uninstallApps = async (apps: string[]): Promise<void> => {
 
 export default async (optionalApp: string, options) => {
   await validateAppAction(optionalApp)
+    const manifest = await getManifest()
   const app = optionalApp || `${manifest.vendor}.${manifest.name}`
   const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
   const preConfirm = options.y || options.yes

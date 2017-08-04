@@ -3,7 +3,7 @@ import {head, tail} from 'ramda'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {validateAppAction} from './utils'
-import {manifest, validateApp} from '../../manifest'
+import {getManifest, validateApp} from '../../manifest'
 
 const {installApp} = apps
 const ARGS_START_INDEX = 2
@@ -27,6 +27,7 @@ const installApps = async (apps: string[], reg: string): Promise<void> => {
 
 export default async (optionalApp: string, options) => {
   await validateAppAction(optionalApp)
+    const manifest = await getManifest()
   const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
   const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 

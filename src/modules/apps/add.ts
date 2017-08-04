@@ -1,7 +1,7 @@
 import * as chalk from 'chalk'
 import * as Bluebird from 'bluebird'
 import * as semverDiff from 'semver-diff'
-import {readFile, writeFile} from 'fs-extra'
+import {writeFile} from 'fs-extra'
 import * as latestVersion from 'latest-version'
 import {
   __,
@@ -24,9 +24,8 @@ import {
   namePattern,
   manifestPath,
   vendorPattern,
-  isManifestReadable,
-  wildVersionPattern,
-  validateAppManifest,
+  getManifest,
+  wildVersionPattern
 } from '../../manifest'
 
 import {RegistryAppVersionsListItem} from '@vtex/api'
@@ -39,14 +38,9 @@ const invalidAppMessage =
 
 class InterruptionException extends Error {}
 
-const readManifest = (): Bluebird<Manifest | never> => {
-  const isReadable = isManifestReadable()
-  if (!isReadable) {
-    return Promise.reject(new InterruptionException('Couldn\'t read manifest file'))
-  }
-  return readFile(manifestPath, 'utf8')
-    .then(JSON.parse)
-    .then(validateAppManifest)
+const readManifest = async (): Promise<Manifest | never> => {
+  const manifest = await getManifest()
+  return manifest
 }
 
 const extractVersionFromId =
