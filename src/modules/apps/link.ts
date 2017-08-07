@@ -58,7 +58,7 @@ const CACHE_CLEAN_AWAIT_MS = 5000
 
 export default async (options) => {
   await validateAppAction()
-    const manifest = await getManifest()
+  const manifest = await getManifest()
   const unlisten = logAll(currentContext, log.level, `${manifest.vendor}.${manifest.name}`)
 
   if (options.c || options.clean) {

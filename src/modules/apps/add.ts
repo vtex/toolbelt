@@ -38,11 +38,6 @@ const invalidAppMessage =
 
 class InterruptionException extends Error {}
 
-const readManifest = async (): Promise<Manifest | never> => {
-  const manifest = await getManifest()
-  return manifest
-}
-
 const extractVersionFromId =
   compose<VersionByApp, string, string[], string>(last, split('@'), prop('versionIdentifier'))
 
@@ -84,7 +79,7 @@ const npmLatestVersion = (app: string): Bluebird<string | never> => {
 }
 
 const updateManifestDependencies = (app: string, version: string): Bluebird<void> => {
-  return readManifest()
+  return getManifest()
     .then((manifest: Manifest) => {
       return {
         ...manifest,

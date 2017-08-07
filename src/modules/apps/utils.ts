@@ -6,7 +6,7 @@ import {createReadStream} from 'fs-extra'
 import log from '../../logger'
 import {getWorkspace} from '../../conf'
 import {CommandError} from '../../errors'
-import {getManifest} from '../../manifest'
+import {isManifestReadable} from '../../manifest'
 
 export const id = (manifest: Manifest): string =>
   `${manifest.vendor}.${manifest.name}@${manifest.version}`
@@ -36,7 +36,8 @@ export const validateAppAction = async (app?) => {
   }
 
   // No app arguments and no manifest file.
-  if (!app) {
-    await getManifest()
+  const isReadable = await isManifestReadable()
+  if (!app && !isReadable) {
+    throw new CommandError("No app was found, manifest file doesn't exist or is not readable. Please fix your manifest.json.")
   }
 }

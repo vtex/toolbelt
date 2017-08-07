@@ -18,6 +18,15 @@ export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
 export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
 
+export const isManifestReadable = async (): Promise<boolean> => {
+  try {
+    await readFileUtf(manifestPath)
+    return true;
+  } catch(error) {
+    return false;
+  }
+}
+
 export const parseManifest = (content: string): Manifest => {
   try {
     return JSON.parse(content)
@@ -31,24 +40,23 @@ export const validateAppManifest = (manifest: Manifest) => {
   const nameRegex = new RegExp(`^${namePattern}$`)
   const versionRegex = new RegExp(`^${versionPattern}$`)
   if (manifest.name === undefined) {
-    throw new Error('Field \'name\' should be set in manifest.json file')
+    throw new CommandError('Field \'name\' should be set in manifest.json file')
   }
   if (manifest.version === undefined) {
-    throw new Error('Field \'version\' should be set in manifest.json file')
+    throw new CommandError('Field \'version\' should be set in manifest.json file')
   }
   if (manifest.vendor === undefined) {
-    throw new Error('Field \'vendor\' should be set in manifest.json file')
+    throw new CommandError('Field \'vendor\' should be set in manifest.json file')
   }
   if (!nameRegex.test(manifest.name)) {
-    throw new Error('Field \'name\' may contain only letters, numbers, underscores and hyphens')
+    throw new CommandError('Field \'name\' may contain only letters, numbers, underscores and hyphens')
   }
   if (!vendorRegex.test(manifest.vendor)) {
-    throw new Error('Field \'vendor\' may contain only letters, numbers, underscores and hyphens')
+    throw new CommandError('Field \'vendor\' may contain only letters, numbers, underscores and hyphens')
   }
   if (!versionRegex.test(manifest.version)) {
-    throw new Error('The version format is invalid')
+    throw new CommandError('The version format is invalid')
   }
-  return manifest
 }
 
 const appName = new RegExp(`^${vendorPattern}\\.${namePattern}$`)

@@ -46,36 +46,36 @@ test('validates an app manifest', t => {
   const manifest = {
     name: 'foo-bar',
     version: '1.2.0',
-    vendor: 'foo',
+    vendor: 'foo'
   }
   const namelessManifest = {
     version: '1.2.0',
-    vendor: 'foo',
+    vendor: 'foo'
   }
   const versionlessManifest = {
     name: 'foo-bar',
-    vendor: 'foo',
+    vendor: 'foo'
   }
   const vendorlessManifest = {
     name: 'foo-bar',
-    version: '1.2.0',
+    version: '1.2.0'
   }
   const badNameManifest = {
     name: 'foo-bar@',
     version: '1.2.0',
-    vendor: 'foo',
+    vendor: 'foo'
   }
   const badVersionManifest = {
     name: 'foo-bar',
     version: '1.2.x',
-    vendor: 'foo',
+    vendor: 'foo'
   }
   const badVendorManifest = {
     name: 'foo-bar',
     version: '1.2.0',
-    vendor: 'foo@bar',
+    vendor: 'foo@bar'
   }
-  t.truthy(validateAppManifest(manifest))
+  t.notThrows(() => validateAppManifest(manifest))
   t.throws(() => validateAppManifest(namelessManifest))
   t.throws(() => validateAppManifest(versionlessManifest))
   t.throws(() => validateAppManifest(vendorlessManifest))
