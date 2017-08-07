@@ -6,6 +6,7 @@ import {
   versionPattern,
   wildVersionPattern,
   validateAppManifest,
+  parseManifest
 } from './manifest'
 
 test('validates a vendor name', t => {
@@ -74,11 +75,18 @@ test('validates an app manifest', t => {
     version: '1.2.0',
     vendor: 'foo@bar',
   }
-  t.truthy(validateAppManifest(manifest))
+  t.notThrows(() => validateAppManifest(manifest))
   t.throws(() => validateAppManifest(namelessManifest))
   t.throws(() => validateAppManifest(versionlessManifest))
   t.throws(() => validateAppManifest(vendorlessManifest))
   t.throws(() => validateAppManifest(badNameManifest))
   t.throws(() => validateAppManifest(badVersionManifest))
   t.throws(() => validateAppManifest(badVendorManifest))
+})
+
+test('validates an app manifest format', t => {
+  const manifest = '{"policies": [{"name": "full-access"}]}'
+  const manifestMalformed = '{"policies":test [{"name": "full-access"}]}'
+  t.truthy(parseManifest(manifest))
+  t.throws(() => parseManifest(manifestMalformed))
 })

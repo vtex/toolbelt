@@ -36,7 +36,8 @@ export const validateAppAction = async (app?) => {
   }
 
   // No app arguments and no manifest file.
-  if (!app && !isManifestReadable()) {
+  const isReadable = await isManifestReadable()
+  if (!app && !isReadable) {
     throw new CommandError(`No app was found, please fix your manifest.json${app ? ' or use <vendor>.<name>[@<version>]' : ''}`)
   }
 }

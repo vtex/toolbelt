@@ -1,16 +1,16 @@
-import {pipe} from 'ramda'
+import {memoize} from 'ramda'
 import * as path from 'path'
-import * as fs from 'fs-extra'
+import {readFile} from 'fs-extra'
 
-import log from './logger'
 import {CommandError} from './errors'
 
-const {readFileSync, accessSync, constants} = fs
-
-const R_OK = constants ? constants.R_OK : fs['R_OK']
-
-const readFileSyncUtf = (file: string): string =>
-  readFileSync(file, 'utf8')
+const readFileUtf = async (file: string): Promise<string> => {
+  try {
+    return await readFile(file, 'utf8')
+  } catch (e) {
+    throw new CommandError(`Manifest file doesn't exist or is not readable. Please add a manifest.json file in the root of the app folder.`)
+  }
+}
 
 export const namePattern = '[\\w_-]+'
 export const vendorPattern = '[\\w_-]+'
@@ -18,39 +18,45 @@ export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
 export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
 
-export const isManifestReadable = (): boolean => {
+export const isManifestReadable = async (): Promise<boolean> => {
   try {
-    accessSync(manifestPath, R_OK) // Throws if check fails
+    await readFileUtf(manifestPath)
     return true
-  } catch (e) {
-    log.debug('manifest.json doesn\'t exist or is not readable')
+  } catch(error) {
     return false
   }
 }
 
-export const validateAppManifest = (manifest: Manifest): Manifest => {
+export const parseManifest = (content: string): Manifest => {
+  try {
+    return JSON.parse(content)
+  } catch (e) {
+    throw new CommandError('Malformed manifest.json file. ' + e)
+  }
+}
+
+export const validateAppManifest = (manifest: Manifest) => {
   const vendorRegex = new RegExp(`^${vendorPattern}$`)
   const nameRegex = new RegExp(`^${namePattern}$`)
   const versionRegex = new RegExp(`^${versionPattern}$`)
   if (manifest.name === undefined) {
-    throw new Error('Field \'name\' should be set in manifest.json file')
+    throw new CommandError('Field \'name\' should be set in manifest.json file')
   }
   if (manifest.version === undefined) {
-    throw new Error('Field \'version\' should be set in manifest.json file')
+    throw new CommandError('Field \'version\' should be set in manifest.json file')
   }
   if (manifest.vendor === undefined) {
-    throw new Error('Field \'vendor\' should be set in manifest.json file')
+    throw new CommandError('Field \'vendor\' should be set in manifest.json file')
   }
   if (!nameRegex.test(manifest.name)) {
-    throw new Error('Field \'name\' may contain only letters, numbers, underscores and hyphens')
+    throw new CommandError('Field \'name\' may contain only letters, numbers, underscores and hyphens')
   }
   if (!vendorRegex.test(manifest.vendor)) {
-    throw new Error('Field \'vendor\' may contain only letters, numbers, underscores and hyphens')
+    throw new CommandError('Field \'vendor\' may contain only letters, numbers, underscores and hyphens')
   }
   if (!versionRegex.test(manifest.version)) {
-    throw Error('The version format is invalid')
+    throw new CommandError('The version format is invalid')
   }
-  return manifest
 }
 
 const appName = new RegExp(`^${vendorPattern}\\.${namePattern}$`)
@@ -64,6 +70,8 @@ export const validateApp = (app: string, skipVersion: boolean = false) => {
   return app
 }
 
-export const manifest = isManifestReadable()
-  ? pipe<string, string, Manifest, Manifest>(readFileSyncUtf, JSON.parse, validateAppManifest)(manifestPath)
-  : {name: '', vendor: '', version: ''}
+export const getManifest = memoize(async (): Promise<Manifest> => {
+  const manifest = parseManifest(await readFileUtf(manifestPath))
+  validateAppManifest(manifest)
+  return manifest
+})

@@ -4,7 +4,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {validateAppAction} from './utils'
 import {listenBuild} from '../utils'
-import {manifest, validateApp} from '../../manifest'
+import {getManifest, validateApp} from '../../manifest'
 
 const {unlink} = apps
 const ARGS_START_INDEX = 2
@@ -31,6 +31,7 @@ const unlinkApps = async (apps: string[]): Promise<void> => {
 
 export default async (optionalApp: string, options) => {
   await validateAppAction(optionalApp)
+  const manifest = await getManifest()
   const app = optionalApp || `${manifest.vendor}.${manifest.name}@${manifest.version}`
   const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
 
