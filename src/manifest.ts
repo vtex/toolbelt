@@ -21,9 +21,9 @@ export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
 export const isManifestReadable = async (): Promise<boolean> => {
   try {
     await readFileUtf(manifestPath)
-    return true;
+    return true
   } catch(error) {
-    return false;
+    return false
   }
 }
 
