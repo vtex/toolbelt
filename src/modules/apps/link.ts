@@ -42,7 +42,7 @@ const sendChanges = (() => {
       return
     }
     queue = uniqBy(pathProp, queue.concat(changes).reverse())
-    const manifest = getManifest()
+    const manifest = await getManifest()
     return publishPatch(manifest)
   }
 })()
