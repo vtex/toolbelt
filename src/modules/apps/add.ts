@@ -25,7 +25,7 @@ import {
   manifestPath,
   vendorPattern,
   getManifest,
-  wildVersionPattern
+  wildVersionPattern,
 } from '../../manifest'
 
 import {RegistryAppVersionsListItem} from '@vtex/api'

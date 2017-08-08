@@ -63,7 +63,7 @@ export default async (options) => {
 
   if (options.c || options.clean) {
     log.info('Requesting to clean cache in builder.')
-      cleanCache(manifest)
+    cleanCache(manifest)
     await Promise.delay(CACHE_CLEAN_AWAIT_MS)
   }
 
