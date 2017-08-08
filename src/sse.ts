@@ -6,6 +6,7 @@ import log from './logger'
 import endpoint from './endpoint'
 import {getToken} from './conf'
 import userAgent from './user-agent'
+import {SSEConnectionError} from './errors'
 
 const levelAdapter = {warning: 'warn'}
 const colossusHost = endpoint('colossus')
@@ -79,15 +80,15 @@ export const onAuth = (account: string, workspace: string, state: string): Promi
   const source = `https://${account}.myvtex.com/_toolbelt/sse/${state}?workspace=${workspace}`
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
-    es.addEventListener('message', (msg: MessageJSON) => {
+    es.onmessage = (msg: MessageJSON) => {
       const {body: token} = JSON.parse(msg.data) as {body: string}
       es.close()
       resolve(token)
-    })
+    }
 
-    es.onerror = (err) => {
-      log.error(`Connection to login server has failed with status ${err.status}`)
-      reject(err)
+    es.onerror = (event) => {
+      es.close()
+      reject(new SSEConnectionError(`Connection to login server has failed with status ${event.status}`))
     }
   })
 }
