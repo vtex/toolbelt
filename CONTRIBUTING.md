@@ -20,7 +20,7 @@ Adding commands to the Toolbelt is very easy.
 All commands are implemented by JavaScript files in the `src/modules/` directory.  
 These files `export` a JavaScript object containing one `command` for each key.  
 The `key` in this object will be the command name, and the value is an object containing, at least, a `handler` function.  
-Hander functions **should return a Promise**.
+Handler functions **should return a Promise**.
 You can either add a command to an existing file, or create a new one.  
 Here's an example for a very simple command:
 

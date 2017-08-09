@@ -233,6 +233,10 @@ export default {
       description: 'Run a Colossus function locally',
       handler: './local/debug',
     },
+    token: {
+      description: 'Show user\'s auth token and copy it to clipboard',
+      handler: './local/token',
+    },
   },
   init: {
     description: 'Create basic files and folders for your VTEX app',
