@@ -5,3 +5,9 @@ export class CommandError extends ExtendableError {
     super(message)
   }
 }
+
+export class SSEConnectionError extends ExtendableError {
+  constructor (message: string) {
+    super(message)
+  }
+}

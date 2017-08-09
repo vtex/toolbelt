@@ -37,7 +37,7 @@ const [apps, router, workspaces, colossus] = getToken()
   ]
   : [
     interceptor<Apps>('apps'),
-    interceptor<Router>('router') ,
+    interceptor<Router>('router'),
     interceptor<Workspaces>('workspaces'),
     interceptor<Colossus>('colossus'),
   ]

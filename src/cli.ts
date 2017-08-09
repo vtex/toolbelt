@@ -12,7 +12,7 @@ import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
 import {getToken} from './conf'
-import {CommandError} from './errors'
+import {CommandError, SSEConnectionError} from './errors'
 
 global.Promise = Bluebird
 
@@ -65,7 +65,7 @@ const onError = e => {
 
   if (statusCode) {
     if (statusCode === 401) {
-      log.error('Oops! There was an authentication error. Please login again.')
+      log.error('There was an authentication error. Please login again.')
       // Try to login and re-issue the command.
       return run({command: loginCmd}).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
     }
@@ -118,8 +118,11 @@ const onError = e => {
           log.error(e.message)
         }
         break
+      case SSEConnectionError.name:
+        log.error('Connection to login server has failed')
+        break
       default:
-        log.error('Something exploded :(')
+        log.error('Something went wrong.')
         if (isVerbose) {
           log.error(e)
         }
