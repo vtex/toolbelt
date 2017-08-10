@@ -219,7 +219,7 @@ export default {
           type: 'boolean',
         },
       ],
-      handler: './local/update',
+      handler: './local/eslint',
     },
     package: {
       description: 'Generate package.json from manifest',
