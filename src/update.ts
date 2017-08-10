@@ -6,7 +6,7 @@ import * as updateNotifier from 'update-notifier'
 import * as pkg from '../package.json'
 
 const updateCallback = curry(
-  (resolve: Function, reject: Function, err, update): void => {
+  function (resolve: Function, reject: Function, err, update): void {
     if (err) {
       reject(err)
     }
