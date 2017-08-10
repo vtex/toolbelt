@@ -77,7 +77,7 @@ export const logAll = (context: Context, logLevel, id) => {
 }
 
 export const onAuth = (account: string, workspace: string, state: string): Promise<string> => {
-  const source = `https://${account}.myvtex.com/_toolbelt/sse/${state}?workspace=${workspace}`
+  const source = `https://${workspace}--${account}.myvtex.com/_toolbelt/sse/${state}`
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
     es.onmessage = (msg: MessageJSON) => {
