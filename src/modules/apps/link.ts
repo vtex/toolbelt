@@ -10,7 +10,7 @@ import {apps, colossus} from '../../clients'
 import {logAll} from '../../sse'
 import {getManifest} from '../../manifest'
 import {changesToString} from '../../apps'
-import {toMajorLocator} from '../../locator'
+import {toAppLocator, toMajorLocator} from '../../locator'
 import {id, validateAppAction} from './utils'
 import startDebuggerTunnel from './debugger'
 import * as chalk from 'chalk'
@@ -49,7 +49,7 @@ const sendChanges = (() => {
 
 const cleanCache = (manifest: Manifest): Bluebird<void> => {
   return colossus.sendEvent('vtex.toolbelt', '-', 'cleanCache', {
-    id: `${manifest.vendor}.${manifest.name}@.${manifest.version}`,
+    id: toAppLocator(manifest),
     type: 'clean',
   })
 }
