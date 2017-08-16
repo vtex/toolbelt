@@ -28,7 +28,7 @@ const sendChanges = (() => {
   let queue = []
   const publishPatch = debounce(
     (data: Manifest) => {
-      const locator = toMajorLocator(data.vendor, data.name, data.version)
+      const locator = toMajorLocator(data)
       log.debug(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
       return link(locator, queue)
         .tap(() => console.log(changesToString(queue, moment().format('HH:mm:ss'))))
@@ -68,7 +68,7 @@ export default async (options) => {
   }
 
   log.info('Linking app', `${id(manifest)}`)
-  const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
+  const majorLocator = toMajorLocator(manifest)
   const folder = options.o || options.only
   const paths = await listLocalFiles(root, folder)
   const changes = mapFilesToChanges(paths)
