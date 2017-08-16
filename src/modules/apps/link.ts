@@ -10,7 +10,7 @@ import {apps, colossus} from '../../clients'
 import {logAll} from '../../sse'
 import {getManifest} from '../../manifest'
 import {changesToString} from '../../apps'
-import {toMajorLocator} from '../../locator'
+import {toAppLocator, toMajorLocator} from '../../locator'
 import {id, validateAppAction} from './utils'
 import startDebuggerTunnel from './debugger'
 import * as chalk from 'chalk'
@@ -28,7 +28,7 @@ const sendChanges = (() => {
   let queue = []
   const publishPatch = debounce(
     (data: Manifest) => {
-      const locator = toMajorLocator(data.vendor, data.name, data.version)
+      const locator = toMajorLocator(data)
       log.debug(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
       return link(locator, queue)
         .tap(() => console.log(changesToString(queue, moment().format('HH:mm:ss'))))
@@ -49,7 +49,7 @@ const sendChanges = (() => {
 
 const cleanCache = (manifest: Manifest): Bluebird<void> => {
   return colossus.sendEvent('vtex.toolbelt', '-', 'cleanCache', {
-    id: `${manifest.vendor}.${manifest.name}@.${manifest.version}`,
+    id: toAppLocator(manifest),
     type: 'clean',
   })
 }
@@ -68,7 +68,7 @@ export default async (options) => {
   }
 
   log.info('Linking app', `${id(manifest)}`)
-  const majorLocator = toMajorLocator(manifest.vendor, manifest.name, manifest.version)
+  const majorLocator = toMajorLocator(manifest)
   const folder = options.o || options.only
   const paths = await listLocalFiles(root, folder)
   const changes = mapFilesToChanges(paths)
