@@ -5,6 +5,8 @@ import envTimeout from './timeout'
 import {getAccount, getWorkspace, getToken} from './conf'
 import userAgent from './user-agent'
 
+import {Builder} from './builder'
+
 const DEFAULT_TIMEOUT = 15000
 const options = {
   authToken: getToken(),
@@ -28,18 +30,20 @@ const createClients = (customOptions) => {
   }
 }
 
-const [apps, router, workspaces, colossus] = getToken()
+const [apps, router, workspaces, colossus, builder] = getToken()
   ? [
     new Apps({...options, endpoint: endpoint('apps')}),
     new Router({...options, endpoint: endpoint('router')}),
     new Workspaces({...options, endpoint: endpoint('workspaces')}),
     new Colossus({...options}),
+    new Builder({...options}),
   ]
   : [
     interceptor<Apps>('apps'),
     interceptor<Router>('router'),
     interceptor<Workspaces>('workspaces'),
     interceptor<Colossus>('colossus'),
+    interceptor<Builder>('builder'),
   ]
 
 export {
@@ -47,5 +51,6 @@ export {
   router,
   workspaces,
   colossus,
+  builder,
   createClients,
 }
