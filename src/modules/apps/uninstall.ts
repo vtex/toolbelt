@@ -5,6 +5,7 @@ import log from '../../logger'
 import {apps} from '../../clients'
 import {validateAppAction} from './utils'
 import {getManifest, validateApp} from '../../manifest'
+import {toAppLocator} from './../../locator'
 
 const {uninstallApp} = apps
 const ARGS_START_INDEX = 2
@@ -39,8 +40,7 @@ const uninstallApps = async (apps: string[]): Promise<void> => {
 
 export default async (optionalApp: string, options) => {
   await validateAppAction(optionalApp)
-  const manifest = await getManifest()
-  const app = optionalApp || `${manifest.vendor}.${manifest.name}`
+  const app = optionalApp || toAppLocator(await getManifest())
   const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
   const preConfirm = options.y || options.yes
 
