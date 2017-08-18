@@ -9,6 +9,7 @@ import {builder} from '../../clients'
 import {id, mapFileObject} from './utils'
 import {listLocalFiles} from './file'
 import {listenBuild} from '../utils'
+import {BuildFailError} from '../../errors'
 
 const ARGS_START_INDEX = 2
 const root = process.cwd()
@@ -29,14 +30,20 @@ const publisher = (account: string = 'smartcheckout') => {
     return listLocalFiles(path)
       .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
       .then(files => mapFileObject(files, path))
-      .then(files => listenBuild(appId, () => prePublish(files, tag), context))
+      .then(files => listenBuild(appId, () => prePublish(files, tag) , context))
       .finally(() => spinner.stop())
       .then(() => log.info(`Published app ${appId} successfully at ${account}`))
       .catch(e => {
-        if (e.response && /already published/.test(e.response.data.message)) {
+        if (e instanceof BuildFailError && e.code === 'already_published') {
+          log.error(e.message)
+          return Promise.resolve()
+        }
+
+        if (e.response && e.response.status === 409) {
           log.error(e.response.data.message.split('The').join(' -'))
           return Promise.resolve()
         }
+
         throw e
       })
   }
