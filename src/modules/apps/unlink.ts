@@ -5,40 +5,51 @@ import {apps} from '../../clients'
 import {validateAppAction} from './utils'
 import {listenBuild} from '../utils'
 import {getManifest, validateApp} from '../../manifest'
-import {toMajorLocator} from './../../locator'
+import {toMajorLocator, parseLocator} from './../../locator'
 
-const {unlink} = apps
-const ARGS_START_INDEX = 2
+const {unlink, listLinks} = apps
+const ARGS_START_INDEX = 1
 
-const unlinkApps = async (apps: string[]): Promise<void> => {
-  if (apps.length === 0) {
+const unlinkApps = async (appsList: string[]): Promise<void> => {
+  if (appsList.length === 0) {
     return
   }
-  const app = validateApp(head(apps))
-  try {
-    log.debug('Starting to install app', app)
+  const app = validateApp(head(appsList))
+  const unlinkApp = async () => {
+    log.info('Starting to unlink app:', app)
     await unlink(app)
-  } catch (e) {
-    if (e.statusCode === 409) {
-      log.warn(`App ${app} is currently not linked`)
-    } else {
-      log.warn(`The following apps were not unlinked: ${apps.join(', ')}`)
-      throw e
-    }
+    log.info('Successfully unlinked', app)
   }
-  log.info(`Unlinked app ${app} successfully`)
-  await unlinkApps(tail(apps))
+  try {
+    await Promise.all([unlinkApp(), unlinkApps(tail(appsList))])
+  } catch (e) {
+    log.error(`Error unlinking ${app}.`, e.message)
+  }
 }
 
 export default async (optionalApp: string, options) => {
-  await validateAppAction(optionalApp)
-  const app = optionalApp || toMajorLocator(await getManifest())
-  const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
-
-  const doUnlink = () => unlinkApps(apps)
-  log.debug('Unlinking app(s)', apps)
-  // Only listen for feedback if there's only one app
-  return apps.length === 1
-    ? listenBuild(app, doUnlink)
-    : doUnlink()
+  let appsList
+  const linkedApps = await listLinks()
+  if (linkedApps.length === 0) {
+    return log.info('No linked apps')
+  }
+  if (options.a || options.all) {
+    appsList = linkedApps
+    await validateAppAction(appsList)
+  } else {
+    appsList = [optionalApp || toMajorLocator(await getManifest()), ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+    await validateAppAction(appsList)
+  }
+  if (appsList.length === 1) {
+    appsList = toMajorLocator(parseLocator(appsList[0]))
+    validateApp(appsList)
+    if (appsList === linkedApps.toString()) {
+      return listenBuild(appsList, () => unlinkApps([appsList])) // Only listen for feedback if there's only one app
+    } else {
+      return log.info('App not linked')
+    }
+  } else {
+    log.debug('Starting to unlink apps:', appsList.join(', '))
+    return unlinkApps(appsList)
+  }
 }

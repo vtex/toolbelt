@@ -20,6 +20,14 @@ export default {
   unlink: {
     optionalArgs: 'app',
     description: 'Unlink an app on the current directory or a specified one',
+    options: [
+      {
+        short: 'a',
+        long: 'all',
+        description: 'Unlink all apps',
+        type: 'boolean',
+      },
+    ],
     handler: './apps/unlink',
   },
   add: {
