@@ -3,6 +3,7 @@ import {pathOr} from 'ramda'
 import {logAll, onEvent} from '../sse'
 import {currentContext} from '../conf'
 import log from '../logger'
+import {BuildFailError} from '../errors'
 
 type BuildEvent = 'start' | 'success' | 'fail' | 'timeout' | 'logs'
 
@@ -43,9 +44,8 @@ export const listenBuild = (appOrKey: string, triggerBuild: () => Promise<any>, 
           resolve(triggerResponse)
           break
         case 'fail':
-          const errorMsg = pathOr('Build fail', ['body', 'message'], message)
           unlisten(...allEvents)
-          reject(new Error(errorMsg))
+          reject(new BuildFailError(message))
           break
       }
     })

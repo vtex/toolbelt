@@ -11,3 +11,15 @@ export class SSEConnectionError extends ExtendableError {
     super(message)
   }
 }
+
+export class BuildFailError extends ExtendableError {
+  public code: string
+  public message: string
+
+  constructor (eventMessage: Message) {
+    const {message = 'Build fail', code = 'unknown'} = eventMessage.body || {}
+    super(message)
+    this.message = message
+    this.code = code
+  }
+}

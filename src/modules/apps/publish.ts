@@ -5,11 +5,11 @@ import {LoggerInstance} from 'winston'
 import {readFileSync} from 'fs-extra'
 
 import log from '../../logger'
-import {createClients} from '../../clients'
+import {builder} from '../../clients'
 import {id, mapFileObject} from './utils'
 import {listLocalFiles} from './file'
-
 import {listenBuild} from '../utils'
+import {BuildFailError} from '../../errors'
 
 const ARGS_START_INDEX = 2
 const root = process.cwd()
@@ -19,11 +19,9 @@ const automaticTag = (version: string): string =>
 
 const publisher = (account: string = 'smartcheckout') => {
   const context = {account, workspace: 'master'}
-  const {registry, colossus} = createClients(context)
 
-  const publishAndTriggerBuild = (appId, files, tag) =>
-    registry.publishApp(files, tag)
-      .then(() => colossus.sendEvent('vtex.toolbelt', '-', 'publish', {id: appId}))
+  const prePublish = (files, tag) =>
+    builder.prePublishApp(files, tag)
 
   const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
     const spinner = ora('Publishing app...').start()
@@ -32,14 +30,20 @@ const publisher = (account: string = 'smartcheckout') => {
     return listLocalFiles(path)
       .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
       .then(files => mapFileObject(files, path))
-      .then(files => listenBuild(appId, () => publishAndTriggerBuild(appId, files, tag), context))
+      .then(files => listenBuild(appId, () => prePublish(files, tag) , context))
       .finally(() => spinner.stop())
       .then(() => log.info(`Published app ${appId} successfully at ${account}`))
       .catch(e => {
-        if (e.response && /already published/.test(e.response.data.message)) {
+        if (e instanceof BuildFailError && e.code === 'already_published') {
+          log.error(e.message)
+          return Promise.resolve()
+        }
+
+        if (e.response && e.response.status === 409) {
           log.error(e.response.data.message.split('The').join(' -'))
           return Promise.resolve()
         }
+
         throw e
       })
   }
