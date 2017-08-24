@@ -5,6 +5,8 @@ import envTimeout from './timeout'
 import {getAccount, getWorkspace, getToken} from './conf'
 import userAgent from './user-agent'
 
+import {Builder} from './builder'
+
 const DEFAULT_TIMEOUT = 15000
 const options = {
   authToken: getToken(),
@@ -25,6 +27,7 @@ const createClients = (customOptions) => {
   return {
     registry: new Registry({...options, ...customOptions, endpoint: endpoint('registry')}),
     colossus: new Colossus({...options, ...customOptions}),
+    builder: new Builder({...options, ...customOptions}),
   }
 }
 
