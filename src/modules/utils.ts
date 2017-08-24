@@ -1,5 +1,3 @@
-import {pathOr} from 'ramda'
-
 import {logAll, onEvent} from '../sse'
 import {currentContext} from '../conf'
 import log from '../logger'
