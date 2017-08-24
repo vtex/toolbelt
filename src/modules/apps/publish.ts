@@ -5,7 +5,7 @@ import {LoggerInstance} from 'winston'
 import {readFileSync} from 'fs-extra'
 
 import log from '../../logger'
-import {builder} from '../../clients'
+import {createClients} from '../../clients'
 import {id, mapFileObject} from './utils'
 import {listLocalFiles} from './file'
 import {listenBuild} from '../utils'
@@ -20,8 +20,10 @@ const automaticTag = (version: string): string =>
 const publisher = (account: string = 'smartcheckout') => {
   const context = {account, workspace: 'master'}
 
-  const prePublish = (files, tag) =>
-    builder.prePublishApp(files, tag)
+  const prePublish = (files, tag) => {
+    const {builder} = createClients(context)
+    return builder.prePublishApp(files, tag)
+  }
 
   const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
     const spinner = ora('Publishing app...').start()

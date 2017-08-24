@@ -27,23 +27,22 @@ const createClients = (customOptions) => {
   return {
     registry: new Registry({...options, ...customOptions, endpoint: endpoint('registry')}),
     colossus: new Colossus({...options, ...customOptions}),
+    builder: new Builder({...options, ...customOptions}),
   }
 }
 
-const [apps, router, workspaces, colossus, builder] = getToken()
+const [apps, router, workspaces, colossus] = getToken()
   ? [
     new Apps({...options, endpoint: endpoint('apps')}),
     new Router({...options, endpoint: endpoint('router')}),
     new Workspaces({...options, endpoint: endpoint('workspaces')}),
     new Colossus({...options}),
-    new Builder({...options}),
   ]
   : [
     interceptor<Apps>('apps'),
     interceptor<Router>('router'),
     interceptor<Workspaces>('workspaces'),
     interceptor<Colossus>('colossus'),
-    interceptor<Builder>('builder'),
   ]
 
 export {
@@ -51,6 +50,5 @@ export {
   router,
   workspaces,
   colossus,
-  builder,
   createClients,
 }
