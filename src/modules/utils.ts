@@ -3,16 +3,21 @@ import {currentContext} from '../conf'
 import log from '../logger'
 import {BuildFailError} from '../errors'
 
+type BuildListeningOptions = {
+  context?: Context,
+  timeout?: number,
+}
+
 type BuildEvent = 'start' | 'success' | 'fail' | 'timeout' | 'logs'
 
 const allEvents: BuildEvent[] = ['start', 'success', 'fail', 'timeout', 'logs']
 
 const flowEvents: BuildEvent[] = ['start', 'success', 'fail']
 
-const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
+const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
   const unlistenLogs = logAll(ctx, log.level, appOrKey.split('@')[0])
   const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent(ctx, 'vtex.render-builder', `build.${type}`, (message) => callback(type, message)))
-  const timer = setTimeout(() => callback('timeout'), 5000)
+  const timer = timeout && setTimeout(() => callback('timeout'), timeout)
 
   const unlistenMap: Record<BuildEvent, Function> = {
     start: unlistenStart,
@@ -27,11 +32,12 @@ const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEven
   }
 }
 
-export const listenBuild = (appOrKey: string, triggerBuild: () => Promise<any>, ctx: Context = currentContext) => {
+export const listenBuild = (appOrKey: string, triggerBuild: (unlistenBuild?: (response) => void) => Promise<any>, options: BuildListeningOptions = {}) => {
   return new Promise((resolve, reject) => {
     let triggerResponse
 
-    const unlisten = onBuildEvent(ctx, appOrKey, (eventType, message) => {
+    const {context = currentContext, timeout = 5000} = options
+    const unlisten = onBuildEvent(context, timeout, appOrKey, (eventType, message) => {
       switch (eventType) {
         case 'start':
           unlisten('start', 'timeout')
@@ -48,7 +54,12 @@ export const listenBuild = (appOrKey: string, triggerBuild: () => Promise<any>, 
       }
     })
 
-    triggerBuild()
+    const unlistenBuild = (response) => {
+      unlisten(...allEvents)
+      resolve(response)
+    }
+
+    triggerBuild(unlistenBuild)
       .then(response => {
         triggerResponse = response
       })

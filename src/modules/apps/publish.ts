@@ -20,19 +20,26 @@ const automaticTag = (version: string): string =>
 const publisher = (account: string = 'smartcheckout') => {
   const context = {account, workspace: 'master'}
 
-  const prePublish = (files, tag) => {
+  const prePublish = async (files, tag, unlistenBuild) => {
     const {builder} = createClients(context)
-    return builder.prePublishApp(files, tag)
+    const response = await builder.prePublishApp(files, tag)
+    if (response.status === 200) {
+      unlistenBuild(response)
+      return
+    }
+
+    return response
   }
 
   const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
     const spinner = ora('Publishing app...').start()
     const appId = id(manifest)
+    const options = {context, timeout: null}
 
     return listLocalFiles(path)
       .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
       .then(files => mapFileObject(files, path))
-      .then(files => listenBuild(appId, () => prePublish(files, tag) , context))
+      .then(files => listenBuild(appId, (unlistenBuild) => prePublish(files, tag, unlistenBuild), options))
       .finally(() => spinner.stop())
       .then(() => log.info(`Published app ${appId} successfully at ${account}`))
       .catch(e => {
