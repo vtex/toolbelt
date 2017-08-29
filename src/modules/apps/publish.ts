@@ -43,13 +43,13 @@ const publisher = (account: string = 'smartcheckout') => {
       .finally(() => spinner.stop())
       .then(() => log.info(`Published app ${appId} successfully at ${account}`))
       .catch(e => {
-        if (e instanceof BuildFailError && e.code === 'already_published') {
+        if (e instanceof BuildFailError) {
           log.error(e.message)
           return Promise.resolve()
         }
 
-        if (e.response && e.response.status === 409) {
-          log.error(e.response.data.message.split('The').join(' -'))
+        if (e.response && e.response.status >= 400 && e.response.status < 500) {
+          log.error(e.response.data.message)
           return Promise.resolve()
         }
 
