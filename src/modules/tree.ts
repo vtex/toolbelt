@@ -204,7 +204,8 @@ export default {
       handler: './deps/list',
     },
     update: {
-      description: 'Update your workspace dependencies',
+      description: 'Update all workspace dependencies or a specific app@version',
+      optionalArgs: ['app'],
       handler: './deps/update',
     },
   },
