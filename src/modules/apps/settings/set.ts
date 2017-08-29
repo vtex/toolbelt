@@ -1,10 +1,7 @@
-import {last, assocPath, merge, __} from 'ramda'
-
+import {splitAt, flatten, merge, zipObj, values, __} from 'ramda'
 import {apps} from '../../../clients'
 
 const {getAppSettings, saveAppSettings} = apps
-
-const FIELDS_START_INDEX = 3
 
 const castValue = value => {
   let parsedValue
@@ -17,11 +14,23 @@ const castValue = value => {
   return isNaN(numberCast) ? parsedValue : numberCast
 }
 
+const transformCommandsToObj = (commandSettings) => {
+  const k = []
+  const v = []
+  for (const [idx, val] of commandSettings.entries()) {
+    const realValue = castValue(val)
+    if (idx % 2) {
+      v.push(realValue)
+    } else {
+      k.push(realValue)
+    }
+  }
+  return zipObj(k, v)
+}
+
 export default (app: string, _field, _value, options) => {
-  const value = last(options._)
-  const fields = options._.slice(FIELDS_START_INDEX, options._.length - 1)
-  const realValue = castValue(value)
-  const commandSettings = assocPath(fields, realValue, {})
+  const [, commands] = splitAt(1, flatten(values(options)))
+  const commandSettings = transformCommandsToObj(commands)
   return getAppSettings(app)
     .then(merge(__, commandSettings))
     .then(newSettings => JSON.stringify(newSettings, null, 2))
