@@ -34,11 +34,12 @@ const publisher = (account: string = 'smartcheckout') => {
   const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
     const spinner = ora('Publishing app...').start()
     const appId = id(manifest)
+    const options = {context, timeout: null}
 
     return listLocalFiles(path)
       .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
       .then(files => mapFileObject(files, path))
-      .then(files => listenBuild(appId, (unlistenBuild) => prePublish(files, tag, unlistenBuild), context))
+      .then(files => listenBuild(appId, (unlistenBuild) => prePublish(files, tag, unlistenBuild), options))
       .finally(() => spinner.stop())
       .then(() => log.info(`Published app ${appId} successfully at ${account}`))
       .catch(e => {
