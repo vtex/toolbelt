@@ -27,7 +27,7 @@ const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEven
   }
 }
 
-export const listenBuild = (appOrKey: string, triggerBuild: () => Promise<any>, ctx: Context = currentContext) => {
+export const listenBuild = (appOrKey: string, triggerBuild: (unlistenBuild?: (response) => void) => Promise<any>, ctx: Context = currentContext) => {
   return new Promise((resolve, reject) => {
     let triggerResponse
 
@@ -48,7 +48,12 @@ export const listenBuild = (appOrKey: string, triggerBuild: () => Promise<any>, 
       }
     })
 
-    triggerBuild()
+    const unlistenBuild = (response) => {
+      unlisten(...allEvents)
+      resolve(response)
+    }
+
+    triggerBuild(unlistenBuild)
       .then(response => {
         triggerResponse = response
       })
