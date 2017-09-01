@@ -1,4 +1,4 @@
-import {head, tail} from 'ramda'
+import {head, tail, contains} from 'ramda'
 
 import log from '../../logger'
 import {apps} from '../../clients'
@@ -43,7 +43,7 @@ export default async (optionalApp: string, options) => {
   if (appsList.length === 1) {
     appsList = toMajorLocator(parseLocator(appsList[0]))
     validateApp(appsList)
-    if (appsList === linkedApps.toString()) {
+    if (contains(appsList, linkedApps.toString())) {
       return listenBuild(appsList, () => unlinkApps([appsList])) // Only listen for feedback if there's only one app
     } else {
       return log.info('App not linked')
