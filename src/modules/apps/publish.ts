@@ -3,15 +3,15 @@ import {resolve} from 'path'
 import * as Bluebird from 'bluebird'
 import {LoggerInstance} from 'winston'
 import {readFileSync} from 'fs-extra'
+import {prepend} from 'ramda'
 
 import log from '../../logger'
 import {createClients} from '../../clients'
-import {id, mapFileObject} from './utils'
+import {id, mapFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
 import {listenBuild} from '../utils'
 import {BuildFailError} from '../../errors'
 
-const ARGS_START_INDEX = 2
 const root = process.cwd()
 
 const automaticTag = (version: string): string =>
@@ -71,7 +71,7 @@ const publisher = (account: string = 'smartcheckout') => {
 
 export default (path: string, options) => {
   log.debug('Starting to publish app')
-  const paths = [path || root, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+  const paths = prepend(path || root, parseArgs(options._))
   const {publishApps} = publisher(options.r || options.registry)
   return publishApps(paths, options.tag)
 }

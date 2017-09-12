@@ -16,6 +16,7 @@ import {
   reduce,
   concat,
   compose,
+  prepend,
 } from 'ramda'
 
 import log from '../../logger'
@@ -28,9 +29,9 @@ import {
   wildVersionPattern,
 } from '../../manifest'
 
+import {parseArgs} from './utils'
 import {RegistryAppVersionsListItem} from '@vtex/api'
 
-const ARGS_START_INDEX = 2
 const unprefixName = compose<string, string[], string>(last, split(':'))
 const wildVersionByMajor = compose<string, string[], string, string>(concat(__, '.x'), head, split('.'))
 const invalidAppMessage =
@@ -122,7 +123,7 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
     .catch(err => {
       // A warn message will display the workspaces not deleted.
       if (!err.toolbeltWarning) {
-        log.warn(`The following app(s) were not added: ${apps.join(', ')}`)
+        log.warn(`The following app` + (apps.length > 1 ? 's were' : ' was') + ` not added: ${apps.join(', ')}`)
         // the warn message is only displayed the first time the err occurs.
         err.toolbeltWarning = true
       }
@@ -131,10 +132,10 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
 }
 
 export default (app: string, options) => {
-  const apps = [app, ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
-  log.debug('Adding app(s)', apps)
+  const apps = prepend(app, parseArgs(options._))
+  log.debug('Adding app' + (apps.length > 1 ? 's' : '') + `: ${apps.join(', ')}`)
   return addApps(apps)
-    .then(() => log.info('App(s) added succesfully!'))
+    .then(() => log.info('App' + (apps.length > 1 ? 's' : '') + ' added succesfully!'))
     .catch(err => {
       if (err instanceof InterruptionException) {
         log.error(err.message)

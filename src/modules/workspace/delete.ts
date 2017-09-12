@@ -1,15 +1,17 @@
 import * as chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
-import {prop, head, tail} from 'ramda'
+import {prop, head, tail, prepend} from 'ramda'
 
 import log from '../../logger'
 import {workspaces} from '../../clients'
 import {getWorkspace, getAccount} from '../../conf'
+import {parseArgs} from '../apps/utils'
 
-const ARGS_START_INDEX = 3
 const account = getAccount()
 const workspace = getWorkspace()
+const delSuccessList = []
+const delFailList = []
 
 const promptWorkspaceDeletion = (name: string): Bluebird<boolean> =>
   Promise.resolve(
@@ -21,45 +23,53 @@ const promptWorkspaceDeletion = (name: string): Bluebird<boolean> =>
   )
     .then<boolean>(prop('confirm'))
 
-const deleteWorkspaces = (names = [], preConfirm: boolean, force: boolean): Bluebird<void | never> => {
+const deleteWorkspaces = async (names = [], preConfirm: boolean, force: boolean): Promise<void | never> => {
   const name = head(names)
   const decNames = tail(names)
+
   log.debug('Starting to delete workspace', name)
   if (!force && name === workspace) {
-    log.error(`You're currently using the workspace ${chalk.green(name)}, please change your workspace before deleting`)
-    return Promise.resolve()
-  }
-  return Promise.resolve(preConfirm || promptWorkspaceDeletion(name))
+    delFailList.push(name)
+    log.error(`You are currently using the workspace ${chalk.green(name)}, please change your workspace before deleting`)
+  } else {
+    await Promise.resolve(preConfirm || promptWorkspaceDeletion(name))
     .then<boolean>(confirm => confirm || Promise.reject(new Error('User cancelled')))
     .then(() => workspaces.delete(account, name))
-    .tap(() => log.info(`Workspace ${chalk.green(name)} deleted successfully`))
-    .then(() =>
-      decNames.length > 0
-        ? deleteWorkspaces(decNames, preConfirm, force)
-        : Promise.resolve(),
-  )
-    .catch(err => {
-      // A warn message will display the workspaces not deleted.
-      if (!err.toolbeltWarning) {
-        log.warn(`The following workspace(s) were not deleted: ${names.join(', ')}`)
-        // the warn message is only displayed the first time the err occurs.
-        err.toolbeltWarning = true
-      }
-      return Promise.reject(err)
+    .tap(() => {
+      delSuccessList.push(name)
+      log.info(`Workspace ${chalk.green(name)} deleted ${chalk.green(`successfully`)}`)
     })
+    .catch(err => {
+      delFailList.push(name)
+      log.warn(`Workspace ${chalk.green(name)} was ${chalk.red(`not`)} deleted`)
+      if (err.message === 'User cancelled') {
+        log.error(err.message)
+      } else {
+        log.error(`Error ${err.response.status}: ${err.response.statusText}. ${err.response.data.message}`)
+      }
+    })
+  }
+
+  if (decNames.length > 0) {
+    return deleteWorkspaces(decNames, preConfirm, force)
+  } else {
+    if (delSuccessList.length > 0) {
+      log.info(`The following workspace` + (delSuccessList.length > 1 ? 's were' : ' was') + ` ${chalk.green('successfully')} deleted: ${delSuccessList.join(', ')}`)
+    }
+    if (delFailList.length > 0) {
+      log.info(`The following workspace` + (delFailList.length > 1 ? 's were' : ' was') + ` ${chalk.red('not')} deleted: ${delFailList.join(', ')}`)
+    }
+    return Promise.resolve()
+  }
 }
 
 export default (name: string, options) => {
-  const names = [name, ...options._.slice(ARGS_START_INDEX)]
+  const names = prepend(name, parseArgs(options._))
   const preConfirm = options.y || options.yes
   const force = options.f || options.force
-  log.debug('Deleting workspace(s)', names)
+  log.debug('Deleting workspace' + (names.length > 1 ? 's' : '') + ':', names.join(', '))
   return deleteWorkspaces(names, preConfirm, force)
     .catch(err => {
-      if (err.message === 'User cancelled') {
-        log.error(err.message)
-        return Promise.resolve()
-      }
       return Promise.reject(err)
     })
 }
