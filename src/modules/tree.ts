@@ -254,6 +254,14 @@ export default {
       description: 'Create a new render bootstrap project',
       handler: './init/render',
     },
+    service: {
+      description: 'Create a new service bootstrap project',
+      handler: './init/service',
+    },
+    functions: {
+      description: 'Create a new functions bootstrap project',
+      handler: './init/functions',
+    },
   },
   infra: {
     list: {

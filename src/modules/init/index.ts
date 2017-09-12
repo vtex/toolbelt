@@ -8,8 +8,10 @@ import * as inquirer from 'inquirer'
 import log from '../../logger'
 import {writeManifest} from './utils'
 
-const choices = ['render']
+const choices = ['render', 'service', 'functions']
 const {mapSeries} = Bluebird
+
+const currentFolderName = process.cwd().replace(/.*\//, '')
 
 const promptService = (): Bluebird<string> => {
   const cancel = 'Cancel'
@@ -38,6 +40,7 @@ const promptName = (): Bluebird<string> => {
       message: 'What\'s your VTEX app name?',
       validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
       filter: s => s.trim(),
+      default: currentFolderName,
     }),
   )
   .then<string>(prop('name'))
@@ -51,6 +54,7 @@ const promptVendor = (): Bluebird<string> => {
       message: 'What\'s your VTEX app vendor?',
       validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
       filter: s => s.trim(),
+      default: null,
     }),
   )
   .then<string>(prop('vendor'))
@@ -91,6 +95,7 @@ const createManifest = (name: string, vendor: string, title = '', description = 
     registries: ['smartcheckout'],
     settingsSchema: {},
     dependencies: {},
+    builders: {},
   }
 }
 
