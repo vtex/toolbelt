@@ -1,31 +1,30 @@
 import {diffJson} from 'diff'
 import * as chalk from 'chalk'
-import {map, keys, compose} from 'ramda'
+import {map, keys, compose, prepend} from 'ramda'
 
 import log from '../../logger'
 import {apps} from '../../clients'
 import {removeNpm} from './utils'
 import {parseLocator} from '../../locator'
+import {parseArgs} from '../apps/utils'
 
-const ARGS_START_INDEX = 1
 const DEFAULT_REGISTRY = 'smartcheckout'
 const {getDependencies, updateDependencies, updateDependency} = apps
 
 const cleanDeps = compose(keys, removeNpm)
 
 export default async (optionalApp: string, options) => {
-  const apps = [optionalApp, ...options._.slice(ARGS_START_INDEX)]
-    .filter(arg => arg && arg !== '')
-    .map(arg => arg.toString())
 
+  const appsList = prepend(optionalApp, parseArgs(options._))
+    .filter(arg => arg && arg !== '')
   try {
     log.debug('Starting update process')
     const previousDeps = await getDependencies()
     let currentDeps
-    if (apps.length === 0) {
+    if (appsList.length === 0) {
       currentDeps = await updateDependencies()
     } else {
-      await Promise.mapSeries(apps, async (locator) => {
+      await Promise.mapSeries(appsList, async (locator) => {
         const {vendor, name, version} = parseLocator(locator)
         if (!name || !version) {
           log.error(`App ${locator} has an invalid app format, please use <vendor>.<name>@<version>`)

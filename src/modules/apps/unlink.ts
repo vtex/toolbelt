@@ -1,14 +1,13 @@
-import {head, tail, contains} from 'ramda'
+import {head, tail, contains, prepend} from 'ramda'
 
 import log from '../../logger'
 import {apps} from '../../clients'
-import {validateAppAction} from './utils'
+import {validateAppAction, parseArgs} from './utils'
 import {listenBuild} from '../utils'
 import {getManifest, validateApp} from '../../manifest'
 import {toMajorLocator, parseLocator} from './../../locator'
 
 const {unlink, listLinks} = apps
-const ARGS_START_INDEX = 1
 
 const unlinkApps = async (appsList: string[]): Promise<void> => {
   if (appsList.length === 0) {
@@ -37,12 +36,12 @@ export default async (optionalApp: string, options) => {
     appsList = linkedApps
     await validateAppAction(appsList)
   } else {
-    appsList = [optionalApp || toMajorLocator(await getManifest()), ...options._.slice(ARGS_START_INDEX)].map(arg => arg.toString())
+    appsList = prepend(optionalApp || toMajorLocator(await getManifest()), parseArgs(options._))
     await validateAppAction(appsList)
   }
   if (appsList.length === 1) {
-    appsList = toMajorLocator(parseLocator(appsList[0]))
     validateApp(appsList)
+    appsList = toMajorLocator(parseLocator(appsList[0]))
     if (contains(appsList, linkedApps.toString())) {
       return listenBuild(appsList, () => unlinkApps([appsList])) // Only listen for feedback if there's only one app
     } else {

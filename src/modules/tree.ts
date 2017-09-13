@@ -32,7 +32,7 @@ export default {
   },
   add: {
     requiredArgs: 'app',
-    description: 'Add an app to the manifest dependencies',
+    description: 'Add app(s) to the manifest dependencies',
     handler: './apps/add',
   },
   publish: {

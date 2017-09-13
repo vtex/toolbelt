@@ -1,5 +1,6 @@
-import {splitAt, flatten, merge, zipObj, values, __} from 'ramda'
+import {merge, zipObj, __} from 'ramda'
 import {apps} from '../../../clients'
+import {parseArgs} from '../utils'
 
 const {getAppSettings, saveAppSettings} = apps
 
@@ -29,8 +30,7 @@ const transformCommandsToObj = (commandSettings) => {
 }
 
 export default (app: string, _field, _value, options) => {
-  const [, commands] = splitAt(1, flatten(values(options)))
-  const commandSettings = transformCommandsToObj(commands)
+  const commandSettings = transformCommandsToObj(parseArgs(options))
   return getAppSettings(app)
     .then(merge(__, commandSettings))
     .then(newSettings => JSON.stringify(newSettings, null, 2))

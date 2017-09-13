@@ -2,6 +2,7 @@ import {join} from 'path'
 import * as chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import {createReadStream} from 'fs-extra'
+import {splitAt, flatten, values} from 'ramda'
 
 import log from '../../logger'
 import {getWorkspace} from '../../conf'
@@ -16,6 +17,11 @@ export const mapFileObject = (files: string[], root = process.cwd()): BatchStrea
 
 export const workspaceMasterMessage =
   `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`
+
+export const parseArgs = (args: string[]) => {
+  const [, commands] = splitAt(1, flatten(values(args)))
+  return commands
+}
 
 export const validateAppAction = async (app?) => {
   if (getWorkspace() === 'master') {
