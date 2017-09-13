@@ -86,6 +86,10 @@ export default {
     description: 'List your installed VTEX apps',
     handler: './apps/list',
   },
+  update: {
+    description: 'Update all installed apps to the latest version',
+    handler: './apps/update',
+  },
   settings: {
     description: 'Get app settings',
     requiredArgs: 'app',

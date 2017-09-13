@@ -25,6 +25,7 @@ interface Manifest {
   categories?: string[],
   registries?: string[],
   mustUpdateAt?: string,
+  latest?: string,
 }
 
 interface InstalledApp {
