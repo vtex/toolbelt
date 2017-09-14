@@ -19,6 +19,7 @@ interface Manifest {
   vendor?: string,
   version?: string,
   dependencies?: {},
+  builders?: {},
   settingsSchema?: {},
   description?: string,
   categories?: string[],
@@ -66,6 +67,20 @@ interface InfraVersionMap {
   },
   update: InfraUpdate,
 }
+
+interface File {
+  type: 'file',
+  name: string,
+  content: string
+}
+
+interface Folder {
+  type: 'folder',
+  name: string,
+  content: Structure
+}
+
+type Structure = (File | Folder)[]
 
 interface Message {
   level: string,
