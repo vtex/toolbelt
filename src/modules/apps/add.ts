@@ -1,26 +1,19 @@
-import * as chalk from 'chalk'
 import * as Bluebird from 'bluebird'
-import * as semverDiff from 'semver-diff'
 import {writeFile} from 'fs-extra'
 import * as latestVersion from 'latest-version'
 import {
-  __,
-  map,
   path,
   head,
   tail,
   last,
-  prop,
-  curry,
   split,
-  reduce,
   concat,
   compose,
   prepend,
 } from 'ramda'
 
 import log from '../../logger'
-import {createClients, router} from '../../clients'
+import {router} from '../../clients'
 import {
   namePattern,
   manifestPath,
@@ -28,43 +21,13 @@ import {
   getManifest,
   wildVersionPattern,
 } from '../../manifest'
+import {CommandError} from '../../errors'
 
-import {parseArgs} from './utils'
-import {RegistryAppVersionsListItem} from '@vtex/api'
+import {parseArgs, appsLatestVersion, pickLatestVersion, wildVersionByMajor, handleError} from './utils'
 
 const unprefixName = compose<string, string[], string>(last, split(':'))
-const wildVersionByMajor = compose<string, string[], string, string>(concat(__, '.x'), head, split('.'))
 const invalidAppMessage =
   'Invalid app format, please use <vendor>.<name>, <vendor>.<name>@<version>, npm:<name> or npm:<name>@<version>'
-
-class InterruptionException extends Error {}
-
-const extractVersionFromId =
-  compose<VersionByApp, string, string[], string>(last, split('@'), prop('versionIdentifier'))
-
-const pickLatestVersion = (versions: string[]): string => {
-  const start = head(versions)
-  return reduce((acc: string, version: string) => {
-    return semverDiff(acc, version) ? version : acc
-  }, start, tail(versions))
-}
-
-const handleError = curry((app: string, err: any) => {
-  if (err.response && err.response.status === 404) {
-    return Promise.reject(new InterruptionException(`App ${chalk.green(app)} not found`))
-  }
-  return Promise.reject(err)
-})
-
-const appsLatestVersion = (app: string): Bluebird<string | never> => {
-  return createClients({account: 'smartcheckout'}).registry
-    .listVersionsByApp(app)
-    .then<RegistryAppVersionsListItem[]>(prop('data'))
-    .then(map(extractVersionFromId))
-    .then(pickLatestVersion)
-    .then(wildVersionByMajor)
-    .catch(handleError(app))
-}
 
 const infraLatestVersion = (app: string): Bluebird<string | never> =>
   router.getAvailableVersions(app)
@@ -76,7 +39,7 @@ const infraLatestVersion = (app: string): Bluebird<string | never> =>
 const npmLatestVersion = (app: string): Bluebird<string | never> => {
   return latestVersion(app)
     .then(concat('^'))
-    .catch(err => Promise.reject(new InterruptionException(err.message)))
+    .catch(err => Promise.reject(new CommandError(err.message)))
 }
 
 const updateManifestDependencies = (app: string, version: string): Bluebird<void> => {
@@ -117,7 +80,7 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
   const appRegex = new RegExp(`^(${vendorPattern}\\.|(npm|infra):)${namePattern}(@${wildVersionPattern})?$`)
   const appPromise = appRegex.test(app)
     ? addApp(app)
-    : Promise.reject(new InterruptionException(invalidAppMessage))
+    : Promise.reject(new CommandError(invalidAppMessage))
   return appPromise
     .then(() => decApps.length > 0 ? addApps(decApps) : Promise.resolve())
     .catch(err => {
@@ -137,7 +100,7 @@ export default (app: string, options) => {
   return addApps(apps)
     .then(() => log.info('App' + (apps.length > 1 ? 's' : '') + ' added succesfully!'))
     .catch(err => {
-      if (err instanceof InterruptionException) {
+      if (err instanceof CommandError) {
         log.error(err.message)
         return Promise.resolve()
       }

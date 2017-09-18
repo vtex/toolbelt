@@ -8,7 +8,7 @@ import {toAppLocator} from './../../locator'
 
 const {installApp} = apps
 
-const installApps = async (appsList: string[], reg: string): Promise<void> => {
+export const installApps = async (appsList: string[], reg: string): Promise<void> => {
   if (appsList.length === 0) {
     return
   }
