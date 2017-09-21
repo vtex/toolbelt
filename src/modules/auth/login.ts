@@ -36,14 +36,26 @@ const promptUsePrevious = (): Bluebird<boolean> =>
   })
   .then<boolean>(prop('confirm'))
 
-const promptAccount = (): Bluebird<string> =>
-  inquirer.prompt({
+const promptAccount = async (promptPreviousAcc) => {
+  if (promptPreviousAcc) {
+    const {confirm} = await inquirer.prompt({
+      type: 'confirm',
+      name: 'confirm',
+      default: true,
+      message: `Use previous account? (${chalk.blue(cachedAccount)})`,
+    })
+    if (confirm) {
+      return cachedAccount
+    }
+  }
+  const {account} = await inquirer.prompt({
     name: 'account',
     message: 'Account:',
     filter: (s) => s.trim(),
     validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
   })
-  .then<string>(prop('account'))
+  return account
+}
 
 const saveCredentials = (login: string, account: string, token: string, workspace: string): void => {
   saveLogin(login)
@@ -52,8 +64,8 @@ const saveCredentials = (login: string, account: string, token: string, workspac
   saveWorkspace(workspace)
 }
 
-const authAndSave = async (account, workspace): Promise<{login: string, token: string}> => {
-  const token = await startUserAuth(account, workspace)
+const authAndSave = async (account, workspace, optionWorkspace): Promise<{login: string, token: string}> => {
+  const token = await startUserAuth(account, optionWorkspace ? workspace : 'master')
   const decodedToken = jwt.decode(token)
   const login = decodedToken.sub
   saveCredentials(login, account, token, workspace)
@@ -63,10 +75,18 @@ const authAndSave = async (account, workspace): Promise<{login: string, token: s
 export default async (options) => {
   const optionAccount = options ? (options.a || options.account) : null
   const optionWorkspace = options ? (options.w || options.workspace) : null
-  const usePrevious = !(optionAccount && optionWorkspace) && details && await promptUsePrevious()
-  const account = optionAccount || (usePrevious && cachedAccount) || await promptAccount()
+  const usePrevious = !(optionAccount || optionWorkspace) && details && await promptUsePrevious()
+  const account = optionAccount || (usePrevious && cachedAccount) || await promptAccount(cachedAccount && optionWorkspace)
   const workspace = optionWorkspace || (usePrevious && cachedWorkspace) || 'master'
-  const {login, token} = await authAndSave(account, workspace)
-  log.debug('Login successful', login, account, token, workspace)
-  log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
+  try {
+    const {login, token} = await authAndSave(account, workspace, optionWorkspace)
+    log.debug('Login successful', login, account, token, workspace)
+    log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
+  } catch (err) {
+    if (err.statusCode === 404) {
+      log.error('Workspace not found')
+    } else {
+      throw err
+    }
+  }
 }
