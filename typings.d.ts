@@ -99,6 +99,8 @@ interface MessageJSON {
 
 interface WorkspaceResponse {
   name: string,
+  weight: number,
+  production: boolean,
 }
 
 interface VersionByApp {
