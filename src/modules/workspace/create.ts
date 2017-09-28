@@ -13,7 +13,7 @@ export default (name: string) => {
   }
   log.debug('Creating workspace', name)
   return workspaces.create(getAccount(), name)
-    .then(() => log.info(`Workspace ${chalk.green(name)} created successfully`))
+    .then(() => log.info(`Workspace ${chalk.green(name)} created ${chalk.green('successfully')}`))
     .catch(err =>
       err.response && err.response.data.code === 'WorkspaceAlreadyExists'
         ? log.error(err.response.data.message)

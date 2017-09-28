@@ -206,6 +206,14 @@ export default {
     use: {
       requiredArgs: 'name',
       description: 'Use a workspace to perform operations',
+      options: [
+        {
+          short: 'r',
+          long: 'reset',
+          description: 'Resets workspace before using it',
+          type: 'boolean',
+        },
+      ],
       handler: './workspace/use',
     },
     reset: {
