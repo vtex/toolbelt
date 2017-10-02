@@ -88,7 +88,7 @@ export const onAuth = (account: string, workspace: string, state: string): Promi
 
     es.onerror = (event) => {
       es.close()
-      reject(new SSEConnectionError(`Connection to login server has failed with status ${event.status}`))
+      reject(new SSEConnectionError(`Connection to login server has failed with status ${event.status}`, event.status))
     }
   })
 }

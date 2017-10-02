@@ -28,7 +28,7 @@ export default (name: string) => {
           .then(confirm => {
             if (!confirm) {
               log.error(`Could not use workspace ${chalk.green(name)}`)
-              return Promise.reject(null)
+              return Promise.reject(new Error ('User cancelled'))
             }
             return createCmd(name)
           })
