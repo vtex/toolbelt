@@ -60,6 +60,19 @@ export default {
     ],
     handler: './apps/publish',
   },
+  deprecate: {
+    optionalArgs: 'app',
+    description: 'Deprecate app(s)',
+    options: [
+      {
+        short: 'a',
+        long: 'account',
+        description: 'Specify app(s) account',
+        type: 'string',
+      },
+    ],
+    handler: './apps/deprecate',
+  },
   install: {
     alias: 'i',
     optionalArgs: 'app',
