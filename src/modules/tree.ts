@@ -48,7 +48,13 @@ export default {
       {
         short: 'r',
         long: 'registry',
-        description: 'Specify the registry for the app registry',
+        description: 'Specify the account for the app registry',
+        type: 'string',
+      },
+      {
+        short: 'w',
+        long: 'workspace',
+        description: 'Specify the workspace for the app registry',
         type: 'string',
       },
     ],

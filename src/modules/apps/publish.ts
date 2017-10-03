@@ -17,8 +17,8 @@ const root = process.cwd()
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
-const publisher = (account: string = 'smartcheckout') => {
-  const context = {account, workspace: 'master'}
+const publisher = (account: string = 'smartcheckout', workspace: string = 'master') => {
+  const context = {account, workspace}
 
   const prePublish = async (files, tag, unlistenBuild) => {
     const {builder} = createClients(context)
@@ -72,6 +72,8 @@ const publisher = (account: string = 'smartcheckout') => {
 export default (path: string, options) => {
   log.debug('Starting to publish app')
   const paths = prepend(path || root, parseArgs(options._))
-  const {publishApps} = publisher(options.r || options.registry)
+  const registry = options.r || options.registry
+  const workspace = options.w || options.workspace
+  const {publishApps} = publisher(registry, workspace)
   return publishApps(paths, options.tag)
 }
