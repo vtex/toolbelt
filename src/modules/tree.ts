@@ -57,6 +57,12 @@ export default {
         description: 'Specify the workspace for the app registry',
         type: 'string',
       },
+      {
+        short: 'p',
+        long: 'public',
+        description: 'Use the public registry (smartcheckout)',
+        type: 'boolean',
+      },
     ],
     handler: './apps/publish',
   },
