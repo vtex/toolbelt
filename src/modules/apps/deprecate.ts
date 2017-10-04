@@ -24,8 +24,8 @@ const deprecateApps = async (appsList: string[], registry): Promise<void> => {
 }
 
 export default async (optionalApp: string, options) => {
-  const optionAccount = options ? (options.a || options.account) : null
-  const context = {account: optionAccount || getAccount(), workspace: 'master'}
+  const optionRegistry = options ? (options.r || options.registry) : null
+  const context = {account: optionRegistry || getAccount(), workspace: 'master'}
   const {registry} = createClients(context)
   const appsList = prepend(optionalApp || toAppLocator(await getManifest()), parseArgs(options._))
   log.debug('Deprecating app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
