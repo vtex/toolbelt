@@ -11,13 +11,14 @@ import {id, mapFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
 import {listenBuild} from '../utils'
 import {BuildFailError} from '../../errors'
+import {getAccount} from '../../conf'
 
 const root = process.cwd()
 
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
-const publisher = (account: string = 'smartcheckout', workspace: string = 'master') => {
+const publisher = (account: string, workspace: string = 'master') => {
   const context = {account, workspace}
 
   const prePublish = async (files, tag, unlistenBuild) => {
@@ -74,6 +75,8 @@ export default (path: string, options) => {
   const paths = prepend(path || root, parseArgs(options._))
   const registry = options.r || options.registry
   const workspace = options.w || options.workspace
-  const {publishApps} = publisher(registry, workspace)
+  const optionPublic = options.p || options.public
+  const account = optionPublic ? 'smartcheckout' : registry ? registry : getAccount()
+  const {publishApps} = publisher(account, workspace)
   return publishApps(paths, options.tag)
 }
