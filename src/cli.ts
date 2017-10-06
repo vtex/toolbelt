@@ -129,7 +129,7 @@ const onError = e => {
     }
   }
 
-  process.exit()
+  process.exit(1)
 }
 
 try {
