@@ -76,6 +76,12 @@ export default {
         description: 'Specify the registry for the app(s)',
         type: 'string',
       },
+      {
+        short: 'p',
+        long: 'public',
+        description: 'Use the public registry (smartcheckout)',
+        type: 'boolean',
+      },
     ],
     handler: './apps/deprecate',
   },
