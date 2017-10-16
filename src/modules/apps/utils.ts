@@ -103,3 +103,7 @@ export const appsLastVersion = (app: string): Bluebird<string | never> => {
     .then(pickLatestVersion)
     .catch(handleError(app))
 }
+
+export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
+  return manifest.builders["service-js"]
+}

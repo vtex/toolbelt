@@ -3,6 +3,7 @@ import {uniqBy, prop} from 'ramda'
 import * as debounce from 'debounce'
 import * as Bluebird from 'bluebird'
 import {createInterface} from 'readline'
+import axios from 'axios'
 
 import log from '../../logger'
 import {currentContext} from '../../conf'
@@ -11,10 +12,11 @@ import {logAll} from '../../sse'
 import {getManifest} from '../../manifest'
 import {changesToString} from '../../apps'
 import {toAppLocator, toMajorLocator} from '../../locator'
-import {id, validateAppAction} from './utils'
+import {id, validateAppAction, hasServiceOnBuilders} from './utils'
 import startDebuggerTunnel from './debugger'
 import * as chalk from 'chalk'
 import {watch, listLocalFiles, addChangeContent} from './file'
+import {getAccount, getWorkspace, getToken} from '../../conf'
 
 const {link} = apps
 const root = process.cwd()
@@ -54,6 +56,17 @@ const cleanCache = (manifest: Manifest): Bluebird<void> => {
   })
 }
 
+const checkAppStatus = (manifest: Manifest) => {
+  const {name, vendor} = manifest
+  const http = axios.create({
+    baseURL: `http://${name}.${vendor}.aws-us-east-1.vtex.io/${getAccount()}/${getWorkspace()}`,
+    headers: {
+      Authorization: 'Bearer ' + getToken(),
+    }
+  })
+  return http.get(`/_status`)
+}
+
 const CACHE_CLEAN_AWAIT_MS = 5000
 
 export default async (options) => {
@@ -84,6 +97,10 @@ export default async (options) => {
   const debuggerPort = await startDebuggerTunnel(manifest)
   log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
 
+  if (hasServiceOnBuilders(manifest)) {
+    await checkAppStatus(manifest)
+  }
+  
   createInterface({input: process.stdin, output: process.stdout})
     .on('SIGINT', () => {
       unlisten()
