@@ -10,7 +10,7 @@ interface Batch {
 
 interface BatchStream {
   path: string,
-  contents: NodeJS.ReadableStream,
+  content: NodeJS.ReadableStream,
 }
 
 interface Manifest {

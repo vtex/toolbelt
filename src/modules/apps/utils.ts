@@ -30,8 +30,8 @@ import {isManifestReadable} from '../../manifest'
 export const id = (manifest: Manifest): string =>
   `${manifest.vendor}.${manifest.name}@${manifest.version}`
 
-export const mapFileObject = (files: string[], root = process.cwd()): BatchStream[] =>
-  files.map(path => ({path, contents: createReadStream(join(root, path))}))
+export const pathToFileObject = (root = process.cwd()) => (path: string): BatchStream =>
+  ({path, content: createReadStream(join(root, path))})
 
 export const workspaceMasterMessage =
   `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`

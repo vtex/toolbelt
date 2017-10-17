@@ -1,13 +1,12 @@
 import * as ora from 'ora'
 import {resolve} from 'path'
 import * as Bluebird from 'bluebird'
-import {LoggerInstance} from 'winston'
 import {readFileSync} from 'fs-extra'
-import {prepend} from 'ramda'
+import {prepend, map} from 'ramda'
 
 import log from '../../logger'
 import {createClients} from '../../clients'
-import {id, mapFileObject, parseArgs} from './utils'
+import {id, pathToFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
 import {listenBuild} from '../utils'
 import {BuildFailError} from '../../errors'
@@ -32,30 +31,30 @@ const publisher = (account: string, workspace: string = 'master') => {
     return response
   }
 
-  const publishApp = (path: string, tag: string, manifest: Manifest): Bluebird<LoggerInstance | never> => {
+  const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
     const spinner = ora('Publishing app...').start()
     const appId = id(manifest)
     const options = {context, timeout: null}
 
-    return listLocalFiles(path)
-      .tap(files => log.debug('Sending files:', '\n' + files.join('\n')))
-      .then(files => mapFileObject(files, path))
-      .then(files => listenBuild(appId, (unlistenBuild) => prePublish(files, tag, unlistenBuild), options))
-      .finally(() => spinner.stop())
-      .then(() => log.info(`Published app ${appId} successfully at ${account}`))
-      .catch(e => {
-        if (e instanceof BuildFailError) {
-          log.error(e.message)
-          return Promise.resolve()
-        }
-
-        if (e.response && e.response.status >= 400 && e.response.status < 500) {
-          log.error(e.response.data.message)
-          return Promise.resolve()
-        }
-
-        throw e
-      })
+    try {
+      const paths = await listLocalFiles(appRoot)
+      const filesWithContent = map(pathToFileObject(appRoot), paths)
+      log.debug('Sending files:', '\n' + paths.join('\n'))
+      await listenBuild(appId, (unlistenBuild) => prePublish(filesWithContent, tag, unlistenBuild), options)
+    } catch (e) {
+      if (e instanceof BuildFailError) {
+        log.error(e.message)
+        return
+      }
+      if (e.response && e.response.status >= 400 && e.response.status < 500) {
+        log.error(e.response.data.message)
+        return
+      }
+      throw e
+    } finally {
+      spinner.stop()
+    }
+    log.info(`Published app ${appId} successfully at ${account}`)
   }
 
   const publishApps = (paths: string[], tag: string, accessor = 0): Bluebird<void | never> => {
