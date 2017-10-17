@@ -3,7 +3,6 @@ import {head, tail, contains, prepend} from 'ramda'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {validateAppAction, parseArgs} from './utils'
-import {listenBuild} from '../utils'
 import {getManifest, validateApp} from '../../manifest'
 import {toMajorLocator, parseLocator} from './../../locator'
 
@@ -39,16 +38,6 @@ export default async (optionalApp: string, options) => {
     appsList = prepend(optionalApp || toMajorLocator(await getManifest()), parseArgs(options._))
     await validateAppAction(appsList)
   }
-  if (appsList.length === 1) {
-    validateApp(appsList)
-    appsList = toMajorLocator(parseLocator(appsList[0]))
-    if (contains(appsList, linkedApps.toString())) {
-      return listenBuild(appsList, () => unlinkApps([appsList])) // Only listen for feedback if there's only one app
-    } else {
-      return log.info('App not linked')
-    }
-  } else {
-    log.debug('Starting to unlink apps:', appsList.join(', '))
-    return unlinkApps(appsList)
-  }
+  log.debug('Starting to unlink apps:', appsList.join(', '))
+  return unlinkApps(appsList)
 }
