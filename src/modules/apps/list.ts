@@ -5,6 +5,7 @@ import {curry, compose, map, prop, split, head, length, gt, flip} from 'ramda'
 import log from '../../logger'
 import {apps} from '../../clients'
 import {parseLocator} from '../../locator'
+import {getAccount, getWorkspace} from '../../conf'
 
 const {listApps} = apps
 
@@ -21,7 +22,7 @@ const isLinked =
 
 const renderTable = curry<string, string, any, void>(
   (title: string, emptyMessage: string, apps): void => {
-    console.log(chalk.green(title))
+    console.log(title)
     if (apps.length === 0) {
       return console.log(`${emptyMessage}\n`)
     }
@@ -36,9 +37,11 @@ const renderTable = curry<string, string, any, void>(
 )
 
 export default () => {
+  const account = getAccount()
+  const workspace = getWorkspace()
   log.debug('Starting to list apps')
   return listApps()
     .then(prop('data'))
     .then(parseLocatorFromList)
-    .then(renderTable('Installed Apps', 'You have no installed apps'))
+    .then(renderTable(`${chalk.green('Installed Apps')} in ${chalk.blue(account)} at workspace ${chalk.green(workspace)}`, 'You have no installed apps'))
 }
