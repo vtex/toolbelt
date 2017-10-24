@@ -1,6 +1,6 @@
 import * as chalk from 'chalk'
 import * as EventSource from 'eventsource'
-import {compose} from 'ramda'
+import {compose, forEach} from 'ramda'
 
 import log from './logger'
 import endpoint from './endpoint'
@@ -40,6 +40,14 @@ const createEventSource = (source: string) =>
     },
   })
 
+const parseKeyToQueryParameter = (keys: string[]): string => {
+  let urlQueryParameters = ""
+  forEach(key => {
+    urlQueryParameters += `&keys[]=${key}`
+  }, keys)
+  return urlQueryParameters
+}
+
 export const withId = (id: string, router: boolean, callback: Function) => (msg: Message) => {
   if ((id && msg.subject.startsWith(id)) || (router && msg.subject.startsWith('-'))) {
     callback(msg)
@@ -55,8 +63,8 @@ export const onLog = (ctx: Context, logLevel: string, callback: (message: Messag
   return es.close.bind(es)
 }
 
-export const onEvent = (ctx: Context, sender: string, key: string, callback: (message: Message) => void): Function => {
-  const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/events/${sender}:-:${key}`
+export const onEvent = (ctx: Context, sender: string, keys: string[], callback: (message: Message) => void): Function => {
+  const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/events?sender=${sender}&subject=-${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
   es.onmessage = compose(callback, parseMessage)
