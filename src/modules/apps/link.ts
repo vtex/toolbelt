@@ -50,7 +50,7 @@ const sendChanges = (() => {
 })()
 
 const cleanCache = (manifest: Manifest): Bluebird<void> => {
-  return colossus.sendEvent('vtex.toolbelt', '-', 'cleanCache', {
+  return colossus.sendEvent('-', 'cleanCache', {
     id: toAppLocator(manifest),
     type: 'clean',
   })
