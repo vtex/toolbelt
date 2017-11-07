@@ -1,0 +1,25 @@
+{
+  "name": "scripts",
+  "version": "0.1.0",
+  "description": "Utility scripts for the VTEX IO platform",
+  "main": "index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@vtex/api": "^0.32.0",
+    "bluebird": "^3.5.1",
+    "chalk": "^2.3.0",
+    "cwait": "^1.1.1",
+    "fs-extra": "^4.0.2",
+    "inquirer": "^3.3.0",
+    "minimist": "^1.2.0",
+    "ts-node": "^3.3.0",
+    "typescript": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.18",
+    "@types/node": "^8.0.47"
+  },
+  "scripts": {
+    "apps": "ts-node mass-apps-operations.ts"
+  }
+}

@@ -8,3 +8,4 @@ lib/
 temp/
 yarn-error.log
 .DS_Store
+scripts/errors.json
