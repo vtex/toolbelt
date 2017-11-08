@@ -24,7 +24,7 @@
     "enable": false
   },
   "include": [
-    "./**/*",
+    "./src/**/*",
     "./typings.d.ts"
   ],
   "exclude": [
