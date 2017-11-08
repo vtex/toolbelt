@@ -24,7 +24,7 @@ Usage instructions:
 
 - Create the following files in your HOME directory:
   ~/accounts.json - [{"name": "basedevmkp"}]
-  ~/token.json - {"VtexIdclientAutCookie": "A token from vtexcommmercestable"}
+  ~/token.json - {"VtexIdclientAutCookie": "A token from vtexcommercestable"}
 
 - Use one of the available commands followed by an app locator:
   {${COMMANDS.join(', ')}} {app}
