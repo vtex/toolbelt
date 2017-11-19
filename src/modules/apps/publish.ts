@@ -8,8 +8,6 @@ import log from '../../logger'
 import {createClients} from '../../clients'
 import {id, pathToFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
-import {listenBuild} from '../utils'
-import {BuildFailError} from '../../errors'
 import {getAccount} from '../../conf'
 
 const root = process.cwd()
@@ -19,33 +17,18 @@ const automaticTag = (version: string): string =>
 
 const publisher = (account: string, workspace: string = 'master') => {
   const context = {account, workspace}
-
-  const prePublish = async (files, tag, unlistenBuild) => {
-    const {builder} = createClients(context)
-    const response = await builder.prePublishApp(files, tag)
-    if (response.status === 200) {
-      unlistenBuild(response)
-      return
-    }
-
-    return response
-  }
+  const {builder} = createClients(context)
 
   const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
     const spinner = ora('Publishing app...').start()
     const appId = id(manifest)
-    const options = {context, timeout: null}
 
     try {
       const paths = await listLocalFiles(appRoot)
       const filesWithContent = map(pathToFileObject(appRoot), paths)
       log.debug('Sending files:', '\n' + paths.join('\n'))
-      await listenBuild(appId, (unlistenBuild) => prePublish(filesWithContent, tag, unlistenBuild), options)
+      await builder.publishApp(appId, filesWithContent, tag)
     } catch (e) {
-      if (e instanceof BuildFailError) {
-        log.error(e.message)
-        return
-      }
       if (e.response && e.response.status >= 400 && e.response.status < 500) {
         log.error(e.response.data.message)
         return

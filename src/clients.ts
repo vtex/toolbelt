@@ -1,11 +1,9 @@
-import {Registry, Apps, Workspaces, Router, Colossus} from '@vtex/api'
+import {Registry, Apps, Builder, Workspaces, Router, Colossus} from '@vtex/api'
 
 import endpoint from './endpoint'
 import envTimeout from './timeout'
 import {getAccount, getWorkspace, getToken} from './conf'
 import userAgent from './user-agent'
-
-import {Builder} from './builder'
 
 const DEFAULT_TIMEOUT = 15000
 const options = {

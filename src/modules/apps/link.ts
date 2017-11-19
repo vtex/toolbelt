@@ -100,7 +100,7 @@ export default async (options) => {
   if (hasServiceOnBuilders(manifest)) {
     await checkAppStatus(manifest)
   }
-  
+
   createInterface({input: process.stdin, output: process.stdout})
     .on('SIGINT', () => {
       unlisten()
