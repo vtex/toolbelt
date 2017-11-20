@@ -16,7 +16,7 @@ const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
 const publisher = (account: string, workspace: string = 'master') => {
-  const context = {account, workspace}
+  const context = {account, workspace, timeout: 60000}
   const {builder} = createClients(context)
 
   const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
