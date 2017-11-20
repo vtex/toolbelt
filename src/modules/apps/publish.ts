@@ -9,6 +9,7 @@ import {createClients} from '../../clients'
 import {id, pathToFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
 import {getAccount} from '../../conf'
+import {formatNano} from '../utils'
 
 const root = process.cwd()
 
@@ -22,12 +23,14 @@ const publisher = (account: string, workspace: string = 'master') => {
   const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
     const spinner = ora('Publishing app...').start()
     const appId = id(manifest)
+    let time
 
     try {
       const paths = await listLocalFiles(appRoot)
       const filesWithContent = map(pathToFileObject(appRoot), paths)
       log.debug('Sending files:', '\n' + paths.join('\n'))
-      await builder.publishApp(appId, filesWithContent, tag)
+      const {timeNano} = await builder.publishApp(appId, filesWithContent, tag)
+      time = timeNano
     } catch (e) {
       if (e.response && e.response.status >= 400 && e.response.status < 500) {
         log.error(e.response.data.message)
@@ -37,7 +40,9 @@ const publisher = (account: string, workspace: string = 'master') => {
     } finally {
       spinner.stop()
     }
-    log.info(`Published app ${appId} successfully at ${account}`)
+
+    log.info(`Build finished successfully in ${formatNano(time)}`)
+    log.info(`Published app ${appId} at ${account}`)
   }
 
   const publishApps = (paths: string[], tag: string, accessor = 0): Bluebird<void | never> => {
