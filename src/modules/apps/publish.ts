@@ -32,8 +32,9 @@ const publisher = (account: string, workspace: string = 'master') => {
       const {timeNano} = await builder.publishApp(appId, filesWithContent, tag)
       time = timeNano
     } catch (e) {
-      if (e.response && e.response.status >= 400 && e.response.status < 500) {
-        log.error(e.response.data.message)
+      if (e.response) {
+        const {message, error} = e.response.data
+        log.error(message || error)
         return
       }
       throw e
