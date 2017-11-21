@@ -79,7 +79,7 @@ export default async (options) => {
     await Promise.delay(CACHE_CLEAN_AWAIT_MS)
   }
 
-  log.info('Linking app', `${toAppLocator(manifest)}`)
+  log.info('Linking legacy app', `${toAppLocator(manifest)}`)
   const majorLocator = toMajorLocator(manifest)
   const folder = options.o || options.only
   const paths = await listLocalFiles(root, folder)
