@@ -11,13 +11,14 @@ import {pathToFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
 import {getAccount} from '../../conf'
 import {formatNano} from '../utils'
+import {legacyPublisher} from './legacyPublish'
 
 const root = process.cwd()
 
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
-const publisher = (account: string, workspace: string = 'master') => {
+const publisher = (account: string, workspace: string = 'master', legacyPublishApp) => {
   const context = {account, workspace, timeout: 60000}
   const {builder} = createClients(context)
 
@@ -53,6 +54,10 @@ const publisher = (account: string, workspace: string = 'master') => {
     const next = () => accessor < paths.length - 1
       ? publishApps(paths, tag, accessor + 1)
       : Promise.resolve()
+
+    if (manifest.builders['service-js'] || manifest.builders['render']) {
+      return legacyPublishApp(path, tag || automaticTag(manifest.version), manifest).then(next)
+    }
     return publishApp(path, tag || automaticTag(manifest.version), manifest).then(next)
   }
 
@@ -66,6 +71,7 @@ export default (path: string, options) => {
   const workspace = options.w || options.workspace
   const optionPublic = options.p || options.public
   const account = optionPublic ? 'smartcheckout' : registry ? registry : getAccount()
-  const {publishApps} = publisher(account, workspace)
+  const {legacyPublishApp} = legacyPublisher(account, workspace)
+  const {publishApps} = publisher(account, workspace, legacyPublishApp)
   return publishApps(paths, options.tag)
 }
