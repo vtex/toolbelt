@@ -6,7 +6,8 @@ import {prepend, map} from 'ramda'
 
 import log from '../../logger'
 import {createClients} from '../../clients'
-import {id, pathToFileObject, parseArgs} from './utils'
+import {toAppLocator} from '../../locator'
+import {pathToFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
 import {getAccount} from '../../conf'
 import {formatNano} from '../utils'
@@ -22,7 +23,7 @@ const publisher = (account: string, workspace: string = 'master') => {
 
   const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
     const spinner = ora('Publishing app...').start()
-    const appId = id(manifest)
+    const appId = toAppLocator(manifest)
     let time
 
     try {

@@ -1,18 +1,12 @@
 export default {
   link: {
-    description: 'Send the files to the registry and watch for changes',
+    description: 'Start a development session for this app',
     options: [
       {
         short: 'c',
         long: 'clean',
         description: 'Clean builder cache',
         type: 'boolean',
-      },
-      {
-        short: 'o',
-        long: 'only',
-        description: 'Link only this folder',
-        type: 'string',
       },
     ],
     handler: './apps/link',
