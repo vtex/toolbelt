@@ -18,7 +18,7 @@ const addBuilder = (manifest: Manifest, builder: string, version: string): Manif
 }
 
 const versions = {
-  render: '3.x',
+  render: '4.x',
   service: '1.x',
   functions: '0.x',
 }
