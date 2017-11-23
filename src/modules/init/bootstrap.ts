@@ -18,7 +18,7 @@ const addBuilder = (manifest: Manifest, builder: string, version: string): Manif
 }
 
 const versions = {
-  render: '3.x',
+  render: '4.x',
   service: '1.x',
   functions: '0.x',
 }
@@ -47,12 +47,14 @@ export default function HelloWorld () {
           type: 'file',
           name: 'render.json',
           content: JSON.stringify({
-            routes: {
-              index: {
-                path: '/',
-                component: `./index.js`,
-              },
-            },
+            "extensions": {
+              "index": {
+                "component": "./index.js",
+                "route": {
+                  "path": "/index"
+                }
+              }
+            }
           }, null, 2),
         },
       ],
