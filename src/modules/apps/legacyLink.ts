@@ -57,14 +57,14 @@ const cleanCache = (manifest: Manifest): Bluebird<void> => {
 }
 
 const checkAppStatus = (manifest: Manifest) => {
-  const {name, vendor} = manifest
+  const {name, vendor, version} = manifest
   const http = axios.create({
     baseURL: `http://${name}.${vendor}.aws-us-east-1.vtex.io/${getAccount()}/${getWorkspace()}`,
     headers: {
-      Authorization: 'Bearer ' + getToken(),
+      Authorization: getToken(),
     },
   })
-  return http.get(`/_status`)
+  return http.get(`/_status?__v=${version}`)
 }
 
 const CACHE_CLEAN_AWAIT_MS = 5000

@@ -1,32 +1,20 @@
 import {map} from 'ramda'
 import {createInterface} from 'readline'
-import axios from 'axios'
 import log from '../../logger'
 import {currentContext} from '../../conf'
 import {createClients} from '../../clients'
 import {logAll} from '../../sse'
 import {getManifest} from '../../manifest'
 import {toAppLocator} from '../../locator'
-import {pathToFileObject, validateAppAction, hasServiceOnBuilders} from './utils'
+import {pathToFileObject, validateAppAction} from './utils'
 import startDebuggerTunnel from './debugger'
 import * as chalk from 'chalk'
 import {listLocalFiles} from './file'
-import {getAccount, getWorkspace, getToken} from '../../conf'
+import {getAccount, getWorkspace} from '../../conf'
 import { formatNano } from '../utils'
 import legacyLink from './legacyLink'
 
 const root = process.cwd()
-
-const checkAppStatus = (manifest: Manifest) => {
-  const {name, vendor} = manifest
-  const http = axios.create({
-    baseURL: `http://${name}.${vendor}.aws-us-east-1.vtex.io/${getAccount()}/${getWorkspace()}`,
-    headers: {
-      Authorization: getToken(),
-    },
-  })
-  return http.get(`/_status`)
-}
 
 export default async (options) => {
   await validateAppAction()
@@ -71,10 +59,6 @@ export default async (options) => {
 
   const debuggerPort = await startDebuggerTunnel(manifest)
   log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
-
-  if (hasServiceOnBuilders(manifest)) {
-    await checkAppStatus(manifest)
-  }
 
   createInterface({input: process.stdin, output: process.stdout})
     .on('SIGINT', () => {
