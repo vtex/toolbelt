@@ -1,4 +1,11 @@
+import {Builder, Change} from '@vtex/api'
+import * as chokidar from 'chokidar'
+import * as debounce from 'debounce'
+import {readFileSync} from 'fs'
+import * as moment from 'moment'
+import {resolve, sep} from 'path'
 import {map} from 'ramda'
+
 import {createInterface} from 'readline'
 import log from '../../logger'
 import {currentContext} from '../../conf'
@@ -9,12 +16,57 @@ import {toAppLocator} from '../../locator'
 import {pathToFileObject, validateAppAction} from './utils'
 import startDebuggerTunnel from './debugger'
 import * as chalk from 'chalk'
-import {listLocalFiles} from './file'
+import {listLocalFiles, getIgnoredPaths} from './file'
 import {getAccount, getWorkspace} from '../../conf'
-import { formatNano } from '../utils'
+import {formatNano} from '../utils'
 import legacyLink from './legacyLink'
 
 const root = process.cwd()
+const DELETE_SIGN = chalk.red('D')
+const UPDATE_SIGN = chalk.blue('U')
+
+const pathToChange = (path: string, remove?: boolean): Change => ({
+  path: path.split(sep).join('/'),
+  content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
+})
+
+const watchAndSendChanges = (appId, builder: Builder) => {
+  const changeQueue: Change[] = []
+
+  const queueChange = (path: string, remove?: boolean) => {
+    console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
+    changeQueue.push(pathToChange(path, remove))
+    sendChanges()
+  }
+
+  const sendChanges = debounce(() => {
+    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
+  }, 50)
+
+  const watcher = chokidar.watch(['*/**', 'manifest.json'], {
+    cwd: root,
+    persistent: true,
+    ignoreInitial: true,
+    ignored: getIgnoredPaths(root),
+    usePolling: true,
+    awaitWriteFinish: {
+      stabilityThreshold: 500,
+    },
+    atomic: true,
+  })
+  return new Promise((resolve, reject) => {
+    watcher
+    .on('add', (file, {size}) => size > 0 ? queueChange(file) : null)
+    .on('change', (file, {size}) => {
+      return size > 0
+        ? queueChange(file)
+        : queueChange(file, true)
+    })
+    .on('unlink', file => queueChange(file, true))
+    .on('error', reject)
+    .on('ready', resolve)
+  })
+}
 
 export default async (options) => {
   await validateAppAction()
@@ -55,7 +107,7 @@ export default async (options) => {
     }
   }
 
-  // await watch(root, sendChanges)
+  await watchAndSendChanges(appId, builder)
 
   const debuggerPort = await startDebuggerTunnel(manifest)
   log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
