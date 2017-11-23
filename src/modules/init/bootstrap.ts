@@ -47,12 +47,14 @@ export default function HelloWorld () {
           type: 'file',
           name: 'render.json',
           content: JSON.stringify({
-            routes: {
-              index: {
-                path: '/',
-                component: `./index.js`,
-              },
-            },
+            "extensions": {
+              "index": {
+                "component": "./index.js",
+                "route": {
+                  "path": "/index"
+                }
+              }
+            }
           }, null, 2),
         },
       ],
