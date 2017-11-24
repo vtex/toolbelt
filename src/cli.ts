@@ -60,32 +60,30 @@ const main = async () => {
 }
 
 const onError = e => {
-  const statusCode = e.response ? e.response.status : null
+  const status = e.response && e.response.status
+  const statusText = e.response && e.response.statusText
+  const data = e.response && e.response.data
   const code = e.code || null
 
-  if (statusCode) {
-    if (statusCode === 401) {
+  if (status) {
+    if (status === 401) {
       log.error('There was an authentication error. Please login again.')
       // Try to login and re-issue the command.
       return run({command: loginCmd}).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
     }
-    if (statusCode >= 400) {
-      const {statusText, data} = e.response
+    if (status >= 400) {
       const message = data ? data.message : null
       const source = e.config.url
-      log.error('API:', statusCode, statusText)
+      log.error('API:', status, statusText)
       if (message) {
         log.error('Message:', message)
+      } else {
+        log.error(data)
       }
       log.debug(source)
-      if (data) {
-        log.debug(data)
-      }
     } else {
-      log.error('Oops! There was an unexpected API error.')
-      if (isVerbose) {
-        log.error(e.read ? e.read().toString('utf8') : e)
-      }
+      log.error('Oops! There was an unexpected error:')
+      log.error(e.read ? e.read().toString('utf8') : data)
     }
   } else if (code) {
     switch (code) {
@@ -123,9 +121,7 @@ const onError = e => {
         break
       default:
         log.error('Something went wrong.')
-        if (isVerbose) {
-          log.error(e)
-        }
+        log.error(e)
     }
   }
 

@@ -30,7 +30,7 @@ const pathToChange = (path: string, remove?: boolean): Change => ({
   content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
 })
 
-const watchAndSendChanges = (appId, builder: Builder) => {
+const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   const changeQueue: Change[] = []
 
   const queueChange = (path: string, remove?: boolean) => {
@@ -39,8 +39,18 @@ const watchAndSendChanges = (appId, builder: Builder) => {
     sendChanges()
   }
 
+  const initialLinkRequired = e => {
+    const data = e.response && e.response.data
+    if (data && data.code && data.code === 'initial_link_required') {
+      log.warn('Initial link requested by builder')
+      performInitialLink()
+      return
+    }
+    throw e
+  }
+
   const sendChanges = debounce(() => {
-    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
+    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length)).catch(initialLinkRequired)
   }, 50)
 
   const watcher = chokidar.watch(['*/**', 'manifest.json'], {
@@ -81,15 +91,7 @@ export default async (options) => {
   const context = {account: getAccount(), workspace: getWorkspace(), timeout: 60000}
   const {builder} = createClients(context)
 
-  if (options.c || options.clean) {
-    log.info('Requesting to clean cache in builder.')
-    const {timeNano} = await builder.clean(appId)
-    log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
-  }
-
-  log.info(`Linking app ${appId}`)
-
-  try {
+  const performInitialLink = async () => {
     const paths = await listLocalFiles(root)
     const filesWithContent = map(pathToFileObject(root), paths)
 
@@ -99,15 +101,19 @@ export default async (options) => {
 
     const {timeNano} = await builder.linkApp(appId, filesWithContent)
     log.info(`Build finished successfully in ${formatNano(timeNano)}`)
-  } catch (e) {
-    if (e.response) {
-      const {message, error} = e.response.data
-      log.error(message || error)
-      return
-    }
   }
 
-  await watchAndSendChanges(appId, builder)
+  if (options.c || options.clean) {
+    log.info('Requesting to clean cache in builder.')
+    const {timeNano} = await builder.clean(appId)
+    log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
+  }
+
+  log.info(`Linking app ${appId}`)
+
+  await performInitialLink()
+
+  await watchAndSendChanges(appId, builder, performInitialLink)
 
   const debuggerPort = await startDebuggerTunnel(manifest)
   log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
