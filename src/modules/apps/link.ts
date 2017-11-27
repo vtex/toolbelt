@@ -1,111 +1,128 @@
-import * as moment from 'moment'
-import {uniqBy, prop} from 'ramda'
+import {Builder, Change} from '@vtex/api'
+import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
-import * as Bluebird from 'bluebird'
-import {createInterface} from 'readline'
-import axios from 'axios'
+import {readFileSync} from 'fs'
+import * as moment from 'moment'
+import {resolve, sep} from 'path'
+import {map} from 'ramda'
 
+import {createInterface} from 'readline'
 import log from '../../logger'
 import {currentContext} from '../../conf'
-import {apps, colossus} from '../../clients'
+import {createClients} from '../../clients'
 import {logAll} from '../../sse'
 import {getManifest} from '../../manifest'
-import {changesToString} from '../../apps'
-import {toAppLocator, toMajorLocator} from '../../locator'
-import {id, validateAppAction, hasServiceOnBuilders} from './utils'
+import {toAppLocator} from '../../locator'
+import {pathToFileObject, validateAppAction} from './utils'
 import startDebuggerTunnel from './debugger'
 import * as chalk from 'chalk'
-import {watch, listLocalFiles, addChangeContent} from './file'
-import {getAccount, getWorkspace, getToken} from '../../conf'
+import {listLocalFiles, getIgnoredPaths} from './file'
+import {getAccount, getWorkspace} from '../../conf'
+import {formatNano} from '../utils'
+import legacyLink from './legacyLink'
 
-const {link} = apps
 const root = process.cwd()
-const pathProp = prop('path')
-const cleanAll: Change = {path: '*', action: 'remove'}
+const DELETE_SIGN = chalk.red('D')
+const UPDATE_SIGN = chalk.blue('U')
 
-const mapFilesToChanges = (files: string[]): Change[] =>
-  [cleanAll].concat(files.map((path): Change => ({path, action: 'save'})))
+const pathToChange = (path: string, remove?: boolean): Change => ({
+  path: path.split(sep).join('/'),
+  content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
+})
 
-const sendChanges = (() => {
-  let queue = []
-  const publishPatch = debounce(
-    (data: Manifest) => {
-      const locator = toMajorLocator(data)
-      log.debug(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
-      return link(locator, queue)
-        .tap(() => console.log(changesToString(queue, moment().format('HH:mm:ss'))))
-        .tap(() => { queue = [] })
-        .catch(err => { throw err })
-    },
-    50,
-  )
-  return async (changes: Change[]) => {
-    if (changes.length === 0) {
+const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
+  const changeQueue: Change[] = []
+
+  const queueChange = (path: string, remove?: boolean) => {
+    console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
+    changeQueue.push(pathToChange(path, remove))
+    sendChanges()
+  }
+
+  const initialLinkRequired = e => {
+    const data = e.response && e.response.data
+    if (data && data.code && data.code === 'initial_link_required') {
+      log.warn('Initial link requested by builder')
+      performInitialLink()
       return
     }
-    queue = uniqBy(pathProp, queue.concat(changes).reverse())
-    const manifest = await getManifest()
-    return publishPatch(manifest)
+    throw e
   }
-})()
 
-const cleanCache = (manifest: Manifest): Bluebird<void> => {
-  return colossus.sendEvent('-', 'cleanCache', {
-    id: toAppLocator(manifest),
-    type: 'clean',
+  const sendChanges = debounce(() => {
+    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length)).catch(initialLinkRequired)
+  }, 50)
+
+  const watcher = chokidar.watch(['*/**', 'manifest.json'], {
+    cwd: root,
+    persistent: true,
+    ignoreInitial: true,
+    ignored: getIgnoredPaths(root),
+    usePolling: true,
+    awaitWriteFinish: {
+      stabilityThreshold: 500,
+    },
+    atomic: true,
+  })
+  return new Promise((resolve, reject) => {
+    watcher
+    .on('add', (file, {size}) => size > 0 ? queueChange(file) : null)
+    .on('change', (file, {size}) => {
+      return size > 0
+        ? queueChange(file)
+        : queueChange(file, true)
+    })
+    .on('unlink', file => queueChange(file, true))
+    .on('error', reject)
+    .on('ready', resolve)
   })
 }
-
-const checkAppStatus = (manifest: Manifest) => {
-  const {name, vendor} = manifest
-  const http = axios.create({
-    baseURL: `http://${name}.${vendor}.aws-us-east-1.vtex.io/${getAccount()}/${getWorkspace()}`,
-    headers: {
-      Authorization: 'Bearer ' + getToken(),
-    }
-  })
-  return http.get(`/_status`)
-}
-
-const CACHE_CLEAN_AWAIT_MS = 5000
 
 export default async (options) => {
   await validateAppAction()
   const manifest = await getManifest()
+
+  if (manifest.builders['service-js'] || manifest.builders['render']) {
+    return legacyLink(options)
+  }
+
+  const appId = toAppLocator(manifest)
   const unlisten = logAll(currentContext, log.level, `${manifest.vendor}.${manifest.name}`)
+  const context = {account: getAccount(), workspace: getWorkspace(), timeout: 60000}
+  const {builder} = createClients(context)
+
+  const performInitialLink = async () => {
+    const paths = await listLocalFiles(root)
+    const filesWithContent = map(pathToFileObject(root), paths)
+
+    log.debug('Sending files:')
+    paths.forEach(p => log.debug(p))
+    log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
+
+    const {timeNano} = await builder.linkApp(appId, filesWithContent)
+    log.info(`Build finished successfully in ${formatNano(timeNano)}`)
+  }
 
   if (options.c || options.clean) {
     log.info('Requesting to clean cache in builder.')
-    cleanCache(manifest)
-    await Promise.delay(CACHE_CLEAN_AWAIT_MS)
+    const {timeNano} = await builder.clean(appId)
+    log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
   }
 
-  log.info('Linking app', `${id(manifest)}`)
-  const majorLocator = toMajorLocator(manifest)
-  const folder = options.o || options.only
-  const paths = await listLocalFiles(root, folder)
-  const changes = mapFilesToChanges(paths)
-  const batch = addChangeContent(changes)
+  log.info(`Linking app ${appId}`)
 
-  log.debug('Sending files:')
-  paths.forEach(p => log.debug(p))
-  log.info(`Sending ${batch.length} file` + (batch.length > 1 ? 's' : ''))
-  await link(majorLocator, batch)
-  log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent')
-  await watch(root, sendChanges, folder)
+  await performInitialLink()
+
+  await watchAndSendChanges(appId, builder, performInitialLink)
 
   const debuggerPort = await startDebuggerTunnel(manifest)
   log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
 
-  if (hasServiceOnBuilders(manifest)) {
-    await checkAppStatus(manifest)
-  }
-  
   createInterface({input: process.stdin, output: process.stdout})
     .on('SIGINT', () => {
       unlisten()
       log.info('Your app is still in development mode.')
-      log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
+      log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
       process.exit()
     })
 }

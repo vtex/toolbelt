@@ -25,7 +25,7 @@ const safeFolder = folder => {
   return folder ? './' + folder + '/**' : '*/**'
 }
 
-const getIgnoredPaths = (root: string): string[] => {
+export const getIgnoredPaths = (root: string): string[] => {
   try {
     return readFileSync(path.join(root, '.vtexignore'))
       .toString()

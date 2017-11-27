@@ -6,55 +6,46 @@ import {prepend, map} from 'ramda'
 
 import log from '../../logger'
 import {createClients} from '../../clients'
-import {id, pathToFileObject, parseArgs} from './utils'
+import {toAppLocator} from '../../locator'
+import {pathToFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
-import {listenBuild} from '../utils'
-import {BuildFailError} from '../../errors'
 import {getAccount} from '../../conf'
+import {formatNano} from '../utils'
+import {legacyPublisher} from './legacyPublish'
 
 const root = process.cwd()
 
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
-const publisher = (account: string, workspace: string = 'master') => {
-  const context = {account, workspace}
-
-  const prePublish = async (files, tag, unlistenBuild) => {
-    const {builder} = createClients(context)
-    const response = await builder.prePublishApp(files, tag)
-    if (response.status === 200) {
-      unlistenBuild(response)
-      return
-    }
-
-    return response
-  }
+const publisher = (account: string, workspace: string = 'master', legacyPublishApp) => {
+  const context = {account, workspace, timeout: 60000}
+  const {builder} = createClients(context)
 
   const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
     const spinner = ora('Publishing app...').start()
-    const appId = id(manifest)
-    const options = {context, timeout: null}
+    const appId = toAppLocator(manifest)
+    let time
 
     try {
       const paths = await listLocalFiles(appRoot)
       const filesWithContent = map(pathToFileObject(appRoot), paths)
       log.debug('Sending files:', '\n' + paths.join('\n'))
-      await listenBuild(appId, (unlistenBuild) => prePublish(filesWithContent, tag, unlistenBuild), options)
+      const {timeNano} = await builder.publishApp(appId, filesWithContent, tag)
+      time = timeNano
     } catch (e) {
-      if (e instanceof BuildFailError) {
-        log.error(e.message)
-        return
-      }
-      if (e.response && e.response.status >= 400 && e.response.status < 500) {
-        log.error(e.response.data.message)
+      if (e.response) {
+        const {message, error} = e.response.data
+        log.error(message || error)
         return
       }
       throw e
     } finally {
       spinner.stop()
     }
-    log.info(`Published app ${appId} successfully at ${account}`)
+
+    log.info(`Build finished successfully in ${formatNano(time)}`)
+    log.info(`Published app ${appId} at ${account}`)
   }
 
   const publishApps = (paths: string[], tag: string, accessor = 0): Bluebird<void | never> => {
@@ -63,6 +54,10 @@ const publisher = (account: string, workspace: string = 'master') => {
     const next = () => accessor < paths.length - 1
       ? publishApps(paths, tag, accessor + 1)
       : Promise.resolve()
+
+    if (manifest.builders['service-js'] || manifest.builders['render']) {
+      return legacyPublishApp(path, tag || automaticTag(manifest.version), manifest).then(next)
+    }
     return publishApp(path, tag || automaticTag(manifest.version), manifest).then(next)
   }
 
@@ -76,6 +71,7 @@ export default (path: string, options) => {
   const workspace = options.w || options.workspace
   const optionPublic = options.p || options.public
   const account = optionPublic ? 'smartcheckout' : registry ? registry : getAccount()
-  const {publishApps} = publisher(account, workspace)
+  const {legacyPublishApp} = legacyPublisher(account, workspace)
+  const {publishApps} = publisher(account, workspace, legacyPublishApp)
   return publishApps(paths, options.tag)
 }

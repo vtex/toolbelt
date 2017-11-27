@@ -27,9 +27,6 @@ import {CommandError} from '../../errors'
 import {createClients} from '../../clients'
 import {isManifestReadable} from '../../manifest'
 
-export const id = (manifest: Manifest): string =>
-  `${manifest.vendor}.${manifest.name}@${manifest.version}`
-
 export const pathToFileObject = (root = process.cwd()) => (path: string): BatchStream =>
   ({path, content: createReadStream(join(root, path))})
 
