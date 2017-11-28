@@ -82,7 +82,7 @@ export default async (options) => {
   await validateAppAction()
   const manifest = await getManifest()
 
-  if (manifest.builders['service-js'] || manifest.builders['render']) {
+  if (manifest.builders['render'] || manifest.name === 'builder-hub') {
     return legacyLink(options)
   }
 
