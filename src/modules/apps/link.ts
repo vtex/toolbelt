@@ -82,7 +82,9 @@ export default async (options) => {
   await validateAppAction()
   const manifest = await getManifest()
 
-  if (manifest.builders['render'] || manifest.name === 'builder-hub') {
+  if (manifest.builders['render']
+    || manifest.builders['functions-ts']
+    || manifest.name === 'builder-hub') {
     return legacyLink(options)
   }
 
@@ -111,7 +113,18 @@ export default async (options) => {
 
   log.info(`Linking app ${appId}`)
 
-  await performInitialLink()
+  try {
+    await performInitialLink()
+  } catch (e) {
+    if (e.response) {
+      const {data} = e.response
+      if (data.code === 'routing_error' && /app_not_found/.test(data.message)) {
+        unlisten()
+        return log.error('Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)')
+      }
+    }
+    throw e
+  }
 
   await watchAndSendChanges(appId, builder, performInitialLink)
 
