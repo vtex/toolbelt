@@ -75,6 +75,9 @@ export const onEvent = (ctx: Context, sender: string, keys: string[], callback: 
 export const logAll = (context: Context, logLevel, id) => {
   let previous = ''
   return onLog(context, logLevel, withId(id, true, ({sender, level, body: {message, code}}: Message) => {
+    if (!(message || code)) {
+      return // Ignore logs without message or code.
+    }
     const suffix = sender.startsWith(id) ? '' : ' ' + chalk.gray(sender)
     const formatted = (message || code || '').replace(/\n\s*$/, '') + suffix
     if (previous !== formatted) {
