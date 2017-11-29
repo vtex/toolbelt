@@ -78,9 +78,11 @@ const onError = e => {
       if (message) {
         log.error('Message:', message)
       } else {
-        log.error(data)
+        log.error('Raw error:', {
+          data,
+          source,
+        })
       }
-      log.debug(source)
     } else {
       log.error('Oops! There was an unexpected error:')
       log.error(e.read ? e.read().toString('utf8') : data)
