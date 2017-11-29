@@ -8,7 +8,7 @@ import * as inquirer from 'inquirer'
 import log from '../../logger'
 import {writeManifest} from './utils'
 
-const choices = ['render', 'service', 'functions']
+const choices = ['react', 'service', 'functions']
 const {mapSeries} = Bluebird
 
 const currentFolderName = process.cwd().replace(/.*\//, '')

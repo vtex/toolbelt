@@ -18,16 +18,16 @@ const addBuilder = (manifest: Manifest, builder: string, version: string): Manif
 }
 
 const versions = {
-  render: '4.x',
+  react: '0.x',
   service: '1.x',
   functions: '0.x',
 }
 
 const structures: {[name: string]: Structure} = {
-  render: [
+  react: [
     {
       type: 'folder',
-      name: 'render',
+      name: 'react',
       content: [
         {
           type: 'file',
@@ -47,14 +47,14 @@ export default function HelloWorld () {
           type: 'file',
           name: 'render.json',
           content: JSON.stringify({
-            "extensions": {
-              "index": {
-                "component": "./index.js",
-                "route": {
-                  "path": "/index"
-                }
-              }
-            }
+            extensions: {
+              index: {
+                component: './index.js',
+                route: {
+                  path: '/index',
+                },
+              },
+            },
           }, null, 2),
         },
       ],

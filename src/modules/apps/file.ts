@@ -16,7 +16,7 @@ const defaultIgnored = [
   'node_modules/**',
 ]
 
-const services = ['render', 'masterdata', 'service']
+const services = ['react', 'render', 'masterdata', 'service']
 
 const safeFolder = folder => {
   if (folder && services.indexOf(folder) === -1) {
