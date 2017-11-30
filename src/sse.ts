@@ -41,7 +41,7 @@ const createEventSource = (source: string) =>
   })
 
 const parseKeyToQueryParameter = (keys: string[]): string => {
-  let urlQueryParameters = ""
+  let urlQueryParameters = ''
   forEach(key => {
     urlQueryParameters += `&keys[]=${key}`
   }, keys)
@@ -88,7 +88,7 @@ export const logAll = (context: Context, logLevel, id) => {
 }
 
 export const onAuth = (account: string, workspace: string, state: string): Promise<string> => {
-  const source = `https://${workspace}--${account}.myvtex.com/_toolbelt/sse/${state}`
+  const source = `https://${workspace}--${account}.myvtex.com/_v/auth-server/v1/sse/${state}`
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
     es.onmessage = (msg: MessageJSON) => {
