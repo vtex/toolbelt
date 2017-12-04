@@ -53,7 +53,7 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
     builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length)).catch(initialLinkRequired)
   }, 50)
 
-  const watcher = chokidar.watch(['*/**', 'manifest.json'], {
+  const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
     cwd: root,
     persistent: true,
     ignoreInitial: true,
