@@ -56,8 +56,7 @@ const publisher = (account: string, workspace: string = 'master', legacyPublishA
       : Promise.resolve()
 
     if (manifest.builders['render']
-      || manifest.builders['functions-ts']
-      || manifest.name === 'builder-hub') {
+      || manifest.builders['functions-ts']) {
       return legacyPublishApp(path, tag || automaticTag(manifest.version), manifest).then(next)
     }
     return publishApp(path, tag || automaticTag(manifest.version), manifest).then(next)

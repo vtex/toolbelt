@@ -83,8 +83,7 @@ export default async (options) => {
   const manifest = await getManifest()
 
   if (manifest.builders['render']
-    || manifest.builders['functions-ts']
-    || manifest.name === 'builder-hub') {
+    || manifest.builders['functions-ts']) {
     return legacyLink(options)
   }
 
