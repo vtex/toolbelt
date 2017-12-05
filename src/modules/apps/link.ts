@@ -30,6 +30,17 @@ const pathToChange = (path: string, remove?: boolean): Change => ({
   content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
 })
 
+const checkBuildFailed = (e) => {
+  if (e.response) {
+    const {data, status} = e.response
+    if (status === 400 && data.code === 'build_failed') {
+      log.error(`App build failed. Waiting for changes...`)
+      return true
+    }
+  }
+  throw e
+}
+
 const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   const changeQueue: Change[] = []
 
@@ -50,7 +61,9 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   }
 
   const sendChanges = debounce(() => {
-    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length)).catch(initialLinkRequired)
+    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
+    .catch(initialLinkRequired)
+    .catch(checkBuildFailed)
   }, 50)
 
   const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
@@ -122,7 +135,9 @@ export default async (options) => {
         return log.error('Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)')
       }
     }
-    throw e
+    if (!checkBuildFailed(e)) {
+      throw e
+    }
   }
 
   await watchAndSendChanges(appId, builder, performInitialLink)
