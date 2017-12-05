@@ -54,7 +54,7 @@ export const withId = (id: string, router: boolean, callback: Function) => (msg:
   }
 }
 
-export const onLog = (ctx: Context, logLevel: string, callback: (message: Message) => void): Function => {
+export const onLog = (ctx: Context, logLevel: string, callback: (message: Message) => void): any => {
   const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)

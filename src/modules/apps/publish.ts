@@ -10,6 +10,7 @@ import {toAppLocator} from '../../locator'
 import {pathToFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
 import {getAccount} from '../../conf'
+import {logAll} from '../../sse'
 import {formatNano} from '../utils'
 import {legacyPublisher} from './legacyPublish'
 
@@ -55,11 +56,13 @@ const publisher = (account: string, workspace: string = 'master', legacyPublishA
       ? publishApps(paths, tag, accessor + 1)
       : Promise.resolve()
 
+    const unlisten = logAll({account, workspace}, log.level, `${manifest.vendor}.${manifest.name}`)
+
     if (manifest.builders['render']
       || manifest.builders['functions-ts']) {
-      return legacyPublishApp(path, tag || automaticTag(manifest.version), manifest).then(next)
+      return legacyPublishApp(path, tag || automaticTag(manifest.version), manifest).finally(unlisten).then(next)
     }
-    return publishApp(path, tag || automaticTag(manifest.version), manifest).then(next)
+    return publishApp(path, tag || automaticTag(manifest.version), manifest).finally(unlisten).then(next)
   }
 
   return {publishApp, publishApps}
