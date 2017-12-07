@@ -20,7 +20,6 @@ const addBuilder = (manifest: Manifest, builder: string, version: string): Manif
 const versions = {
   react: '0.x',
   service: '1.x',
-  functions: '0.x',
 }
 
 const structures: {[name: string]: Structure} = {
@@ -92,22 +91,6 @@ export default function HelloWorld () {
             },
           }
           , null, 2),
-        },
-      ],
-    },
-  ],
-  functions: [
-    {
-      type: 'folder',
-      name: 'functions',
-      content: [
-        {
-          type: 'file',
-          name: 'index.js',
-          content: `export default function (args, context, callback) {
-  callback(null, 'hello world!')
-}
-`,
         },
       ],
     },
