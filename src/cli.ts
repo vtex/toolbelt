@@ -8,6 +8,7 @@ import 'any-promise/register/bluebird'
 import {find, run as unboundRun, MissingRequiredArgsError, CommandNotFoundError} from 'findhelp'
 import * as path from 'path'
 
+import * as pkg from '../package.json'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
@@ -40,6 +41,10 @@ if (process.env.NODE_ENV === 'development') {
 // Show update notification if newer version is available
 notify()
 
+const logToolbeltVersion = () => {
+  log.debug(`Toolbelt version: ${pkg.version}`)
+}
+
 const checkLogin = args => {
   const first = args[0]
   const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init']
@@ -51,6 +56,8 @@ const checkLogin = args => {
 
 const main = async () => {
   const args = process.argv.slice(2)
+
+  await logToolbeltVersion()
 
   await checkLogin(args)
 
