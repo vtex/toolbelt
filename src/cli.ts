@@ -57,7 +57,7 @@ const checkLogin = args => {
 const main = async () => {
   const args = process.argv.slice(2)
 
-  await logToolbeltVersion()
+  logToolbeltVersion()
 
   await checkLogin(args)
 
