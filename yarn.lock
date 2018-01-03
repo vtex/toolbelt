@@ -1813,6 +1813,10 @@ extend@~3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/extend/-/extend-3.0.1.tgz#a755ea7bc1adfcc5a31ce7e762dbaadc5e636444"
 
+extendable-error@^0.1.5:
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/extendable-error/-/extendable-error-0.1.5.tgz#122308a7097bc89a263b2c4fbf089c78140e3b6d"
+
 external-editor@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/external-editor/-/external-editor-2.0.1.tgz#4c597c6c88fa6410e41dbbaa7b1be2336aa31095"

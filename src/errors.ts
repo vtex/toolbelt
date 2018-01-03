@@ -1,4 +1,4 @@
-import ExtendableError from 'es6-error/lib/index.ts.js'
+import ExtendableError from 'extendable-error'
 
 export class CommandError extends ExtendableError {
   public message
