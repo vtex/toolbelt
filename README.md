@@ -87,13 +87,13 @@ you are logged in visible at your command prompt it is achievable by running the
 command:
 
 ```sh
-echo "source $(npm get prefix)/node_modules/vtex/scripts/prompt.bash" >> .bashrc
+echo "source $(npm root -g)/vtex/scripts/prompt.bash" >> ~/.bashrc
 ```
 
 Or, similarly, if you are a _zsh_ user:
 
 ```sh
-echo "source $(npm get prefix)/node_modules/vtex/scripts/prompt.bash" >> .zshrc
+echo "source $(npm root -g)/vtex/scripts/prompt.bash" >> ~/.zshrc
 ```
 
 Disclaimer: _fish_ is not yet supported.
