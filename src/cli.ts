@@ -84,6 +84,9 @@ const onError = e => {
       log.error('API:', status, statusText)
       if (message) {
         log.error('Message:', message)
+        if (isVerbose) {
+          log.debug('Raw error:', data)
+        }
       } else {
         log.error('Raw error:', {
           data,
