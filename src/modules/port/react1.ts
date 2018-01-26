@@ -44,7 +44,7 @@ export default async () => {
 
     if (component) {
       extensions[key] = {
-        component: component.replace('./', ''),
+        component: component.replace('./', '').replace('.js', ''),
         props: settings,
       }
     }
