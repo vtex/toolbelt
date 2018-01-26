@@ -287,10 +287,6 @@ export default {
   init: {
     description: 'Create basic files and folders for your VTEX app',
     handler: './init',
-    render: {
-      description: 'Create a new render bootstrap project',
-      handler: './init/render',
-    },
   },
   infra: {
     list: {
