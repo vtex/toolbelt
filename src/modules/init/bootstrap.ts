@@ -8,18 +8,21 @@ import log from '../../logger'
 import {writeManifest} from './utils'
 import {manifestPath} from '../../manifest'
 
-const addBuilder = (manifest: Manifest, builder: string, version: string): Manifest => {
+const addBuilder = (manifest: Manifest, builder: string): Manifest => {
   return {
     ...manifest,
-    builders: merge(manifest.builders || {}, {
-      [builder]: version,
-    }),
+    builders: merge(manifest.builders || {}, buildersForApp[builder]),
   }
 }
 
-const versions = {
-  react: '0.x',
-  service: '1.x',
+const buildersForApp = {
+  react: {
+    pages: '0.x',
+    react: '1.x',
+  },
+  service: {
+    service: '1.x',
+  },
 }
 
 const structures: {[name: string]: Structure} = {
@@ -42,16 +45,24 @@ export default function HelloWorld () {
 }
 `,
         },
+      ],
+    },
+    {
+      type: 'folder',
+      name: 'pages',
+      content: [
         {
           type: 'file',
-          name: 'render.json',
+          name: 'pages.json',
           content: JSON.stringify({
+            pages: {
+              index: {
+                path: '/index',
+              },
+            },
             extensions: {
               index: {
-                component: './index.js',
-                route: {
-                  path: '/index',
-                },
+                component: 'index',
               },
             },
           }, null, 2),
@@ -136,9 +147,8 @@ export default async (builder: string) => {
       }
     }
 
-    const version = versions[builder]
-    log.debug(`Adding ${builder}@${version} builder to manifest`)
-    await writeManifest(addBuilder(manifest, builder, version))
+    log.debug(`Adding ${builder} builder to manifest`)
+    await writeManifest(addBuilder(manifest, builder))
 
     log.debug(`Creating ${builder} folder structure`)
 
