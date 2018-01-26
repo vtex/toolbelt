@@ -25,20 +25,16 @@ export default async () => {
 
   forEachObjIndexed((val: any, key) => {
     const {
-      route: {
-        path,
-        auth,
-      },
+      route,
       component,
       theme,
       settings,
     } = val
 
-    if (path) {
+    if (route && route.path) {
       pages[key] = {
-        path,
-        auth,
-        theme,
+        ...route,
+        theme: theme.replace('./', '').replace('.css', ''),
       }
     }
 
