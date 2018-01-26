@@ -102,5 +102,5 @@ export const appsLastVersion = (app: string): Bluebird<string | never> => {
 }
 
 export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
-  return manifest.builders["service-js"]
+  return !!manifest.builders['service-js']
 }

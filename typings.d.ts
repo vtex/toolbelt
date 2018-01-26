@@ -19,7 +19,9 @@ interface Manifest {
   vendor?: string,
   version?: string,
   dependencies?: {},
-  builders?: {},
+  builders?: {
+    [builder: string]: string
+  },
   settingsSchema?: {},
   description?: string,
   categories?: string[],
