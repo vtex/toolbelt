@@ -34,13 +34,13 @@ export default async () => {
     if (route && route.path) {
       pages[key] = {
         ...route,
-        theme: theme.replace('./', '').replace('.css', ''),
+        theme: theme && theme.replace('./', '').replace('.css', ''),
       }
     }
 
     if (component) {
       extensions[key] = {
-        component: component.replace('./', '').replace('.js', ''),
+        component: component && component.replace('./', '').replace('.js', ''),
         props: settings,
       }
     }
