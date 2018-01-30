@@ -5,6 +5,7 @@ import * as streamToString from 'get-stream'
 import log from '../../logger'
 import {getAccount, getWorkspace, getToken} from '../../conf'
 import {toMajorRange} from '../../locator'
+import {region} from '../../env'
 
 const keepAliveDelayMs = 3 * 60 * 1000
 
@@ -85,7 +86,7 @@ function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket:
 export default function startDebuggerTunnel (manifest: Manifest, port: number = 5858): Promise<number> {
   const {name, vendor, version} = manifest
   const majorRange = toMajorRange(version)
-  const endpoint = `ws://${name}.${vendor}.aws-us-east-1.vtex.io/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
+  const endpoint = `ws://${name}.${vendor}.${region}.vtex.io/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
 
   return new Promise((resolve, reject) => {
     const server = net.createServer()
