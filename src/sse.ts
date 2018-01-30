@@ -3,7 +3,7 @@ import * as EventSource from 'eventsource'
 import {compose, forEach} from 'ramda'
 
 import log from './logger'
-import endpoint from './endpoint'
+import {endpoint} from './env'
 import {getToken} from './conf'
 import userAgent from './user-agent'
 import {SSEConnectionError} from './errors'

@@ -1,6 +1,6 @@
 const env = process.env.VTEX_ENV === 'beta' ? 'BETA' : 'STABLE'
 
-export default function endpoint (api = 'api'): string {
+export function endpoint (api = 'api'): string {
   switch (api.toLowerCase()) {
     case 'vtexid':
       return process.env.VTEX_VTEXID_ENDPOINT || env
@@ -13,8 +13,12 @@ export default function endpoint (api = 'api'): string {
     case 'workspaces':
       return process.env.VTEX_WORKSPACES_ENDPOINT
     case 'colossus':
-      return process.env.VTEX_COLOSSUS_ENDPOINT || 'http://colossus.aws-us-east-1.vtex.io'
+      return process.env.VTEX_COLOSSUS_ENDPOINT || `http://colossus.${region()}.vtex.io`
     default:
       return process.env.VTEX_API_ENDPOINT || env
   }
+}
+
+export function region (): string {
+  return process.env.VTEX_REGION || env === 'BETA' ? 'aws-us-east-2' : 'aws-us-east-1'
 }

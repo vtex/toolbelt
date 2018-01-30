@@ -1,6 +1,6 @@
 import {Registry, Apps, Builder, Workspaces, Router, Colossus} from '@vtex/api'
 
-import endpoint from './endpoint'
+import {endpoint} from './env'
 import envTimeout from './timeout'
 import {getAccount, getWorkspace, getToken} from './conf'
 import userAgent from './user-agent'
