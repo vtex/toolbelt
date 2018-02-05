@@ -20,5 +20,5 @@ export function endpoint (api = 'api'): string {
 }
 
 export function region (): string {
-  return process.env.VTEX_REGION || env === 'BETA' ? 'aws-us-east-2' : 'aws-us-east-1'
+  return process.env.VTEX_REGION || (env === 'BETA' ? 'aws-us-east-2' : 'aws-us-east-1')
 }
