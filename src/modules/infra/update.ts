@@ -8,9 +8,9 @@ import * as Bluebird from 'bluebird'
 
 import log from '../../logger'
 import {router} from '../../clients'
+import {region} from '../../env'
 import {getTag, diffVersions} from './utils'
 
-const VERSIONS_REGION = 'aws-us-east-1'
 const {listAvailableServices, listInstalledServices, installService} = router
 
 const promptUpdate = (): Bluebird<boolean> =>
@@ -45,7 +45,7 @@ const logVersionMap = ({latest, update}: InfraVersionMap): void => {
 const createVersionMap = (availableRes: InfraAvailableResources, installedRes: InfraInstalledResources[]): InfraVersionMap =>
   installedRes.reduce((acc, {name, version: currentVersion}) => {
     const tag = getTag(currentVersion)
-    const latestVersion = availableRes[name].versions[VERSIONS_REGION]
+    const latestVersion = availableRes[name].versions[region()]
       .filter(v => getTag(v) === tag)
       .sort(semver.rcompare)[0]
     if (currentVersion !== latestVersion) {

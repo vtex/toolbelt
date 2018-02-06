@@ -17,6 +17,7 @@ import startDebuggerTunnel from './debugger'
 import * as chalk from 'chalk'
 import {watch, listLocalFiles, addChangeContent} from './file'
 import {getAccount, getWorkspace, getToken} from '../../conf'
+import {region} from '../../env'
 
 const {link} = apps
 const root = process.cwd()
@@ -59,7 +60,7 @@ const cleanCache = (manifest: Manifest): Bluebird<void> => {
 const checkAppStatus = (manifest: Manifest) => {
   const {name, vendor, version} = manifest
   const http = axios.create({
-    baseURL: `http://${name}.${vendor}.aws-us-east-1.vtex.io/${getAccount()}/${getWorkspace()}`,
+    baseURL: `http://${name}.${vendor}.${region()}.vtex.io/${getAccount()}/${getWorkspace()}`,
     headers: {
       Authorization: getToken(),
     },

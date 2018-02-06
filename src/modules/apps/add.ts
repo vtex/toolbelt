@@ -22,6 +22,7 @@ import {
   wildVersionPattern,
 } from '../../manifest'
 import {CommandError} from '../../errors'
+import {region} from '../../env'
 
 import {parseArgs, appsLatestVersion, pickLatestVersion, wildVersionByMajor, handleError} from './utils'
 
@@ -31,7 +32,7 @@ const invalidAppMessage =
 
 const infraLatestVersion = (app: string): Bluebird<string | never> =>
   router.getAvailableVersions(app)
-    .then<string[]>(path(['versions', 'aws-us-east-1']))
+    .then<string[]>(path(['versions', region()]))
     .then(pickLatestVersion)
     .then(wildVersionByMajor)
     .catch(handleError(app))

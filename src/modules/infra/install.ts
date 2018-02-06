@@ -7,9 +7,9 @@ import {curry, prop, path} from 'ramda'
 
 import log from '../../logger'
 import {router} from '../../clients'
+import {region} from '../../env'
 import {getTag, diffVersions} from './utils'
 
-const VERSIONS_REGION = 'aws-us-east-1'
 const {getAvailableVersions, listInstalledServices, installService} = router
 
 const promptInstall = (): Bluebird<boolean> =>
@@ -82,7 +82,7 @@ export default (name: string) => {
   const spinner = ora('Getting versions').start()
   return Promise.all([
     getInstalledVersion(service),
-    getAvailableVersions(service).then(path(['versions', VERSIONS_REGION])),
+    getAvailableVersions(service).then(path(['versions', region()])),
   ])
   .tap(() => spinner.stop())
   .spread(getNewVersion(suffix))
