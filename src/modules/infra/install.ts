@@ -7,7 +7,6 @@ import {curry, prop, path} from 'ramda'
 
 import log from '../../logger'
 import {router} from '../../clients'
-import {region} from '../../env'
 import {getTag, diffVersions} from './utils'
 
 const {getAvailableVersions, listInstalledServices, installService} = router
@@ -80,9 +79,13 @@ const getInstalledVersion = (service: string): Bluebird<string> =>
 export default (name: string) => {
   const [service, suffix] = name.split('@')
   const spinner = ora('Getting versions').start()
+  // We force getting versions from the aws-us-east-1 region as currently all
+  // regions use the same ECR on us-east-1 region. This API is old and weird,
+  // as it shouldn't return the regions in the response if I'm already querying
+  // a single region. Only change to use `env.region()` when router fixed.
   return Promise.all([
     getInstalledVersion(service),
-    getAvailableVersions(service).then(path(['versions', region()])),
+    getAvailableVersions(service).then(path(['versions', 'aws-us-east-1'])),
   ])
   .tap(() => spinner.stop())
   .spread(getNewVersion(suffix))
