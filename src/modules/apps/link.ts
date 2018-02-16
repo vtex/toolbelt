@@ -55,7 +55,7 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
     if (data && data.code && data.code === 'initial_link_required') {
       log.warn('Initial link requested by builder')
       performInitialLink()
-      return
+      return null
     }
     throw e
   }
