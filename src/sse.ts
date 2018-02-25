@@ -22,13 +22,13 @@ const parseMessage = (msg: MessageJSON): Message => {
     sender,
     subject,
     level,
-    body: {message, code},
+    body,
   }: Message = JSON.parse(msg.data)
   return {
     sender,
     subject,
     level: levelAdapter[level] || level,
-    body: {message, code},
+    body,
   }
 }
 
@@ -64,7 +64,7 @@ export const onLog = (ctx: Context, logLevel: string, callback: (message: Messag
 }
 
 export const onEvent = (ctx: Context, sender: string, keys: string[], callback: (message: Message) => void): Function => {
-  const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/events?sender=${sender}&subject=-${parseKeyToQueryParameter(keys)}`
+  const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/events?sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
   es.onmessage = compose(callback, parseMessage)
