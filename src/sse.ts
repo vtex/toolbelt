@@ -1,6 +1,6 @@
 import * as chalk from 'chalk'
 import * as EventSource from 'eventsource'
-import {compose, forEach} from 'ramda'
+import {compose, forEach, path, pathOr} from 'ramda'
 
 import log from './logger'
 import {endpoint} from './env'
@@ -48,33 +48,47 @@ const parseKeyToQueryParameter = (keys: string[]): string => {
   return urlQueryParameters
 }
 
-export const withId = (id: string, router: boolean, callback: Function) => (msg: Message) => {
-  if ((id && msg.subject.startsWith(id)) || (router && msg.subject.startsWith('-'))) {
+const matchSubject = (msg: Message, subject: string) => {
+  return msg.subject.startsWith(subject)
+    || msg.subject.startsWith('-')
+    && pathOr('', ['body', 'subject'], msg).startsWith(subject)
+}
+
+const hasNoSubject = (msg: Message) => {
+  return msg.subject.startsWith('-') && !path(['body', 'subject'], msg)
+}
+
+const filterSubject = (subject: string, logAny: boolean = false) => (msg: Message) => {
+  return (matchSubject(msg, subject) || logAny && hasNoSubject(msg)) && msg
+}
+
+const maybeCall = (callback: (message: Message) => void) => (msg: Message) => {
+  if (msg) {
     callback(msg)
   }
 }
 
-export const onLog = (ctx: Context, logLevel: string, callback: (message: Message) => void): any => {
+const onLog = (ctx: Context, subject: string, logLevel: string, callback: (message: Message) => void): Unlisten => {
   const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)
-  es.onmessage = compose(callback, parseMessage)
+  es.onmessage = compose(maybeCall(callback), filterSubject(subject, true), parseMessage)
   es.onerror = onError(`${logLevel} log`)
   return es.close.bind(es)
 }
 
-export const onEvent = (ctx: Context, sender: string, keys: string[], callback: (message: Message) => void): Function => {
+export const onEvent = (ctx: Context, sender: string, subject: string, keys: string[], callback: (message: Message) => void): Unlisten => {
   const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/events?sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
-  es.onmessage = compose(callback, parseMessage)
+  es.onmessage = compose(maybeCall(callback), filterSubject(subject), parseMessage)
   es.onerror = onError('event')
   return es.close.bind(es)
 }
 
-export const logAll = (context: Context, logLevel, id) => {
+export const logAll = (context: Context, logLevel: string, id: string) => {
   let previous = ''
-  return onLog(context, logLevel, withId(id, true, ({sender, level, body: {message, code}}: Message) => {
+  return onLog(context, id, logLevel, ({sender, level, body: {message, code}}: Message) => {
     if (!(message || code)) {
       return // Ignore logs without message or code.
     }
@@ -84,7 +98,7 @@ export const logAll = (context: Context, logLevel, id) => {
       previous = formatted
       log.log(level, formatted)
     }
-  }))
+  })
 }
 
 export const onAuth = (account: string, workspace: string, state: string): Promise<string> => {

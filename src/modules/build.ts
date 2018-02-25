@@ -13,22 +13,19 @@ interface BuildTrigger<T> {
   (): Promise<T>
 }
 
-interface Unlisten {
-  (): void
-}
-
 interface ListenResponse<T> {
   response: T,
   unlisten: Unlisten
 }
 
-type BuildEvent = | 'logs' | 'build.status'
+type BuildEvent = 'logs' | 'build.status'
 
 const allEvents: BuildEvent[] = ['logs', 'build.status']
 
 const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
-  const unlistenLogs = logAll(ctx, log.level, appOrKey.split('@')[0])
-  const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', ['build.status'], (message) => callback('build.status', message))
+  const [subject] = appOrKey.split('@')
+  const unlistenLogs = logAll(ctx, log.level, subject)
+  const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', subject, ['build.status'], message => callback('build.status', message))
   const unlistenMap: Record<BuildEvent, Function> = {
     'build.status': unlistenBuild,
     logs: unlistenLogs,
