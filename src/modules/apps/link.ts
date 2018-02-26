@@ -29,8 +29,22 @@ const pathToChange = (path: string, remove?: boolean): Change => ({
   content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
 })
 
-const watchAndSendChanges = (appId, builder: Builder) => {
+const warnAndLinkFromStart = (performInitialLink) => {
+  log.warn('Initial link requested by builder')
+  performInitialLink()
+  return null
+}
+
+const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   const changeQueue: Change[] = []
+
+  const onInitialLinkRequired = e => {
+    const data = e.response && e.response.data
+    if (data && data.code && data.code === 'initial_link_required') {
+      return warnAndLinkFromStart(performInitialLink)
+    }
+    throw e
+  }
 
   const queueChange = (path: string, remove?: boolean) => {
     console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
@@ -40,6 +54,7 @@ const watchAndSendChanges = (appId, builder: Builder) => {
 
   const sendChanges = debounce(() => {
     builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
+    .catch(onInitialLinkRequired)
   }, 50)
 
   const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
@@ -102,14 +117,8 @@ export default async (options) => {
   }
 
   const onError = {
-    build_failed: () => {
-      log.error(`App build failed. Waiting for changes...`)
-    },
-    initial_link_required: () => {
-      log.warn('Initial link requested by builder')
-      performInitialLink()
-      return null
-    },
+    build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
+    initial_link_required: () => warnAndLinkFromStart(performInitialLink),
   }
 
   log.info(`Linking app ${appId}`)
@@ -140,5 +149,5 @@ export default async (options) => {
 
   const debuggerPort = await startDebuggerTunnel(manifest)
   log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
-  await watchAndSendChanges(appId, builder)
+  await watchAndSendChanges(appId, builder, performInitialLink)
 }
