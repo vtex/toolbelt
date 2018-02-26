@@ -16,6 +16,10 @@ const addBuilder = (manifest: Manifest, builder: string): Manifest => {
 }
 
 const buildersForApp = {
+  graphql: {
+    graphql: '1.x',
+    node: '3.x',
+  },
   react: {
     pages: '0.x',
     react: '1.x',
@@ -26,6 +30,83 @@ const buildersForApp = {
 }
 
 const structures: {[name: string]: Structure} = {
+  graphql: [
+    {
+      type: 'folder',
+      name: 'graphql',
+      content: [
+        {
+          type: 'file',
+          name: 'schema.graphql',
+          content: `
+# Default GraphQL Type. You can learn more about GraphQL here: http://graphql.org/learn/
+type MyProductType {
+  name: String!
+}
+
+# VTEX IO autogenerates the CRUD queries for this type
+type HelloAutopersisted @autopersist {
+  id: ID! # NOTE: Autopersisted types must have an ID
+  author: String @searchable # NOTE: You can also search by the author
+  name: String # NOTE: You can NOT search by the name because it has no @searchable directive
+}
+
+# Specifies the available queries
+type Query {
+  getMeAProductName: MyProductType!
+}
+
+type Mutation {
+  changeProductName(targetName: String!): MyProductType
+}
+          `,
+        },
+      ],
+    },
+    {
+      type: 'folder',
+      name: 'node',
+      content: [
+        {
+          type: 'folder',
+          name: 'graphql',
+          content: [
+            {
+              type: 'file',
+              name: 'index.ts',
+              content: `
+/**
+ *  Simple in-memory database
+ */
+const product = {
+  name: 'My awesome product'
+}
+
+/**
+ *  You shoud write your GraphQL resolvers in here.
+ * Resolvers are nothing else than usual node functions, so here you can make
+ * API calls, connect to the database and transform the data in any way you wish
+ */
+export const resolvers = {
+  Query: {
+    getMeAProductName: () => {
+      return product
+    }
+  },
+  Mutation: {
+    changeProductName: (base, variables, ctx) => {
+      const {targetName} = variables
+      product.name = targetName
+      return product
+    }
+  }
+}             `,
+            },
+          ],
+        },
+      ],
+    },
+  ],
   react: [
     {
       type: 'folder',
