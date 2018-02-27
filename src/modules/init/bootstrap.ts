@@ -16,6 +16,10 @@ const addBuilder = (manifest: Manifest, builder: string): Manifest => {
 }
 
 const buildersForApp = {
+  graphql: {
+    graphql: '1.x',
+    node: '3.x',
+  },
   react: {
     pages: '0.x',
     react: '1.x',
@@ -26,6 +30,106 @@ const buildersForApp = {
 }
 
 const structures: {[name: string]: Structure} = {
+  graphql: [
+    {
+      type: 'folder',
+      name: 'graphql',
+      content: [
+        {
+          type: 'file',
+          name: 'schema.graphql',
+          content: `
+# Default GraphQL Type. You can learn more about GraphQL here: http://graphql.org/learn/
+type MyProductType {
+  width: Int
+  length: Int
+  name: String!
+}
+
+# VTEX IO autogenerates the CRUD queries for this type
+type HelloAutopersisted @autopersist {
+  id: ID! # NOTE: Autopersisted types must have an ID
+  author: String @searchable # NOTE: You can also search by the author
+  name: String # NOTE: You can NOT search by the name because it has no @searchable directive
+}
+
+# Specifies the available queries.
+# The resolvers for this query are implemented in here: node/graphql/index.ts
+type Query {
+  getMeAProduct: MyProductType!
+}
+
+# The resolvers for this query are also implemented in here: node/graphql/index.ts
+type Mutation {
+  changeProductName(targetName: String!): MyProductType
+}
+          `,
+        },
+      ],
+    },
+    {
+      type: 'folder',
+      name: 'node',
+      content: [
+        {
+          type: 'file',
+          name: 'package.json',
+          content: `
+{
+  "name": "vendor.app-name",
+  "version": null,
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "lint": "tsc --noEmit && tslint -c tslint.json './**/*.ts'"
+  },
+  "license": "UNLICENSED"
+}
+          `,
+        },
+        {
+          type: 'folder',
+          name: 'graphql',
+          content: [
+            {
+              type: 'file',
+              name: 'index.ts',
+              content: `
+/**
+ *  Simple in-memory database
+ */
+const product = {
+  name: 'My awesome product',
+  width: 120,
+  length: 410
+}
+
+/**
+ * You shoud write your GraphQL resolvers in here.
+ * Resolvers are just usual node functions, so here you can make
+ * API calls, connect to the database and transform the data in
+ * any way you wish. You can learn more about resolvers and its arguments
+ * here: https://www.apollographql.com/docs/graphql-tools/resolvers.html
+ */
+export const resolvers = {
+  Query: {
+    getMeAProduct: (root, args, ctx) => {
+      return product
+    }
+  },
+  Mutation: {
+    changeProductName: (root, args, ctx) => {
+      product.name = args.targetName
+      return product
+    }
+  }
+}             `,
+            },
+          ],
+        },
+      ],
+    },
+  ],
   react: [
     {
       type: 'folder',
