@@ -41,6 +41,8 @@ const structures: {[name: string]: Structure} = {
           content: `
 # Default GraphQL Type. You can learn more about GraphQL here: http://graphql.org/learn/
 type MyProductType {
+  width: Int
+  length: Int
   name: String!
 }
 
@@ -51,11 +53,13 @@ type HelloAutopersisted @autopersist {
   name: String # NOTE: You can NOT search by the name because it has no @searchable directive
 }
 
-# Specifies the available queries
+# Specifies the available queries.
+# The resolvers for this query are implemented in here: node/graphql/index.ts
 type Query {
-  getMeAProductName: MyProductType!
+  getMeAProduct: MyProductType!
 }
 
+# The resolvers for this query are also implemented in here: node/graphql/index.ts
 type Mutation {
   changeProductName(targetName: String!): MyProductType
 }
@@ -68,6 +72,22 @@ type Mutation {
       name: 'node',
       content: [
         {
+          type: 'file',
+          name: 'package.json',
+          content: `
+{
+  "name": "vendor.app-name",
+  "version": null,
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "lint": "tsc --noEmit && tslint -c tslint.json './**/*.ts'"
+  },
+  "license": "UNLICENSED"
+}
+          `,
+        },
+        {
           type: 'folder',
           name: 'graphql',
           content: [
@@ -79,24 +99,27 @@ type Mutation {
  *  Simple in-memory database
  */
 const product = {
-  name: 'My awesome product'
+  name: 'My awesome product',
+  width: 120,
+  length: 410
 }
 
 /**
- *  You shoud write your GraphQL resolvers in here.
- * Resolvers are nothing else than usual node functions, so here you can make
- * API calls, connect to the database and transform the data in any way you wish
+ * You shoud write your GraphQL resolvers in here.
+ * Resolvers are just usual node functions, so here you can make
+ * API calls, connect to the database and transform the data in
+ * any way you wish. You can learn more about resolvers and its arguments
+ * here: https://www.apollographql.com/docs/graphql-tools/resolvers.html
  */
 export const resolvers = {
   Query: {
-    getMeAProductName: () => {
+    getMeAProduct: (root, args, ctx) => {
       return product
     }
   },
   Mutation: {
-    changeProductName: (base, variables, ctx) => {
-      const {targetName} = variables
-      product.name = targetName
+    changeProductName: (root, args, ctx) => {
+      product.name = args.targetName
       return product
     }
   }
