@@ -43,7 +43,7 @@ const createEventSource = (source: string) =>
 const parseKeyToQueryParameter = (keys: string[]): string => {
   let urlQueryParameters = ''
   forEach(key => {
-    urlQueryParameters += `&keys[]=${key}`
+    urlQueryParameters += `&keys=${key}`
   }, keys)
   return urlQueryParameters
 }
