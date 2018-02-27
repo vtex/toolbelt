@@ -15,8 +15,9 @@ const allEvents: BuildEvent[] = ['start', 'success', 'fail', 'timeout', 'logs']
 const flowEvents: BuildEvent[] = ['start', 'success', 'fail']
 
 const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
-  const unlistenLogs = logAll(ctx, log.level, appOrKey.split('@')[0])
-  const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent(ctx, 'vtex.render-builder', [`build.${type}`], (message) => callback(type, message)))
+  const [subject] = appOrKey.split('@')
+  const unlistenLogs = logAll(ctx, log.level, subject)
+  const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent(ctx, 'vtex.render-builder', subject, [`build.${type}`], (message) => callback(type, message)))
   const timer = timeout && setTimeout(() => callback('timeout'), timeout)
   const unlistenMap: Record<BuildEvent, Function> = {
     start: unlistenStart,

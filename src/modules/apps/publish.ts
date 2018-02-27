@@ -1,6 +1,5 @@
 import * as ora from 'ora'
 import {resolve} from 'path'
-import * as Bluebird from 'bluebird'
 import {readFileSync} from 'fs-extra'
 import {prepend, map} from 'ramda'
 
@@ -11,8 +10,9 @@ import {pathToFileObject, parseArgs} from './utils'
 import {listLocalFiles} from './file'
 import {getAccount} from '../../conf'
 import {logAll} from '../../sse'
-import {formatNano} from '../utils'
+import {listenBuild} from '../build'
 import {legacyPublisher} from './legacyPublish'
+import { BuildResult } from '@vtex/api'
 
 const root = process.cwd()
 
@@ -23,46 +23,44 @@ const publisher = (account: string, workspace: string = 'master', legacyPublishA
   const context = {account, workspace, timeout: 60000}
   const {builder} = createClients(context)
 
-  const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
-    const spinner = ora('Publishing app...').start()
-    const appId = toAppLocator(manifest)
-    let time
-
-    try {
-      const paths = await listLocalFiles(appRoot)
-      const filesWithContent = map(pathToFileObject(appRoot), paths)
-      log.debug('Sending files:', '\n' + paths.join('\n'))
-      const {timeNano} = await builder.publishApp(appId, filesWithContent, tag)
-      time = timeNano
-    } catch (e) {
-      if (e.response) {
-        const {message, error} = e.response.data
-        log.error(message || error)
-        return
-      }
-      throw e
-    } finally {
-      spinner.stop()
-    }
-
-    log.info(`Build finished successfully in ${formatNano(time)}`)
-    log.info(`Published app ${appId} at ${account}`)
+  const publishApp = async (appRoot: string, appId: string, tag: string): Promise<BuildResult> => {
+    const paths = await listLocalFiles(appRoot)
+    const filesWithContent = map(pathToFileObject(appRoot), paths)
+    log.debug('Sending files:', '\n' + paths.join('\n'))
+    return await builder.publishApp(appId, filesWithContent, tag)
   }
 
-  const publishApps = (paths: string[], tag: string, accessor = 0): Bluebird<void | never> => {
+  const publishApps = async (paths: string[], tag: string, accessor = 0): Promise<void | never> => {
     const path = resolve(paths[accessor])
     const manifest = JSON.parse(readFileSync(resolve(path, 'manifest.json'), 'utf8'))
+    const pubTag = tag || automaticTag(manifest.version)
     const next = () => accessor < paths.length - 1
       ? publishApps(paths, tag, accessor + 1)
       : Promise.resolve()
 
-    const unlisten = logAll({account, workspace}, log.level, `${manifest.vendor}.${manifest.name}`)
-
     if (manifest.builders['render']
       || manifest.builders['functions-ts']) {
-      return legacyPublishApp(path, tag || automaticTag(manifest.version), manifest).finally(unlisten).then(next)
+      const unlisten = logAll({account, workspace}, log.level, `${manifest.vendor}.${manifest.name}`)
+      await legacyPublishApp(path, pubTag, manifest).finally(unlisten)
+    } else {
+      const appId = toAppLocator(manifest)
+      const oraMessage = ora(`Publishing ${appId} ...`)
+      const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
+      try {
+        const {response} = await listenBuild(appId, () => publishApp(path, appId, pubTag), {waitCompletion: true, context})
+        if (response.code !== 'build.accepted') {
+          spinner.warn(`${appId} was published successfully, but you should update your builder hub to the latest version.`)
+        } else {
+          spinner.succeed(`${appId} was published successfully!`)
+        }
+      } catch (e) {
+        spinner.fail(`Fail to publish ${appId}`)
+        log.error(e.message)
+        throw e
+      }
     }
-    return publishApp(path, tag || automaticTag(manifest.version), manifest).finally(unlisten).then(next)
+
+    await next()
   }
 
   return {publishApp, publishApps}

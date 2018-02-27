@@ -16,6 +16,9 @@ import {getToken} from './conf'
 import {CommandError, SSEConnectionError} from './errors'
 
 global.Promise = Bluebird
+Bluebird.config({
+  cancellation: true,
+})
 
 const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 

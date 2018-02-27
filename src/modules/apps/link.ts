@@ -8,9 +8,7 @@ import {map} from 'ramda'
 
 import {createInterface} from 'readline'
 import log from '../../logger'
-import {currentContext} from '../../conf'
 import {createClients} from '../../clients'
-import {logAll} from '../../sse'
 import {getManifest} from '../../manifest'
 import {toAppLocator} from '../../locator'
 import {pathToFileObject, validateAppAction} from './utils'
@@ -19,6 +17,7 @@ import * as chalk from 'chalk'
 import {listLocalFiles, getIgnoredPaths} from './file'
 import {getAccount, getWorkspace} from '../../conf'
 import {formatNano} from '../utils'
+import {listenBuild} from '../build'
 import legacyLink from './legacyLink'
 
 const root = process.cwd()
@@ -30,19 +29,22 @@ const pathToChange = (path: string, remove?: boolean): Change => ({
   content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
 })
 
-const checkBuildFailed = (e) => {
-  if (e.response) {
-    const {data, status} = e.response
-    if (status === 400 && data.code === 'build_failed') {
-      log.error(`App build failed. Waiting for changes...`)
-      return true
-    }
-  }
-  throw e
+const warnAndLinkFromStart = (performInitialLink) => {
+  log.warn('Initial link requested by builder')
+  performInitialLink()
+  return null
 }
 
 const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   const changeQueue: Change[] = []
+
+  const onInitialLinkRequired = e => {
+    const data = e.response && e.response.data
+    if (data && data.code && data.code === 'initial_link_required') {
+      return warnAndLinkFromStart(performInitialLink)
+    }
+    throw e
+  }
 
   const queueChange = (path: string, remove?: boolean) => {
     console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
@@ -50,20 +52,9 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
     sendChanges()
   }
 
-  const initialLinkRequired = e => {
-    const data = e.response && e.response.data
-    if (data && data.code && data.code === 'initial_link_required') {
-      log.warn('Initial link requested by builder')
-      performInitialLink()
-      return null
-    }
-    throw e
-  }
-
   const sendChanges = debounce(() => {
     builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
-    .catch(initialLinkRequired)
-    .catch(checkBuildFailed)
+    .catch(onInitialLinkRequired)
   }, 50)
 
   const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
@@ -102,9 +93,14 @@ export default async (options) => {
   }
 
   const appId = toAppLocator(manifest)
-  const unlisten = logAll(currentContext, log.level, `${manifest.vendor}.${manifest.name}`)
   const context = {account: getAccount(), workspace: getWorkspace(), timeout: 60000}
   const {builder} = createClients(context)
+
+  if (options.c || options.clean) {
+    log.info('Requesting to clean cache in builder.')
+    const {timeNano} = await builder.clean(appId)
+    log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
+  }
 
   const performInitialLink = async () => {
     const paths = await listLocalFiles(root)
@@ -114,43 +110,44 @@ export default async (options) => {
     paths.forEach(p => log.debug(p))
     log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
 
-    const {timeNano} = await builder.linkApp(appId, filesWithContent)
-    log.info(`Build finished successfully in ${formatNano(timeNano)}`)
+    const {code} = await builder.linkApp(appId, filesWithContent)
+    if (code !== 'build.accepted') {
+      throw new Error('Please, update your builder-hub to the latest version!')
+    }
   }
 
-  if (options.c || options.clean) {
-    log.info('Requesting to clean cache in builder.')
-    const {timeNano} = await builder.clean(appId)
-    log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
+  const onError = {
+    build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
+    initial_link_required: () => warnAndLinkFromStart(performInitialLink),
   }
 
   log.info(`Linking app ${appId}`)
 
+  let unlistenBuild
   try {
-    await performInitialLink()
+    const {unlisten} = await listenBuild(appId, performInitialLink, {waitCompletion: false, onError})
+    unlistenBuild = unlisten
   } catch (e) {
     if (e.response) {
       const {data} = e.response
       if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
-        unlisten()
         return log.error('Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)')
       }
     }
-    if (!checkBuildFailed(e)) {
-      throw e
-    }
+    throw e
   }
-
-  await watchAndSendChanges(appId, builder, performInitialLink)
-
-  const debuggerPort = await startDebuggerTunnel(manifest)
-  log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
 
   createInterface({input: process.stdin, output: process.stdout})
     .on('SIGINT', () => {
-      unlisten()
+      if (unlistenBuild) {
+        unlistenBuild()
+      }
       log.info('Your app is still in development mode.')
       log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
       process.exit()
     })
+
+  const debuggerPort = await startDebuggerTunnel(manifest)
+  log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
+  await watchAndSendChanges(appId, builder, performInitialLink)
 }

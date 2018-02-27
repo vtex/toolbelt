@@ -92,7 +92,13 @@ interface Message {
   body: {
     code: string,
     message: string,
+    details: any,
+    subject?: string,
   },
+}
+
+interface Unlisten {
+  (): void
 }
 
 interface MessageJSON {
