@@ -15,6 +15,8 @@ import {
   saveAccount,
   getWorkspace,
   saveWorkspace,
+  Environment,
+  saveEnvironment,
 } from '../../conf'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [getAccount(), getLogin(), getWorkspace()]
@@ -67,8 +69,14 @@ const saveCredentials = (login: string, account: string, token: string, workspac
 const authAndSave = async (account, workspace, optionWorkspace): Promise<{login: string, token: string}> => {
   const token = await startUserAuth(account, optionWorkspace ? workspace : 'master')
   const decodedToken = jwt.decode(token)
-  const login = decodedToken.sub
+  const login: string = decodedToken.sub
   saveCredentials(login, account, token, workspace)
+  if (login.endsWith('@vtex.com.br')) {
+    log.info(`Using staging (beta) IO environment due to VTEX domain. Switch back with ${chalk.gray('vtex config set env prod')}`)
+    saveEnvironment(Environment.Staging)
+  } else {
+    saveEnvironment(Environment.Production)
+  }
   return {login, token}
 }
 
