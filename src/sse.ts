@@ -3,7 +3,7 @@ import * as EventSource from 'eventsource'
 import {compose, forEach, path, pathOr} from 'ramda'
 
 import log from './logger'
-import {endpoint} from './env'
+import {publicEndpoint, endpoint} from './env'
 import {getToken} from './conf'
 import userAgent from './user-agent'
 import {SSEConnectionError} from './errors'
@@ -102,7 +102,7 @@ export const logAll = (context: Context, logLevel: string, id: string) => {
 }
 
 export const onAuth = (account: string, workspace: string, state: string): Promise<string> => {
-  const source = `https://${workspace}--${account}.myvtex.com/_v/auth-server/v1/sse/${state}`
+  const source = `https://${workspace}--${account}.${publicEndpoint()}/_v/auth-server/v1/sse/${state}`
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
     es.onmessage = (msg: MessageJSON) => {

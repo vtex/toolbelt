@@ -27,3 +27,7 @@ export function region (): string {
   return process.env.VTEX_REGION ||
     (env === conf.Environment.Staging ? 'aws-us-east-2' : 'aws-us-east-1')
 }
+
+export function publicEndpoint (): string {
+  return env === conf.Environment.Staging ? 'myvtexdev.com' : 'myvtex.com'
+}

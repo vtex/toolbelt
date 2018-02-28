@@ -9,6 +9,7 @@ import {pathToFileObject} from './utils'
 import {listLocalFiles} from './file'
 import {listenBuild} from '../utils'
 import {BuildFailError} from '../../errors'
+import {publicEndpoint} from '../../env'
 
 const routes = {
   Publish: '_v/publish',
@@ -20,7 +21,7 @@ class LegacyBuilder {
   constructor (opts: any) {
     const {account, workspace} = opts
     this.http = axios.create({
-      baseURL: `http://${workspace}--${account}.myvtex.com`,
+      baseURL: `http://${workspace}--${account}.${publicEndpoint()}`,
       headers: {
         'User-Agent': 'vtex.toolbelt',
       },
