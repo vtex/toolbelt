@@ -1,7 +1,7 @@
-import {logAll, onEvent} from '../sse'
 import {currentContext} from '../conf'
-import log from '../logger'
 import {BuildFailError} from '../errors'
+import log from '../logger'
+import {logAll, onEvent} from '../sse'
 
 interface ListeningOptions {
   context?: Context,
@@ -9,9 +9,7 @@ interface ListeningOptions {
   onError?: {[code: string]: Function},
 }
 
-interface BuildTrigger<T> {
-  (): Promise<T>
-}
+type BuildTrigger<T> = () => Promise<T>
 
 interface ListenResponse<T> {
   response: T,

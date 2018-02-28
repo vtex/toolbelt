@@ -1,4 +1,4 @@
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import * as semver from 'semver'
 import * as Table from 'cli-table'
 import * as Bluebird from 'bluebird'

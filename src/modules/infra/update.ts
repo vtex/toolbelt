@@ -1,5 +1,5 @@
 import * as Bluebird from 'bluebird'
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import * as ora from 'ora'
 import * as pad from 'pad'

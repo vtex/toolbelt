@@ -1,14 +1,14 @@
-import {prop} from 'ramda'
-import * as chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
-import * as opn from 'opn'
+import chalk from 'chalk'
+import * as inquirer from 'inquirer'
 import * as jwt from 'jsonwebtoken'
+import * as opn from 'opn'
+import {prop} from 'ramda'
 import * as randomstring from 'randomstring'
-import log from '../../logger'
-import {onAuth} from '../../sse'
 import * as conf from '../../conf'
 import {publicEndpoint} from '../../env'
+import log from '../../logger'
+import {onAuth} from '../../sse'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`
@@ -23,28 +23,28 @@ const startUserAuth = (account: string, workspace: string): Bluebird<string | ne
 
 const promptUsePrevious = (): Bluebird<boolean> =>
   inquirer.prompt({
-    type: 'confirm',
-    name: 'confirm',
     message: `Do you want to use the previous login details? (${details})`,
+    name: 'confirm',
+    type: 'confirm',
   })
   .then<boolean>(prop('confirm'))
 
 const promptAccount = async (promptPreviousAcc) => {
   if (promptPreviousAcc) {
     const {confirm} = await inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
       default: true,
       message: `Use previous account? (${chalk.blue(cachedAccount)})`,
+      name: 'confirm',
+      type: 'confirm',
     })
     if (confirm) {
       return cachedAccount
     }
   }
   const {account} = await inquirer.prompt({
-    name: 'account',
-    message: 'Account:',
     filter: (s) => s.trim(),
+    message: 'Account:',
+    name: 'account',
     validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
   })
   return account

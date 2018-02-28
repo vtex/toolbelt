@@ -1,4 +1,4 @@
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import * as EventSource from 'eventsource'
 import {compose, forEach, path, pathOr} from 'ramda'
 

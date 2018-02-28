@@ -1,4 +1,4 @@
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import {prop, curry} from 'ramda'
 import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'

@@ -1,4 +1,4 @@
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import * as Table from 'cli-table'
 
 import log from '../../logger'

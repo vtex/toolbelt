@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import {without} from 'ramda'
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import * as moment from 'moment'
 import * as Bluebird from 'bluebird'
 import {all as clearCachedModules} from 'clear-module'

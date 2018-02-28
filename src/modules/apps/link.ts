@@ -1,32 +1,35 @@
 import {Builder, Change} from '@vtex/api'
+import chalk from 'chalk'
 import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import {readFileSync} from 'fs'
 import * as moment from 'moment'
 import {resolve, sep} from 'path'
 import {map} from 'ramda'
-
 import {createInterface} from 'readline'
-import log from '../../logger'
+
+
 import {createClients} from '../../clients'
-import {getManifest} from '../../manifest'
-import {toAppLocator} from '../../locator'
-import {pathToFileObject, validateAppAction} from './utils'
-import startDebuggerTunnel from './debugger'
-import * as chalk from 'chalk'
-import {listLocalFiles, getIgnoredPaths} from './file'
 import {getAccount, getWorkspace} from '../../conf'
-import {formatNano} from '../utils'
+import {toAppLocator} from '../../locator'
+import log from '../../logger'
+import {getManifest} from '../../manifest'
 import {listenBuild} from '../build'
+import {formatNano} from '../utils'
+import startDebuggerTunnel from './debugger'
+import {getIgnoredPaths, listLocalFiles} from './file'
 import legacyLink from './legacyLink'
+import {pathToFileObject, validateAppAction} from './utils'
+
+
 
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
 
 const pathToChange = (path: string, remove?: boolean): Change => ({
-  path: path.split(sep).join('/'),
   content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
+  path: path.split(sep).join('/'),
 })
 
 const warnAndLinkFromStart = (performInitialLink) => {
@@ -58,15 +61,15 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   }, 10)
 
   const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
-    cwd: root,
-    persistent: true,
-    ignoreInitial: true,
-    ignored: getIgnoredPaths(root),
-    usePolling: true,
+    atomic: true,
     awaitWriteFinish: {
       stabilityThreshold: 50,
     },
-    atomic: true,
+    cwd: root,
+    ignoreInitial: true,
+    ignored: getIgnoredPaths(root),
+    persistent: true,
+    usePolling: true,
   })
   return new Promise((resolve, reject) => {
     watcher

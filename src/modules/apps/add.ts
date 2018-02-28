@@ -1,49 +1,48 @@
-import * as Bluebird from 'bluebird'
 import {writeFile} from 'fs-extra'
 import * as latestVersion from 'latest-version'
 import {
-  path,
-  head,
-  tail,
-  last,
-  split,
-  concat,
   compose,
+  concat,
+  head,
+  last,
+  path,
   prepend,
+  split,
+  tail,
 } from 'ramda'
 
-import log from '../../logger'
 import {router} from '../../clients'
+import {region} from '../../env'
+import {CommandError} from '../../errors'
+import log from '../../logger'
 import {
-  namePattern,
-  manifestPath,
-  vendorPattern,
   getManifest,
+  manifestPath,
+  namePattern,
+  vendorPattern,
   wildVersionPattern,
 } from '../../manifest'
-import {CommandError} from '../../errors'
-import {region} from '../../env'
 
-import {parseArgs, appsLatestVersion, pickLatestVersion, wildVersionByMajor, handleError} from './utils'
+import {appsLatestVersion, handleError, parseArgs, pickLatestVersion, wildVersionByMajor} from './utils'
 
 const unprefixName = compose<string, string[], string>(last, split(':'))
 const invalidAppMessage =
   'Invalid app format, please use <vendor>.<name>, <vendor>.<name>@<version>, npm:<name> or npm:<name>@<version>'
 
-const infraLatestVersion = (app: string): Bluebird<string | never> =>
+const infraLatestVersion = (app: string): Promise<string | never> =>
   router.getAvailableVersions(app)
     .then<string[]>(path(['versions', region()]))
     .then(pickLatestVersion)
     .then(wildVersionByMajor)
     .catch(handleError(app))
 
-const npmLatestVersion = (app: string): Bluebird<string | never> => {
+const npmLatestVersion = (app: string): Promise<string | never> => {
   return latestVersion(app)
     .then(concat('^'))
     .catch(err => Promise.reject(new CommandError(err.message)))
 }
 
-const updateManifestDependencies = (app: string, version: string): Bluebird<void> => {
+const updateManifestDependencies = (app: string, version: string): Promise<void> => {
   return getManifest()
     .then((manifest: Manifest) => {
       return {
@@ -58,7 +57,7 @@ const updateManifestDependencies = (app: string, version: string): Bluebird<void
     .then((manifestJson: string) => writeFile(manifestPath, manifestJson))
 }
 
-const addApp = (app: string): Bluebird<void> => {
+const addApp = (app: string): Promise<void> => {
   const hasVersion = app.indexOf('@') > -1
   if (hasVersion) {
     const [appId, version] = app.split('@')
@@ -74,7 +73,7 @@ const addApp = (app: string): Bluebird<void> => {
     .then((version: string) => updateManifestDependencies(app, version))
 }
 
-const addApps = (apps: string[]): Bluebird<void | never> => {
+const addApps = (apps: string[]): Promise<void | never> => {
   const app = head(apps)
   const decApps = tail(apps)
   log.debug('Starting to add app', app)
@@ -96,7 +95,7 @@ const addApps = (apps: string[]): Bluebird<void | never> => {
 }
 
 export default (app: string, options) => {
-  const apps = prepend(app, parseArgs(options._))
+  const apps: string[] = prepend(app, parseArgs(options._) as string[])
   log.debug('Adding app' + (apps.length > 1 ? 's' : '') + `: ${apps.join(', ')}`)
   return addApps(apps)
     .then(() => log.info('App' + (apps.length > 1 ? 's' : '') + ' added succesfully!'))

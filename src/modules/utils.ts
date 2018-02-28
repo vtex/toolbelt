@@ -1,7 +1,7 @@
-import {logAll, onEvent} from '../sse'
 import {currentContext} from '../conf'
-import log from '../logger'
 import {BuildFailError} from '../errors'
+import log from '../logger'
+import {logAll, onEvent} from '../sse'
 
 type BuildListeningOptions = {
   context?: Context,
@@ -20,10 +20,10 @@ const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback:
   const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent(ctx, 'vtex.render-builder', subject, [`build.${type}`], (message) => callback(type, message)))
   const timer = timeout && setTimeout(() => callback('timeout'), timeout)
   const unlistenMap: Record<BuildEvent, Function> = {
-    start: unlistenStart,
-    success: unlistenSuccess,
     fail: unlistenFail,
     logs: unlistenLogs,
+    start: unlistenStart,
+    success: unlistenSuccess,
     timeout: () => clearTimeout(timer),
   }
 
