@@ -1,5 +1,6 @@
 import * as archiver from 'archiver'
 import axios, {AxiosInstance} from 'axios'
+import {publicEndpoint} from './env'
 
 const routes = {
   Publish: '_v/publish',
@@ -11,7 +12,7 @@ export class Builder {
   constructor (opts: InstanceOptions) {
     const {account, workspace} = opts
     this.http = axios.create({
-      baseURL: `http://${workspace}--${account}.myvtex.com`,
+      baseURL: `http://${workspace}--${account}.${publicEndpoint()}`,
       headers: {
         'User-Agent': 'vtex.toolbelt',
       },

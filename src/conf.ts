@@ -4,6 +4,11 @@ import {name as pkgName} from '../package.json'
 
 const conf = new Configstore(pkgName)
 
+export enum Environment {
+  Production = 'prod',
+  Staging = 'staging',
+}
+
 export const saveAccount = (account: string): void =>
   conf.set('account', account)
 
@@ -16,6 +21,9 @@ export const saveToken = (token: string): void =>
 export const saveWorkspace = (workspace = 'master') =>
   conf.set('workspace', workspace)
 
+export const saveEnvironment = (env: Environment) =>
+  conf.set('env', env)
+
 export const getAccount = (): string =>
   conf.get('account')
 
@@ -27,6 +35,9 @@ export const getToken = (): string =>
 
 export const getWorkspace = (): string =>
   conf.get('workspace')
+
+export const getEnvironment = (): Environment =>
+  conf.get('env')
 
 export const clear = (): void =>
   conf.clear()

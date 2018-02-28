@@ -1,4 +1,8 @@
-const env = process.env.VTEX_ENV === 'beta' ? 'BETA' : 'STABLE'
+import {Environment, getEnvironment} from './conf'
+
+const env = process.env.VTEX_ENV === 'beta' ?
+    Environment.Staging :
+    (getEnvironment() || Environment.Production)
 
 export function endpoint (api = 'api'): string {
   switch (api.toLowerCase()) {
@@ -20,5 +24,10 @@ export function endpoint (api = 'api'): string {
 }
 
 export function region (): string {
-  return process.env.VTEX_REGION || (env === 'BETA' ? 'aws-us-east-2' : 'aws-us-east-1')
+  return process.env.VTEX_REGION ||
+    (env === Environment.Staging ? 'aws-us-east-2' : 'aws-us-east-1')
+}
+
+export function publicEndpoint (): string {
+  return env === Environment.Staging ? 'myvtexdev.com' : 'myvtex.com'
 }

@@ -7,23 +7,16 @@ import * as jwt from 'jsonwebtoken'
 import * as randomstring from 'randomstring'
 import log from '../../logger'
 import {onAuth} from '../../sse'
-import {
-  getLogin,
-  saveToken,
-  saveLogin,
-  getAccount,
-  saveAccount,
-  getWorkspace,
-  saveWorkspace,
-} from '../../conf'
+import * as conf from '../../conf'
+import {publicEndpoint} from '../../env'
 
-const [cachedAccount, cachedLogin, cachedWorkspace] = [getAccount(), getLogin(), getWorkspace()]
+const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`
 
 const startUserAuth = (account: string, workspace: string): Bluebird<string | never> => {
   const state = randomstring.generate()
   const returnUrlEncoded = encodeURIComponent(`/_v/auth-server/v1/callback?state=${state}`)
-  const url = `https://${workspace}--${account}.myvtex.com/_v/auth-server/v1/login/?ReturnUrl=${returnUrlEncoded}`
+  const url = `https://${workspace}--${account}.${publicEndpoint()}/_v/auth-server/v1/login/?ReturnUrl=${returnUrlEncoded}`
   opn(url, {wait: false})
   return onAuth(account, workspace, state)
 }
@@ -58,17 +51,23 @@ const promptAccount = async (promptPreviousAcc) => {
 }
 
 const saveCredentials = (login: string, account: string, token: string, workspace: string): void => {
-  saveLogin(login)
-  saveAccount(account)
-  saveToken(token)
-  saveWorkspace(workspace)
+  conf.saveLogin(login)
+  conf.saveAccount(account)
+  conf.saveToken(token)
+  conf.saveWorkspace(workspace)
 }
 
 const authAndSave = async (account, workspace, optionWorkspace): Promise<{login: string, token: string}> => {
   const token = await startUserAuth(account, optionWorkspace ? workspace : 'master')
   const decodedToken = jwt.decode(token)
-  const login = decodedToken.sub
+  const login: string = decodedToken.sub
   saveCredentials(login, account, token, workspace)
+  if (login.endsWith('@vtex.com.br')) {
+    log.info(`Using staging (beta) IO environment due to VTEX domain. Switch back with ${chalk.gray('vtex config set env prod')}`)
+    conf.saveEnvironment(conf.Environment.Staging)
+  } else {
+    conf.saveEnvironment(conf.Environment.Production)
+  }
   return {login, token}
 }
 
