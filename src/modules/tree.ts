@@ -361,6 +361,18 @@ export default {
   port: {
     handler: './port/react1',
   },
+  config: {
+    get: {
+      description: 'Gets the current value for the requested configuration',
+      requiredArgs: 'name',
+      handler: './config/get',
+    },
+    set: {
+      description: 'Sets the current value for the given configuration',
+      requiredArgs: ['name', 'value'],
+      handler: './config/set',
+    },
+  },
   options: [
     {
       short: 'h',
