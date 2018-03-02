@@ -62,7 +62,7 @@
     "eslint-plugin-react": "^7.0.0",
     "eventsource": "^1.0.1",
     "extendable-error": "^0.1.5",
-    "findhelp": "^1.0.1",
+    "findhelp": "^1.0.2",
     "fs-extra": "^3.0.1",
     "get-stream": "^3.0.0",
     "globby": "^6.1.0",
@@ -73,16 +73,16 @@
     "opn": "^5.2.0",
     "ora": "^1.1.0",
     "pad": "^1.1.0",
+    "pipe-streams-to-promise": "^0.2.0",
     "ramda": "^0.23.0",
     "randomstring": "^1.1.5",
     "semver": "^5.3.0",
     "semver-diff": "^2.1.0",
+    "unzip-stream": "^0.3.0",
     "update-notifier": "^2.1.0",
     "validator": "^7.0.0",
     "winston": "^2.3.1",
-    "ws": "^3.0.0",
-    "pipe-streams-to-promise": "^0.2.0",
-    "unzip-stream": "^0.3.0"
+    "ws": "^3.0.0"
   },
   "preferGlobal": true,
   "devDependencies": {

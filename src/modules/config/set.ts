@@ -1,11 +1,11 @@
 import * as chalk from 'chalk'
-import {contains} from 'ramda'
+import {contains, values} from 'ramda'
 
 import {Environment, saveEnvironment} from './../../conf'
 import log from '../../logger'
 import {CommandError} from '../../errors'
 
-const envValues = Object.values(Environment)
+const envValues = values(Environment)
 
 export default (name: string, value: string) => {
   switch (name) {
