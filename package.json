@@ -85,7 +85,7 @@
     "update-notifier": "^2.1.0",
     "validator": "^7.0.0",
     "winston": "^2.3.1",
-    "ws": "^4.1.0"
+    "ws": "^3.0.0"
   },
   "preferGlobal": true,
   "devDependencies": {
