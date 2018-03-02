@@ -1,8 +1,13 @@
 import {Environment, getEnvironment} from './conf'
 
-const env = process.env.VTEX_ENV === 'beta' ?
-    Environment.Staging :
-    (getEnvironment() || Environment.Production)
+const env = fromProcessEnv() || getEnvironment() || Environment.Production
+
+function fromProcessEnv (): Environment {
+  if (!process.env.VTEX_ENV) {
+    return null
+  }
+  return process.env.VTEX_ENV === 'beta' ? Environment.Staging : Environment.Production
+}
 
 export function endpoint (api = 'api'): string {
   switch (api.toLowerCase()) {
