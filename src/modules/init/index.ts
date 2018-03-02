@@ -1,85 +1,85 @@
-import {join} from 'path'
-import {prop} from 'ramda'
+import {keys, prop} from 'ramda'
 import * as chalk from 'chalk'
 import * as moment from 'moment'
 import * as Bluebird from 'bluebird'
 import * as inquirer from 'inquirer'
-
+import * as git from './git'
 import log from '../../logger'
-import {writeManifest} from './utils'
+import {outputJson, readJson} from 'fs-extra'
+import {manifestPath} from '../../manifest'
 
-const choices = ['react', 'graphql']
 const {mapSeries} = Bluebird
 
 const currentFolderName = process.cwd().replace(/.*\//, '')
 
-const promptService = (): Bluebird<string> => {
-  const cancel = 'Cancel'
-  return Promise.resolve(
-    inquirer.prompt({
-      name: 'service',
-      message: 'Choose the VTEX service you will use',
-      type: 'list',
-      choices: [...choices, cancel],
-    }),
-  )
-  .then(({service}) => {
-    if (service === cancel) {
-      log.info('Bye o/')
-      return process.exit()
-    }
-    return service
-  })
+const templates = {
+  'react getting-started': 'render-getting-started',
+  'graphql getting-started': 'product-review-graphql-example',
+  'react+graphql': 'catalogue',
+  'hello graphql': 'hello-graphql',
+  'hello react': 'hello-react',
 }
 
-const promptName = (): Bluebird<string> => {
+const promptName = async () => {
   const message = 'The app name should only contain numbers, lowercase letters, underscores and hyphens.'
-  return Promise.resolve(
-    inquirer.prompt({
-      name: 'name',
-      message: 'What\'s your VTEX app name?',
-      validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
-      filter: s => s.trim(),
-      default: currentFolderName,
-    }),
-  )
-  .then<string>(prop('name'))
+  return prop('name', await inquirer.prompt({
+    name: 'name',
+    message: 'What\'s your VTEX app name?',
+    validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
+    filter: s => s.trim(),
+    default: currentFolderName,
+  }))
 }
 
-const promptVendor = (): Bluebird<string> => {
+const promptVendor = async () => {
   const message = 'The vendor should only contain numbers, lowercase letters, underscores and hyphens.'
-  return Promise.resolve(
-    inquirer.prompt({
-      name: 'vendor',
-      message: 'What\'s your VTEX app vendor?',
-      validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
-      filter: s => s.trim(),
-      default: null,
-    }),
-  )
-  .then<string>(prop('vendor'))
+  return prop('vendor', await inquirer.prompt({
+    name: 'vendor',
+    message: 'What\'s your VTEX app vendor?',
+    validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
+    filter: s => s.trim(),
+    default: null,
+  }))
 }
 
-const promptTitle = (): Bluebird<string> => {
-  return Promise.resolve(
-    inquirer.prompt({
-      name: 'title',
-      message: 'What\'s your VTEX app title?',
-      filter: s => s.trim(),
-    }),
-  )
-  .then<string>(prop('title'))
+const promptTitle = async () => {
+  return prop('title', await inquirer.prompt({
+    name: 'title',
+    message: 'What\'s your VTEX app title?',
+    filter: s => s.trim(),
+  }))
 }
 
-const promptDescription = (): Bluebird<string> => {
-  return Promise.resolve(
-    inquirer.prompt({
-      name: 'description',
-      message: 'What\'s your VTEX app description?',
-      filter: s => s.trim(),
-    }),
-  )
-  .then<string>(prop('description'))
+const promptDescription = async () => {
+  return prop('description', await inquirer.prompt({
+    name: 'description',
+    message: 'What\'s your VTEX app description?',
+    filter: s => s.trim(),
+  }))
+}
+
+const promptTemplates = async () => {
+  const cancel = 'Cancel'
+  const {service: chosen} = await inquirer.prompt({
+    name: 'service',
+    message: 'Choose where do you want to start from',
+    type: 'list',
+    choices: [...keys(templates), cancel],
+  })
+  if (chosen === cancel) {
+    log.info('Bye o/')
+    return process.exit()
+  }
+  return chosen
+}
+
+const manifestFromPrompt = async () => {
+  return mapSeries([
+    promptName,
+    promptVendor,
+    promptTitle,
+    promptDescription,
+  ], f => f())
 }
 
 const createManifest = (name: string, vendor: string, title = '', description = ''): Manifest => {
@@ -91,41 +91,26 @@ const createManifest = (name: string, vendor: string, title = '', description = 
     title,
     description,
     mustUpdateAt: `${Number(year) + 1}-${monthAndDay.join('-')}`,
-    categories: [],
     registries: ['smartcheckout'],
-    settingsSchema: {},
-    dependencies: {},
-    builders: {},
   }
 }
 
-export default () => {
+export default async () => {
   log.debug('Prompting for app info')
   log.info('Hello! I will help you generate basic files and folders for your app.')
-  return mapSeries([
-    promptName,
-    promptVendor,
-    promptTitle,
-    promptDescription,
-  ], f => f())
-    .spread((name: string, vendor: string, title: string, description: string) => {
-      log.debug('Creating manifest file')
-      const fullName = `${vendor}.${name}`
-      return writeManifest(createManifest(name, vendor, title, description))
-        .tap(() => log.info('Manifest file generated succesfully!'))
-        .then(promptService)
-        .then((service: string) =>
-          require(join(__dirname, service)).default(),
-        )
-        .tap(() => {
-          console.log('')
-          log.info(`${fullName} structure generated successfully.`)
-          log.info(`Run ${chalk.bold.green('vtex link')} to start developing!`)
-        })
-        .catch(err =>
-          err && err.code === 'EEXIST'
-            ? log.error(`Folder ${fullName} already exists.`)
-            : Promise.reject(err),
-        )
-    })
+  try {
+    const repo = templates[await promptTemplates()]
+    log.info(`Cloning https://vtex-apps/${repo}.git`)
+    const [, [name, vendor, title, description]]: any = await Bluebird.all([
+      git.clone(repo),
+      manifestFromPrompt(),
+    ])
+    const synthetic = createManifest(name, vendor, title, description)
+    const manifest: any = Object.assign(await readJson(manifestPath) || {}, synthetic)
+    await outputJson(manifestPath, manifest, {spaces: 2})
+    log.info(`Run ${chalk.bold.green('vtex link')} to start developing!`)
+  } catch (err) {
+    log.error(err.message)
+    err.printStackTrace()
+  }
 }
