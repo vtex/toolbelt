@@ -73,6 +73,18 @@ const promptTemplates = async () => {
   return chosen
 }
 
+const promptContinue = async () => {
+  const {proceed} = await inquirer.prompt({
+    name: 'proceed',
+    message: `You are about to remove all files in ${process.cwd()}. Do you want to continue ?`,
+    type: 'confirm',
+  })
+  if (!proceed) {
+    log.info('Bye o/')
+    process.exit()
+  }
+}
+
 const manifestFromPrompt = async () => {
   return mapSeries([
     promptName,
@@ -100,6 +112,7 @@ export default async () => {
   log.info('Hello! I will help you generate basic files and folders for your app.')
   try {
     const repo = templates[await promptTemplates()]
+    await promptContinue()
     log.info(`Cloning https://vtex-apps/${repo}.git`)
     const [, [name, vendor, title, description]]: any = await Bluebird.all([
       git.clone(repo),
