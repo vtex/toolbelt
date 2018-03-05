@@ -24,7 +24,7 @@ function getErrorMessage (raw: string): string {
 function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket: net.Socket) => void {
   const options = {
     headers: {
-      Authorization: 'Bearer ' + getToken(),
+      Authorization: getToken(),
     },
   }
 
@@ -86,7 +86,7 @@ function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket:
 export default function startDebuggerTunnel (manifest: Manifest, port: number = 5858): Promise<number> {
   const {name, vendor, version} = manifest
   const majorRange = toMajorRange(version)
-  const endpoint = `ws://${name}.${vendor}.${region}.vtex.io/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
+  const endpoint = `ws://${name}.${vendor}.${region()}.vtex.io/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
 
   return new Promise((resolve, reject) => {
     const server = net.createServer()
