@@ -15,7 +15,7 @@ With it you can:
 - List, install and uninstall available apps in your account.
 - List, create and remove workspaces.
 - Promote a workspace to `master`, making it public in your account URL.
-- Develop new apps in watch mode, using automatic synchronization.
+- Develop new apps in link mode, using automatic synchronization.
 - Publish apps to the VTEX App Store.
 
 # Getting started
@@ -23,7 +23,7 @@ With it you can:
 The VTEX Toolbelt can be installed via [npm](https://www.npmjs.com/).
 If you don't have it installed, you can get it bundled with [node](https://nodejs.org/):
  - [Linux](https://nodejs.org/en/download/package-manager/)
- - [Mac and Windows](https://nodejs.org/download/)
+ - [Mac and Windows](https://nodejs.org/en/download/)
 
 ## Installing the VTEX Toolbelt
 
@@ -37,7 +37,7 @@ Now you can use the `vtex` command:
 
 ```sh
 $ vtex
-  Welcome to VTEX I/O
+  Welcome to VTEX IO
   Login with vtex login <account>
 
   Usage: vtex <command> [options]
@@ -102,11 +102,11 @@ $ vtex
 Start by using `vtex login` to receive your credentials and be able to access other features.
 Simply type this command and follow the instructions.
 
-## Using watch
+## Using link
 
-On an app directory, run `vtex watch` and click on or copy the provided URL into your browser.
+On an app directory, run `vtex link` and click on or copy the provided URL into your browser.
 
-The `vtex` command will now monitor your files for changes and sync them automatically.
+VTEX Toolbelt will now monitor your files for changes and sync them automatically.
 
 ## Customizing your prompt
 
@@ -142,7 +142,7 @@ When logging in, you will be asked for **3** things:
 
 If you wish to work on another `account`, logout and login again with that `account`.
 
-Note that `watch` and `publish` implicitly checks if you're logged, and if you're not, it asks your credentials before proceeding.
+Note that `link` and `publish` implicitly checks if you're logged, and if you're not, it asks your credentials before proceeding.
 
 
 ## How do I develop an app locally?
@@ -150,7 +150,7 @@ Note that `watch` and `publish` implicitly checks if you're logged, and if you'r
 To develop an app locally, open the directory where your VTEX app is and then type:
 
 ```sh
-vtex watch
+vtex link
 ```
 
 Toolbelt will upload all your app files to the developer environment, print an URL for your use and watch for any changes you make to the files, which will be automatically synchronized.
