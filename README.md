@@ -44,25 +44,53 @@ $ vtex
 
   Commands:
 
-    login                  Log into a VTEX account
-    logout                 Logout of the current VTEX account
-    list [query]           List your installed VTEX apps
-    watch [log-level]      Send the files to the registry and watch for changes
-    install <app>          Install the specified app
-    uninstall <app>        Uninstall the specified app
-    publish                Publish this app
+    link                  Start a development session for this app
+    unlink [app]          Unlink an app on the current directory or a specified one
+    add <app>             Add app(s) to the manifest dependencies
+    publish [path]        Publish the current app or a path containing an app
+    deprecate [app]       Deprecate app(s)
+    install [app]         Install an app (defaults to the app in the current directory)
+    uninstall [app]       Uninstall an app (defaults to the app in the current directory)
+    list                  List your installed VTEX apps
+    update                Update all installed apps to the latest version
+    login                 Log into a VTEX account
+    logout                Logout of the current VTEX account
+    switch <account>      Switch to another VTEX account
+    whoami                See your credentials current status
+    init                  Create basic files and folders for your VTEX app
+    use <name>            Use a workspace to perform operations
+    port                  undefined
 
-    settings <app> [field]                     Get app settings
-    settings set <app> <field> <value>         Set a value
-    settings unset <app> <field>               Unset a value
+    settings <app> [fields]                     Get app settings
+    settings set <app> <fields> <value>         Set a value
+    settings unset <app> <fields>               Unset a value
 
-    workspace list               List workspaces on this account
-    workspace create <name>      Create a new workspace with this name
-    workspace delete <name>      Delete this workspace
-    workspace use <name>         Use a workspace to perform operations
-    workspace promote <name>     Promote this workspace to master
+    workspace list                    List workspaces on this account
+    workspace create <name>           Create a new workspace with this name
+    workspace delete <name>           Delete a single or various workspaces
+    workspace promote                 Promote this workspace to master
+    workspace production [production] Set this workspace to production mode
+    workspace use <name>              Use a workspace to perform operations
+    workspace reset [name]            Delete and create a workspace
 
-    setup eslint      Setup a local eslint environment
+    deps list             List your workspace dependencies
+    deps update [app]     Update all workspace dependencies or a specific app@version
+
+    local eslint      Setup a local eslint environment
+    local package     Generate package.json from manifest
+    local manifest    Generate manifest from package.json
+    local debug       Run a Colossus function locally
+    local token       Show user\'s auth token and copy it to clipboard
+
+    infra list [name]        List installed services
+    infra install <name>     Install a service
+    infra update             Update all installed services
+
+    io list                 List VTEX IO versions available to install
+    io install [version]    Install VTEX IO Version
+
+    config get <name>                 Gets the current value for the requested configuration
+    config set <name> <value>         Sets the current value for the given configuration
 
   Options:
 
