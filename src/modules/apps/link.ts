@@ -55,7 +55,7 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   const sendChanges = debounce(() => {
     builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
     .catch(onInitialLinkRequired)
-  }, 50)
+  }, 10)
 
   const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
     cwd: root,
@@ -64,7 +64,7 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
     ignored: getIgnoredPaths(root),
     usePolling: true,
     awaitWriteFinish: {
-      stabilityThreshold: 500,
+      stabilityThreshold: 50,
     },
     atomic: true,
   })
