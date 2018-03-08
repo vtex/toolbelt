@@ -359,7 +359,9 @@ export default {
     handler: './workspace/use',
   },
   port: {
-    handler: './port/react1',
+    react: {
+      handler: './port/react',
+    },
   },
   config: {
     get: {
