@@ -1,24 +1,24 @@
+import * as Bluebird from 'bluebird'
+import * as chalk from 'chalk'
+import * as inquirer from 'inquirer'
+import * as ora from 'ora'
 import * as pad from 'pad'
 import {prop} from 'ramda'
-import * as ora from 'ora'
-import * as chalk from 'chalk'
 import * as semver from 'semver'
-import * as inquirer from 'inquirer'
-import * as Bluebird from 'bluebird'
 
-import log from '../../logger'
 import {router} from '../../clients'
 import {region} from '../../env'
-import {getTag, diffVersions} from './utils'
+import log from '../../logger'
+import {diffVersions, getTag} from './utils'
 
 const {listAvailableServices, listInstalledServices, installService} = router
 
 const promptUpdate = (): Bluebird<boolean> =>
   Promise.resolve(
     inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
       message: 'Apply version updates?',
+      name: 'confirm',
+      type: 'confirm',
     })
     .then<boolean>(prop('confirm')),
   )
@@ -45,13 +45,13 @@ const logVersionMap = ({latest, update}: InfraVersionMap): void => {
 const createVersionMap = (availableRes: InfraAvailableResources, installedRes: InfraInstalledResources[]): InfraVersionMap =>
   installedRes.reduce((acc, {name, version: currentVersion}) => {
     const tag = getTag(currentVersion)
-    const latestVersion = availableRes[name].versions[region()]
+    const latestVersion = availableRes[name].versions['aws-us-east-1'] // See comment in src/modules/infra/install.ts:82
       .filter(v => getTag(v) === tag)
       .sort(semver.rcompare)[0]
     if (currentVersion !== latestVersion) {
       acc.update[name] = {
-        latest: latestVersion,
         current: currentVersion,
+        latest: latestVersion,
       }
     } else {
       acc.latest[name] = currentVersion
