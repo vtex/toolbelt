@@ -7,7 +7,6 @@ import {prop} from 'ramda'
 import * as semver from 'semver'
 
 import {router} from '../../clients'
-import {region} from '../../env'
 import log from '../../logger'
 import {diffVersions, getTag} from './utils'
 
