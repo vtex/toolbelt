@@ -1,30 +1,29 @@
-import {join} from 'path'
-import * as chalk from 'chalk'
-import * as Bluebird from 'bluebird'
-import * as inquirer from 'inquirer'
-import {createReadStream} from 'fs-extra'
-import * as semverDiff from 'semver-diff'
-import {splitAt, flatten, values} from 'ramda'
 import {RegistryAppVersionsListItem} from '@vtex/api'
+import chalk from 'chalk'
+import {createReadStream} from 'fs-extra'
+import * as inquirer from 'inquirer'
+import {join} from 'path'
+import {flatten, splitAt, values} from 'ramda'
+import * as semverDiff from 'semver-diff'
 
 import {
   __,
-  map,
-  head,
-  tail,
-  last,
-  prop,
-  curry,
-  split,
-  reduce,
-  concat,
   compose,
+  concat,
+  curry,
+  head,
+  last,
+  map,
+  prop,
+  reduce,
+  split,
+  tail,
 } from 'ramda'
 
-import log from '../../logger'
+import {createClients} from '../../clients'
 import {getWorkspace} from '../../conf'
 import {CommandError} from '../../errors'
-import {createClients} from '../../clients'
+import log from '../../logger'
 import {isManifestReadable} from '../../manifest'
 
 export const pathToFileObject = (root = process.cwd()) => (path: string): BatchStream =>
@@ -33,7 +32,7 @@ export const pathToFileObject = (root = process.cwd()) => (path: string): BatchS
 export const workspaceMasterMessage =
   `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`
 
-export const parseArgs = (args: string[]) => {
+export const parseArgs = (args: string[]): string[] => {
   const [, commands] = splitAt(1, flatten(values(args)))
   return commands
 }
@@ -42,10 +41,10 @@ export const validateAppAction = async (app?) => {
   if (getWorkspace() === 'master') {
     if (process.argv.indexOf('--force-master') >= 0) {
       const {confirm} = await inquirer.prompt({
-        type: 'confirm',
-        name: 'confirm',
         default: false,
         message: `Are you sure you want to force this operation on the master workspace?`,
+        name: 'confirm',
+        type: 'confirm',
       })
       if (!confirm) {
         process.exit(1)
@@ -82,22 +81,22 @@ export const handleError = curry((app: string, err: any) => {
   return Promise.reject(err)
 })
 
-export const appsLatestVersion = (app: string): Bluebird<string | never> => {
+export const appsLatestVersion = (app: string): Promise<string | never> => {
   return createClients({account: 'smartcheckout'}).registry
     .listVersionsByApp(app)
     .then<RegistryAppVersionsListItem[]>(prop('data'))
-    .then(map(extractVersionFromId))
-    .then(pickLatestVersion)
+    .then<string[]>(map(extractVersionFromId))
+    .then<string>(pickLatestVersion)
     .then(wildVersionByMajor)
     .catch(handleError(app))
 }
 
-export const appsLastVersion = (app: string): Bluebird<string | never> => {
+export const appsLastVersion = (app: string): Promise<string | never> => {
   return createClients({account: 'smartcheckout'}).registry
     .listVersionsByApp(app)
     .then<RegistryAppVersionsListItem[]>(prop('data'))
-    .then(map(extractVersionFromId))
-    .then(pickLatestVersion)
+    .then<string[]>(map(extractVersionFromId))
+    .then<string>(pickLatestVersion)
     .catch(handleError(app))
 }
 

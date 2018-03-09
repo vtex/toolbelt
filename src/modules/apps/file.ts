@@ -1,8 +1,8 @@
-import * as path from 'path'
-import * as glob from 'globby'
 import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
 import {readFileSync, stat} from 'fs-extra'
+import * as glob from 'globby'
+import * as path from 'path'
 
 import log from '../../logger'
 
@@ -43,9 +43,9 @@ export const listLocalFiles = (root: string, folder?: string): Bluebird<string[]
   Promise.resolve(
     glob(`{manifest.json,policies.json,${safeFolder(folder)}}`, {
       cwd: root,
-      nodir: true,
       follow: true,
       ignore: getIgnoredPaths(root),
+      nodir: true,
     }),
   )
   .then((files: string[]) =>
@@ -67,10 +67,10 @@ export const listLocalFiles = (root: string, folder?: string): Bluebird<string[]
 export const addChangeContent = (changes: Change[]): Batch[] =>
   changes.map(({path: filePath, action}) => {
     return {
-      path: filePath.split(path.sep).join('/'),
       content: action === 'save'
-        ? readFileSync(path.resolve(process.cwd(), filePath)).toString('base64')
-        : null,
+      ? readFileSync(path.resolve(process.cwd(), filePath)).toString('base64')
+      : null,
+      path: filePath.split(path.sep).join('/'),
     }
   })
 
@@ -82,15 +82,15 @@ const sendRemoveChanges = (file: string, sendChanges: Function): void =>
 
 export const watch = (root: string, sendChanges: Function, folder?: string): Bluebird<string | void> => {
   const watcher = chokidar.watch([`${safeFolder(folder)}`, '*.json'], {
-    cwd: root,
-    persistent: true,
-    ignoreInitial: true,
-    ignored: getIgnoredPaths(root),
-    usePolling: true,
+    atomic: true,
     awaitWriteFinish: {
       stabilityThreshold: 500,
     },
-    atomic: true,
+    cwd: root,
+    ignoreInitial: true,
+    ignored: getIgnoredPaths(root),
+    persistent: true,
+    usePolling: true,
   })
   return new Promise((resolve, reject) => {
     watcher

@@ -1,5 +1,5 @@
 import {keys, prop} from 'ramda'
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import * as moment from 'moment'
 import * as Bluebird from 'bluebird'
 import * as inquirer from 'inquirer'

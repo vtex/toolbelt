@@ -1,5 +1,5 @@
 import test from 'ava'
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import * as moment from 'moment'
 
 import {changesToString} from './apps'

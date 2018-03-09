@@ -1,18 +1,18 @@
+import {readFileSync} from 'fs-extra'
 import * as ora from 'ora'
 import {resolve} from 'path'
-import {readFileSync} from 'fs-extra'
-import {prepend, map} from 'ramda'
+import {map, prepend} from 'ramda'
 
-import log from '../../logger'
+import { BuildResult } from '@vtex/api'
 import {createClients} from '../../clients'
-import {toAppLocator} from '../../locator'
-import {pathToFileObject, parseArgs} from './utils'
-import {listLocalFiles} from './file'
 import {getAccount} from '../../conf'
+import {toAppLocator} from '../../locator'
+import log from '../../logger'
 import {logAll} from '../../sse'
 import {listenBuild} from '../build'
+import {listLocalFiles} from './file'
 import {legacyPublisher} from './legacyPublish'
-import { BuildResult } from '@vtex/api'
+import {parseArgs, pathToFileObject} from './utils'
 
 const root = process.cwd()
 

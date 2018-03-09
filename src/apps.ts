@@ -1,4 +1,4 @@
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 
 const DELETE_SIGN = chalk.red('D')
 const UPLOAD_SIGN = chalk.yellow('U')

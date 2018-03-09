@@ -1,387 +1,354 @@
 export default {
-  link: {
-    description: 'Start a development session for this app',
-    options: [
-      {
-        short: 'c',
-        long: 'clean',
-        description: 'Clean builder cache',
-        type: 'boolean',
-      },
-    ],
-    handler: './apps/link',
-  },
-  unlink: {
-    optionalArgs: 'app',
-    description: 'Unlink an app on the current directory or a specified one',
-    options: [
-      {
-        short: 'a',
-        long: 'all',
-        description: 'Unlink all apps',
-        type: 'boolean',
-      },
-    ],
-    handler: './apps/unlink',
-  },
   add: {
-    requiredArgs: 'app',
     description: 'Add app(s) to the manifest dependencies',
     handler: './apps/add',
+    requiredArgs: 'app',
   },
-  publish: {
-    description: 'Publish the current app or a path containing an app',
-    optionalArgs: 'path',
-    options: [
-      {
-        short: 't',
-        long: 'tag',
-        description: 'Apply a tag to the release',
-        type: 'string',
-      },
-      {
-        short: 'r',
-        long: 'registry',
-        description: 'Specify the account for the app registry',
-        type: 'string',
-      },
-      {
-        short: 'w',
-        long: 'workspace',
-        description: 'Specify the workspace for the app registry',
-        type: 'string',
-      },
-      {
-        short: 'p',
-        long: 'public',
-        description: 'Use the public registry (smartcheckout)',
-        type: 'boolean',
-      },
-    ],
-    handler: './apps/publish',
+  config: {
+    get: {
+      description: 'Gets the current value for the requested configuration',
+      handler: './config/get',
+      requiredArgs: 'name',
+    },
+    set: {
+      description: 'Sets the current value for the given configuration',
+      handler: './config/set',
+      requiredArgs: ['name', 'value'],
+    },
   },
   deprecate: {
-    optionalArgs: 'app',
     description: 'Deprecate app(s)',
-    options: [
-      {
-        short: 'r',
-        long: 'registry',
-        description: 'Specify the registry for the app(s)',
-        type: 'string',
-      },
-      {
-        short: 'p',
-        long: 'public',
-        description: 'Use the public registry (smartcheckout)',
-        type: 'boolean',
-      },
-    ],
     handler: './apps/deprecate',
-  },
-  install: {
-    alias: 'i',
     optionalArgs: 'app',
-    description: 'Install an app (defaults to the app in the current directory)',
     options: [
       {
-        short: 'r',
+        description: 'Specify the registry for the app(s)',
         long: 'registry',
-        description: 'Specify the registry for the app',
+        short: 'r',
         type: 'string',
       },
-    ],
-    handler: './apps/install',
-  },
-  uninstall: {
-    optionalArgs: 'app',
-    description: 'Uninstall an app (defaults to the app in the current directory)',
-    options: [
       {
-        short: 'y',
-        long: 'yes',
-        description: 'Auto confirm prompts',
+        description: 'Use the public registry (smartcheckout)',
+        long: 'public',
+        short: 'p',
         type: 'boolean',
       },
     ],
-    handler: './apps/uninstall',
-  },
-  list: {
-    alias: 'ls',
-    description: 'List your installed VTEX apps',
-    handler: './apps/list',
-  },
-  update: {
-    description: 'Update all installed apps to the latest version',
-    handler: './apps/update',
-  },
-  settings: {
-    description: 'Get app settings',
-    requiredArgs: 'app',
-    optionalArgs: 'fields',
-    handler: './apps/settings',
-    set: {
-      description: 'Set a value',
-      requiredArgs: ['app', 'fields', 'value'],
-      handler: './apps/settings/set',
-    },
-    unset: {
-      description: 'Unset a value',
-      requiredArgs: ['app', 'fields'],
-      handler: './apps/settings/unset',
-    },
-  },
-  login: {
-    description: 'Log into a VTEX account',
-    options: [
-      {
-        short: 'a',
-        long: 'account',
-        description: 'Specify login account',
-        type: 'string',
-      },
-      {
-        short: 'w',
-        long: 'workspace',
-        description: 'Specify login workspace',
-        type: 'string',
-      },
-    ],
-    handler: './auth/login',
-  },
-  logout: {
-    description: 'Logout of the current VTEX account',
-    handler: './auth/logout',
-  },
-  switch: {
-    requiredArgs: 'account',
-    description: 'Switch to another VTEX account',
-    options: [
-      {
-        short: 'w',
-        long: 'workspace',
-        description: 'Specify login workspace',
-        type: 'string',
-      },
-    ],
-    handler: './auth/switch',
-  },
-  whoami: {
-    description: 'See your credentials current status',
-    handler: './auth/whoami',
-  },
-  workspace: {
-    list: {
-      alias: 'ls',
-      description: 'List workspaces on this account',
-      handler: './workspace/list',
-    },
-    create: {
-      requiredArgs: 'name',
-      description: 'Create a new workspace with this name',
-      handler: './workspace/create',
-    },
-    delete: {
-      requiredArgs: 'name',
-      description: 'Delete a single or various workspaces',
-      options: [
-        {
-          short: 'y',
-          long: 'yes',
-          description: 'Auto confirm prompts',
-          type: 'boolean',
-        },
-        {
-          short: 'f',
-          long: 'force',
-          description: 'Ignore if you\'re currently using the workspace',
-          type: 'boolean',
-        },
-      ],
-      handler: './workspace/delete',
-    },
-    promote: {
-      description: 'Promote this workspace to master',
-      handler: './workspace/promote',
-    },
-    production: {
-      optionalArgs: 'production',
-      description: 'Set this workspace to production mode',
-      handler: './workspace/production',
-    },
-    use: {
-      requiredArgs: 'name',
-      description: 'Use a workspace to perform operations',
-      options: [
-        {
-          short: 'r',
-          long: 'reset',
-          description: 'Resets workspace before using it',
-          type: 'boolean',
-        },
-      ],
-      handler: './workspace/use',
-    },
-    reset: {
-      optionalArgs: 'name',
-      description: 'Delete and create a workspace',
-      handler: './workspace/reset',
-    },
   },
   deps: {
     list: {
       alias: 'ls',
       description: 'List your workspace dependencies',
+      handler: './deps/list',
       options: [
         {
-          short: 'n',
-          long: 'npm',
           description: 'Include deps from npm registry',
+          long: 'npm',
+          short: 'n',
           type: 'boolean',
         },
         {
-          short: 'k',
-          long: 'keys',
           description: 'Show only keys',
+          long: 'keys',
+          short: 'k',
           type: 'boolean',
         },
       ],
-      handler: './deps/list',
     },
     update: {
       description: 'Update all workspace dependencies or a specific app@version',
-      optionalArgs: ['app'],
       handler: './deps/update',
+      optionalArgs: ['app'],
     },
   },
-  local: {
-    eslint: {
-      description: 'Setup a local eslint environment',
-      options: [
-        {
-          short: 'y',
-          long: 'yes',
-          description: 'Auto confirm prompts',
-          type: 'boolean',
-        },
-      ],
-      handler: './local/eslint',
-    },
-    package: {
-      description: 'Generate package.json from manifest',
-      handler: './local/package',
-    },
-    manifest: {
-      description: 'Generate manifest from package.json',
-      handler: './local/manifest',
-    },
-    debug: {
-      description: 'Run a Colossus function locally',
-      handler: './local/debug',
-    },
-    token: {
-      description: 'Show user\'s auth token and copy it to clipboard',
-      handler: './local/token',
-    },
-  },
-  init: {
-    description: 'Create basic files and folders for your VTEX app',
-    handler: './init',
-  },
+  handler: './',
   infra: {
+    install: {
+      alias: 'i',
+      description: 'Install a service',
+      handler: './infra/install',
+      requiredArgs: 'name',
+    },
     list: {
       alias: 'ls',
-      optionalArgs: 'name',
       description: 'List installed services',
+      handler: './infra/list',
+      optionalArgs: 'name',
       options: [
         {
-          short: 'a',
-          long: 'available',
           description: 'List services available to install',
+          long: 'available',
+          short: 'a',
           type: 'bool',
         }, {
-          short: 'f',
-          long: 'filter',
           description: 'Only list versions containing this word',
+          long: 'filter',
+          short: 'f',
           type: 'string',
         },
       ],
-      handler: './infra/list',
-    },
-    install: {
-      alias: 'i',
-      requiredArgs: 'name',
-      description: 'Install a service',
-      handler: './infra/install',
     },
     update: {
       description: 'Update all installed services',
       handler: './infra/update',
     },
   },
-  io: {
-    list: {
-      alias: 'ls',
-      description: 'List VTEX IO versions available to install',
+  init: {
+    description: 'Create basic files and folders for your VTEX app',
+    handler: './init',
+  },
+  install: {
+    alias: 'i',
+    description: 'Install an app (defaults to the app in the current directory)',
+    handler: './apps/install',
+    optionalArgs: 'app',
+    options: [
+      {
+        description: 'Specify the registry for the app',
+        long: 'registry',
+        short: 'r',
+        type: 'string',
+      },
+    ],
+  },
+  link: {
+    description: 'Start a development session for this app',
+    handler: './apps/link',
+    options: [
+      {
+        description: 'Clean builder cache',
+        long: 'clean',
+        short: 'c',
+        type: 'boolean',
+      },
+    ],
+  },
+  list: {
+    alias: 'ls',
+    description: 'List your installed VTEX apps',
+    handler: './apps/list',
+  },
+  local: {
+    debug: {
+      description: 'Run a Colossus function locally',
+      handler: './local/debug',
+    },
+    eslint: {
+      description: 'Setup a local eslint environment',
+      handler: './local/eslint',
       options: [
         {
-          short: 'a',
-          long: 'available',
-          description: 'List services available to install',
-          type: 'bool',
-        }, {
-          short: 't',
-          long: 'tag',
-          description: 'Filter by tag',
-          type: 'string',
+          description: 'Auto confirm prompts',
+          long: 'yes',
+          short: 'y',
+          type: 'boolean',
         },
       ],
-      handler: './io/list',
     },
-    install: {
-      alias: 'i',
-      optionalArgs: 'version',
-      description: 'Install VTEX IO Version',
-      options: [
-        {
-          short: 't',
-          long: 'tag',
-          description: 'Install last version by Tag',
-          type: 'string',
-        },
-      ],
-      handler: './io/install',
+    manifest: {
+      description: 'Generate manifest from package.json',
+      handler: './local/manifest',
+    },
+    package: {
+      description: 'Generate package.json from manifest',
+      handler: './local/package',
+    },
+    token: {
+      description: 'Show user\'s auth token and copy it to clipboard',
+      handler: './local/token',
     },
   },
-  use: {
-    requiredArgs: 'name',
-    description: 'Use a workspace to perform operations',
-    handler: './workspace/use',
+  login: {
+    description: 'Log into a VTEX account',
+    handler: './auth/login',
+    options: [
+      {
+        description: 'Specify login account',
+        long: 'account',
+        short: 'a',
+        type: 'string',
+      },
+      {
+        description: 'Specify login workspace',
+        long: 'workspace',
+        short: 'w',
+        type: 'string',
+      },
+    ],
   },
-  port: {
-    react: {
-      handler: './port/react',
-    },
-  },
-  config: {
-    get: {
-      description: 'Gets the current value for the requested configuration',
-      requiredArgs: 'name',
-      handler: './config/get',
-    },
-    set: {
-      description: 'Sets the current value for the given configuration',
-      requiredArgs: ['name', 'value'],
-      handler: './config/set',
-    },
+  logout: {
+    description: 'Logout of the current VTEX account',
+    handler: './auth/logout',
   },
   options: [
     {
-      short: 'h',
-      long: 'help',
       description: 'show help information',
+      long: 'help',
+      short: 'h',
       type: 'boolean',
     },
   ],
-  handler: './',
+  port: {
+    react: {
+      description: 'Convert your app from React 0.x to React 2.x',
+      handler: './port/react',
+    },
+  },
+  publish: {
+    description: 'Publish the current app or a path containing an app',
+    handler: './apps/publish',
+    optionalArgs: 'path',
+    options: [
+      {
+        description: 'Apply a tag to the release',
+        long: 'tag',
+        short: 't',
+        type: 'string',
+      },
+      {
+        description: 'Specify the account for the app registry',
+        long: 'registry',
+        short: 'r',
+        type: 'string',
+      },
+      {
+        description: 'Specify the workspace for the app registry',
+        long: 'workspace',
+        short: 'w',
+        type: 'string',
+      },
+      {
+        description: 'Use the public registry (smartcheckout)',
+        long: 'public',
+        short: 'p',
+        type: 'boolean',
+      },
+    ],
+  },
+  settings: {
+    description: 'Get app settings',
+    handler: './apps/settings',
+    optionalArgs: 'fields',
+    requiredArgs: 'app',
+    set: {
+      description: 'Set a value',
+      handler: './apps/settings/set',
+      requiredArgs: ['app', 'fields', 'value'],
+    },
+    unset: {
+      description: 'Unset a value',
+      handler: './apps/settings/unset',
+      requiredArgs: ['app', 'fields'],
+    },
+  },
+  switch: {
+    description: 'Switch to another VTEX account',
+    handler: './auth/switch',
+    options: [
+      {
+        description: 'Specify login workspace',
+        long: 'workspace',
+        short: 'w',
+        type: 'string',
+      },
+    ],
+    requiredArgs: 'account',
+  },
+  uninstall: {
+    description: 'Uninstall an app (defaults to the app in the current directory)',
+    handler: './apps/uninstall',
+    optionalArgs: 'app',
+    options: [
+      {
+        description: 'Auto confirm prompts',
+        long: 'yes',
+        short: 'y',
+        type: 'boolean',
+      },
+    ],
+  },
+  unlink: {
+    description: 'Unlink an app on the current directory or a specified one',
+    handler: './apps/unlink',
+    optionalArgs: 'app',
+    options: [
+      {
+        description: 'Unlink all apps',
+        long: 'all',
+        short: 'a',
+        type: 'boolean',
+      },
+    ],
+  },
+  update: {
+    description: 'Update all installed apps to the latest version',
+    handler: './apps/update',
+  },
+  use: {
+    description: 'Use a workspace to perform operations',
+    handler: './workspace/use',
+    requiredArgs: 'name',
+  },
+  whoami: {
+    description: 'See your credentials current status',
+    handler: './auth/whoami',
+  },
+  workspace: {
+    create: {
+      description: 'Create a new workspace with this name',
+      handler: './workspace/create',
+      requiredArgs: 'name',
+    },
+    delete: {
+      description: 'Delete a single or various workspaces',
+      handler: './workspace/delete',
+      options: [
+        {
+          description: 'Auto confirm prompts',
+          long: 'yes',
+          short: 'y',
+          type: 'boolean',
+        },
+        {
+          description: 'Ignore if you\'re currently using the workspace',
+          long: 'force',
+          short: 'f',
+          type: 'boolean',
+        },
+      ],
+      requiredArgs: 'name',
+    },
+    list: {
+      alias: 'ls',
+      description: 'List workspaces on this account',
+      handler: './workspace/list',
+    },
+    production: {
+      description: 'Set this workspace to production mode',
+      handler: './workspace/production',
+      optionalArgs: 'production',
+    },
+    promote: {
+      description: 'Promote this workspace to master',
+      handler: './workspace/promote',
+    },
+    reset: {
+      description: 'Delete and create a workspace',
+      handler: './workspace/reset',
+      optionalArgs: 'name',
+    },
+    use: {
+      description: 'Use a workspace to perform operations',
+      handler: './workspace/use',
+      options: [
+        {
+          description: 'Resets workspace before using it',
+          long: 'reset',
+          short: 'r',
+          type: 'boolean',
+        },
+      ],
+      requiredArgs: 'name',
+    },
+  },
 }

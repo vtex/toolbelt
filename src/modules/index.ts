@@ -1,8 +1,8 @@
 import {help} from 'findhelp'
 
-import tree from './tree'
-import {greeting} from '../greeting'
 import * as pkg from '../../package.json'
+import {greeting} from '../greeting'
+import tree from './tree'
 
 export default (options) => {
   if (options.h || options.help) {

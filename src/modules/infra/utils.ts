@@ -1,4 +1,4 @@
-import * as chalk from 'chalk'
+import chalk from 'chalk'
 import * as semver from 'semver'
 
 const stitch = (main: string, prerelease: string): string =>

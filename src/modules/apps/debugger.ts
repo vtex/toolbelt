@@ -1,11 +1,11 @@
-import * as WebSocket from 'ws'
-import * as net from 'net'
 import * as streamToString from 'get-stream'
+import * as net from 'net'
+import * as WebSocket from 'ws'
 
-import log from '../../logger'
-import {getAccount, getWorkspace, getToken} from '../../conf'
-import {toMajorRange} from '../../locator'
+import {getAccount, getToken, getWorkspace} from '../../conf'
 import {region} from '../../env'
+import {toMajorRange} from '../../locator'
+import log from '../../logger'
 
 const keepAliveDelayMs = 3 * 60 * 1000
 
@@ -28,7 +28,7 @@ function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket:
     },
   }
 
-  return function (socket: net.Socket) {
+  return (socket: net.Socket) => {
     socket.setKeepAlive(true, keepAliveDelayMs)
     const ws = new WebSocket(endpoint, options)
 
