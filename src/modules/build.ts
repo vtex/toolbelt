@@ -6,7 +6,7 @@ import {logAll, onEvent} from '../sse'
 interface ListeningOptions {
   context?: Context,
   waitCompletion?: boolean,
-  onError?: {[code: string]: Function},
+  onError?: {[code: string]: AnyFunction},
 }
 
 type BuildTrigger<T> = () => Promise<T>
@@ -16,6 +16,7 @@ interface ListenResponse<T> {
   unlisten: Unlisten
 }
 
+type AnyFunction = (...args: any[]) => any
 type BuildEvent = 'logs' | 'build.status'
 
 const allEvents: BuildEvent[] = ['logs', 'build.status']
@@ -24,7 +25,7 @@ const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEven
   const [subject] = appOrKey.split('@')
   const unlistenLogs = logAll(ctx, log.level, subject)
   const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', subject, ['build.status'], message => callback('build.status', message))
-  const unlistenMap: Record<BuildEvent, Function> = {
+  const unlistenMap: Record<BuildEvent, AnyFunction> = {
     'build.status': unlistenBuild,
     logs: unlistenLogs,
   }
@@ -49,7 +50,7 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
         const {body: {code, details}} = message
         if (code === 'success' && waitCompletion) {
           unlisten(...allEvents)
-          resolve(() => {})
+          resolve(() => undefined)
         }
 
         if (code === 'fail') {

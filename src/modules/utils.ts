@@ -3,12 +3,13 @@ import {BuildFailError} from '../errors'
 import log from '../logger'
 import {logAll, onEvent} from '../sse'
 
-type BuildListeningOptions = {
+interface BuildListeningOptions {
   context?: Context,
   timeout?: number,
 }
 
 type BuildEvent = 'start' | 'success' | 'fail' | 'timeout' | 'logs'
+type AnyFunction = (...args: any[]) => any
 
 const allEvents: BuildEvent[] = ['start', 'success', 'fail', 'timeout', 'logs']
 
@@ -19,7 +20,7 @@ const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback:
   const unlistenLogs = logAll(ctx, log.level, subject)
   const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent(ctx, 'vtex.render-builder', subject, [`build.${type}`], (message) => callback(type, message)))
   const timer = timeout && setTimeout(() => callback('timeout'), timeout)
-  const unlistenMap: Record<BuildEvent, Function> = {
+  const unlistenMap: Record<BuildEvent, AnyFunction> = {
     fail: unlistenFail,
     logs: unlistenLogs,
     start: unlistenStart,

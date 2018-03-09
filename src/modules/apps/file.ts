@@ -6,6 +6,8 @@ import * as path from 'path'
 
 import log from '../../logger'
 
+type AnyFunction = (...args: any[]) => any
+
 const defaultIgnored = [
   '.DS_Store',
   'README.md',
@@ -74,13 +76,13 @@ export const addChangeContent = (changes: Change[]): Batch[] =>
     }
   })
 
-const sendSaveChanges = (file: string, sendChanges: Function): void =>
+const sendSaveChanges = (file: string, sendChanges: AnyFunction): void =>
   sendChanges(addChangeContent([{path: file, action: 'save'}]))
 
-const sendRemoveChanges = (file: string, sendChanges: Function): void =>
+const sendRemoveChanges = (file: string, sendChanges: AnyFunction): void =>
   sendChanges(addChangeContent([{path: file, action: 'remove'}]))
 
-export const watch = (root: string, sendChanges: Function, folder?: string): Bluebird<string | void> => {
+export const watch = (root: string, sendChanges: AnyFunction, folder?: string): Bluebird<string | void> => {
   const watcher = chokidar.watch([`${safeFolder(folder)}`, '*.json'], {
     atomic: true,
     awaitWriteFinish: {
