@@ -2,11 +2,11 @@ import chalk from 'chalk'
 import * as EventSource from 'eventsource'
 import {compose, forEach, path, pathOr} from 'ramda'
 
-import log from './logger'
-import {publicEndpoint, endpoint} from './env'
 import {getToken} from './conf'
-import userAgent from './user-agent'
+import {endpoint, publicEndpoint} from './env'
 import {SSEConnectionError} from './errors'
+import log from './logger'
+import userAgent from './user-agent'
 
 const levelAdapter = {warning: 'warn'}
 const colossusHost = endpoint('colossus')
@@ -25,10 +25,10 @@ const parseMessage = (msg: MessageJSON): Message => {
     body,
   }: Message = JSON.parse(msg.data)
   return {
+    body,
+    level: levelAdapter[level] || level,
     sender,
     subject,
-    level: levelAdapter[level] || level,
-    body,
   }
 }
 
@@ -51,7 +51,7 @@ const parseKeyToQueryParameter = (keys: string[]): string => {
 const matchSubject = (msg: Message, subject: string) => {
   return msg.subject.startsWith(subject)
     || msg.subject.startsWith('-')
-    && pathOr('', ['body', 'subject'], msg).startsWith(subject)
+    && (pathOr('', ['body', 'subject'], msg) as string).startsWith(subject)
 }
 
 const hasNoSubject = (msg: Message) => {

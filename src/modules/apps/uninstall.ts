@@ -1,19 +1,19 @@
 import * as inquirer from 'inquirer'
-import {head, tail, prepend} from 'ramda'
+import {head, prepend, tail} from 'ramda'
 
-import log from '../../logger'
 import {apps} from '../../clients'
-import {validateAppAction, parseArgs} from './utils'
+import log from '../../logger'
 import {getManifest, validateApp} from '../../manifest'
 import {toAppLocator} from './../../locator'
+import {parseArgs, validateAppAction} from './utils'
 
 const {uninstallApp} = apps
 
 const promptAppUninstall = (appsList: string[]): Promise<void> =>
   inquirer.prompt({
-    type: 'confirm',
-    name: 'confirm',
     message: `Are you sure you want to uninstall ${appsList.join(', ')}?`,
+    name: 'confirm',
+    type: 'confirm',
   })
   .then(({confirm}) => {
     if (!confirm) {

@@ -1,20 +1,20 @@
-import {head, tail, prepend, prop} from 'ramda'
+import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import * as Bluebird from 'bluebird'
+import {head, prepend, prop, tail} from 'ramda'
 
-import log from '../../logger'
-import {parseArgs} from './utils'
-import {getManifest, validateApp} from '../../manifest'
-import {toAppLocator, parseLocator} from './../../locator'
 import {createClients} from '../../clients'
 import {getAccount} from '../../conf'
+import log from '../../logger'
+import {getManifest, validateApp} from '../../manifest'
+import {parseLocator, toAppLocator} from './../../locator'
+import {parseArgs} from './utils'
 
 const promptDeprecate = (appsList: string[]): Bluebird<boolean> =>
 inquirer.prompt({
-  type: 'confirm',
-  name: 'confirm',
   message: `Are you sure you want to deprecate app` + (appsList.length > 1 ? 's' : '') + ` ${chalk.green(appsList.join(', '))}?`,
+  name: 'confirm',
+  type: 'confirm',
 })
 .then<boolean>(prop('confirm'))
 
@@ -47,7 +47,7 @@ export default async (optionalApp: string, options) => {
   const context = {account: optionAccount, workspace: 'master'}
   const {registry} = createClients(context)
   const appsList = prepend(optionalApp || toAppLocator(await getManifest()), parseArgs(options._))
-
+  
   if (!preConfirm && !await promptDeprecate(appsList)) {
     throw new Error('User cancelled')
   }

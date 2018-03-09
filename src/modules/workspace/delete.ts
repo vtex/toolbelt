@@ -1,11 +1,11 @@
+import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import * as Bluebird from 'bluebird'
-import {prop, head, tail, prepend, contains, flatten} from 'ramda'
+import {contains, flatten, head, prepend, prop, tail} from 'ramda'
 
-import log from '../../logger'
 import {workspaces} from '../../clients'
-import {getWorkspace, getAccount} from '../../conf'
+import {getAccount, getWorkspace} from '../../conf'
+import log from '../../logger'
 import {parseArgs} from '../apps/utils'
 import workspaceUse from './use'
 
@@ -14,9 +14,9 @@ const workspace = getWorkspace()
 
 const promptWorkspaceDeletion = (names: string[]): Bluebird<boolean> =>
   inquirer.prompt({
-    type: 'confirm',
-    name: 'confirm',
     message: `Are you sure you want to delete workspace` + (names.length > 1 ? 's' : '') + ` ${chalk.green(names.join(', '))}?`,
+    name: 'confirm',
+    type: 'confirm',
   })
   .then<boolean>(prop('confirm'))
 

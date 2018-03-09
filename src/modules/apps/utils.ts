@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import {createReadStream} from 'fs-extra'
 import * as inquirer from 'inquirer'
 import {join} from 'path'
-import {flatten, splitAt, values} from 'ramda'
+import {drop} from 'ramda'
 import * as semverDiff from 'semver-diff'
 
 import {
@@ -33,8 +33,7 @@ export const workspaceMasterMessage =
   `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`
 
 export const parseArgs = (args: string[]): string[] => {
-  const [, commands] = splitAt(1, flatten(values(args)))
-  return commands
+  return drop(1, args)
 }
 
 export const validateAppAction = async (app?) => {

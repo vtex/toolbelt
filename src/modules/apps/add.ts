@@ -95,7 +95,7 @@ const addApps = (apps: string[]): Promise<void | never> => {
 }
 
 export default (app: string, options) => {
-  const apps: string[] = prepend(app, parseArgs(options._) as string[])
+  const apps = prepend(app, parseArgs(options._))
   log.debug('Adding app' + (apps.length > 1 ? 's' : '') + `: ${apps.join(', ')}`)
   return addApps(apps)
     .then(() => log.info('App' + (apps.length > 1 ? 's' : '') + ' added succesfully!'))
