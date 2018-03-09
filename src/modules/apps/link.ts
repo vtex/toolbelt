@@ -26,6 +26,7 @@ import {pathToFileObject, validateAppAction} from './utils'
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
+const stabilityThreshold = process.platform === 'win32' ? 200 : 50
 
 const pathToChange = (path: string, remove?: boolean): Change => ({
   content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
@@ -63,7 +64,7 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
     atomic: true,
     awaitWriteFinish: {
-      stabilityThreshold: 50,
+      stabilityThreshold,
     },
     cwd: root,
     ignoreInitial: true,
@@ -89,7 +90,7 @@ export default async (options) => {
   await validateAppAction()
   const manifest = await getManifest()
 
-  if (manifest.builders['render']
+  if (manifest.builders.render
     || manifest.builders['functions-ts']
     || manifest.name === 'builder-hub') {
     return legacyLink(options)
