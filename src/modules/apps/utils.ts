@@ -29,8 +29,11 @@ import {isManifestReadable} from '../../manifest'
 export const pathToFileObject = (root = process.cwd()) => (path: string): BatchStream =>
   ({path, content: createReadStream(join(root, path))})
 
+const workspaceExampleName = process.env.USER || 'example'
+
 export const workspaceMasterMessage =
-  `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.`
+  `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.
+You can run "${chalk.blue(`vtex use ${workspaceExampleName} -r`)}" to create and use a workspace named "${chalk.green(workspaceExampleName)}".`
 
 export const parseArgs = (args: string[]): string[] => {
   return drop(1, args)
