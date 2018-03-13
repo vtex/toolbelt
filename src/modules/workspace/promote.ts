@@ -1,13 +1,13 @@
+import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import * as Bluebird from 'bluebird'
 import {compose, flip, gt, length} from 'ramda'
 
-import {CommandError} from '../../errors'
-import useCmd from './use'
-import log from '../../logger'
 import {apps, workspaces} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
+import {CommandError} from '../../errors'
+import log from '../../logger'
+import useCmd from './use'
 
 const {listLinks} = apps
 const {promote, get} = workspaces
@@ -36,15 +36,15 @@ const isPromotable = (workspace: string): Bluebird<never | void> =>
     }).then(async () => {
       const meta = await get(account, currentWorkspace)
       if (!meta.production) {
-        throw new CommandError(`Workspace ${currentWorkspace} is not in production mode. Use the command "${chalk.yellow('vtex workspace production true')}" to set production mode.`)
+        throw new CommandError(`Workspace ${chalk.green(currentWorkspace)} is not in ${chalk.green('production mode')}\nOnly production workspaces with no linked apps may be promoted\nUse the command ${chalk.blue('vtex production')} to set it to production mode`)
       }
     })
 
 const promptConfirm = (workspace: string): Promise<any> =>
   inquirer.prompt({
-    type: 'confirm',
-    name: 'confirm',
     message: `Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`,
+    name: 'confirm',
+    type: 'confirm',
   }).then(({confirm}) => {
     if (!confirm) {
       process.exit()

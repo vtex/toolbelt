@@ -194,6 +194,15 @@ export default {
       handler: './port/react',
     },
   },
+  production: {
+    description: 'Set this workspace\'s production mode to true or false',
+    handler: './workspace/production',
+    optionalArgs: 'production',
+  },
+  promote: {
+    description: 'Promote this workspace to master',
+    handler: './workspace/promote',
+  },
   publish: {
     description: 'Publish the current app or a path containing an app',
     handler: './apps/publish',
@@ -318,13 +327,19 @@ export default {
       ],
       requiredArgs: 'name',
     },
+    description: 'Alias for vtex workspace info',
+    handler: './workspace/info',
+    info: {
+      description: 'Display information about the current workspace',
+      handler: './workspace/info',
+    },
     list: {
       alias: 'ls',
       description: 'List workspaces on this account',
       handler: './workspace/list',
     },
     production: {
-      description: 'Set this workspace to production mode',
+      description: 'Set this workspace\'s production mode to true or false',
       handler: './workspace/production',
       optionalArgs: 'production',
     },

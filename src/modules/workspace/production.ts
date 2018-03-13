@@ -1,12 +1,12 @@
 import chalk from 'chalk'
 
-import {CommandError} from '../../errors'
-import log from '../../logger'
 import {apps, workspaces} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
+import {CommandError} from '../../errors'
+import log from '../../logger'
 
 const {listLinks} = apps
-const {set, get} = workspaces
+const {set} = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const canGoLive = async (): Promise<void> => {
@@ -16,18 +16,17 @@ const canGoLive = async (): Promise<void> => {
   }
 }
 
-const pretty = p => p ? chalk.green('true') : chalk.red('false')
+const pretty = p => p ? chalk.green('production mode') : chalk.red('development mode')
 
 export default async (production: any) => {
-  const prod = production === 'true'
-    ? true
-    : production === 'false'
-      ? false
-      : null
+  let prod
 
-  if (prod === null) {
-    const meta = await get(account, currentWorkspace)
-    return log.info(`Workspace ${chalk.green(currentWorkspace)} production=${pretty(meta.production)}`)
+  if (production === null || production === 'true') {
+    prod = true
+  } else if (production === 'false') {
+    prod = false
+  } else {
+    throw new CommandError('Argument for command production must be either true or false.')
   }
 
   if (prod) {
@@ -37,6 +36,12 @@ export default async (production: any) => {
   }
 
   log.debug(`Setting workspace ${currentWorkspace} to production=${prod}`)
-  return set(account, currentWorkspace, {production: prod})
-    .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} set to production=${pretty(prod)}`))
+  await set(account, currentWorkspace, {production: prod})
+  log.info(`Workspace ${chalk.green(currentWorkspace)} set to ${pretty(prod)}`)
+  if (prod) {
+    log.info(`You can now check your changes before publishing them`)
+    log.info(`If everything is fine, promote with ${chalk.blue('vtex promote')}`)
+  } else {
+    log.info(`You may now link apps again`)
+  }
 }
