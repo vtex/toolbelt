@@ -35,29 +35,31 @@ const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEven
   }
 }
 
-const runErrorAction = (code, errorActions) => {
+const runErrorAction = (code, message, errorActions) => {
   const action = errorActions[code]
   if (action) {
     action()
+  } else {
+    log.error(`App build failed with message: ${message}`)
   }
 }
 
 const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlisten> => {
   return new Promise((resolve, reject, onCancel) => {
     const {waitCompletion, onError = {}, context = currentContext} = options
-    const unlisten = onBuildEvent(context, appOrKey, (eventType, message) => {
+    const unlisten = onBuildEvent(context, appOrKey, (eventType, eventData) => {
       if (eventType === 'build.status') {
-        const {body: {code, details}} = message
+        const {body: {code, details, message}} = eventData
         if (code === 'success' && waitCompletion) {
           unlisten(...allEvents)
           resolve(() => undefined)
         }
 
         if (code === 'fail') {
-          runErrorAction(details.errorCode, onError)
+          runErrorAction(details.errorCode, message, onError)
           if (waitCompletion) {
             unlisten(...allEvents)
-            reject(new BuildFailError(message))
+            reject(new BuildFailError(eventData))
           }
         }
       }
