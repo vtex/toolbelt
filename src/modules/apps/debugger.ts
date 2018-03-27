@@ -21,16 +21,17 @@ function getErrorMessage (raw: string): string {
   }
 }
 
-function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket: net.Socket) => void {
+function webSocketTunnelHandler (host, path: string, server: net.Server): (socket: net.Socket) => void {
   const options = {
     headers: {
       Authorization: getToken(),
+      Host: host,
     },
   }
 
   return (socket: net.Socket) => {
     socket.setKeepAlive(true, keepAliveDelayMs)
-    const ws = new WebSocket(endpoint, options)
+    const ws = new WebSocket(`ws://${host}${path}`, options)
 
     const end = () => {
       ws.removeAllListeners()
@@ -86,11 +87,12 @@ function webSocketTunnelHandler (endpoint: string, server: net.Server): (socket:
 export default function startDebuggerTunnel (manifest: Manifest, port: number = 5858): Promise<number> {
   const {name, vendor, version} = manifest
   const majorRange = toMajorRange(version)
-  const endpoint = `ws://${name}.${vendor}.${region()}.vtex.io/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
+  const host = `${name}.${vendor}.${region()}.vtex.io`
+  const path = `/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
 
   return new Promise((resolve, reject) => {
     const server = net.createServer()
-    server.on('connection', webSocketTunnelHandler(endpoint, server))
+    server.on('connection', webSocketTunnelHandler(host, path, server))
 
     server.on('error', err => {
       if (port < 5900) {
