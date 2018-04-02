@@ -1,7 +1,7 @@
 import {readFileSync} from 'fs-extra'
 import * as ora from 'ora'
 import {resolve} from 'path'
-import {map, prepend} from 'ramda'
+import {forEach, map, prepend} from 'ramda'
 
 import { BuildResult } from '@vtex/api'
 import {createClients} from '../../clients'
@@ -30,37 +30,35 @@ const publisher = (account: string, workspace: string = 'master', legacyPublishA
     return await builder.publishApp(appId, filesWithContent, tag)
   }
 
-  const publishApps = async (paths: string[], tag: string, accessor = 0): Promise<void | never> => {
-    const path = resolve(paths[accessor])
-    const manifest = JSON.parse(readFileSync(resolve(path, 'manifest.json'), 'utf8'))
-    const pubTag = tag || automaticTag(manifest.version)
-    const next = () => accessor < paths.length - 1
-      ? publishApps(paths, tag, accessor + 1)
-      : Promise.resolve()
+  const publishApps = async (paths: string[], tag: string): Promise<void | never> => {
+    forEach(async (p : string) => {
+      const path = resolve(p)
+      const manifest = JSON.parse(readFileSync(resolve(path, 'manifest.json'), 'utf8'))
+      const pubTag = tag || automaticTag(manifest.version)
 
-    if (manifest.builders['render']
-      || manifest.builders['functions-ts']) {
-      const unlisten = logAll({account, workspace}, log.level, `${manifest.vendor}.${manifest.name}`)
-      await legacyPublishApp(path, pubTag, manifest).finally(unlisten)
-    } else {
-      const appId = toAppLocator(manifest)
-      const oraMessage = ora(`Publishing ${appId} ...`)
-      const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
-      try {
-        const {response} = await listenBuild(appId, () => publishApp(path, appId, pubTag), {waitCompletion: true, context})
-        if (response.code !== 'build.accepted') {
-          spinner.warn(`${appId} was published successfully, but you should update your builder hub to the latest version.`)
-        } else {
-          spinner.succeed(`${appId} was published successfully!`)
+      if (manifest.builders.render
+        || manifest.builders['functions-ts']) {
+        const unlisten = logAll({account, workspace}, log.level, `${manifest.vendor}.${manifest.name}`)
+        await legacyPublishApp(path, pubTag, manifest).finally(unlisten)
+      } else {
+        const appId = toAppLocator(manifest)
+        const oraMessage = ora(`Publishing ${appId} ...`)
+        const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
+        try {
+          const {response} = await listenBuild(appId, () => publishApp(path, appId, pubTag), {waitCompletion: true, context})
+          if (response.code !== 'build.accepted') {
+            spinner.warn(`${appId} was published successfully, but you should update your builder hub to the latest version.`)
+          } else {
+            spinner.succeed(`${appId} was published successfully!`)
+          }
+        } catch (e) {
+          spinner.fail(`Fail to publish ${appId}`)
+          log.error(e.message)
+          throw e
         }
-      } catch (e) {
-        spinner.fail(`Fail to publish ${appId}`)
-        log.error(e.message)
-        throw e
       }
-    }
-
-    await next()
+    }, paths)
+    Promise.resolve()
   }
 
   return {publishApp, publishApps}
