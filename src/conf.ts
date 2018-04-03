@@ -46,3 +46,8 @@ export const currentContext: Context = {
   account: getAccount(),
   workspace: getWorkspace(),
 }
+
+export enum Region {
+  Production = 'aws-us-east-1',
+  Staging = 'aws-us-east-2',
+}

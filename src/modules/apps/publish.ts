@@ -5,7 +5,7 @@ import {forEach, map, prepend} from 'ramda'
 
 import { BuildResult } from '@vtex/api'
 import {createClients} from '../../clients'
-import {getAccount} from '../../conf'
+import {getAccount, Region} from '../../conf'
 import {toAppLocator} from '../../locator'
 import log from '../../logger'
 import {logAll} from '../../sse'
@@ -19,8 +19,9 @@ const root = process.cwd()
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
-const publisher = (account: string, workspace: string = 'master', legacyPublishApp) => {
-  const context = {account, workspace, timeout: 60000}
+const publisher = (account: string, workspace: string = 'master', staging: boolean = false, legacyPublishApp) => {
+  const region = staging ? Region.Staging : Region.Production
+  const context = {account, workspace, region, timeout: 60000}
   const {builder} = createClients(context)
 
   const publishApp = async (appRoot: string, appId: string, tag: string): Promise<BuildResult> => {
@@ -70,8 +71,9 @@ export default (path: string, options) => {
   const registry = options.r || options.registry
   const workspace = options.w || options.workspace
   const optionPublic = options.p || options.public
+  const staging = !! options.staging
   const account = optionPublic ? 'smartcheckout' : registry ? registry : getAccount()
   const {legacyPublishApp} = legacyPublisher(account, workspace)
-  const {publishApps} = publisher(account, workspace, legacyPublishApp)
+  const {publishApps} = publisher(account, workspace, staging, legacyPublishApp)
   return publishApps(paths, options.tag)
 }
