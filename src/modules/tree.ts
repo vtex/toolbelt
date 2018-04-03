@@ -232,6 +232,11 @@ export default {
         short: 'p',
         type: 'boolean',
       },
+      {
+        description: 'Use the staging environment',
+        long: 'staging',
+        type: 'boolean',
+      },
     ],
   },
   settings: {
