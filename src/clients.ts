@@ -1,4 +1,5 @@
 import {Apps, Builder, Colossus, Registry, Router, Workspaces} from '@vtex/api'
+import Billing from './billingClient'
 
 import {getAccount, getToken, getWorkspace} from './conf'
 import * as env from './env'
@@ -29,18 +30,20 @@ const createClients = (customOptions) => {
   }
 }
 
-const [apps, router, workspaces, colossus] = getToken()
+const [apps, router, workspaces, colossus, billing] = getToken()
   ? [
     new Apps({...options, endpoint: env.endpoint('apps')}),
     new Router({...options, endpoint: env.endpoint('router')}),
     new Workspaces({...options, endpoint: env.endpoint('workspaces')}),
     new Colossus({...options}),
+    new Billing({...options}),
   ]
   : [
     interceptor<Apps>('apps'),
     interceptor<Router>('router'),
     interceptor<Workspaces>('workspaces'),
     interceptor<Colossus>('colossus'),
+    interceptor<Billing>('billing'),
   ]
 
 export {
@@ -49,4 +52,5 @@ export {
   workspaces,
   colossus,
   createClients,
+  billing,
 }
