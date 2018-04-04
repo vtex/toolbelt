@@ -9,7 +9,6 @@ import log from './logger'
 import userAgent from './user-agent'
 
 const levelAdapter = {warning: 'warn'}
-const colossusHost = endpoint('colossus')
 
 const onOpen = type => () =>
   log.debug(`Connected to ${type} server`)
@@ -69,7 +68,7 @@ const maybeCall = (callback: (message: Message) => void) => (msg: Message) => {
 }
 
 const onLog = (ctx: Context, subject: string, logLevel: string, callback: (message: Message) => void): Unlisten => {
-  const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
+  const source = `${endpoint('colossus')}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)
   es.onmessage = compose(maybeCall(callback), filterSubject(subject, true), parseMessage)
@@ -78,7 +77,7 @@ const onLog = (ctx: Context, subject: string, logLevel: string, callback: (messa
 }
 
 export const onEvent = (ctx: Context, sender: string, subject: string, keys: string[], callback: (message: Message) => void): Unlisten => {
-  const source = `${colossusHost}/${ctx.account}/${ctx.workspace}/events?sender=${sender}${parseKeyToQueryParameter(keys)}`
+  const source = `${endpoint('colossus')}/${ctx.account}/${ctx.workspace}/events?sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
   es.onmessage = compose(maybeCall(callback), filterSubject(subject), parseMessage)
