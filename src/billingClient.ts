@@ -1,12 +1,4 @@
 import {HttpClient, InstanceOptions, IOResponse} from '@vtex/api'
-import CustomGraphQLError from './modules/errors/customGraphQLError'
-
-const throwOnErrors = (message) => (response) => {
-  if (response.data && response.data.errors && response.data.errors.length > 0) {
-    throw new CustomGraphQLError(message, response.data.errors)
-  }
-  return response
-}
 
 export default class Billing {
   private http: HttpClient
@@ -24,7 +16,7 @@ export default class Billing {
     })
   }
 
-  public installApp = (appName: string, registry: string, billingPolicyAccepted: boolean, termsOfUseAccepted: boolean): Promise<IOResponse<any>> => {
+  public installApp = async (appName: string, registry: string, billingPolicyAccepted: boolean, termsOfUseAccepted: boolean): Promise<IOResponse<any>> => {
     const graphQLQuery = `mutation InstallApps{
       install(appName:"${appName}", registry:"${registry}", billingPolicyAccepted:${billingPolicyAccepted}, termsOfUseAccepted:${termsOfUseAccepted}) {
         installed
@@ -32,18 +24,13 @@ export default class Billing {
         termsOfUse
       }
     }`
-    return this.http.postRaw<any>(`/_v/graphql`, {
-      data: {query: graphQLQuery},
-    })
-    .then(throwOnErrors('Error fetching install/billing data from vtex.billing'))
-    .then(({data: billingData}) => {
-      return {
-        data: {
-          installed: billingData.installed,
-          billingPolicyJSON: JSON.parse(billingData.billingPolicyJSON),
-          termsOfUse: billingData.termsOfUse,
-        },
-      }
-    })
+    try {
+      const {data: {data, errors}} = await this.http.postRaw<any>(`/_v/graphql`, {query: graphQLQuery})
+      console.log('data', data)
+      console.log('errors', errors)
+      return data
+    } catch (e) {
+      console.log('e', e)
+    }
   }
 }

@@ -20,7 +20,6 @@ export const prepareInstall = async (app: string, reg: string): Promise<void> =>
     log.info(`Installed app ${app} successfully`)
   } catch (e) {
     console.log(e)
-    console.log(e.response.data.errors)
     log.warn(`The following app was not installed: ${app}`)
     // log.error(`Error ${e.response.status}: ${e.response.statusText}. ${e.response.data.message}`)
   }
