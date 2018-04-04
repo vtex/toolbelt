@@ -130,3 +130,8 @@ declare module '*/package.json' {
   const version: string
   export {name, version}
 }
+
+interface InstallResponse {
+  installed: boolean
+  billingPolicyJSON?: string
+}
