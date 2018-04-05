@@ -1,13 +1,7 @@
 import {Environment, getEnvironment, Region} from './conf'
 
-const env = process.env.VTEX_ENV === 'beta' ?
-    Environment.Staging :
-    (getEnvironment() || Environment.Production)
-
-export function endpoint (api = 'api'): string {
+export function endpoint (api: string): string {
   switch (api.toLowerCase()) {
-    case 'vtexid':
-      return process.env.VTEX_VTEXID_ENDPOINT || env
     case 'apps':
       return process.env.VTEX_APPS_ENDPOINT
     case 'registry':
@@ -19,15 +13,15 @@ export function endpoint (api = 'api'): string {
     case 'colossus':
       return process.env.VTEX_COLOSSUS_ENDPOINT || `http://colossus.${region()}.vtex.io`
     default:
-      return process.env.VTEX_API_ENDPOINT || env
+      throw new Error('api argument is required')
   }
 }
 
 export function region (): string {
   return process.env.VTEX_REGION ||
-    (env === Environment.Staging ? Region.Staging : Region.Production)
+    (getEnvironment() === Environment.Staging ? Region.Staging : Region.Production)
 }
 
 export function publicEndpoint (): string {
-  return env === Environment.Staging ? 'myvtexdev.com' : 'myvtex.com'
+  return getEnvironment() === Environment.Staging ? 'myvtexdev.com' : 'myvtex.com'
 }
