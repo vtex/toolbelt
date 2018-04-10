@@ -16,11 +16,11 @@ export default class Billing {
     })
   }
 
-  public installApp = async (appName: string, registry: string, billingPolicyAccepted: boolean, termsOfUseAccepted: boolean): Promise<InstallResponse> => {
+  public installApp = async (appName: string, registry: string, termsOfUseAccepted: boolean): Promise<InstallResponse> => {
     const graphQLQuery = `mutation InstallApps{
-      install(appName:"${appName}", registry:"${registry}", billingPolicyAccepted:${billingPolicyAccepted}, termsOfUseAccepted:${termsOfUseAccepted}) {
+      install(appName:"${appName}", registry:"${registry}", termsOfUseAccepted:${termsOfUseAccepted}) {
         installed
-        billingPolicyJSON
+        billingOptions
       }
     }`
     try {
@@ -28,14 +28,9 @@ export default class Billing {
       if (errors) {
         throw errors
       }
-      // console.log('data', data)
       return data.install
     } catch (e) {
-      if (e.response && e.response.data && e.response.data.errors) {
-        console.log('error: ', e.response.data.errors)
-      } else {
-        console.log('error: ', e)
-      }
+      throw e
     }
   }
 }

@@ -2,12 +2,13 @@ import {prop} from 'ramda'
 import * as inquirer from 'inquirer'
 
 import log from '../../logger'
-import {billing} from '../../clients'
+import {apps, billing} from '../../clients'
 import {validateAppAction} from './utils'
 import {getManifest, validateApp} from '../../manifest'
 import {toAppLocator} from './../../locator'
 
 const {installApp} = billing
+const {installApp: legacyInstallApp} = apps
 
 const promptPolicies = async () => {
   return prop('confirm', await inquirer.prompt({
@@ -17,41 +18,52 @@ const promptPolicies = async () => {
   }))
 }
 
+const legacyInstall = async (app: string, reg: string): Promise<void> => {
+  try {
+    log.debug('Starting legacy install')
+    await legacyInstallApp(app, reg)
+    log.info(`Installed app ${app} successfully`)
+  } catch (e) {
+    log.warn(`The following app was not installed: ${app}`)
+    log.error(`Error ${e.response.status}: ${e.response.statusText}. ${e.response.data.message}`)
+  }
+}
+
 export const prepareInstall = async (app: string, reg: string): Promise<void> => {
   const validApp = validateApp(app)
   try {
-    log.debug('Starting to install app', validApp)
-    const billingResponse = await installApp(app, reg, false, false)
-    if (!billingResponse) {
-      throw new Error ('Something went wrong :(')
-    }
+    const billingResponse = await installApp(validApp, reg, false)
     if (billingResponse.installed) {
-      log.info(`Installed app ${app} successfully`)
-      return
+      log.info(`Installed app ${validApp} successfully`)
     } else {
-      if (billingResponse.billingPolicyJSON) {
-        const policies = billingResponse.billingPolicyJSON
-        log.warn(`This is a paid app. In order for you to install it, you need to accept the following Terms:\n${policies}`)
+      if (billingResponse.billingOptions) {
+        const options = billingResponse.billingOptions
+        log.warn(`This is a paid app. In order for you to install it, you need to accept the following Terms:\n${options}`)
         const confirm = await promptPolicies()
         if (!confirm) {
           log.info('User cancelled')
           process.exit()
         }
-        log.debug('Starting to install app with accepted Terms', validApp)
-        const responseAfterAccept = await installApp(app, reg, confirm, confirm)
-        if (!responseAfterAccept) {
-          throw new Error ('Something went wrong :(')
-        }
+        log.info('Starting to install app with accepted Terms')
+        const responseAfterAccept = await installApp(validApp, reg, true)
         if (responseAfterAccept.installed) {
-          log.info(`Installed app ${app} successfully`)
-          return
+          log.info(`Installed app ${validApp} successfully`)
         }
-        throw new Error('Something went wrong during installation')
+      } else {
+        throw new Error('Failed to get billing options')
       }
     }
-    console.log('billingResponse: ', billingResponse)
   } catch (e) {
-    console.log(e)
+    if (e.response && e.response.data && e.response.data.error) {
+      if (e.response.data.error.includes('Unable to find vtex.billing in worskpace dependencies')) {
+        log.debug('Billing app not found in current workspace')
+        return await legacyInstall(validApp, reg)
+      } else {
+        log.error(e.response.data.error)
+      }
+    } else {
+      log.error(e)
+    }
     log.warn(`The following app was not installed: ${app}`)
   }
 }
@@ -59,7 +71,6 @@ export const prepareInstall = async (app: string, reg: string): Promise<void> =>
 export default async (optionalApp: string, options) => {
   await validateAppAction(optionalApp)
   const app = optionalApp || toAppLocator(await getManifest())
-  log.info('Installing through vtex.billing')
-  log.debug('Installing app' + `${app}`)
+  log.debug(`Installing app ${app}`)
   return prepareInstall(app, options.r || options.registry || 'smartcheckout')
 }

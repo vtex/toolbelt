@@ -133,5 +133,5 @@ declare module '*/package.json' {
 
 interface InstallResponse {
   installed: boolean
-  billingPolicyJSON?: string
+  billingOptions?: string
 }
