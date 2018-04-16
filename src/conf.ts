@@ -36,6 +36,11 @@ export const getToken = (): string =>
 export const getWorkspace = (): string =>
   conf.get('workspace')
 
+const envFromProcessEnv = {
+  'beta': Environment.Staging,
+  'prod': Environment.Production,
+  'staging': Environment.Staging
+}
 let forcedEnv = null
 
 export const forceEnvironment = (env: Environment) => {
@@ -43,7 +48,7 @@ export const forceEnvironment = (env: Environment) => {
 }
 
 export const getEnvironment = (): Environment => {
-  const env = process.env.VTEX_ENV === 'beta' ? Environment.Staging : null
+  const env = envFromProcessEnv[process.env.VTEX_ENV]
   const persisted = conf.get('env') || Environment.Production
   return forcedEnv || env || persisted
 }
