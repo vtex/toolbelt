@@ -348,6 +348,11 @@ export default {
       handler: './workspace/production',
       optionalArgs: 'production',
     },
+    test: {
+      description: 'AB test between this workspace and master',
+      handler: './workspace/abTest',
+      optionalArgs: 'weight',
+    },
     promote: {
       description: 'Promote this workspace to master',
       handler: './workspace/promote',
