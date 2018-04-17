@@ -66,6 +66,13 @@ const main = async () => {
 
   const command = await find(tree, without([VERBOSE], args))
 
+  if (isVerbose) {
+    const findWhoami = await find(tree, ['whoami'])
+    if (command.command !== findWhoami.command) {
+      await run(findWhoami)
+    }
+  }
+
   await run(command)
 }
 
