@@ -19,7 +19,7 @@ export default class Billing {
   public installApp = async (appName: string, registry: string, termsOfUseAccepted: boolean): Promise<InstallResponse> => {
     const graphQLQuery = `mutation InstallApps{
       install(appName:"${appName}", registry:"${registry}", termsOfUseAccepted:${termsOfUseAccepted}) {
-        installed
+        code
         billingOptions
       }
     }`

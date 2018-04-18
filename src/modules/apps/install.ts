@@ -29,35 +29,46 @@ const legacyInstall = async (app: string, reg: string): Promise<void> => {
   }
 }
 
+const checkBillingOptions = async (validApp: string, reg: string, billingOptions: string) => {
+  log.warn(`This is a paid app. In order for you to install it, you need to accept the following Terms:\n${billingOptions}`)
+  const confirm = await promptPolicies()
+  if (!confirm) {
+    log.info('User cancelled')
+    process.exit()
+  }
+
+  log.info('Starting to install app with accepted Terms')
+  await installApp(validApp, reg, true)
+  log.debug('Installed after accepted terms')
+}
+
 export const prepareInstall = async (app: string, reg: string): Promise<void> => {
   const validApp = validateApp(app)
   try {
-    const billingResponse = await installApp(validApp, reg, false)
-    if (billingResponse.installed) {
-      log.info(`Installed app ${validApp} successfully`)
-    } else {
-      if (billingResponse.billingOptions) {
-        const options = billingResponse.billingOptions
-        log.warn(`This is a paid app. In order for you to install it, you need to accept the following Terms:\n${options}`)
-        const confirm = await promptPolicies()
-        if (!confirm) {
-          log.info('User cancelled')
-          process.exit()
+    const {code, billingOptions} = await installApp(validApp, reg, false)
+    switch (code) {
+      case 'installed_from_own_registry':
+        log.debug('Installed from own registry')
+        break
+      case 'installed_by_previous_purchase':
+        log.debug('Installed from previous purchase')
+        break
+      case 'installed_free':
+        log.debug('Free app')
+        break
+      case 'check_terms':
+        if (!billingOptions) {
+          throw new Error('Failed to get billing options')
         }
-        log.info('Starting to install app with accepted Terms')
-        const responseAfterAccept = await installApp(validApp, reg, true)
-        if (responseAfterAccept.installed) {
-          log.info(`Installed app ${validApp} successfully`)
-        }
-      } else {
-        throw new Error('Failed to get billing options')
-      }
+        await checkBillingOptions(validApp, reg, billingOptions)
     }
+    log.info(`Installed app ${validApp} successfully`)
+
   } catch (e) {
     if (e.response && e.response.data && e.response.data.error) {
-      if (e.response.data.error.includes('Unable to find vtex.billing in worskpace dependencies')) {
+      if (e.response.data.error.includes('Unable to find vtex.billing in workspace dependencies')) {
         log.debug('Billing app not found in current workspace')
-        return await legacyInstall(validApp, reg)
+        return legacyInstall(validApp, reg)
       } else {
         log.error(e.response.data.error)
       }
