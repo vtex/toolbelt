@@ -1,20 +1,20 @@
-import {prop} from 'ramda'
 import * as inquirer from 'inquirer'
+import {prop} from 'ramda'
 
-import log from '../../logger'
 import {apps, billing} from '../../clients'
-import {validateAppAction} from './utils'
+import log from '../../logger'
 import {getManifest, validateApp} from '../../manifest'
 import {toAppLocator} from './../../locator'
+import {optionsFormatter, validateAppAction} from './utils'
 
 const {installApp} = billing
 const {installApp: legacyInstallApp} = apps
 
 const promptPolicies = async () => {
   return prop('confirm', await inquirer.prompt({
+    message: 'Do you accept all the Terms?',
     name: 'confirm',
     type: 'confirm',
-    message: 'Do you accept all the Terms?',
   }))
 }
 
@@ -29,8 +29,8 @@ const legacyInstall = async (app: string, reg: string): Promise<void> => {
   }
 }
 
-const checkBillingOptions = async (validApp: string, reg: string, billingOptions: string) => {
-  log.warn(`This is a paid app. In order for you to install it, you need to accept the following Terms:\n${billingOptions}`)
+const checkBillingOptions = async (validApp: string, reg: string, billingOptions: BillingOptions) => {
+  log.warn(`This is a paid app. In order for you to install it, you need to accept the following Terms:\n${optionsFormatter(billingOptions)}`)
   const confirm = await promptPolicies()
   if (!confirm) {
     log.info('User cancelled')
@@ -60,7 +60,7 @@ export const prepareInstall = async (app: string, reg: string): Promise<void> =>
         if (!billingOptions) {
           throw new Error('Failed to get billing options')
         }
-        await checkBillingOptions(validApp, reg, billingOptions)
+        await checkBillingOptions(validApp, reg, JSON.parse(billingOptions))
     }
     log.info(`Installed app ${validApp} successfully`)
 
