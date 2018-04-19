@@ -1,24 +1,24 @@
-import * as ora from 'ora'
+import * as Bluebird from 'bluebird'
 import * as Table from 'cli-table'
 import * as inquirer from 'inquirer'
-import * as Bluebird from 'bluebird'
-import {map, prop, pipe, reject, isEmpty} from 'ramda'
+import * as ora from 'ora'
+import {isEmpty, map, pipe, prop, reject} from 'ramda'
 
-import log from '../../logger'
 import {apps} from '../../clients'
-import {installApps} from './install'
-import {appsLastVersion} from './utils'
-import {diffVersions} from '../infra/utils'
 import {parseLocator, toAppLocator} from '../../locator'
+import log from '../../logger'
+import {diffVersions} from '../infra/utils'
+import {prepareInstall} from './install'
+import {appsLastVersion} from './utils'
 
 const {listApps} = apps
 
 const promptUpdate = (): Bluebird<boolean> =>
   Promise.resolve(
     inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
       message: 'Apply version updates?',
+      name: 'confirm',
+      type: 'confirm',
     })
     .then<boolean>(prop('confirm')),
   )
@@ -58,5 +58,5 @@ export default async () => {
   }
 
   const appsList = map(pipe(updateVersion, toAppLocator), updateableApps)
-  await installApps(appsList, 'smartcheckout')
+  await prepareInstall(appsList, 'smartcheckout')
 }

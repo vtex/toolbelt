@@ -1,4 +1,4 @@
-export interface Change {
+interface Change {
   path: string,
   action: 'save' | 'remove',
 }
@@ -13,7 +13,7 @@ interface BatchStream {
   content: NodeJS.ReadableStream,
 }
 
-export interface Manifest {
+interface Manifest {
   name?: string,
   title?: string,
   vendor?: string,
@@ -144,24 +144,24 @@ interface BillingOptions {
   termsURL: string
 }
 
-export interface Policy {
+interface Policy {
   plan: string
   currency: string
   billing: Billing
 }
 
-export interface Billing {
+interface Billing {
   taxClassification: string
   items: CalculationItem[]
 }
 
-export interface CalculationItem {
+interface CalculationItem {
   itemCurrency: string
   fixed: number
   calculatedByMetricUnit: CalculatedByMetricUnit
 }
 
-export interface CalculatedByMetricUnit {
+interface CalculatedByMetricUnit {
   metricId: string
   metricName: string
   minChargeValue: number
@@ -169,7 +169,7 @@ export interface CalculatedByMetricUnit {
   route: string
 }
 
-export interface Range {
+interface Range {
   exclusiveFrom: number
   inclusiveTo: number
   multiplier: number

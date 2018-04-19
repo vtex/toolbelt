@@ -1,11 +1,12 @@
+import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import {prop} from 'ramda'
+import {head, prepend, prop, tail} from 'ramda'
 
 import {apps, billing} from '../../clients'
 import log from '../../logger'
 import {getManifest, validateApp} from '../../manifest'
 import {toAppLocator} from './../../locator'
-import {optionsFormatter, validateAppAction} from './utils'
+import {optionsFormatter, parseArgs, validateAppAction} from './utils'
 
 const {installApp} = billing
 const {installApp: legacyInstallApp} = apps
@@ -29,26 +30,30 @@ const legacyInstall = async (app: string, reg: string): Promise<void> => {
   }
 }
 
-const checkBillingOptions = async (validApp: string, reg: string, billingOptions: BillingOptions) => {
-  log.warn(`This is a paid app. In order for you to install it, you need to accept the following Terms:\n${optionsFormatter(billingOptions)}`)
+const checkBillingOptions = async (app: string, reg: string, billingOptions: BillingOptions) => {
+  log.warn(`${chalk.green(app)} is a paid app. In order for you to install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`)
   const confirm = await promptPolicies()
   if (!confirm) {
-    log.info('User cancelled')
-    process.exit()
+    throw new Error('User cancelled')
   }
 
   log.info('Starting to install app with accepted Terms')
-  await installApp(validApp, reg, true)
+  await installApp(app, reg, true)
   log.debug('Installed after accepted terms')
 }
 
-export const prepareInstall = async (app: string, reg: string): Promise<void> => {
-  const validApp = validateApp(app)
+export const prepareInstall = async (appsList: string[], reg: string): Promise<void> => {
+  if (appsList.length === 0) {
+    return
+  }
+  const app = validateApp(head(appsList))
+
   try {
-    const {code, billingOptions} = await installApp(validApp, reg, false)
+    log.debug('Starting to install app', app)
+    const {code, billingOptions} = await installApp(app, reg, false)
     switch (code) {
       case 'installed_from_own_registry':
-        log.debug('Installed from own registry')
+        log.debug('Installed from own/public registry')
         break
       case 'installed_by_previous_purchase':
         log.debug('Installed from previous purchase')
@@ -60,28 +65,34 @@ export const prepareInstall = async (app: string, reg: string): Promise<void> =>
         if (!billingOptions) {
           throw new Error('Failed to get billing options')
         }
-        await checkBillingOptions(validApp, reg, JSON.parse(billingOptions))
+        await checkBillingOptions(app, reg, JSON.parse(billingOptions))
     }
-    log.info(`Installed app ${validApp} successfully`)
+    log.info(`Installed app ${chalk.green(app)} successfully`)
 
   } catch (e) {
     if (e.response && e.response.data && e.response.data.error) {
       if (e.response.data.error.includes('Unable to find vtex.billing in workspace dependencies')) {
         log.debug('Billing app not found in current workspace')
-        return legacyInstall(validApp, reg)
+        return legacyInstall(app, reg)
       } else {
         log.error(e.response.data.error)
       }
+    } else if (e.message) {
+      log.error(e.message)
+
     } else {
       log.error(e)
     }
     log.warn(`The following app was not installed: ${app}`)
   }
+
+  await prepareInstall(tail(appsList), reg)
 }
 
 export default async (optionalApp: string, options) => {
   await validateAppAction(optionalApp)
   const app = optionalApp || toAppLocator(await getManifest())
-  log.debug(`Installing app ${app}`)
-  return prepareInstall(app, options.r || options.registry || 'smartcheckout')
+  const appsList = prepend(app, parseArgs(options._))
+  log.debug('Installing app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
+  return prepareInstall(appsList, options.r || options.registry || 'smartcheckout')
 }
