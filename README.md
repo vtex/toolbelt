@@ -35,7 +35,7 @@ npm install -g vtex
 
 Now you can use the `vtex` command:
 
-```sh
+```
 $ vtex
   Welcome to VTEX IO
   Login with vtex login <account>
@@ -44,53 +44,55 @@ $ vtex
 
   Commands:
 
-    link                  Start a development session for this app
-    unlink [app]          Unlink an app on the current directory or a specified one
-    add <app>             Add app(s) to the manifest dependencies
-    publish [path]        Publish the current app or a path containing an app
-    deprecate [app]       Deprecate app(s)
-    install [app]         Install an app (defaults to the app in the current directory)
-    uninstall [app]       Uninstall an app (defaults to the app in the current directory)
-    list                  List your installed VTEX apps
-    update                Update all installed apps to the latest version
-    login                 Log into a VTEX account
-    logout                Logout of the current VTEX account
-    switch <account>      Switch to another VTEX account
-    whoami                See your credentials current status
-    init                  Create basic files and folders for your VTEX app
-    use <name>            Use a workspace to perform operations
-    port                  undefined
+    add <app>               Add app(s) to the manifest dependencies
+    deprecate [app]         Deprecate app(s)
+    init                    Create basic files and folders for your VTEX app
+    install [app]           Install an app (defaults to the app in the current directory)
+    link                    Start a development session for this app
+    list                    List your installed VTEX apps
+    login                   Log into a VTEX account
+    logout                  Logout of the current VTEX account
+    production [production] Set this workspace's production mode to true or false
+    promote                 Promote this workspace to master
+    publish [path]          Publish the current app or a path containing an app
+    switch <account>        Switch to another VTEX account
+    uninstall [app]         Uninstall an app (defaults to the app in the current directory)
+    unlink [app]            Unlink an app on the current directory or a specified one
+    update                  Update all installed apps to the latest version
+    use <name>              Use a workspace to perform operations
+    whoami                  See your credentials current status
+
+    config get <name>                 Gets the current value for the requested configuration
+    config set <name> <value>         Sets the current value for the given configuration
+
+    deps list             List your workspace dependencies
+    deps update [app]     Update all workspace dependencies or a specific app@version
+
+    infra install <name>     Install a service
+    infra list [name]        List installed services
+    infra update             Update all installed services
+
+    local debug       Run a Colossus function locally
+    local eslint      Setup a local eslint environment
+    local manifest    Generate manifest from package.json
+    local package     Generate package.json from manifest
+    local token       Show user's auth token and copy it to clipboard
+
+    port react       Convert your app from React 0.x to React 2.x
 
     settings <app> [fields]                     Get app settings
     settings set <app> <fields> <value>         Set a value
     settings unset <app> <fields>               Unset a value
 
-    workspace list                    List workspaces on this account
+    workspace                         Alias for vtex workspace info
     workspace create <name>           Create a new workspace with this name
     workspace delete <name>           Delete a single or various workspaces
+    workspace info                    Display information about the current workspace
+    workspace list                    List workspaces on this account
+    workspace production [production] Set this workspace's production mode to true or false
     workspace promote                 Promote this workspace to master
-    workspace production [production] Set this workspace to production mode
-    workspace use <name>              Use a workspace to perform operations
     workspace reset [name]            Delete and create a workspace
-
-    deps list             List your workspace dependencies
-    deps update [app]     Update all workspace dependencies or a specific app@version
-
-    local eslint      Setup a local eslint environment
-    local package     Generate package.json from manifest
-    local manifest    Generate manifest from package.json
-    local debug       Run a Colossus function locally
-    local token       Show user\'s auth token and copy it to clipboard
-
-    infra list [name]        List installed services
-    infra install <name>     Install a service
-    infra update             Update all installed services
-
-    io list                 List VTEX IO versions available to install
-    io install [version]    Install VTEX IO Version
-
-    config get <name>                 Gets the current value for the requested configuration
-    config set <name> <value>         Sets the current value for the given configuration
+    workspace use <name>              Use a workspace to perform operations
 
   Options:
 

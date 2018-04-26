@@ -24,6 +24,7 @@ const legacyInstall = async (app: string, reg: string): Promise<void> => {
     log.debug('Starting legacy install')
     await legacyInstallApp(app, reg)
     log.info(`Installed app ${app} successfully`)
+    return
   } catch (e) {
     log.warn(`The following app was not installed: ${app}`)
     log.error(`Error ${e.response.status}: ${e.response.statusText}. ${e.response.data.message}`)
@@ -71,9 +72,9 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
 
   } catch (e) {
     if (e.response && e.response.data && e.response.data.error) {
-      if (e.response.data.error.includes('Unable to find vtex.billing in workspace dependencies')) {
+      if (e.response.data.error.includes('Unable to find vtex.billing')) {
         log.debug('Billing app not found in current workspace')
-        return legacyInstall(app, reg)
+        await legacyInstall(app, reg)
       } else {
         log.error(e.response.data.error)
       }

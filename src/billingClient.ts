@@ -23,14 +23,10 @@ export default class Billing {
         billingOptions
       }
     }`
-    try {
-      const {data: {data, errors}} = await this.http.postRaw<any>(`/_v/graphql`, {query: graphQLQuery})
-      if (errors) {
-        throw errors
-      }
-      return data.install
-    } catch (e) {
-      throw e
+    const {data: {data, errors}} = await this.http.postRaw<any>(`/_v/graphql`, {query: graphQLQuery})
+    if (errors) {
+      throw errors
     }
+    return data.install
   }
 }
