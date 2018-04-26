@@ -15,27 +15,27 @@ const canGoLive = async (): Promise<void> => {
   }
 }
 
-export default async (weight: any) => {
-  let w
+export default async (optionWeight: number) => {
+  let weight
 
   if (currentWorkspace === 'master') {
-      throw new CommandError(`Cannot set AB test between master and itself. Change the workspace`)
+      throw new CommandError(`Cannot set AB test while in workspace ${chalk.red('master')}. Please switch to another workspace`)
   }
-  if (weight === null) {
-    w = 50
-  } else if (weight > 0 && weight < 100) {
-    w = weight
+  if (optionWeight === null) {
+    weight = 50
+  } else if (optionWeight >= 0 && optionWeight < 100) {
+    weight = optionWeight
   } else {
-    throw new CommandError('The weight for workspace AB test must be a integer between 0 and 100.')
+    throw new CommandError('The weight for workspace AB test must be an integer between 0 and 100')
   }
 
-  if (w) {
+  if (weight) {
     await canGoLive()
   }
 
   log.debug(`Setting workspace ${currentWorkspace} to AB test with weight=${w}`)
   await set(account, currentWorkspace, {production: true, weight: w})
-  await set(account, 'master', {weight: 100 - weight})
+  await set(account, 'master', {production: true, weight: 100 - weight})
   log.info(`Workspace ${chalk.green(currentWorkspace)} in AB Test with master}`)
   log.info(`You can stop the test using ${chalk.blue('vtex workspace test 0')}`)
 }
