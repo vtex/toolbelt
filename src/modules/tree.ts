@@ -348,11 +348,6 @@ export default {
       handler: './workspace/production',
       optionalArgs: 'production',
     },
-    test: {
-      description: 'AB test between this workspace and master',
-      handler: './workspace/abTest',
-      optionalArgs: 'weight',
-    },
     promote: {
       description: 'Promote this workspace to master',
       handler: './workspace/promote',
@@ -361,6 +356,11 @@ export default {
       description: 'Delete and create a workspace',
       handler: './workspace/reset',
       optionalArgs: 'name',
+    },
+    test: {
+      description: 'AB test between this workspace and master',
+      handler: './workspace/abTest',
+      optionalArgs: 'weight',
     },
     use: {
       description: 'Use a workspace to perform operations',
