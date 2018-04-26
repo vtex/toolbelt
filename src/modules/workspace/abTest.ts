@@ -22,11 +22,11 @@ export default async (weight: any) => {
       throw new CommandError(`Cannot set AB test between master and itself. Change the workspace`)
   }
   if (weight === null) {
-    w = 0.5
-  } else if (weight > 0 && weight < 1) {
+    w = 50
+  } else if (weight > 0 && weight < 100) {
     w = weight
   } else {
-    throw new CommandError('The weight for workspace AB test must be a decimal between 0 and 1.')
+    throw new CommandError('The weight for workspace AB test must be a integer between 0 and 100.')
   }
 
   if (w) {
@@ -35,7 +35,7 @@ export default async (weight: any) => {
 
   log.debug(`Setting workspace ${currentWorkspace} to AB test with weight=${w}`)
   await set(account, currentWorkspace, {production: true, weight: w})
-  await set(account, 'master', {weight: 1 - weight})
+  await set(account, 'master', {weight: 100 - weight})
   log.info(`Workspace ${chalk.green(currentWorkspace)} in AB Test with master}`)
   log.info(`You can stop the test using ${chalk.blue('vtex workspace test 0')}`)
 }
