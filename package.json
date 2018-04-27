@@ -53,6 +53,7 @@
     "chokidar": "^2.0.2",
     "clear-module": "^2.1.0",
     "cli-table": "^0.3.1",
+    "cli-table2": "^0.2.0",
     "clipboardy": "^1.1.4",
     "configstore": "^3.0.0",
     "debounce": "^1.0.0",

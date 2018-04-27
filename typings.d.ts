@@ -130,3 +130,47 @@ declare module '*/package.json' {
   const version: string
   export {name, version}
 }
+
+interface InstallResponse {
+  code: string
+  billingOptions?: string
+}
+
+interface BillingOptions {
+  version: string
+  free: boolean
+  policies: Policy[]
+  deactivationRoute: string
+  termsURL: string
+}
+
+interface Policy {
+  plan: string
+  currency: string
+  billing: Billing
+}
+
+interface Billing {
+  taxClassification: string
+  items: CalculationItem[]
+}
+
+interface CalculationItem {
+  itemCurrency: string
+  fixed: number
+  calculatedByMetricUnit: CalculatedByMetricUnit
+}
+
+interface CalculatedByMetricUnit {
+  metricId: string
+  metricName: string
+  minChargeValue: number
+  ranges: Range[]
+  route: string
+}
+
+interface Range {
+  exclusiveFrom: number
+  inclusiveTo: number
+  multiplier: number
+}

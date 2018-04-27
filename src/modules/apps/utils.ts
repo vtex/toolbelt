@@ -5,6 +5,7 @@ import * as inquirer from 'inquirer'
 import {join} from 'path'
 import {drop} from 'ramda'
 import * as semverDiff from 'semver-diff'
+import * as Table from 'cli-table2'
 
 import {
   __,
@@ -104,4 +105,54 @@ export const appsLastVersion = (app: string): Promise<string | never> => {
 
 export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
   return !!manifest.builders['service-js']
+}
+
+export function optionsFormatter (billingOptions: BillingOptions) {
+  const table = new Table({ head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }], chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' } })
+
+  if (billingOptions.free) {
+    table.push([{ content: chalk.green('This app is free'), colSpan: 2, hAlign: 'center' }])
+  } else {
+    table.push([{ content: 'Plan', hAlign: 'center' }, { content: 'Values', hAlign: 'center' }])
+
+    billingOptions.policies.forEach((policy) => {
+      let rowCount = 0
+      const itemsArray = []
+
+      policy.billing.items.forEach((i) => {
+        if (i.fixed) {
+          itemsArray.push([{ content: `${i.fixed} ${i.itemCurrency}`, hAlign: 'center', vAlign: 'center' }])
+          rowCount++
+        } else if (i.calculatedByMetricUnit) {
+          if (i.calculatedByMetricUnit.minChargeValue) {
+            itemsArray.push([`Minimum charge: ${i.calculatedByMetricUnit.minChargeValue} ${i.itemCurrency}`])
+            rowCount++
+          }
+
+          let rangesStr = ''
+          i.calculatedByMetricUnit.ranges.forEach((r) => {
+            if (r.inclusiveTo) {
+              rangesStr += `${r.multiplier} ${i.itemCurrency}/${i.calculatedByMetricUnit.metricName} (${r.exclusiveFrom} to ${r.inclusiveTo})`
+              rangesStr += '\nor\n'
+            } else {
+              rangesStr += `${r.multiplier} ${i.itemCurrency}/${i.calculatedByMetricUnit.metricName} (over ${r.exclusiveFrom})`
+            }
+          })
+
+          rowCount ++
+          itemsArray.push([{ content: rangesStr, hAlign: 'center', vAlign: 'center' }])
+        }
+        itemsArray.push([{ content: '+', hAlign: 'center' }])
+        rowCount++
+      })
+
+      itemsArray.pop()
+      rowCount--
+
+      table.push([{ content: `${chalk.yellow(policy.plan)}\n(Charged montlhy)`, rowSpan: rowCount, colSpan: 1, vAlign: 'center', hAlign: 'center' }, itemsArray[0][0]], ...(itemsArray.slice(1)))
+      table.push([{ content: `The monthly amount will be charged in ${chalk.red(policy.currency)}`, colSpan: 2, hAlign: 'center' }])
+    })
+  }
+  table.push([{ content: chalk.bold('Terms of use:'), hAlign: 'center' }, { content: billingOptions.termsURL, hAlign: 'center' }])
+  return table.toString()
 }
