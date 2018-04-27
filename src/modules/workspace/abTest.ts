@@ -22,20 +22,19 @@ export default async (optionWeight: number) => {
       throw new CommandError(`Cannot set AB test while in workspace ${chalk.red('master')}. Please switch to another workspace`)
   }
   if (optionWeight === null) {
-    weight = 50
-  } else if (optionWeight >= 0 && optionWeight < 100) {
+    weight = 100
+  } else if (optionWeight >= 0) {
     weight = optionWeight
   } else {
-    throw new CommandError('The weight for workspace AB test must be an integer between 0 and 100')
+    throw new CommandError('The weight for workspace AB test must be an positive integer')
   }
 
   if (weight) {
     await canGoLive()
   }
 
-  log.debug(`Setting workspace ${currentWorkspace} to AB test with weight=${w}`)
-  await set(account, currentWorkspace, {production: true, weight: w})
-  await set(account, 'master', {production: true, weight: 100 - weight})
+  log.debug(`Setting workspace ${currentWorkspace} to AB test with weight=${weight}`)
+  await set(account, currentWorkspace, {production: true, weight: weight})
   log.info(`Workspace ${chalk.green(currentWorkspace)} in AB Test with master}`)
   log.info(`You can stop the test using ${chalk.blue('vtex workspace test 0')}`)
 }
