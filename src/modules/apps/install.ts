@@ -78,15 +78,20 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
       } else {
         log.error(e.response.data.error)
       }
-    } else if (e instanceof Array) {
-      e.forEach(err => log.error(err.message ? err.message : err))
     } else {
-      log.error(e)
+      logGraphQLErrorMessage(e)
     }
     log.warn(`The following app was not installed: ${app}`)
   }
 
   await prepareInstall(tail(appsList), reg)
+}
+
+const logGraphQLErrorMessage = (e) => {
+  const errorMessage = e instanceof Array
+  ? e.forEach(err => log.error(err.message ? err.message : err))
+  : e
+  log.error(errorMessage)
 }
 
 export default async (optionalApp: string, options) => {
