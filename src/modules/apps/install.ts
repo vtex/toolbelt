@@ -79,7 +79,7 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
         log.error(e.response.data.error)
       }
     } else if (e instanceof Array) {
-      e.forEach(err => log.error(err.message))
+      e.forEach(err => log.error(err.message ? err.message : err))
     } else {
       log.error(e)
     }
