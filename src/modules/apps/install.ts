@@ -75,12 +75,14 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
       if (e.response.data.error.includes('Unable to find vtex.billing')) {
         log.debug('Billing app not found in current workspace')
         await legacyInstall(app, reg)
+        return
+      }
+      if (e.response.status === 404) {
+        log.info(`The app ${chalk.green(app)} was not found. Use ${chalk.green('vtex publish')} to distribute your app.`)
+        log.debug(e.response.data.error)
       } else {
         log.error(e.response.data.error)
       }
-    } else if (e.message) {
-      log.error(e.message)
-
     } else {
       log.error(e)
     }
