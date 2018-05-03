@@ -23,6 +23,7 @@ Bluebird.config({
 const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
 const loginCmd = tree['login']
+let loginPending = false
 
 // Setup logging
 const VERBOSE = '--verbose'
@@ -84,9 +85,14 @@ const onError = e => {
 
   if (status) {
     if (status === 401) {
-      log.error('There was an authentication error. Please login again.')
-      // Try to login and re-issue the command.
-      return run({command: loginCmd}).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
+      if (!loginPending){
+        log.error('There was an authentication error. Please login again')
+        // Try to login and re-issue the command.
+        loginPending = true
+        return run({command: loginCmd}).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
+      } else {
+        return // Prevent multiple login attempts
+      }
     }
     if (status >= 400) {
       const message = data ? data.message : null
