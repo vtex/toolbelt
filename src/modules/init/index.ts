@@ -76,7 +76,7 @@ const promptTemplates = async () => {
 const promptContinue = async () => {
   const {proceed} = await inquirer.prompt({
     name: 'proceed',
-    message: `You are about to remove all files in ${process.cwd()}. Do you want to continue ?`,
+    message: `You are about to remove all files in ${process.cwd()}. Do you want to continue?`,
     type: 'confirm',
   })
   if (!proceed) {

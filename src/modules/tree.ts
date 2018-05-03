@@ -358,7 +358,7 @@ export default {
       optionalArgs: 'name',
     },
     test: {
-      description: 'AB test between this workspace and master',
+      description: 'Set AB test in current workspace',
       handler: './workspace/abTest',
       optionalArgs: 'weight',
     },
