@@ -18,6 +18,7 @@ const templates = {
   'react+graphql': 'catalogue',
   'hello graphql': 'hello-graphql',
   'hello react': 'hello-react',
+  'dreamstore getting-started': 'dreamstore-getting-started',
 }
 
 const promptName = async () => {
