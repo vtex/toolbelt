@@ -41,6 +41,10 @@ export default async () => {
 
   const table = new Table({head: ['Vendor', 'Name', 'Current', 'Latest']})
   updateableApps.forEach(({vendor, name, version, latest}) => {
+    if (!latest) {
+      log.debug(`Couldn't find latest version of ${vendor}.${name}`)
+      return
+    }
     const [fromVersion, toVersion] = diffVersions(version, latest)
     table.push([vendor, name, fromVersion, toVersion])
   })
