@@ -62,12 +62,6 @@ const authAndSave = async (account, workspace, optionWorkspace): Promise<{login:
   const decodedToken = jwt.decode(token)
   const login: string = decodedToken.sub
   saveCredentials(login, account, token, workspace)
-  if (login.endsWith('@vtex.com.br')) {
-    log.info(`Using staging (beta) IO environment due to VTEX domain. Switch back with ${chalk.gray('vtex config set env prod')}`)
-    conf.saveEnvironment(conf.Environment.Staging)
-  } else {
-    conf.saveEnvironment(conf.Environment.Production)
-  }
   return {login, token}
 }
 
