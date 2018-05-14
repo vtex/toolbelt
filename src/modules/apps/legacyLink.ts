@@ -1,31 +1,30 @@
-import * as moment from 'moment'
-import {uniqBy, prop} from 'ramda'
-import * as debounce from 'debounce'
-import * as Bluebird from 'bluebird'
-import {createInterface} from 'readline'
 import axios from 'axios'
+import * as Bluebird from 'bluebird'
+import * as debounce from 'debounce'
+import * as moment from 'moment'
+import {prop, uniqBy} from 'ramda'
+import {createInterface} from 'readline'
 
-import log from '../../logger'
-import {currentContext} from '../../conf'
-import {apps, colossus} from '../../clients'
-import {logAll} from '../../sse'
-import {getManifest} from '../../manifest'
-import {changesToString} from '../../apps'
-import {toAppLocator, toMajorLocator} from '../../locator'
-import {hasServiceOnBuilders} from './utils'
-import startDebuggerTunnel from './debugger'
 import chalk from 'chalk'
-import {watch, listLocalFiles, addChangeContent} from './file'
-import {getAccount, getWorkspace, getToken} from '../../conf'
+import {changesToString} from '../../apps'
+import {apps, colossus} from '../../clients'
+import {getAccount, getToken, getWorkspace} from '../../conf'
+import {currentContext} from '../../conf'
 import {region} from '../../env'
+import {toAppLocator, toMajorLocator} from '../../locator'
+import log from '../../logger'
+import {getManifest} from '../../manifest'
+import {logAll} from '../../sse'
+import startDebuggerTunnel from './debugger'
+import {addChangeContent, listLocalFiles, watch} from './file'
+import {hasServiceOnBuilders} from './utils'
 
-const {link} = apps
+const {link, patch} = apps
 const root = process.cwd()
 const pathProp = prop('path')
-const cleanAll: Change = {path: '*', action: 'remove'}
 
 const mapFilesToChanges = (files: string[]): Change[] =>
-  [cleanAll].concat(files.map((path): Change => ({path, action: 'save'})))
+  files.map((path): Change => ({path, action: 'save'}))
 
 const sendChanges = (() => {
   let queue = []
@@ -33,10 +32,9 @@ const sendChanges = (() => {
     (data: Manifest) => {
       const locator = toMajorLocator(data)
       log.debug(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
-      return link(locator, queue)
+      return patch(locator, queue)
         .tap(() => console.log(changesToString(queue, moment().format('HH:mm:ss'))))
         .tap(() => { queue = [] })
-        .catch(err => { throw err })
     },
     50,
   )

@@ -286,9 +286,9 @@
   dependencies:
     "@types/node" "*"
 
-"@vtex/api@^0.37.0":
-  version "0.37.1"
-  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-0.37.1.tgz#5409a8c67000ee402343660e08b975756a69e40a"
+"@vtex/api@^0.40.0":
+  version "0.40.0"
+  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-0.40.0.tgz#70abf4601764a6abf9a5b3b30732c8cf23ce925d"
   dependencies:
     archiver "^2.1.0"
     axios "^0.16.0"

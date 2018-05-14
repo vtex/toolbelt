@@ -1,6 +1,6 @@
 import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
-import {readFileSync, stat} from 'fs-extra'
+import {createReadStream, readFileSync, stat} from 'fs-extra'
 import * as glob from 'globby'
 import * as path from 'path'
 
@@ -70,7 +70,7 @@ export const addChangeContent = (changes: Change[]): Batch[] =>
   changes.map(({path: filePath, action}) => {
     return {
       content: action === 'save'
-      ? readFileSync(path.resolve(process.cwd(), filePath)).toString('base64')
+      ? createReadStream(path.resolve(process.cwd(), filePath))
       : null,
       path: filePath.split(path.sep).join('/'),
     }

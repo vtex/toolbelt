@@ -97,8 +97,8 @@ export default async (options) => {
   }
 
   const appId = toAppLocator(manifest)
-  const context = {account: getAccount(), workspace: getWorkspace(), timeout: 60000}
-  const {builder} = createClients(context)
+  const context = {account: getAccount(), workspace: getWorkspace()}
+  const {builder} = createClients(context, {timeout: 60000})
 
   if (options.c || options.clean) {
     log.info('Requesting to clean cache in builder.')
