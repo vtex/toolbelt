@@ -1,4 +1,4 @@
-import {Apps, Builder, Colossus, Registry, Router, Workspaces} from '@vtex/api'
+import {Apps, Builder, Colossus, InstanceOptions, IOContext, Registry, Router, Workspaces} from '@vtex/api'
 import Billing from './billingClient'
 
 import {getAccount, getToken, getWorkspace} from './conf'
@@ -7,13 +7,17 @@ import envTimeout from './timeout'
 import userAgent from './user-agent'
 
 const DEFAULT_TIMEOUT = 15000
-const options = {
+const context = {
   account: getAccount(),
   authToken: getToken(),
+  production: false,
   region: env.region(),
-  timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
   userAgent,
   workspace: getWorkspace() || 'master',
+}
+
+const options = {
+  timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
 }
 
 const interceptor = <T>(client): T => new Proxy({}, {
@@ -22,21 +26,23 @@ const interceptor = <T>(client): T => new Proxy({}, {
   },
 }) as T
 
-const createClients = (customOptions) => {
+const createClients = (customContext: Partial<IOContext>, customOptions: InstanceOptions = {}) => {
+  const mergedContext = {...context, ...customContext}
+  const mergedOptions = {...options, ...customOptions}
   return {
-    builder: new Builder({...options, ...customOptions}),
-    colossus: new Colossus({...options, ...customOptions}),
-    registry: new Registry({...options, ...customOptions, endpoint: env.endpoint('registry')}),
+    builder: new Builder(mergedContext, mergedOptions),
+    colossus: new Colossus(mergedContext, mergedOptions),
+    registry: new Registry(mergedContext, {...mergedOptions, endpoint: env.endpoint('registry')}),
   }
 }
 
 const [apps, router, workspaces, colossus, billing] = getToken()
   ? [
-    new Apps({...options, endpoint: env.endpoint('apps')}),
-    new Router({...options, endpoint: env.endpoint('router')}),
-    new Workspaces({...options, endpoint: env.endpoint('workspaces')}),
-    new Colossus({...options}),
-    new Billing({...options}),
+    new Apps(context, {...options, endpoint: env.endpoint('apps')}),
+    new Router(context, {...options, endpoint: env.endpoint('router')}),
+    new Workspaces(context, {...options, endpoint: env.endpoint('workspaces')}),
+    new Colossus(context),
+    new Billing(context, options),
   ]
   : [
     interceptor<Apps>('apps'),

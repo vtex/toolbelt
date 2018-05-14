@@ -1,19 +1,10 @@
-import {HttpClient, InstanceOptions} from '@vtex/api'
+import {HttpClient, InstanceOptions, IOContext} from '@vtex/api'
 
 export default class Billing {
   private http: HttpClient
 
-  constructor (opts: InstanceOptions) {
-    const {account, workspace, authToken, cacheStorage, region, userAgent} = opts
-
-    this.http = HttpClient.forWorkspace('billing.vtex', {
-      account,
-      authToken,
-      cacheStorage,
-      region,
-      userAgent,
-      workspace,
-    })
+  constructor (ioContext: IOContext, opts: InstanceOptions) {
+    this.http = HttpClient.forWorkspace('billing.vtex', ioContext, opts)
   }
 
   public installApp = async (appName: string, registry: string, termsOfUseAccepted: boolean): Promise<InstallResponse> => {

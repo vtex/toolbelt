@@ -21,8 +21,8 @@ const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
 const publisher = (account: string, workspace: string = 'master', legacyPublishApp) => {
-  const context = {account, workspace, region: region(), timeout: 60000}
-  const {builder} = createClients(context)
+  const context = {account, workspace, region: region()}
+  const {builder} = createClients(context, {timeout: 60000})
 
   const publishApp = async (appRoot: string, appId: string, tag: string): Promise<BuildResult> => {
     const paths = await listLocalFiles(appRoot)
