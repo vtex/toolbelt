@@ -5,6 +5,7 @@ import * as jwt from 'jsonwebtoken'
 import * as opn from 'opn'
 import {prop} from 'ramda'
 import * as randomstring from 'randomstring'
+
 import * as conf from '../../conf'
 import {publicEndpoint} from '../../env'
 import log from '../../logger'

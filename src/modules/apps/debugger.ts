@@ -104,7 +104,11 @@ export default function startDebuggerTunnel (manifest: Manifest, port: number = 
     })
 
     server.listen(port, () => {
-      resolve(server.address().port)
+      const address = server.address()
+      if (typeof address === net.AddressInfo) {
+        resolve(address.port)
+      }
+
     })
   })
 }

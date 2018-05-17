@@ -1,12 +1,13 @@
-import {keys, prop} from 'ramda'
-import chalk from 'chalk'
-import * as moment from 'moment'
 import * as Bluebird from 'bluebird'
+import chalk from 'chalk'
+import { outputJson, readJson } from 'fs-extra'
 import * as inquirer from 'inquirer'
-import * as git from './git'
+import * as moment from 'moment'
+import { keys, prop } from 'ramda'
+
 import log from '../../logger'
-import {outputJson, readJson} from 'fs-extra'
-import {manifestPath} from '../../manifest'
+import { manifestPath } from '../../manifest'
+import * as git from './git'
 
 const {mapSeries} = Bluebird
 
