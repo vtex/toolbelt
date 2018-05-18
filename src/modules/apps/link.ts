@@ -129,7 +129,7 @@ export default async (options) => {
 
   let unlistenBuild
   try {
-    const {unlisten} = await listenBuild(appId, performInitialLink, {waitCompletion: false, onError})
+    const {unlisten} = await listenBuild(appId, performInitialLink, {waitCompletion: true, onError})
     unlistenBuild = unlisten
   } catch (e) {
     if (e.response) {

@@ -108,7 +108,7 @@ export default function startDebuggerTunnel (manifest: Manifest, port: number = 
     })
 
     server.listen(port, () => {
-      resolve(server.address().port)
+      resolve(port)
     })
   })
 }
