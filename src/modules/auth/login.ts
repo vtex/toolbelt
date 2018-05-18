@@ -32,22 +32,23 @@ const promptUsePrevious = (): Bluebird<boolean> =>
 
 const promptAccount = async (promptPreviousAcc) => {
   if (promptPreviousAcc) {
-    const {confirm} = await inquirer.prompt({
+    const confirm = prop('confirm', await inquirer.prompt({
       default: true,
       message: `Use previous account? (${chalk.blue(cachedAccount)})`,
       name: 'confirm',
       type: 'confirm',
-    })
+    }))
     if (confirm) {
       return cachedAccount
     }
   }
-  const {account} = await inquirer.prompt({
+
+  const account = prop('account', await inquirer.prompt({
     filter: (s) => s.trim(),
     message: 'Account:',
     name: 'account',
     validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
-  })
+  }))
   return account
 }
 
@@ -78,7 +79,7 @@ export default async (options) => {
     log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at workspace ${chalk.green(workspace)}`)
   } catch (err) {
     if (err.statusCode === 404) {
-      log.error('Workspace not found')
+      log.error('Account/Workspace not found')
     } else {
       throw err
     }

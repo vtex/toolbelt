@@ -1,31 +1,19 @@
-import {RegistryAppVersionsListItem} from '@vtex/api'
+import { RegistryAppVersionsListItem } from '@vtex/api'
 import chalk from 'chalk'
-import {createReadStream} from 'fs-extra'
-import * as inquirer from 'inquirer'
-import {join} from 'path'
-import {drop} from 'ramda'
-import * as semverDiff from 'semver-diff'
 import * as Table from 'cli-table2'
+import { createReadStream } from 'fs-extra'
+import * as inquirer from 'inquirer'
+import { join } from 'path'
+import { __, compose, concat, curry, drop, head, last, map, prop, reduce, split, tail } from 'ramda'
+import * as semverDiff from 'semver-diff'
 
-import {
-  __,
-  compose,
-  concat,
-  curry,
-  head,
-  last,
-  map,
-  prop,
-  reduce,
-  split,
-  tail,
-} from 'ramda'
-
-import {createClients} from '../../clients'
-import {getWorkspace} from '../../conf'
-import {CommandError} from '../../errors'
+import { createClients } from '../../clients'
+import { getWorkspace } from '../../conf'
+import { CommandError } from '../../errors'
 import log from '../../logger'
-import {isManifestReadable} from '../../manifest'
+import { isManifestReadable } from '../../manifest'
+
+
 
 export const pathToFileObject = (root = process.cwd()) => (path: string): BatchStream =>
   ({path, content: createReadStream(join(root, path))})
@@ -43,12 +31,12 @@ export const parseArgs = (args: string[]): string[] => {
 export const validateAppAction = async (app?) => {
   if (getWorkspace() === 'master') {
     if (process.argv.indexOf('--force-master') >= 0) {
-      const {confirm} = await inquirer.prompt({
+      const confirm = prop('confirm', await inquirer.prompt({
         default: false,
         message: `Are you sure you want to force this operation on the master workspace?`,
         name: 'confirm',
         type: 'confirm',
-      })
+      }))
       if (!confirm) {
         process.exit(1)
       }

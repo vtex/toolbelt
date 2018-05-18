@@ -1,5 +1,7 @@
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
+import {prop} from 'ramda'
+
 import {apps, workspaces} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
 import {CommandError} from '../../errors'
@@ -11,11 +13,11 @@ const {set} = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const promptContinue = async () => {
-  const {proceed} = await inquirer.prompt({
+  const proceed = prop('proceed', await inquirer.prompt({
     name: 'proceed',
     message: `You are about to change the weight of workspace ${chalk.red('master')}. Do you want to continue?`,
     type: 'confirm',
-  })
+  }))
   if (!proceed) {
     process.exit()
   }
