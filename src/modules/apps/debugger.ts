@@ -69,8 +69,12 @@ function webSocketTunnelHandler (host, path: string, server: net.Server): (socke
 
     ws.on('open', () => {
       socket.on('data', data => {
+        if (ws.readyState !== ws.OPEN) {
+          log.debug(`Tried to write to debugger websocket but it is not opened`)
+          return
+        }
         ws.send(data, err => {
-          if (err && err.message !== 'not opened') {
+          if (err) {
             log.error(`Error writing to debugger websocket: ${err.name}: ${err.message}`)
           }
         })
