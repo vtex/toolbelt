@@ -1,15 +1,15 @@
-import {diffJson} from 'diff'
+import { diffJson } from 'diff'
 import chalk from 'chalk'
-import {map, keys, compose, prepend} from 'ramda'
+import { map, keys, compose, prepend } from 'ramda'
 
 import log from '../../logger'
-import {apps} from '../../clients'
-import {removeNpm} from './utils'
-import {parseLocator} from '../../locator'
-import {parseArgs} from '../apps/utils'
+import { apps } from '../../clients'
+import { removeNpm } from './utils'
+import { parseLocator } from '../../locator'
+import { parseArgs } from '../apps/utils'
 
 const DEFAULT_REGISTRY = 'smartcheckout'
-const {getDependencies, updateDependencies, updateDependency} = apps
+const { getDependencies, updateDependencies, updateDependency } = apps
 
 const cleanDeps = compose(keys, removeNpm)
 
@@ -25,7 +25,7 @@ export default async (optionalApp: string, options) => {
       currentDeps = await updateDependencies()
     } else {
       await Promise.mapSeries(appsList, async (locator: string) => {
-        const {vendor, name, version} = parseLocator(locator)
+        const { vendor, name, version } = parseLocator(locator)
         if (!name || !version) {
           log.error(`App ${locator} has an invalid app format, please use <vendor>.<name>@<version>`)
         } else {
@@ -43,7 +43,7 @@ export default async (optionalApp: string, options) => {
     const diff = diffJson(cleanPrevDeps, cleanCurrDeps)
     let nAdded = 0
     let nRemoved = 0
-    diff.forEach(({count, value, added, removed}: {count: number, value: string, added: boolean, removed: boolean}) => {
+    diff.forEach(({ count, value, added, removed }: { count: number, value: string, added: boolean, removed: boolean }) => {
       const color = added ? chalk.green : removed ? chalk.red : chalk.gray
       if (added) {
         nAdded += count

@@ -1,14 +1,14 @@
-import {keys, prop} from 'ramda'
+import { keys, prop } from 'ramda'
 import chalk from 'chalk'
 import * as moment from 'moment'
 import * as Bluebird from 'bluebird'
 import * as inquirer from 'inquirer'
 import * as git from './git'
 import log from '../../logger'
-import {outputJson, readJson} from 'fs-extra'
-import {manifestPath} from '../../manifest'
+import { outputJson, readJson } from 'fs-extra'
+import { manifestPath } from '../../manifest'
 
-const {mapSeries} = Bluebird
+const { mapSeries } = Bluebird
 
 const currentFolderName = process.cwd().replace(/.*\//, '')
 
@@ -61,7 +61,7 @@ const promptDescription = async () => {
 
 const promptTemplates = async () => {
   const cancel = 'Cancel'
-  const {service: chosen} = await inquirer.prompt({
+  const { service: chosen } = await inquirer.prompt({
     name: 'service',
     message: 'Choose where do you want to start from',
     type: 'list',
@@ -75,7 +75,7 @@ const promptTemplates = async () => {
 }
 
 const promptContinue = async () => {
-  const {proceed} = await inquirer.prompt({
+  const { proceed } = await inquirer.prompt({
     name: 'proceed',
     message: `You are about to remove all files in ${process.cwd()}. Do you want to continue?`,
     type: 'confirm',
@@ -121,7 +121,7 @@ export default async () => {
     ])
     const synthetic = createManifest(name, vendor, title, description)
     const manifest: any = Object.assign(await readJson(manifestPath) || {}, synthetic)
-    await outputJson(manifestPath, manifest, {spaces: 2})
+    await outputJson(manifestPath, manifest, { spaces: 2 })
     log.info(`Run ${chalk.bold.green('vtex link')} to start developing!`)
   } catch (err) {
     log.error(err.message)

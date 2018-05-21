@@ -1,6 +1,6 @@
 import * as Configstore from 'configstore'
 
-import {name as pkgName} from '../package.json'
+import { name as pkgName } from '../package.json'
 
 const conf = new Configstore(pkgName)
 

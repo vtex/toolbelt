@@ -1,4 +1,4 @@
-import {copy, emptyDir, remove} from 'fs-extra'
+import { copy, emptyDir, remove } from 'fs-extra'
 import * as pipeStreams from 'pipe-streams-to-promise'
 import * as request from 'request'
 import * as unzip from 'unzip-stream'
@@ -7,7 +7,7 @@ const urlForRepo = (repo: string) => `https://github.com/vtex-apps/${repo}/archi
 
 const fetchAndUnzip = async (url: string, path: string) => pipeStreams([
   request(url),
-  unzip.Extract({path}),
+  unzip.Extract({ path }),
 ])
 
 export const clone = async (repo: string) => {

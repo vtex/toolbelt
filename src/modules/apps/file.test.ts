@@ -1,7 +1,7 @@
 import test from 'ava'
-import {resolve} from 'path'
+import { resolve } from 'path'
 
-import {listLocalFiles} from './file'
+import { listLocalFiles } from './file'
 
 const FIXTURES_PATH = './test/fixtures/file-test'
 const root = resolve(FIXTURES_PATH)

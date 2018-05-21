@@ -1,12 +1,12 @@
-import {head, tail, prepend} from 'ramda'
+import { head, tail, prepend } from 'ramda'
 
 import log from '../../logger'
-import {apps} from '../../clients'
-import {validateAppAction, parseArgs} from './utils'
-import {getManifest, validateApp} from '../../manifest'
-import {toMajorLocator} from './../../locator'
+import { apps } from '../../clients'
+import { validateAppAction, parseArgs } from './utils'
+import { getManifest, validateApp } from '../../manifest'
+import { toMajorLocator } from './../../locator'
 
-const {unlink, listLinks} = apps
+const { unlink, listLinks } = apps
 
 const unlinkApps = async (appsList: string[]): Promise<void> => {
   if (appsList.length === 0) {

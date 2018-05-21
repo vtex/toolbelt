@@ -2,29 +2,29 @@ import axios from 'axios'
 import * as Bluebird from 'bluebird'
 import * as debounce from 'debounce'
 import * as moment from 'moment'
-import {prop, uniqBy} from 'ramda'
-import {createInterface} from 'readline'
+import { prop, uniqBy } from 'ramda'
+import { createInterface } from 'readline'
 
 import chalk from 'chalk'
-import {changesToString} from '../../apps'
-import {apps, colossus} from '../../clients'
-import {getAccount, getToken, getWorkspace} from '../../conf'
-import {currentContext} from '../../conf'
-import {region} from '../../env'
-import {toAppLocator, toMajorLocator} from '../../locator'
+import { changesToString } from '../../apps'
+import { apps, colossus } from '../../clients'
+import { getAccount, getToken, getWorkspace } from '../../conf'
+import { currentContext } from '../../conf'
+import { region } from '../../env'
+import { toAppLocator, toMajorLocator } from '../../locator'
 import log from '../../logger'
-import {getManifest} from '../../manifest'
-import {logAll} from '../../sse'
+import { getManifest } from '../../manifest'
+import { logAll } from '../../sse'
 import startDebuggerTunnel from './debugger'
-import {addChangeContent, listLocalFiles, watch} from './file'
-import {hasServiceOnBuilders} from './utils'
+import { addChangeContent, listLocalFiles, watch } from './file'
+import { hasServiceOnBuilders } from './utils'
 
-const {link, patch} = apps
+const { link, patch } = apps
 const root = process.cwd()
 const pathProp = prop('path')
 
 const mapFilesToChanges = (files: string[]): Change[] =>
-  files.map((path): Change => ({path, action: 'save'}))
+  files.map((path): Change => ({ path, action: 'save' }))
 
 const sendChanges = (() => {
   let queue = []
@@ -56,7 +56,7 @@ const cleanCache = (manifest: Manifest): Bluebird<void> => {
 }
 
 const checkAppStatus = (manifest: Manifest) => {
-  const {name, vendor, version} = manifest
+  const { name, vendor, version } = manifest
   const http = axios.create({
     baseURL: `http://${name}.${vendor}.${region()}.vtex.io/${getAccount()}/${getWorkspace()}`,
     headers: {
@@ -99,7 +99,7 @@ export default async (options) => {
     await checkAppStatus(manifest)
   }
 
-  createInterface({input: process.stdin, output: process.stdout})
+  createInterface({ input: process.stdin, output: process.stdout })
     .on('SIGINT', () => {
       unlisten()
       log.info('Your app is still in development mode.')

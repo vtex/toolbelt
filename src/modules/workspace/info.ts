@@ -1,10 +1,10 @@
 import chalk from 'chalk'
 
-import {workspaces} from '../../clients'
-import {getAccount, getWorkspace} from '../../conf'
+import { workspaces } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
 
-const {get} = workspaces
+const { get } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const pretty = p => p ? chalk.green('true') : chalk.red('false')

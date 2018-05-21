@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 
-import {CommandError} from '../../errors'
+import { CommandError } from '../../errors'
 import log from '../../logger'
-import {getAccount} from '../../conf'
-import {workspaces} from '../../clients'
+import { getAccount } from '../../conf'
+import { workspaces } from '../../clients'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9-]{0,126}[a-z0-9]$/
 
@@ -18,5 +18,5 @@ export default (name: string) => {
       err.response && err.response.data.code === 'WorkspaceAlreadyExists'
         ? log.error(err.response.data.message)
         : Promise.reject(err),
-    )
+  )
 }

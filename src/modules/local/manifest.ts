@@ -1,6 +1,6 @@
-import {outputJson, readJson} from 'fs-extra'
-import {reduce, keys, assoc} from 'ramda'
-import {resolve} from 'path'
+import { outputJson, readJson } from 'fs-extra'
+import { reduce, keys, assoc } from 'ramda'
+import { resolve } from 'path'
 
 import log from '../../logger'
 
@@ -25,6 +25,6 @@ export default async () => {
     delete manifest.vtexVersion
   }
   log.debug('Generating manifest:', JSON.stringify(manifest, null, 2))
-  await outputJson(resolve(process.cwd(), 'manifest.json'), manifest, {spaces: 2})
+  await outputJson(resolve(process.cwd(), 'manifest.json'), manifest, { spaces: 2 })
   log.info('Generated manifest.json successfully.')
 }

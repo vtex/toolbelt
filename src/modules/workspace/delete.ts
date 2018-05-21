@@ -1,12 +1,12 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import {contains, flatten, head, prepend, prop, tail} from 'ramda'
+import { contains, flatten, head, prepend, prop, tail } from 'ramda'
 
-import {workspaces} from '../../clients'
-import {getAccount, getWorkspace} from '../../conf'
+import { workspaces } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
-import {parseArgs} from '../apps/utils'
+import { parseArgs } from '../apps/utils'
 import workspaceUse from './use'
 
 const account = getAccount()
@@ -18,7 +18,7 @@ const promptWorkspaceDeletion = (names: string[]): Bluebird<boolean> =>
     name: 'confirm',
     type: 'confirm',
   })
-  .then<boolean>(prop('confirm'))
+    .then<boolean>(prop('confirm'))
 
 export const deleteWorkspaces = async (names = []): Promise<string[]> => {
   const name = head(names)

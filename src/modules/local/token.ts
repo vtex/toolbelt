@@ -1,4 +1,4 @@
-import {getToken} from '../../conf'
+import { getToken } from '../../conf'
 import * as clipboardy from 'clipboardy'
 
 export default () => {

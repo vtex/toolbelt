@@ -1,13 +1,13 @@
 import * as inquirer from 'inquirer'
-import {head, prepend, tail} from 'ramda'
+import { head, prepend, tail } from 'ramda'
 
-import {apps} from '../../clients'
+import { apps } from '../../clients'
 import log from '../../logger'
-import {getManifest, validateApp} from '../../manifest'
-import {toAppLocator} from './../../locator'
-import {parseArgs, validateAppAction} from './utils'
+import { getManifest, validateApp } from '../../manifest'
+import { toAppLocator } from './../../locator'
+import { parseArgs, validateAppAction } from './utils'
 
-const {uninstallApp} = apps
+const { uninstallApp } = apps
 
 const promptAppUninstall = (appsList: string[]): Promise<void> =>
   inquirer.prompt({
@@ -15,11 +15,11 @@ const promptAppUninstall = (appsList: string[]): Promise<void> =>
     name: 'confirm',
     type: 'confirm',
   })
-  .then(({confirm}) => {
-    if (!confirm) {
-      process.exit()
-    }
-  })
+    .then(({ confirm }) => {
+      if (!confirm) {
+        process.exit()
+      }
+    })
 
 const uninstallApps = async (appsList: string[]): Promise<void> => {
   if (appsList.length === 0) {

@@ -1,13 +1,13 @@
 import chalk from 'chalk'
-import {prop, curry} from 'ramda'
+import { prop, curry } from 'ramda'
 import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
-import {basename, dirname, join} from 'path'
-import {mkdir, unlink, symlink} from 'fs-extra'
+import { basename, dirname, join } from 'path'
+import { mkdir, unlink, symlink } from 'fs-extra'
 
 import log from '../../logger'
 
-const {mapSeries} = Bluebird
+const { mapSeries } = Bluebird
 const eslintAssets = [
   '.eslintrc',
   'node_modules/eslint',
@@ -31,7 +31,7 @@ const promptOverwrite = (message: string): Bluebird<boolean> => {
       message: 'Do you wish to overwrite it?',
     }),
   )
-  .then<boolean>(prop('confirm'))
+    .then<boolean>(prop('confirm'))
 }
 
 const handleLinkError = curry((origin: string, dest: string, asset: string, preConfirm: boolean, err): Bluebird<never | void> => {
@@ -40,13 +40,13 @@ const handleLinkError = curry((origin: string, dest: string, asset: string, preC
     return preConfirm
       ? overwriteFile(origin, dest, asset)
       : promptOverwrite(`${fileName} already exists on ${dirname(err.dest)}`)
-          .then(confirm => {
-            if (!confirm) {
-              log.error('Couldn\'t complete eslint setup')
-              return process.exit()
-            }
-            return overwriteFile(origin, dest, asset)
-          })
+        .then(confirm => {
+          if (!confirm) {
+            log.error('Couldn\'t complete eslint setup')
+            return process.exit()
+          }
+          return overwriteFile(origin, dest, asset)
+        })
   }
   return Promise.reject(err)
 })

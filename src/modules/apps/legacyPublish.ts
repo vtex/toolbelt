@@ -1,15 +1,15 @@
 import * as ora from 'ora'
-import {map} from 'ramda'
+import { map } from 'ramda'
 import * as archiver from 'archiver'
-import axios, {AxiosInstance} from 'axios'
+import axios, { AxiosInstance } from 'axios'
 
 import log from '../../logger'
-import {toAppLocator} from '../../locator'
-import {pathToFileObject} from './utils'
-import {listLocalFiles} from './file'
-import {listenBuild} from '../utils'
-import {BuildFailError} from '../../errors'
-import {publicEndpoint} from '../../env'
+import { toAppLocator } from '../../locator'
+import { pathToFileObject } from './utils'
+import { listLocalFiles } from './file'
+import { listenBuild } from '../utils'
+import { BuildFailError } from '../../errors'
+import { publicEndpoint } from '../../env'
 
 const routes = {
   Publish: '_v/publish',
@@ -18,8 +18,8 @@ const routes = {
 class LegacyBuilder {
   private http: AxiosInstance
 
-  constructor (opts: any) {
-    const {account, workspace} = opts
+  constructor(opts: any) {
+    const { account, workspace } = opts
     this.http = axios.create({
       baseURL: `http://${workspace}--${account}.${publicEndpoint()}`,
       headers: {
@@ -33,16 +33,16 @@ class LegacyBuilder {
     if (!(files[0] && files[0].path && files[0].content)) {
       throw new Error('Argument files must be an array of {path, content}, where content can be a String, a Buffer or a ReadableStream.')
     }
-    const indexOfManifest = files.findIndex(({path}) => path === 'manifest.json')
+    const indexOfManifest = files.findIndex(({ path }) => path === 'manifest.json')
     if (indexOfManifest === -1) {
       throw new Error('No manifest.json file found in files.')
     }
     const archive = archiver('zip')
-    files.forEach(({content, path}) => archive.append(content, {name: path}))
+    files.forEach(({ content, path }) => archive.append(content, { name: path }))
     archive.finalize()
     return this.http.post(routes.Publish, archive, {
       params: {},
-      headers: {'Content-Type': 'application/octet-stream'},
+      headers: { 'Content-Type': 'application/octet-stream' },
     })
   }
 }
@@ -53,7 +53,7 @@ type File = {
 }
 
 export const legacyPublisher = (account: string, workspace: string = 'master') => {
-  const context = {account, workspace}
+  const context = { account, workspace }
 
   const prePublish = async (files, tag, unlistenBuild) => {
     const builder = new LegacyBuilder(context)
@@ -69,7 +69,7 @@ export const legacyPublisher = (account: string, workspace: string = 'master') =
   const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
     const spinner = ora('Publishing legacy app...').start()
     const appId = toAppLocator(manifest)
-    const options = {context, timeout: null}
+    const options = { context, timeout: null }
 
     try {
       const paths = await listLocalFiles(appRoot)
@@ -92,5 +92,5 @@ export const legacyPublisher = (account: string, workspace: string = 'master') =
     log.info(`Published app ${appId} successfully at ${account}`)
   }
 
-  return {legacyPublishApp: publishApp}
+  return { legacyPublishApp: publishApp }
 }

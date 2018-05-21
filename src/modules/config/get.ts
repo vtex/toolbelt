@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 
-import {getEnvironment} from './../../conf'
-import {CommandError} from '../../errors'
+import { getEnvironment } from './../../conf'
+import { CommandError } from '../../errors'
 
 export default (name: string) => {
   switch (name) {

@@ -1,8 +1,8 @@
-import {merge, zipObj, __} from 'ramda'
-import {apps} from '../../../clients'
-import {parseArgs} from '../utils'
+import { merge, zipObj, __ } from 'ramda'
+import { apps } from '../../../clients'
+import { parseArgs } from '../utils'
 
-const {getAppSettings, saveAppSettings} = apps
+const { getAppSettings, saveAppSettings } = apps
 
 const castValue = value => {
   let parsedValue

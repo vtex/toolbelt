@@ -1,7 +1,7 @@
-import {Apps, Builder, Colossus, InstanceOptions, IOContext, Registry, Router, Workspaces} from '@vtex/api'
+import { Apps, Builder, Colossus, InstanceOptions, IOContext, Registry, Router, Workspaces } from '@vtex/api'
 import Billing from './billingClient'
 
-import {getAccount, getToken, getWorkspace} from './conf'
+import { getAccount, getToken, getWorkspace } from './conf'
 import * as env from './env'
 import envTimeout from './timeout'
 import userAgent from './user-agent'
@@ -27,20 +27,20 @@ const interceptor = <T>(client): T => new Proxy({}, {
 }) as T
 
 const createClients = (customContext: Partial<IOContext>, customOptions: InstanceOptions = {}) => {
-  const mergedContext = {...context, ...customContext}
-  const mergedOptions = {...options, ...customOptions}
+  const mergedContext = { ...context, ...customContext }
+  const mergedOptions = { ...options, ...customOptions }
   return {
     builder: new Builder(mergedContext, mergedOptions),
     colossus: new Colossus(mergedContext, mergedOptions),
-    registry: new Registry(mergedContext, {...mergedOptions, endpoint: env.endpoint('registry')}),
+    registry: new Registry(mergedContext, { ...mergedOptions, endpoint: env.endpoint('registry') }),
   }
 }
 
 const [apps, router, workspaces, colossus, billing] = getToken()
   ? [
-    new Apps(context, {...options, endpoint: env.endpoint('apps')}),
-    new Router(context, {...options, endpoint: env.endpoint('router')}),
-    new Workspaces(context, {...options, endpoint: env.endpoint('workspaces')}),
+    new Apps(context, { ...options, endpoint: env.endpoint('apps') }),
+    new Router(context, { ...options, endpoint: env.endpoint('router') }),
+    new Workspaces(context, { ...options, endpoint: env.endpoint('workspaces') }),
     new Colossus(context),
     new Billing(context, options),
   ]

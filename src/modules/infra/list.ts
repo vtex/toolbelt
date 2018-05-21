@@ -4,17 +4,17 @@ import * as Table from 'cli-table'
 import * as Bluebird from 'bluebird'
 
 import log from '../../logger'
-import {router} from '../../clients'
-import {getLastStableAndPrerelease} from './utils'
-import {getAccount, getWorkspace} from '../../conf'
+import { router } from '../../clients'
+import { getLastStableAndPrerelease } from './utils'
+import { getAccount, getWorkspace } from '../../conf'
 
 const [account, workspace] = [getAccount(), getWorkspace()]
-const {listAvailableServices, listInstalledServices, getAvailableVersions} = router
+const { listAvailableServices, listInstalledServices, getAvailableVersions } = router
 
 const printAvailableServices = (): Bluebird<void> =>
   listAvailableServices()
     .then((availableRes: InfraAvailableResources) => {
-      const table = new Table({head: ['Name', 'Last stable', 'Last prerelease']})
+      const table = new Table({ head: ['Name', 'Last stable', 'Last prerelease'] })
       Object.keys(availableRes).forEach(res => {
         const [stable, prerelease] = getLastStableAndPrerelease(availableRes[res])
         table.push([res, chalk.bold.green(stable), chalk.yellow(prerelease)])
@@ -28,29 +28,29 @@ const printAvailableServices = (): Bluebird<void> =>
 
 const printAvailableServiceVersions = (name: string, filter: string): Bluebird<void> =>
   getAvailableVersions(name)
-    .then(({versions}: InfraResourceVersions) => {
+    .then(({ versions }: InfraResourceVersions) => {
       const region = Object.keys(versions)[0]
       return versions[region]
         .filter(v => !filter || v.indexOf(filter) >= 0)
         .map<string>(semver.valid)
         .filter(v => v !== null)
         .sort(semver.compare)
-          .reverse()
-          .slice(0, 20)
-          .forEach(v => {
-            if (semver.prerelease(v) !== null) {
-              console.log(`  ${chalk.yellow(v)}`)
-            } else {
-              console.log(`  ${chalk.bold.green(v)}`)
-            }
-          })
+        .reverse()
+        .slice(0, 20)
+        .forEach(v => {
+          if (semver.prerelease(v) !== null) {
+            console.log(`  ${chalk.yellow(v)}`)
+          } else {
+            console.log(`  ${chalk.bold.green(v)}`)
+          }
+        })
     })
 
 const printInstalledServices = (): Bluebird<void> =>
   listInstalledServices()
     .then((installedRes: InfraInstalledResources[]) => {
-      const table = new Table({head: ['Name', 'Version']})
-      installedRes.forEach(({name, version}) => {
+      const table = new Table({ head: ['Name', 'Version'] })
+      installedRes.forEach(({ name, version }) => {
         const validVersion = semver.valid(version)
         const styledVersion = semver.prerelease(validVersion) !== null
           ? chalk.yellow(validVersion)

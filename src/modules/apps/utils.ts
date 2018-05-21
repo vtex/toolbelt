@@ -1,9 +1,9 @@
-import {RegistryAppVersionsListItem} from '@vtex/api'
+import { RegistryAppVersionsListItem } from '@vtex/api'
 import chalk from 'chalk'
-import {createReadStream} from 'fs-extra'
+import { createReadStream } from 'fs-extra'
 import * as inquirer from 'inquirer'
-import {join} from 'path'
-import {drop} from 'ramda'
+import { join } from 'path'
+import { drop } from 'ramda'
 import * as semverDiff from 'semver-diff'
 import * as Table from 'cli-table2'
 
@@ -21,14 +21,14 @@ import {
   tail,
 } from 'ramda'
 
-import {createClients} from '../../clients'
-import {getWorkspace} from '../../conf'
-import {CommandError} from '../../errors'
+import { createClients } from '../../clients'
+import { getWorkspace } from '../../conf'
+import { CommandError } from '../../errors'
 import log from '../../logger'
-import {isManifestReadable} from '../../manifest'
+import { isManifestReadable } from '../../manifest'
 
 export const pathToFileObject = (root = process.cwd()) => (path: string): BatchStream =>
-  ({path, content: createReadStream(join(root, path))})
+  ({ path, content: createReadStream(join(root, path)) })
 
 const workspaceExampleName = process.env.USER || 'example'
 
@@ -43,7 +43,7 @@ export const parseArgs = (args: string[]): string[] => {
 export const validateAppAction = async (app?) => {
   if (getWorkspace() === 'master') {
     if (process.argv.indexOf('--force-master') >= 0) {
-      const {confirm} = await inquirer.prompt({
+      const { confirm } = await inquirer.prompt({
         default: false,
         message: `Are you sure you want to force this operation on the master workspace?`,
         name: 'confirm',
@@ -85,7 +85,7 @@ export const handleError = curry((app: string, err: any) => {
 })
 
 export const appsLatestVersion = (app: string): Promise<string | never> => {
-  return createClients({account: 'smartcheckout'}).registry
+  return createClients({ account: 'smartcheckout' }).registry
     .listVersionsByApp(app)
     .then<RegistryAppVersionsListItem[]>(prop('data'))
     .then<string[]>(map(extractVersionFromId))
@@ -95,7 +95,7 @@ export const appsLatestVersion = (app: string): Promise<string | never> => {
 }
 
 export const appsLastVersion = (app: string): Promise<string | never> => {
-  return createClients({account: 'smartcheckout'}).registry
+  return createClients({ account: 'smartcheckout' }).registry
     .listVersionsByApp(app)
     .then<RegistryAppVersionsListItem[]>(prop('data'))
     .then<string[]>(map(extractVersionFromId))
@@ -107,7 +107,7 @@ export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
   return !!manifest.builders['service-js']
 }
 
-export function optionsFormatter (billingOptions: BillingOptions) {
+export function optionsFormatter(billingOptions: BillingOptions) {
   const table = new Table({ head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }], chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' } })
 
   if (billingOptions.free) {
@@ -139,7 +139,7 @@ export function optionsFormatter (billingOptions: BillingOptions) {
             }
           })
 
-          rowCount ++
+          rowCount++
           itemsArray.push([{ content: rangesStr, hAlign: 'center', vAlign: 'center' }])
         }
         itemsArray.push([{ content: '+', hAlign: 'center' }])

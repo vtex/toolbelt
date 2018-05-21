@@ -1,14 +1,14 @@
 import chalk from 'chalk'
 import * as EventSource from 'eventsource'
-import {compose, forEach, path, pathOr} from 'ramda'
+import { compose, forEach, path, pathOr } from 'ramda'
 
-import {getToken} from './conf'
-import {endpoint, publicEndpoint} from './env'
-import {SSEConnectionError} from './errors'
+import { getToken } from './conf'
+import { endpoint, publicEndpoint } from './env'
+import { SSEConnectionError } from './errors'
 import log from './logger'
 import userAgent from './user-agent'
 
-const levelAdapter = {warning: 'warn'}
+const levelAdapter = { warning: 'warn' }
 
 const onOpen = type => () =>
   log.debug(`Connected to ${type} server`)
@@ -87,7 +87,7 @@ export const onEvent = (ctx: Context, sender: string, subject: string, keys: str
 
 export const logAll = (context: Context, logLevel: string, id: string) => {
   let previous = ''
-  return onLog(context, id, logLevel, ({sender, level, body: {message, code}}: Message) => {
+  return onLog(context, id, logLevel, ({ sender, level, body: { message, code } }: Message) => {
     if (!(message || code)) {
       return // Ignore logs without message or code.
     }
@@ -105,7 +105,7 @@ export const onAuth = (account: string, workspace: string, state: string): Promi
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
     es.onmessage = (msg: MessageJSON) => {
-      const {body: token} = JSON.parse(msg.data) as {body: string}
+      const { body: token } = JSON.parse(msg.data) as { body: string }
       es.close()
       resolve(token)
     }

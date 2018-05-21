@@ -1,8 +1,8 @@
-import {path} from 'ramda'
+import { path } from 'ramda'
 
-import {apps} from '../../../clients'
+import { apps } from '../../../clients'
 
-const {getAppSettings} = apps
+const { getAppSettings } = apps
 
 const FIELDS_START_INDEX = 2
 

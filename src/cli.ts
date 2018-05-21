@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-import {without} from 'ramda'
+import { without } from 'ramda'
 import chalk from 'chalk'
 import * as moment from 'moment'
 import * as Bluebird from 'bluebird'
-import {all as clearCachedModules} from 'clear-module'
+import { all as clearCachedModules } from 'clear-module'
 import 'any-promise/register/bluebird'
-import {find, run as unboundRun, MissingRequiredArgsError, CommandNotFoundError} from 'findhelp'
+import { find, run as unboundRun, MissingRequiredArgsError, CommandNotFoundError } from 'findhelp'
 import * as path from 'path'
 
 import * as pkg from '../package.json'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
-import {getToken} from './conf'
-import {CommandError, SSEConnectionError} from './errors'
+import { getToken } from './conf'
+import { CommandError, SSEConnectionError } from './errors'
 
 global.Promise = Bluebird
 Bluebird.config({
@@ -54,7 +54,7 @@ const checkLogin = args => {
   const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init']
   if (!getToken() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
-    return run({command: loginCmd})
+    return run({ command: loginCmd })
   }
 }
 
@@ -85,11 +85,11 @@ const onError = e => {
 
   if (status) {
     if (status === 401) {
-      if (!loginPending){
+      if (!loginPending) {
         log.error('There was an authentication error. Please login again')
         // Try to login and re-issue the command.
         loginPending = true
-        return run({command: loginCmd}).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
+        return run({ command: loginCmd }).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
       } else {
         return // Prevent multiple login attempts
       }

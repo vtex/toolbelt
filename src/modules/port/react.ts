@@ -1,8 +1,8 @@
-import {readJSON, outputJSON, remove} from 'fs-extra'
-import {forEachObjIndexed, isEmpty} from 'ramda'
+import { readJSON, outputJSON, remove } from 'fs-extra'
+import { forEachObjIndexed, isEmpty } from 'ramda'
 
-import {CommandError} from '../../errors'
-import {getManifest} from '../../manifest'
+import { CommandError } from '../../errors'
+import { getManifest } from '../../manifest'
 import log from '../../logger'
 
 export default async () => {
@@ -20,7 +20,7 @@ export default async () => {
     }
     log.info('Porting react code to react builder version 2.x')
 
-    const {extensions: react0Extensions} = renderJson
+    const { extensions: react0Extensions } = renderJson
     const pages = {}
     const extensions = {}
 
@@ -48,17 +48,17 @@ export default async () => {
     }, react0Extensions)
 
     const pagesFile = {
-      ...!isEmpty(pages) && {pages},
-      ...!isEmpty(extensions) && {extensions},
+      ...!isEmpty(pages) && { pages },
+      ...!isEmpty(extensions) && { extensions },
     }
 
-    await outputJSON('pages/pages.json', pagesFile, {spaces: 2})
+    await outputJSON('pages/pages.json', pagesFile, { spaces: 2 })
     await remove('react/render.json')
   }
 
   manifest.builders.react = '2.x'
   manifest.builders.pages = '0.x'
-  await outputJSON('manifest.json', manifest, {spaces: 2})
+  await outputJSON('manifest.json', manifest, { spaces: 2 })
 
   log.info(`Ported react builder successfully. ${oldReact === '0.x' ? 'Please check your pages/pages.json file.' : ''}`)
 }

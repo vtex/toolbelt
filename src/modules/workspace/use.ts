@@ -1,12 +1,12 @@
-import {prop} from 'ramda'
+import { prop } from 'ramda'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
 
 import log from '../../logger'
 import createCmd from './create'
-import {workspaces} from '../../clients'
-import {getAccount, saveWorkspace} from '../../conf'
+import { workspaces } from '../../clients'
+import { getAccount, saveWorkspace } from '../../conf'
 import resetWks from './reset'
 
 const promptWorkspaceCreation = (name: string): Bluebird<boolean> => {
@@ -18,7 +18,7 @@ const promptWorkspaceCreation = (name: string): Bluebird<boolean> => {
       message: 'Do you wish to create it?',
     }),
   )
-  .then<boolean>(prop('confirm'))
+    .then<boolean>(prop('confirm'))
 }
 
 export default async (name: string, options?) => {

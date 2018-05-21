@@ -1,9 +1,9 @@
 import chalk from 'chalk'
-import {contains, values} from 'ramda'
+import { contains, values } from 'ramda'
 
-import {Environment, saveEnvironment} from './../../conf'
+import { Environment, saveEnvironment } from './../../conf'
 import log from '../../logger'
-import {CommandError} from '../../errors'
+import { CommandError } from '../../errors'
 
 const envValues = values(Environment)
 
