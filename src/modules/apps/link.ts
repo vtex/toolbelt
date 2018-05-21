@@ -125,11 +125,21 @@ export default async (options) => {
     initial_link_required: () => warnAndLinkFromStart(performInitialLink),
   }
 
+  let debuggerStarted = false
+  const onBuild = async () => {
+    if (debuggerStarted) {
+      return
+    }
+    const debuggerPort = await startDebuggerTunnel(manifest)
+    debuggerStarted = true
+    log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
+  }
+
   log.info(`Linking app ${appId}`)
 
   let unlistenBuild
   try {
-    const {unlisten} = await listenBuild(appId, performInitialLink, {waitCompletion: true, onError})
+    const {unlisten} = await listenBuild(appId, performInitialLink, {waitCompletion: false, onBuild, onError})
     unlistenBuild = unlisten
   } catch (e) {
     if (e.response) {
@@ -151,7 +161,5 @@ export default async (options) => {
       process.exit()
     })
 
-  const debuggerPort = await startDebuggerTunnel(manifest)
-  log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
   await watchAndSendChanges(appId, builder, performInitialLink)
 }
