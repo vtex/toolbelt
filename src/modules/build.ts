@@ -6,6 +6,7 @@ import {logAll, onEvent} from '../sse'
 interface ListeningOptions {
   context?: Context,
   waitCompletion?: boolean,
+  onBuild?: AnyFunction,
   onError?: {[code: string]: AnyFunction},
 }
 
@@ -46,13 +47,18 @@ const runErrorAction = (code, message, errorActions) => {
 
 const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlisten> => {
   return new Promise((resolve, reject, onCancel) => {
-    const {waitCompletion, onError = {}, context = currentContext} = options
+    const {waitCompletion, onError = {}, onBuild = false, context = currentContext} = options
     const unlisten = onBuildEvent(context, appOrKey, (eventType, eventData) => {
       if (eventType === 'build.status') {
         const {body: {code, details, message}} = eventData
-        if (code === 'success' && waitCompletion) {
-          unlisten(...allEvents)
-          resolve(() => undefined)
+        if (code === 'success') {
+          if (waitCompletion) {
+            unlisten(...allEvents)
+            resolve(() => undefined)
+          }
+          if (onBuild) {
+            onBuild()
+          }
         }
 
         if (code === 'fail') {
