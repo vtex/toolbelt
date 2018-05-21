@@ -1,11 +1,11 @@
 import { RegistryAppVersionsListItem } from '@vtex/api'
 import chalk from 'chalk'
+import * as Table from 'cli-table2'
 import { createReadStream } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import { join } from 'path'
 import { drop } from 'ramda'
 import * as semverDiff from 'semver-diff'
-import * as Table from 'cli-table2'
 
 import {
   __,

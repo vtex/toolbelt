@@ -1,6 +1,6 @@
-import { memoize } from 'ramda'
-import * as path from 'path'
 import { readFile } from 'fs-extra'
+import * as path from 'path'
+import { memoize } from 'ramda'
 
 import { CommandError } from './errors'
 

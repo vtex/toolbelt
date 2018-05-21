@@ -1,9 +1,9 @@
+import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import * as Bluebird from 'bluebird'
-import log from '../../logger'
-import { getAccount, getWorkspace } from '../../conf'
 import { workspaces } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
+import log from '../../logger'
 
 const promptWorkspaceReset = (name: string): Bluebird<void> =>
   inquirer.prompt({

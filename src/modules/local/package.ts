@@ -1,9 +1,9 @@
 import { outputJson } from 'fs-extra'
-import { reduce, keys, assoc } from 'ramda'
 import { resolve } from 'path'
+import { assoc, keys, reduce } from 'ramda'
 
-import { getManifest } from '../../manifest'
 import log from '../../logger'
+import { getManifest } from '../../manifest'
 
 const PREFIX = 'npm:'
 const npmReducer = dependencies => (acc: {}, k: string): {} =>

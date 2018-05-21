@@ -1,12 +1,12 @@
-import { prop } from 'ramda'
+import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import * as Bluebird from 'bluebird'
+import { prop } from 'ramda'
 
-import log from '../../logger'
-import createCmd from './create'
 import { workspaces } from '../../clients'
 import { getAccount, saveWorkspace } from '../../conf'
+import log from '../../logger'
+import createCmd from './create'
 import resetWks from './reset'
 
 const promptWorkspaceCreation = (name: string): Bluebird<boolean> => {

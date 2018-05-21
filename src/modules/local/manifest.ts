@@ -1,6 +1,6 @@
 import { outputJson, readJson } from 'fs-extra'
-import { reduce, keys, assoc } from 'ramda'
 import { resolve } from 'path'
+import { assoc, keys, reduce } from 'ramda'
 
 import log from '../../logger'
 

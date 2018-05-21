@@ -1,12 +1,12 @@
-import chalk from 'chalk'
-import * as semver from 'semver'
-import * as Table from 'cli-table'
 import * as Bluebird from 'bluebird'
+import chalk from 'chalk'
+import * as Table from 'cli-table'
+import * as semver from 'semver'
 
-import log from '../../logger'
 import { router } from '../../clients'
-import { getLastStableAndPrerelease } from './utils'
 import { getAccount, getWorkspace } from '../../conf'
+import log from '../../logger'
+import { getLastStableAndPrerelease } from './utils'
 
 const [account, workspace] = [getAccount(), getWorkspace()]
 const { listAvailableServices, listInstalledServices, getAvailableVersions } = router

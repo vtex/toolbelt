@@ -1,9 +1,9 @@
-import { readJSON, outputJSON, remove } from 'fs-extra'
+import { outputJSON, readJSON, remove } from 'fs-extra'
 import { forEachObjIndexed, isEmpty } from 'ramda'
 
 import { CommandError } from '../../errors'
-import { getManifest } from '../../manifest'
 import log from '../../logger'
+import { getManifest } from '../../manifest'
 
 export default async () => {
   const manifest = await getManifest()

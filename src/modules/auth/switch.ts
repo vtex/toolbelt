@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 
+import { getAccount } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
 import loginCmd from './login'
-import { getAccount } from '../../conf'
 
 const previousAccount = getAccount()
 

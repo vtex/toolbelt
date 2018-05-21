@@ -1,12 +1,12 @@
-import { diffJson } from 'diff'
 import chalk from 'chalk'
-import { map, keys, compose, prepend } from 'ramda'
+import { diffJson } from 'diff'
+import { compose, keys, map, prepend } from 'ramda'
 
-import log from '../../logger'
 import { apps } from '../../clients'
-import { removeNpm } from './utils'
 import { parseLocator } from '../../locator'
+import log from '../../logger'
 import { parseArgs } from '../apps/utils'
+import { removeNpm } from './utils'
 
 const DEFAULT_REGISTRY = 'smartcheckout'
 const { getDependencies, updateDependencies, updateDependency } = apps

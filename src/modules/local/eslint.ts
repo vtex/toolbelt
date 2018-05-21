@@ -1,9 +1,9 @@
-import chalk from 'chalk'
-import { prop, curry } from 'ramda'
-import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
+import chalk from 'chalk'
+import { mkdir, symlink, unlink } from 'fs-extra'
+import * as inquirer from 'inquirer'
 import { basename, dirname, join } from 'path'
-import { mkdir, unlink, symlink } from 'fs-extra'
+import { curry, prop } from 'ramda'
 
 import log from '../../logger'
 

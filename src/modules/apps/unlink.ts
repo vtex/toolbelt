@@ -1,10 +1,10 @@
-import { head, tail, prepend } from 'ramda'
+import { head, prepend, tail } from 'ramda'
 
-import log from '../../logger'
 import { apps } from '../../clients'
-import { validateAppAction, parseArgs } from './utils'
+import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
 import { toMajorLocator } from './../../locator'
+import { parseArgs, validateAppAction } from './utils'
 
 const { unlink, listLinks } = apps
 

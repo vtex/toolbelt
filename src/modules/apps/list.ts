@@ -1,11 +1,11 @@
 import chalk from 'chalk'
 import * as Table from 'cli-table'
-import { curry, compose, map, prop, split, head, length, gt, flip } from 'ramda'
+import { compose, curry, flip, gt, head, length, map, prop, split } from 'ramda'
 
-import log from '../../logger'
 import { apps } from '../../clients'
-import { parseLocator } from '../../locator'
 import { getAccount, getWorkspace } from '../../conf'
+import { parseLocator } from '../../locator'
+import log from '../../logger'
 
 const { listApps } = apps
 

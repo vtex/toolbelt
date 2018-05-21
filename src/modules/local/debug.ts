@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import { getAccount, getWorkspace, getToken } from '../../conf'
+import { getAccount, getToken, getWorkspace } from '../../conf'
 
 import log from '../../logger'
 

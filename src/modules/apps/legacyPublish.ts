@@ -1,15 +1,15 @@
-import * as ora from 'ora'
-import { map } from 'ramda'
 import * as archiver from 'archiver'
 import axios, { AxiosInstance } from 'axios'
+import * as ora from 'ora'
+import { map } from 'ramda'
 
-import log from '../../logger'
-import { toAppLocator } from '../../locator'
-import { pathToFileObject } from './utils'
-import { listLocalFiles } from './file'
-import { listenBuild } from '../utils'
-import { BuildFailError } from '../../errors'
 import { publicEndpoint } from '../../env'
+import { BuildFailError } from '../../errors'
+import { toAppLocator } from '../../locator'
+import log from '../../logger'
+import { listenBuild } from '../utils'
+import { listLocalFiles } from './file'
+import { pathToFileObject } from './utils'
 
 const routes = {
   Publish: '_v/publish',

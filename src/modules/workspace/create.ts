@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 
+import { workspaces } from '../../clients'
+import { getAccount } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
-import { getAccount } from '../../conf'
-import { workspaces } from '../../clients'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9-]{0,126}[a-z0-9]$/
 

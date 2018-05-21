@@ -1,5 +1,5 @@
-import log from '../../logger'
 import { apps } from '../../clients'
+import log from '../../logger'
 import { removeNpm } from './utils'
 
 const { getDependencies } = apps

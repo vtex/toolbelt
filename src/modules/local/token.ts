@@ -1,5 +1,5 @@
-import { getToken } from '../../conf'
 import * as clipboardy from 'clipboardy'
+import { getToken } from '../../conf'
 
 export default () => {
   const token = getToken()

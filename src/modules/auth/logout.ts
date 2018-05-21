@@ -1,5 +1,5 @@
-import log from '../../logger'
 import { clear } from '../../conf'
+import log from '../../logger'
 
 export default () => {
   log.debug('Clearing config file')

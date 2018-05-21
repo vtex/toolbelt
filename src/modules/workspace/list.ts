@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 import * as Table from 'cli-table'
 
-import log from '../../logger'
 import { workspaces } from '../../clients'
-import { getWorkspace, getAccount } from '../../conf'
+import { getAccount, getWorkspace } from '../../conf'
+import log from '../../logger'
 
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 

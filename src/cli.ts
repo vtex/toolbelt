@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-import { without } from 'ramda'
-import chalk from 'chalk'
-import * as moment from 'moment'
-import * as Bluebird from 'bluebird'
-import { all as clearCachedModules } from 'clear-module'
 import 'any-promise/register/bluebird'
-import { find, run as unboundRun, MissingRequiredArgsError, CommandNotFoundError } from 'findhelp'
+import * as Bluebird from 'bluebird'
+import chalk from 'chalk'
+import { all as clearCachedModules } from 'clear-module'
+import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
+import * as moment from 'moment'
 import * as path from 'path'
+import { without } from 'ramda'
 
 import * as pkg from '../package.json'
+import { getToken } from './conf'
+import { CommandError, SSEConnectionError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
-import { getToken } from './conf'
-import { CommandError, SSEConnectionError } from './errors'
 
 global.Promise = Bluebird
 Bluebird.config({
