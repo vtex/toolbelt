@@ -2,13 +2,14 @@ import chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import {head, prepend, prop, tail} from 'ramda'
 
-import {billing} from '../../clients'
+import {apps, billing} from '../../clients'
 import log from '../../logger'
 import {getManifest, validateApp} from '../../manifest'
 import {toAppLocator} from './../../locator'
 import {optionsFormatter, parseArgs, validateAppAction} from './utils'
 
 const {installApp} = billing
+const {installApp: legacyInstallApp} = apps
 
 const promptPolicies = async () => {
   return prop('confirm', await inquirer.prompt({
@@ -38,28 +39,36 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
 
   try {
     log.debug('Starting to install app', app)
-    const {code, billingOptions} = await installApp(app, reg, false)
-    switch (code) {
-      case 'installed_from_own_registry':
-        log.debug('Installed from own/public registry')
-        break
-      case 'installed_by_previous_purchase':
-        log.debug('Installed from previous purchase')
-        break
-      case 'installed_free':
-        log.debug('Free app')
-        break
-      case 'check_terms':
-        if (!billingOptions) {
-          throw new Error('Failed to get billing options')
-        }
-        await checkBillingOptions(app, reg, JSON.parse(billingOptions))
+    if (app === 'vtex.billing' || app.split('@')[0] === 'vtex.billing') {
+      await legacyInstallApp('vtex.billing', reg)
+    } else {
+      const {code, billingOptions} = await installApp(app, reg, false)
+      switch (code) {
+        case 'installed_from_own_registry':
+          log.debug('Installed from own/public registry')
+          break
+        case 'installed_by_previous_purchase':
+          log.debug('Installed from previous purchase')
+          break
+        case 'installed_free':
+          log.debug('Free app')
+          break
+        case 'check_terms':
+          if (!billingOptions) {
+            throw new Error('Failed to get billing options')
+          }
+          await checkBillingOptions(app, reg, JSON.parse(billingOptions))
+      }
     }
     log.info(`Installed app ${chalk.green(app)} successfully`)
 
   } catch (e) {
     if (e.response && e.response.data && e.response.data.error) {
-      log.error(e.response.data.error)
+      if (e.response.data.code === 'routing_error' && e.response.data.error.includes('not found')) {
+        log.warn(`Billing app not found in current workspace. Please install it with ${chalk.green('vtex install vtex.billing')}`)
+      } else {
+        log.error(e.response.data.error)
+      }
     } else {
       logGraphQLErrorMessage(e)
     }
