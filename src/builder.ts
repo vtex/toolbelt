@@ -20,7 +20,7 @@ export class Builder {
     })
   }
 
-  prePublishApp = (files: File[], _tag: string) => {
+  public prePublishApp = (files: File[], _tag: string) => {
     if (!(files[0] && files[0].path && files[0].content)) {
       throw new Error('Argument files must be an array of {path, content}, where content can be a String, a Buffer or a ReadableStream.')
     }
@@ -38,12 +38,12 @@ export class Builder {
   }
 }
 
-export type File = {
+export interface File {
   path: string,
   content: any,
 }
 
-export type InstanceOptions = {
+export interface InstanceOptions {
   authToken: string,
   userAgent: string,
   account: string,

@@ -22,7 +22,7 @@ Bluebird.config({
 
 const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
-const loginCmd = tree['login']
+const loginCmd = tree.login
 let loginPending = false
 
 // Setup logging
@@ -30,7 +30,7 @@ const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 if (isVerbose) {
   log.level = 'debug'
-  log['default'].transports.console['timestamp'] = () =>
+  log.default.transports.console['timestamp'] = () =>
     chalk.grey(moment().format('HH:mm:ss.SSS'))
 }
 
