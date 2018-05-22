@@ -1,13 +1,13 @@
-import {currentContext} from '../conf'
-import {BuildFailError} from '../errors'
+import { currentContext } from '../conf'
+import { BuildFailError } from '../errors'
 import log from '../logger'
-import {logAll, onEvent} from '../sse'
+import { logAll, onEvent } from '../sse'
 
 interface ListeningOptions {
   context?: Context,
   waitCompletion?: boolean,
   onBuild?: AnyFunction,
-  onError?: {[code: string]: AnyFunction},
+  onError?: { [code: string]: AnyFunction },
 }
 
 type BuildTrigger<T> = () => Promise<T>
@@ -47,10 +47,10 @@ const runErrorAction = (code, message, errorActions) => {
 
 const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlisten> => {
   return new Promise((resolve, reject, onCancel) => {
-    const {waitCompletion, onError = {}, onBuild = false, context = currentContext} = options
+    const { waitCompletion, onError = {}, onBuild = false, context = currentContext } = options
     const unlisten = onBuildEvent(context, appOrKey, (eventType, eventData) => {
       if (eventType === 'build.status') {
-        const {body: {code, details, message}} = eventData
+        const { body: { code, details, message } } = eventData
         if (code === 'success') {
           if (waitCompletion) {
             unlisten(...allEvents)
@@ -79,12 +79,12 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
   })
 }
 
-export const listenBuild = async <T = void> (appOrKey: string, triggerBuild: BuildTrigger<T>, options: ListeningOptions = {}): Promise<ListenResponse<T>> => {
+export const listenBuild = async <T = void>(appOrKey: string, triggerBuild: BuildTrigger<T>, options: ListeningOptions = {}): Promise<ListenResponse<T>> => {
   const listenPromise = listen(appOrKey, options)
   try {
     const response = await triggerBuild()
     const unlisten = await listenPromise
-    return {response, unlisten}
+    return { response, unlisten }
   } catch (e) {
     listenPromise.cancel()
     throw e

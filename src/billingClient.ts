@@ -1,9 +1,9 @@
-import {HttpClient, InstanceOptions, IOContext} from '@vtex/api'
+import { HttpClient, InstanceOptions, IOContext } from '@vtex/api'
 
 export default class Billing {
   private http: HttpClient
 
-  constructor (ioContext: IOContext, opts: InstanceOptions) {
+  constructor(ioContext: IOContext, opts: InstanceOptions) {
     this.http = HttpClient.forWorkspace('billing.vtex', ioContext, opts)
   }
 
@@ -14,7 +14,7 @@ export default class Billing {
         billingOptions
       }
     }`
-    const {data: {data, errors}} = await this.http.postRaw<any>(`/_v/graphql`, {query: graphQLQuery})
+    const { data: { data, errors } } = await this.http.postRaw<any>(`/_v/graphql`, { query: graphQLQuery })
     if (errors) {
       throw errors
     }

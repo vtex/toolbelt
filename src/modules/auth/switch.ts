@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 
-import {CommandError} from '../../errors'
+import { getAccount } from '../../conf'
+import { CommandError } from '../../errors'
 import log from '../../logger'
 import loginCmd from './login'
-import {getAccount} from '../../conf'
 
 const previousAccount = getAccount()
 
@@ -18,6 +18,6 @@ export default async (account: string, options) => {
   } else if (previousAccount === account) {
     throw new CommandError(`You're already using the account ${chalk.blue(account)}`)
   }
-  await loginCmd({account, workspace})
+  await loginCmd({ account, workspace })
   log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(account)}`)
 }

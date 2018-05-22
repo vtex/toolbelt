@@ -1,6 +1,6 @@
-import {Environment, getEnvironment, Region} from './conf'
+import { Environment, getEnvironment, Region } from './conf'
 
-export function endpoint (api: string): string {
+export function endpoint(api: string): string {
   switch (api.toLowerCase()) {
     case 'apps':
       return process.env.VTEX_APPS_ENDPOINT
@@ -17,11 +17,11 @@ export function endpoint (api: string): string {
   }
 }
 
-export function region (): string {
+export function region(): string {
   return process.env.VTEX_REGION ||
     (getEnvironment() === Environment.Staging ? Region.Staging : Region.Production)
 }
 
-export function publicEndpoint (): string {
+export function publicEndpoint(): string {
   return getEnvironment() === Environment.Staging ? 'myvtexdev.com' : 'myvtex.com'
 }

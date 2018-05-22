@@ -1,6 +1,6 @@
 import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
-import {createReadStream, readFileSync, stat} from 'fs-extra'
+import { createReadStream, readFileSync, stat } from 'fs-extra'
 import * as glob from 'globby'
 import * as path from 'path'
 
@@ -50,37 +50,37 @@ export const listLocalFiles = (root: string, folder?: string): Bluebird<string[]
       nodir: true,
     }),
   )
-  .then((files: string[]) =>
-    Promise.all(
-      files.map(file =>
-        stat(path.join(root, file)).then(stats => ({file, stats})),
+    .then((files: string[]) =>
+      Promise.all(
+        files.map(file =>
+          stat(path.join(root, file)).then(stats => ({ file, stats })),
+        ),
       ),
-    ),
   )
-  .then(filesStats =>
-    filesStats.reduce((acc, {file, stats}) => {
-      if (stats.size > 0) {
-        acc.push(file)
-      }
-      return acc
-    }, []),
+    .then(filesStats =>
+      filesStats.reduce((acc, { file, stats }) => {
+        if (stats.size > 0) {
+          acc.push(file)
+        }
+        return acc
+      }, []),
   )
 
 export const addChangeContent = (changes: Change[]): Batch[] =>
-  changes.map(({path: filePath, action}) => {
+  changes.map(({ path: filePath, action }) => {
     return {
       content: action === 'save'
-      ? createReadStream(path.resolve(process.cwd(), filePath))
-      : null,
+        ? createReadStream(path.resolve(process.cwd(), filePath))
+        : null,
       path: filePath.split(path.sep).join('/'),
     }
   })
 
 const sendSaveChanges = (file: string, sendChanges: AnyFunction): void =>
-  sendChanges(addChangeContent([{path: file, action: 'save'}]))
+  sendChanges(addChangeContent([{ path: file, action: 'save' }]))
 
 const sendRemoveChanges = (file: string, sendChanges: AnyFunction): void =>
-  sendChanges(addChangeContent([{path: file, action: 'remove'}]))
+  sendChanges(addChangeContent([{ path: file, action: 'remove' }]))
 
 export const watch = (root: string, sendChanges: AnyFunction, folder?: string): Bluebird<string | void> => {
   const watcher = chokidar.watch([`${safeFolder(folder)}`, '*.json'], {
@@ -96,14 +96,14 @@ export const watch = (root: string, sendChanges: AnyFunction, folder?: string): 
   })
   return new Promise((resolve, reject) => {
     watcher
-    .on('add', (file, {size}) => size > 0 ? sendSaveChanges(file, sendChanges) : null)
-    .on('change', (file, {size}) => {
-      return size > 0
-        ? sendSaveChanges(file, sendChanges)
-        : sendRemoveChanges(file, sendChanges)
-    })
-    .on('unlink', file => sendRemoveChanges(file, sendChanges))
-    .on('error', reject)
-    .on('ready', resolve)
+      .on('add', (file, { size }) => size > 0 ? sendSaveChanges(file, sendChanges) : null)
+      .on('change', (file, { size }) => {
+        return size > 0
+          ? sendSaveChanges(file, sendChanges)
+          : sendRemoveChanges(file, sendChanges)
+      })
+      .on('unlink', file => sendRemoveChanges(file, sendChanges))
+      .on('error', reject)
+      .on('ready', resolve)
   })
 }

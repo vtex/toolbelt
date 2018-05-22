@@ -1,8 +1,8 @@
-import {dissocPath} from 'ramda'
+import { dissocPath } from 'ramda'
 
-import {apps} from '../../../clients'
+import { apps } from '../../../clients'
 
-const {getAppSettings, saveAppSettings} = apps
+const { getAppSettings, saveAppSettings } = apps
 
 const FIELDS_START_INDEX = 3
 

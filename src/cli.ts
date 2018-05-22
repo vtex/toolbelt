@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-import {without} from 'ramda'
-import chalk from 'chalk'
-import * as moment from 'moment'
-import * as Bluebird from 'bluebird'
-import {all as clearCachedModules} from 'clear-module'
 import 'any-promise/register/bluebird'
-import {find, run as unboundRun, MissingRequiredArgsError, CommandNotFoundError} from 'findhelp'
+import * as Bluebird from 'bluebird'
+import chalk from 'chalk'
+import { all as clearCachedModules } from 'clear-module'
+import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
+import * as moment from 'moment'
 import * as path from 'path'
+import { without } from 'ramda'
 
 import * as pkg from '../package.json'
+import { getToken } from './conf'
+import { CommandError, SSEConnectionError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
-import {getToken} from './conf'
-import {CommandError, SSEConnectionError} from './errors'
 
 global.Promise = Bluebird
 Bluebird.config({
@@ -22,7 +22,7 @@ Bluebird.config({
 
 const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
-const loginCmd = tree['login']
+const loginCmd = tree.login
 let loginPending = false
 
 // Setup logging
@@ -30,7 +30,7 @@ const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 if (isVerbose) {
   log.level = 'debug'
-  log['default'].transports.console['timestamp'] = () =>
+  log.default.transports.console['timestamp'] = () =>
     chalk.grey(moment().format('HH:mm:ss.SSS'))
 }
 
@@ -54,7 +54,7 @@ const checkLogin = args => {
   const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init']
   if (!getToken() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
-    return run({command: loginCmd})
+    return run({ command: loginCmd })
   }
 }
 
@@ -85,11 +85,11 @@ const onError = e => {
 
   if (status) {
     if (status === 401) {
-      if (!loginPending){
+      if (!loginPending) {
         log.error('There was an authentication error. Please login again')
         // Try to login and re-issue the command.
         loginPending = true
-        return run({command: loginCmd}).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
+        return run({ command: loginCmd }).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
       } else {
         return // Prevent multiple login attempts
       }

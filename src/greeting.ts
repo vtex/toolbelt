@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 
-import {getAccount, getLogin, getWorkspace, getEnvironment} from './conf'
+import { getAccount, getEnvironment, getLogin, getWorkspace } from './conf'
 
 const login = getLogin()
 const account = getAccount()

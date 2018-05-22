@@ -1,15 +1,15 @@
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import {head, prepend, prop, tail} from 'ramda'
+import { head, prepend, prop, tail } from 'ramda'
 
-import {apps, billing} from '../../clients'
+import { apps, billing } from '../../clients'
 import log from '../../logger'
-import {getManifest, validateApp} from '../../manifest'
-import {toAppLocator} from './../../locator'
-import {optionsFormatter, parseArgs, validateAppAction} from './utils'
+import { getManifest, validateApp } from '../../manifest'
+import { toAppLocator } from './../../locator'
+import { optionsFormatter, parseArgs, validateAppAction } from './utils'
 
-const {installApp} = billing
-const {installApp: legacyInstallApp} = apps
+const { installApp } = billing
+const { installApp: legacyInstallApp } = apps
 
 const promptPolicies = async () => {
   return prop('confirm', await inquirer.prompt({
@@ -51,7 +51,7 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
 
   try {
     log.debug('Starting to install app', app)
-    const {code, billingOptions} = await installApp(app, reg, false)
+    const { code, billingOptions } = await installApp(app, reg, false)
     switch (code) {
       case 'installed_from_own_registry':
         log.debug('Installed from own/public registry')
@@ -89,8 +89,8 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
 
 const logGraphQLErrorMessage = (e) => {
   const errorMessage = e instanceof Array
-  ? e.forEach(err => log.error(err.message ? err.message : err))
-  : e
+    ? e.forEach(err => log.error(err.message ? err.message : err))
+    : e
   log.error(errorMessage)
 }
 

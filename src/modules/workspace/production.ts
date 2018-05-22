@@ -1,12 +1,12 @@
 import chalk from 'chalk'
 
-import {apps, workspaces} from '../../clients'
-import {getAccount, getWorkspace} from '../../conf'
-import {CommandError} from '../../errors'
+import { apps, workspaces } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
+import { CommandError } from '../../errors'
 import log from '../../logger'
 
-const {listLinks} = apps
-const {set} = workspaces
+const { listLinks } = apps
+const { set } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const canGoLive = async (): Promise<void> => {
@@ -36,7 +36,7 @@ export default async (production: any) => {
   }
 
   log.debug(`Setting workspace ${currentWorkspace} to production=${prod}`)
-  await set(account, currentWorkspace, {production: prod})
+  await set(account, currentWorkspace, { production: prod })
   log.info(`Workspace ${chalk.green(currentWorkspace)} set to ${pretty(prod)}`)
   if (prod) {
     log.info(`You can now check your changes before publishing them`)

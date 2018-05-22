@@ -1,8 +1,8 @@
-import {memoize} from 'ramda'
+import { readFile } from 'fs-extra'
 import * as path from 'path'
-import {readFile} from 'fs-extra'
+import { memoize } from 'ramda'
 
-import {CommandError} from './errors'
+import { CommandError } from './errors'
 
 const readFileUtf = async (file: string): Promise<string> => {
   try {
@@ -22,7 +22,7 @@ export const isManifestReadable = async (): Promise<boolean> => {
   try {
     await readFileUtf(manifestPath)
     return true
-  } catch(error) {
+  } catch (error) {
     return false
   }
 }
