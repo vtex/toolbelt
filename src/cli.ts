@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import 'any-promise/register/bluebird'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
@@ -55,7 +54,7 @@ const checkLogin = args => {
   const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init']
   if (!getToken() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
-    return run({command: loginCmd})
+    return run({ command: loginCmd })
   }
 }
 
@@ -86,11 +85,11 @@ const onError = e => {
 
   if (status) {
     if (status === 401) {
-      if (!loginPending){
+      if (!loginPending) {
         log.error('There was an authentication error. Please login again')
         // Try to login and re-issue the command.
         loginPending = true
-        return run({command: loginCmd}).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
+        return run({ command: loginCmd }).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
       } else {
         return // Prevent multiple login attempts
       }

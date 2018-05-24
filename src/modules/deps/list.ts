@@ -1,10 +1,10 @@
+import { apps } from '../../clients'
 import log from '../../logger'
-import {apps} from '../../clients'
-import {removeNpm} from './utils'
+import { removeNpm } from './utils'
 
-const {getDependencies} = apps
+const { getDependencies } = apps
 
-export default async ({n, npm, k, keys}) => {
+export default async ({ n, npm, k, keys }) => {
   log.debug('Starting to list dependencies')
   const deps = await getDependencies()
   const keysOnly = k || keys

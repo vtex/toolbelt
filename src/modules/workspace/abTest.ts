@@ -8,8 +8,8 @@ import {CommandError} from '../../errors'
 import log from '../../logger'
 import list from './list'
 
-const {listLinks} = apps
-const {set} = workspaces
+const { listLinks } = apps
+const { set } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const promptContinue = async () => {
@@ -53,7 +53,7 @@ export default async (optionWeight: number) => {
 
   try {
     log.debug(`Setting workspace ${chalk.green(currentWorkspace)} to AB test with weight=${weight}`)
-    await set(account, currentWorkspace, {production: weight !== 0, weight})
+    await set(account, currentWorkspace, { production: weight !== 0, weight })
     if (weight !== 0) {
       log.info(`Workspace ${chalk.green(currentWorkspace)} in AB Test with weight=${weight}`)
       if (currentWorkspace !== 'master') {
@@ -64,6 +64,6 @@ export default async (optionWeight: number) => {
     }
     list()
   } catch (e) {
-    throw(e)
+    throw (e)
   }
 }

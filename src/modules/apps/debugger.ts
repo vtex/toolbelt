@@ -2,9 +2,9 @@ import * as streamToString from 'get-stream'
 import * as net from 'net'
 import * as WebSocket from 'ws'
 
-import {getAccount, getToken, getWorkspace} from '../../conf'
-import {region} from '../../env'
-import {toMajorRange} from '../../locator'
+import { getAccount, getToken, getWorkspace } from '../../conf'
+import { region } from '../../env'
+import { toMajorRange } from '../../locator'
 import log from '../../logger'
 
 const keepAliveDelayMs = 3 * 60 * 1000
@@ -12,7 +12,7 @@ const keepAliveDelayMs = 3 * 60 * 1000
 const wsCloseCodeGoingAway = 1001
 const wsCloseCodeError = 1011
 
-function getErrorMessage (raw: string): string {
+function getErrorMessage(raw: string): string {
   try {
     const errJson = JSON.parse(raw)
     return errJson.message || errJson.code || raw
@@ -21,7 +21,7 @@ function getErrorMessage (raw: string): string {
   }
 }
 
-function webSocketTunnelHandler (host, path: string, server: net.Server): (socket: net.Socket) => void {
+function webSocketTunnelHandler(host, path: string, server: net.Server): (socket: net.Socket) => void {
   const options = {
     headers: {
       Authorization: getToken(),
@@ -69,8 +69,12 @@ function webSocketTunnelHandler (host, path: string, server: net.Server): (socke
 
     ws.on('open', () => {
       socket.on('data', data => {
+        if (ws.readyState !== ws.OPEN) {
+          log.debug(`Tried to write to debugger websocket but it is not opened`)
+          return
+        }
         ws.send(data, err => {
-          if (err && err.message !== 'not opened') {
+          if (err) {
             log.error(`Error writing to debugger websocket: ${err.name}: ${err.message}`)
           }
         })
@@ -84,8 +88,8 @@ function webSocketTunnelHandler (host, path: string, server: net.Server): (socke
   }
 }
 
-export default function startDebuggerTunnel (manifest: Manifest, port: number = 5858): Promise<number> {
-  const {name, vendor, version} = manifest
+export default function startDebuggerTunnel(manifest: Manifest, port: number = 5858): Promise<number> {
+  const { name, vendor, version } = manifest
   const majorRange = toMajorRange(version)
   const host = `${name}.${vendor}.${region()}.vtex.io`
   const path = `/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
@@ -104,8 +108,8 @@ export default function startDebuggerTunnel (manifest: Manifest, port: number = 
     })
 
     server.listen(port, () => {
-      const address = server.address() as net.AddressInfo
-      resolve(address.port)
+      const addr = server.address() as net.AddressInfo
+      resolve(addr.port)
     })
   })
 }

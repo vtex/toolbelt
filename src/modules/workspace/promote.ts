@@ -1,16 +1,16 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import {compose, flip, gt, length} from 'ramda'
+import { compose, flip, gt, length } from 'ramda'
 
-import {apps, workspaces} from '../../clients'
-import {getAccount, getWorkspace} from '../../conf'
-import {CommandError} from '../../errors'
+import { apps, workspaces } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
+import { CommandError } from '../../errors'
 import log from '../../logger'
 import useCmd from './use'
 
-const {listLinks} = apps
-const {promote, get} = workspaces
+const { listLinks } = apps
+const { promote, get } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const flippedGt = flip(gt)
@@ -45,7 +45,7 @@ const promptConfirm = (workspace: string): Promise<any> =>
     message: `Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`,
     name: 'confirm',
     type: 'confirm',
-  }).then(({confirm}) => {
+  }).then(({ confirm }) => {
     if (!confirm) {
       process.exit()
     }

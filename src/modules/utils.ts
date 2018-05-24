@@ -1,7 +1,7 @@
-import {currentContext} from '../conf'
-import {BuildFailError} from '../errors'
+import { currentContext } from '../conf'
+import { BuildFailError } from '../errors'
 import log from '../logger'
-import {logAll, onEvent} from '../sse'
+import { logAll, onEvent } from '../sse'
 
 interface BuildListeningOptions {
   context?: Context,
@@ -37,7 +37,7 @@ export const listenBuild = (appOrKey: string, triggerBuild: (unlistenBuild?: (re
   return new Promise((resolve, reject) => {
     let triggerResponse
 
-    const {context = currentContext, timeout = 5000} = options
+    const { context = currentContext, timeout = 5000 } = options
     const unlisten = onBuildEvent(context, timeout, appOrKey, (eventType, message) => {
       switch (eventType) {
         case 'start':

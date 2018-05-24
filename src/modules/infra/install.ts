@@ -1,15 +1,15 @@
-import * as ora from 'ora'
-import chalk from 'chalk'
-import * as semver from 'semver'
-import * as inquirer from 'inquirer'
 import * as Bluebird from 'bluebird'
-import {curry, prop, path} from 'ramda'
+import chalk from 'chalk'
+import * as inquirer from 'inquirer'
+import * as ora from 'ora'
+import { curry, path, prop } from 'ramda'
+import * as semver from 'semver'
 
+import { router } from '../../clients'
 import log from '../../logger'
-import {router} from '../../clients'
-import {getTag, diffVersions} from './utils'
+import { diffVersions, getTag } from './utils'
 
-const {getAvailableVersions, listInstalledServices, installService} = router
+const { getAvailableVersions, listInstalledServices, installService } = router
 
 const promptInstall = (): Bluebird<boolean> =>
   Promise.resolve(
@@ -18,7 +18,7 @@ const promptInstall = (): Bluebird<boolean> =>
       name: 'confirm',
       message: 'Continue with the installation?',
     })
-    .then<boolean>(prop('confirm')),
+      .then<boolean>(prop('confirm')),
   )
 
 const findVersion = (pool: string[], predicate: (version: string) => boolean): string =>
@@ -44,8 +44,8 @@ const getNewVersion = curry<string, string, string[], [string, string]>(
     const hasTagOrInstalledVersion = !tag || !installedVersion
     const fn = hasValidRange ? v => semver.satisfies(v, suffix, true)
       : suffix && !hasValidSuffix ? v => getTag(v) === null
-      : hasTagOrInstalledVersion ? v => semver.prerelease(v) === null
-      : v => getTag(v) === tag
+        : hasTagOrInstalledVersion ? v => semver.prerelease(v) === null
+          : v => getTag(v) === tag
     const newVersion = findVersion(availableVersions, fn)
     return [installedVersion, newVersion]
   },
@@ -73,7 +73,7 @@ const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolea
 
 const getInstalledVersion = (service: string): Bluebird<string> =>
   listInstalledServices()
-    .then(data => data.find(({name}) => name === service))
+    .then(data => data.find(({ name }) => name === service))
     .then(s => s && s.version)
 
 export default (name: string) => {
@@ -87,12 +87,12 @@ export default (name: string) => {
     getInstalledVersion(service),
     getAvailableVersions(service).then(path(['versions', 'aws-us-east-1'])),
   ])
-  .tap(() => spinner.stop())
-  .spread(getNewVersion(suffix))
-  .tap(logInstall(service))
-  .then((versions: [string, string]) => {
-    return hasNewVersion(versions)
-      ? Promise.resolve(console.log(''))
+    .tap(() => spinner.stop())
+    .spread(getNewVersion(suffix))
+    .tap(logInstall(service))
+    .then((versions: [string, string]) => {
+      return hasNewVersion(versions)
+        ? Promise.resolve(console.log(''))
           .then(promptInstall)
           .then(confirm => {
             if (!confirm) {
@@ -106,10 +106,10 @@ export default (name: string) => {
             spinner.stop()
             log.info('Installation complete')
           })
-      : null
-  })
-  .catch(err => {
-    spinner.stop()
-    throw err
-  })
+        : null
+    })
+    .catch(err => {
+      spinner.stop()
+      throw err
+    })
 }

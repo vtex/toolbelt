@@ -4,12 +4,11 @@ import { outputJson, readJson } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import * as moment from 'moment'
 import { keys, prop } from 'ramda'
-
 import log from '../../logger'
 import { manifestPath } from '../../manifest'
 import * as git from './git'
 
-const {mapSeries} = Bluebird
+const { mapSeries } = Bluebird
 
 const currentFolderName = process.cwd().replace(/.*\//, '')
 
@@ -122,7 +121,7 @@ export default async () => {
     ])
     const synthetic = createManifest(name, vendor, title, description)
     const manifest: any = Object.assign(await readJson(manifestPath) || {}, synthetic)
-    await outputJson(manifestPath, manifest, {spaces: 2})
+    await outputJson(manifestPath, manifest, { spaces: 2 })
     log.info(`Run ${chalk.bold.green('vtex link')} to start developing!`)
   } catch (err) {
     log.error(err.message)

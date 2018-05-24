@@ -13,10 +13,8 @@ import { CommandError } from '../../errors'
 import log from '../../logger'
 import { isManifestReadable } from '../../manifest'
 
-
-
 export const pathToFileObject = (root = process.cwd()) => (path: string): BatchStream =>
-  ({path, content: createReadStream(join(root, path))})
+  ({ path, content: createReadStream(join(root, path)) })
 
 const workspaceExampleName = process.env.USER || 'example'
 
@@ -73,7 +71,7 @@ export const handleError = curry((app: string, err: any) => {
 })
 
 export const appsLatestVersion = (app: string): Promise<string | never> => {
-  return createClients({account: 'smartcheckout'}).registry
+  return createClients({ account: 'smartcheckout' }).registry
     .listVersionsByApp(app)
     .then<RegistryAppVersionsListItem[]>(prop('data'))
     .then<string[]>(map(extractVersionFromId))
@@ -83,7 +81,7 @@ export const appsLatestVersion = (app: string): Promise<string | never> => {
 }
 
 export const appsLastVersion = (app: string): Promise<string | never> => {
-  return createClients({account: 'smartcheckout'}).registry
+  return createClients({ account: 'smartcheckout' }).registry
     .listVersionsByApp(app)
     .then<RegistryAppVersionsListItem[]>(prop('data'))
     .then<string[]>(map(extractVersionFromId))
@@ -95,7 +93,7 @@ export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
   return !!manifest.builders['service-js']
 }
 
-export function optionsFormatter (billingOptions: BillingOptions) {
+export function optionsFormatter(billingOptions: BillingOptions) {
   const table = new Table({ head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }], chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' } })
 
   if (billingOptions.free) {
@@ -127,7 +125,7 @@ export function optionsFormatter (billingOptions: BillingOptions) {
             }
           })
 
-          rowCount ++
+          rowCount++
           itemsArray.push([{ content: rangesStr, hAlign: 'center', vAlign: 'center' }])
         }
         itemsArray.push([{ content: '+', hAlign: 'center' }])

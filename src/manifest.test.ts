@@ -2,11 +2,11 @@ import test from 'ava'
 
 import {
   namePattern,
+  parseManifest,
+  validateAppManifest,
   vendorPattern,
   versionPattern,
-  wildVersionPattern,
-  validateAppManifest,
-  parseManifest
+  wildVersionPattern
 } from './manifest'
 
 test('validates a vendor name', t => {
