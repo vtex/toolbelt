@@ -61,12 +61,12 @@ const promptDescription = async () => {
 
 const promptTemplates = async () => {
   const cancel = 'Cancel'
-  const { service: chosen } = await inquirer.prompt({
+  const chosen = prop('service', await inquirer.prompt({
     name: 'service',
     message: 'Choose where do you want to start from',
     type: 'list',
     choices: [...keys(templates), cancel],
-  })
+  }))
   if (chosen === cancel) {
     log.info('Bye o/')
     return process.exit()
@@ -75,11 +75,11 @@ const promptTemplates = async () => {
 }
 
 const promptContinue = async () => {
-  const { proceed } = await inquirer.prompt({
+  const proceed = prop('proceed', await inquirer.prompt({
     name: 'proceed',
     message: `You are about to remove all files in ${process.cwd()}. Do you want to continue?`,
     type: 'confirm',
-  })
+  }))
   if (!proceed) {
     log.info('Bye o/')
     process.exit()

@@ -19,18 +19,6 @@ const promptPolicies = async () => {
   }))
 }
 
-const legacyInstall = async (app: string, reg: string): Promise<void> => {
-  try {
-    log.debug('Starting legacy install')
-    await legacyInstallApp(app, reg)
-    log.info(`Installed app ${app} successfully`)
-    return
-  } catch (e) {
-    log.warn(`The following app was not installed: ${app}`)
-    log.error(`Error ${e.response.status}: ${e.response.statusText}. ${e.response.data.message}`)
-  }
-}
-
 const checkBillingOptions = async (app: string, reg: string, billingOptions: BillingOptions) => {
   log.warn(`${chalk.green(app)} is a paid app. In order for you to install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`)
   const confirm = await promptPolicies()
@@ -51,30 +39,36 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
 
   try {
     log.debug('Starting to install app', app)
-    const { code, billingOptions } = await installApp(app, reg, false)
-    switch (code) {
-      case 'installed_from_own_registry':
-        log.debug('Installed from own/public registry')
-        break
-      case 'installed_by_previous_purchase':
-        log.debug('Installed from previous purchase')
-        break
-      case 'installed_free':
-        log.debug('Free app')
-        break
-      case 'check_terms':
-        if (!billingOptions) {
-          throw new Error('Failed to get billing options')
-        }
-        await checkBillingOptions(app, reg, JSON.parse(billingOptions))
+    if (app === 'vtex.billing' || head(app.split('@')) === 'vtex.billing') {
+      await legacyInstallApp('vtex.billing', reg)
+    } else {
+      const {code, billingOptions} = await installApp(app, reg, false)
+      switch (code) {
+        case 'installed_from_own_registry':
+          log.debug('Installed from own registry')
+          break
+        case 'public_app':
+          log.debug('Installed from public registry')
+          break
+        case 'installed_by_previous_purchase':
+          log.debug('Installed from previous purchase')
+          break
+        case 'installed_free':
+          log.debug('Free app')
+          break
+        case 'check_terms':
+          if (!billingOptions) {
+            throw new Error('Failed to get billing options')
+          }
+          await checkBillingOptions(app, reg, JSON.parse(billingOptions))
+      }
     }
     log.info(`Installed app ${chalk.green(app)} successfully`)
 
   } catch (e) {
     if (e.response && e.response.data && e.response.data.error) {
-      if (e.response.data.error.includes('Unable to find vtex.billing')) {
-        log.debug('Billing app not found in current workspace')
-        await legacyInstall(app, reg)
+      if (e.response.data.code === 'routing_error' && e.response.data.error.includes('not found')) {
+        log.warn(`Billing app not found in current workspace. Please install it with ${chalk.green('vtex install vtex.billing')}`)
       } else {
         log.error(e.response.data.error)
       }
