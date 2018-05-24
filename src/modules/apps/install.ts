@@ -39,13 +39,16 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
 
   try {
     log.debug('Starting to install app', app)
-    if (app === 'vtex.billing' || app.split('@')[0] === 'vtex.billing') {
+    if (app === 'vtex.billing' || head(app.split('@')) === 'vtex.billing') {
       await legacyInstallApp('vtex.billing', reg)
     } else {
       const {code, billingOptions} = await installApp(app, reg, false)
       switch (code) {
         case 'installed_from_own_registry':
-          log.debug('Installed from own/public registry')
+          log.debug('Installed from own registry')
+          break
+        case 'public_app':
+          log.debug('Installed from public registry')
           break
         case 'installed_by_previous_purchase':
           log.debug('Installed from previous purchase')
