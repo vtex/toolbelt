@@ -45,6 +45,7 @@ export const listLocalFiles = (root: string, folder?: string): Bluebird<string[]
   Promise.resolve(
     glob(`{manifest.json,policies.json,${safeFolder(folder)}}`, {
       cwd: root,
+      dot: true,
       follow: true,
       ignore: getIgnoredPaths(root),
       nodir: true,
