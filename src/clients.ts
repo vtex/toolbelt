@@ -22,7 +22,7 @@ const options = {
 
 const interceptor = <T>(client): T => new Proxy({}, {
   get: (_, name) => () => {
-    throw new Error(`Error trying to call ${client}.${name} before login.`)
+    throw new Error(`Error trying to call ${client}.${name.toString()} before login.`)
   },
 }) as T
 
