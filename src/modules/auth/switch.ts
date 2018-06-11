@@ -22,7 +22,7 @@ export const switchAccount = async (account: string, options, previousAccount = 
 }
 
 const hasAccountSwitched = (account: string) => {
-  return account == getAccount()
+  return account === getAccount()
 }
 
 export default async (account: string, options) => {

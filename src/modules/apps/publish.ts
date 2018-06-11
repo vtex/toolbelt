@@ -1,24 +1,23 @@
+import * as Bluebird from 'bluebird'
 import { readFileSync } from 'fs-extra'
 import * as ora from 'ora'
 import { resolve } from 'path'
-import { map, prepend } from 'ramda'
-import * as Bluebird from 'bluebird'
+import { forEach, map, prepend, prop } from 'ramda'
 
 import { BuildResult } from '@vtex/api'
+import chalk from 'chalk'
+import * as inquirer from 'inquirer'
 import { createClients } from '../../clients'
 import { Environment, forceEnvironment, getAccount, getEnvironment, getToken } from '../../conf'
 import { region } from '../../env'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { logAll } from '../../sse'
+import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { listLocalFiles } from './file'
 import { legacyPublisher } from './legacyPublish'
 import { parseArgs, pathToFileObject } from './utils'
-import * as inquirer from 'inquirer'
-import { forEach, prop } from 'ramda'
-import switchAccount from '../auth/switch'
-import chalk from 'chalk'
 
 
 const root = process.cwd()
@@ -63,7 +62,7 @@ const publisher = (workspace: string = 'master') => {
       const manifest = JSON.parse(readFileSync(resolve(path, 'manifest.json'), 'utf8'))
       const account = getAccount()
 
-      if (manifest.vendor != account) {
+      if (manifest.vendor !== account) {
         const switchToVendorMsg = `You are not logged in the vendor account for publishing the app. Wanna do that now going to ${chalk.blue(manifest.vendor)} account?`
         const canSwitchToVendor = await promptPublishOnVendor(switchToVendorMsg)
         if (!canSwitchToVendor) {
