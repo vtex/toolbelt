@@ -23,7 +23,7 @@ import { pathToFileObject } from './utils'
 const root = process.cwd()
 
 const getSwitchAccountMessage = (previousAccount: string, currentAccount = getAccount()) :string => {
-  return `Now you are logged in ${chalk.blue(currentAccount)}. Wanna return to ${chalk.blue(previousAccount)} account?`
+  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
 }
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
