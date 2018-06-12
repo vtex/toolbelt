@@ -8,7 +8,7 @@ import { BuildResult } from '@vtex/api'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import { createClients } from '../../clients'
-import { Environment, forceEnvironment, getAccount, getEnvironment, getToken } from '../../conf'
+import { Environment, forceEnvironment, getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
@@ -23,14 +23,14 @@ import { pathToFileObject } from './utils'
 const root = process.cwd()
 
 const getSwitchAccountMessage = (previousAccount: string, currentAccount = getAccount()) :string => {
-  return `Now you are not logged in ${chalk.blue(currentAccount)}. Wanna return to ${chalk.blue(previousAccount)} account?`
+  return `Now you are logged in ${chalk.blue(currentAccount)}. Wanna return to ${chalk.blue(previousAccount)} account?`
 }
 
-const switchToPreviousAccount = async (previousAccount: string) => {
+const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   if (previousAccount != getAccount()) {
     const canSwitchToPrevious = await promptPublishOnVendor(getSwitchAccountMessage(previousAccount))
     if (canSwitchToPrevious) {
-      return await switchAccount(previousAccount, {})
+      return await switchAccount(previousAccount, {workspace: previousWorkspace})
     }
   }
 }
@@ -57,6 +57,7 @@ const publisher = (workspace: string = 'master') => {
 
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
     const previousAccount = getAccount()
+    const previousWorkspace = getWorkspace()
     
     const manifest = JSON.parse(readFileSync(resolve(path, 'manifest.json'), 'utf8'))
     const account = getAccount()
@@ -94,11 +95,11 @@ const publisher = (workspace: string = 'master') => {
       } catch (e) {
         spinner.fail(`Fail to publish ${appId}`)
         log.error(e.message)
-        await switchToPreviousAccount(previousAccount)
+        await switchToPreviousAccount(previousAccount, previousWorkspace)
         throw e
       }
     }
-    await switchToPreviousAccount(previousAccount)
+    await switchToPreviousAccount(previousAccount, previousWorkspace)
     
     Promise.resolve()
   }
