@@ -63,7 +63,7 @@ const publisher = (workspace: string = 'master') => {
     const account = getAccount()
 
       if (manifest.vendor !== account) {
-      const switchToVendorMsg = `You are not logged in the vendor account for publishing the app. Wanna do that now going to ${chalk.blue(manifest.vendor)} account?`
+      const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(manifest.vendor)}?`
       const canSwitchToVendor = await promptPublishOnVendor(switchToVendorMsg)
       if (!canSwitchToVendor) {
         return
