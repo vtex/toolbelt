@@ -1,64 +1,106 @@
+import * as Bluebird from 'bluebird'
 import { readFileSync } from 'fs-extra'
 import * as ora from 'ora'
 import { resolve } from 'path'
-import { forEach, map, prepend } from 'ramda'
+import { map, prop } from 'ramda'
 
 import { BuildResult } from '@vtex/api'
+import chalk from 'chalk'
+import * as inquirer from 'inquirer'
 import { createClients } from '../../clients'
-import { Environment, forceEnvironment, getAccount, getEnvironment } from '../../conf'
+import { Environment, forceEnvironment, getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { logAll } from '../../sse'
+import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { listLocalFiles } from './file'
 import { legacyPublisher } from './legacyPublish'
-import { parseArgs, pathToFileObject } from './utils'
+import { pathToFileObject } from './utils'
+
 
 const root = process.cwd()
+
+const getSwitchAccountMessage = (previousAccount: string, currentAccount = getAccount()) :string => {
+  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
+}
+
+const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
+  if (previousAccount != getAccount()) {
+    const canSwitchToPrevious = await promptPublishOnVendor(getSwitchAccountMessage(previousAccount))
+    if (canSwitchToPrevious) {
+      return await switchAccount(previousAccount, {workspace: previousWorkspace})
+    }
+  }
+}
 
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
 
-const publisher = (account: string, workspace: string = 'master', legacyPublishApp) => {
-  const context = { account, workspace, region: region() }
-  const { builder } = createClients(context, { timeout: 60000 })
+const promptPublishOnVendor = (msg: string): Bluebird<boolean> =>
+  inquirer.prompt({
+    message: msg,
+    name: 'confirm',
+    type: 'confirm',
+  })
+    .then<boolean>(prop('confirm'))
 
-  const publishApp = async (appRoot: string, appId: string, tag: string): Promise<BuildResult> => {
+const publisher = (workspace: string = 'master') => {
+
+  const publishApp = async (appRoot: string, appId: string, tag: string, builder): Promise<BuildResult> => {
     const paths = await listLocalFiles(appRoot)
     const filesWithContent = map(pathToFileObject(appRoot), paths)
     log.debug('Sending files:', '\n' + paths.join('\n'))
     return await builder.publishApp(appId, filesWithContent, tag)
   }
 
-  const publishApps = async (paths: string[], tag: string): Promise<void | never> => {
-    forEach(async (p: string) => {
-      const path = resolve(p)
-      const manifest = JSON.parse(readFileSync(resolve(path, 'manifest.json'), 'utf8'))
-      const pubTag = tag || automaticTag(manifest.version)
+  const publishApps = async (path: string, tag: string): Promise<void | never> => {
+    const previousAccount = getAccount()
+    const previousWorkspace = getWorkspace()
+    
+    const manifest = JSON.parse(readFileSync(resolve(path, 'manifest.json'), 'utf8'))
+    const account = getAccount()
 
-      if (manifest.builders.render
-        || manifest.builders['functions-ts']) {
-        const unlisten = logAll({ account, workspace }, log.level, `${manifest.vendor}.${manifest.name}`)
-        await legacyPublishApp(path, pubTag, manifest).finally(unlisten)
-      } else {
-        const appId = toAppLocator(manifest)
-        const oraMessage = ora(`Publishing ${appId} ...`)
-        const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
-        try {
-          const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag), { waitCompletion: true, context })
-          if (response.code !== 'build.accepted') {
-            spinner.warn(`${appId} was published successfully, but you should update your builder hub to the latest version.`)
-          } else {
-            spinner.succeed(`${appId} was published successfully!`)
-          }
-        } catch (e) {
-          spinner.fail(`Fail to publish ${appId}`)
-          log.error(e.message)
-          throw e
-        }
+      if (manifest.vendor !== account) {
+      const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(manifest.vendor)}?`
+      const canSwitchToVendor = await promptPublishOnVendor(switchToVendorMsg)
+      if (!canSwitchToVendor) {
+        return
       }
-    }, paths)
+      await switchAccount(manifest.vendor, {})
+    }
+
+    const context = { account: manifest.vendor, workspace, region: region(), authToken: getToken() }
+    const { builder } = createClients(context, { timeout: 60000 })
+
+    const pubTag = tag || automaticTag(manifest.version)
+
+    if (manifest.builders.render
+      || manifest.builders['functions-ts']) {
+      const unlisten = logAll({ account, workspace }, log.level, `${manifest.vendor}.${manifest.name}`)
+      const { legacyPublishApp } = legacyPublisher(manifest.vendor, workspace)
+      await legacyPublishApp(path, pubTag, manifest).finally(unlisten)
+    } else {
+      const appId = toAppLocator(manifest)
+      const oraMessage = ora(`Publishing ${appId} ...`)
+      const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
+      try {
+        const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, builder), { waitCompletion: true, context })
+        if (response.code !== 'build.accepted') {
+          spinner.warn(`${appId} was published successfully, but you should update your builder hub to the latest version.`)
+        } else {
+            spinner.succeed(`${appId} was published successfully!`)
+        }
+      } catch (e) {
+        spinner.fail(`Fail to publish ${appId}`)
+        log.error(e.message)
+        await switchToPreviousAccount(previousAccount, previousWorkspace)
+        throw e
+      }
+    }
+    await switchToPreviousAccount(previousAccount, previousWorkspace)
+    
     Promise.resolve()
   }
 
@@ -72,12 +114,8 @@ export default (path: string, options) => {
 
   log.debug(`Starting to publish app in ${getEnvironment()}`)
 
-  const paths = prepend(path || root, parseArgs(options._))
-  const registry = options.r || options.registry
+  path = path || root
   const workspace = options.w || options.workspace
-  const optionPublic = options.p || options.public
-  const account = optionPublic ? 'smartcheckout' : registry ? registry : getAccount()
-  const { legacyPublishApp } = legacyPublisher(account, workspace)
-  const { publishApps } = publisher(account, workspace, legacyPublishApp)
-  return publishApps(paths, options.tag)
+  const { publishApps } = publisher(workspace)
+  return publishApps(path, options.tag)
 }
