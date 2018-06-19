@@ -30,8 +30,8 @@ export default async (name: string, options?) => {
     if (err.response && err.response.status === 404) {
       confirm = await promptWorkspaceCreation(name)
       if (!confirm) {
-        log.error(`Could not use workspace ${chalk.green(name)}`)
-        throw new Error('User cancelled')
+        log.info('User cancelled')
+        process.exit()
       }
       await createCmd(name)
     } else {
