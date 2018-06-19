@@ -5,6 +5,7 @@ import { head, prepend, prop, tail } from 'ramda'
 
 import { createClients } from '../../clients'
 import { getAccount } from '../../conf'
+import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
 import { parseLocator, toAppLocator } from './../../locator'
@@ -49,7 +50,7 @@ export default async (optionalApp: string, options) => {
   const appsList = prepend(optionalApp || toAppLocator(await getManifest()), parseArgs(options._))
 
   if (!preConfirm && !await promptDeprecate(appsList)) {
-    throw new Error('User cancelled')
+    throw new UserCancelledError()
   }
   log.debug('Deprecating app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
   return deprecateApps(appsList, optionAccount, registry)

@@ -5,7 +5,7 @@ import { compose, flip, gt, length } from 'ramda'
 
 import { apps, workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
-import { CommandError } from '../../errors'
+import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
 import useCmd from './use'
 
@@ -47,7 +47,7 @@ const promptConfirm = (workspace: string): Promise<any> =>
     type: 'confirm',
   }).then(({ confirm }) => {
     if (!confirm) {
-      process.exit()
+      throw new UserCancelledError()
     }
   })
 

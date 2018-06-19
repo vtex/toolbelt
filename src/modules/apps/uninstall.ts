@@ -2,6 +2,7 @@ import * as inquirer from 'inquirer'
 import { head, prepend, tail } from 'ramda'
 
 import { apps } from '../../clients'
+import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
 import { toAppLocator } from './../../locator'
@@ -17,7 +18,7 @@ const promptAppUninstall = (appsList: string[]): Promise<void> =>
   })
     .then(({ confirm }) => {
       if (!confirm) {
-        process.exit()
+        throw new UserCancelledError()
       }
     })
 

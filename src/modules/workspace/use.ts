@@ -5,6 +5,7 @@ import { prop } from 'ramda'
 
 import { workspaces } from '../../clients'
 import { getAccount, saveWorkspace } from '../../conf'
+import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import createCmd from './create'
 import resetWks from './reset'
@@ -30,8 +31,7 @@ export default async (name: string, options?) => {
     if (err.response && err.response.status === 404) {
       confirm = await promptWorkspaceCreation(name)
       if (!confirm) {
-        log.info('User cancelled')
-        process.exit()
+        throw new UserCancelledError()
       }
       await createCmd(name)
     } else {

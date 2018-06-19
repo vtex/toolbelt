@@ -5,6 +5,7 @@ import * as inquirer from 'inquirer'
 import { basename, dirname, join } from 'path'
 import { curry, prop } from 'ramda'
 
+import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 
 const { mapSeries } = Bluebird
@@ -43,7 +44,7 @@ const handleLinkError = curry((origin: string, dest: string, asset: string, preC
         .then(confirm => {
           if (!confirm) {
             log.error('Couldn\'t complete eslint setup')
-            return process.exit()
+            throw new UserCancelledError()
           }
           return overwriteFile(origin, dest, asset)
         })

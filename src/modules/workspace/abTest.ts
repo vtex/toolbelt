@@ -4,7 +4,7 @@ import {prop} from 'ramda'
 
 import {apps, workspaces} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
-import {CommandError} from '../../errors'
+import {CommandError, UserCancelledError} from '../../errors'
 import log from '../../logger'
 import list from './list'
 
@@ -19,7 +19,7 @@ const promptContinue = async () => {
     type: 'confirm',
   }))
   if (!proceed) {
-    process.exit()
+    throw new UserCancelledError()
   }
 }
 

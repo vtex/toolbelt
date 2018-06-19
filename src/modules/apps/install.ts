@@ -3,6 +3,7 @@ import * as inquirer from 'inquirer'
 import { head, prepend, prop, tail } from 'ramda'
 
 import { apps, billing } from '../../clients'
+import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
 import { toAppLocator } from './../../locator'
@@ -23,7 +24,7 @@ const checkBillingOptions = async (app: string, reg: string, billingOptions: Bil
   log.warn(`${chalk.green(app)} is a paid app. In order for you to install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`)
   const confirm = await promptPolicies()
   if (!confirm) {
-    throw new Error('User cancelled')
+    throw new UserCancelledError()
   }
 
   log.info('Starting to install app with accepted Terms')

@@ -4,7 +4,7 @@ import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
-import { resolve, sep } from 'path'
+import { resolve as resolvePath, sep } from 'path'
 import { map } from 'ramda'
 import { createInterface } from 'readline'
 
@@ -29,7 +29,7 @@ const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'win32' ? 200 : 50
 
 const pathToChange = (path: string, remove?: boolean): Change => ({
-  content: remove ? null : readFileSync(resolve(root, path)).toString('base64'),
+  content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'),
   path: path.split(sep).join('/'),
 })
 
