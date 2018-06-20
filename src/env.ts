@@ -17,11 +17,22 @@ export function endpoint(api: string): string {
   }
 }
 
+const regionFromEnv = {
+  [Environment.Azure]: Region.Azure,
+  [Environment.Staging]: Region.Staging,
+  [Environment.Production]: Region.Production,
+}
+
 export function region(): string {
-  return process.env.VTEX_REGION ||
-    (getEnvironment() === Environment.Staging ? Region.Staging : Region.Production)
+  return process.env.VTEX_REGION || regionFromEnv[getEnvironment()]
+}
+
+const publicEndpointFromEnv = {
+  [Environment.Azure]: 'myvtextest.com',
+  [Environment.Staging]: 'myvtexdev.com',
+  [Environment.Production]: 'myvtex.com',
 }
 
 export function publicEndpoint(): string {
-  return getEnvironment() === Environment.Staging ? 'myvtexdev.com' : 'myvtex.com'
+  return publicEndpointFromEnv[getEnvironment()]
 }
