@@ -66,5 +66,5 @@ export const currentContext: Context = {
 export enum Region {
   Production = 'aws-us-east-1',
   Staging = 'aws-us-east-2',
-  Azure = 'azure-us-east-2',
+  Azure = 'azure-us-east-1',
 }
