@@ -5,6 +5,7 @@ import { contains, flatten, head, prepend, prop, tail } from 'ramda'
 
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
+import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { parseArgs } from '../apps/utils'
 import workspaceUse from './use'
@@ -52,7 +53,7 @@ export default async (name: string, options) => {
   }
 
   if (!preConfirm && !await promptWorkspaceDeletion(names)) {
-    throw new Error('User cancelled')
+    throw new UserCancelledError()
   }
 
   const deleted = await deleteWorkspaces(names)

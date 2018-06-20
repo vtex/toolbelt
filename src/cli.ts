@@ -10,7 +10,7 @@ import { without } from 'ramda'
 
 import * as pkg from '../package.json'
 import { getToken } from './conf'
-import { CommandError, SSEConnectionError } from './errors'
+import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
@@ -146,6 +146,9 @@ const onError = e => {
         break
       case SSEConnectionError.name:
         log.error('Connection to login server has failed')
+        break
+      case UserCancelledError.name:
+        log.debug('User Cancelled')
         break
       default:
         log.error('Something went wrong.')

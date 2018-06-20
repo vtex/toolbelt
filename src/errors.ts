@@ -8,6 +8,8 @@ export class CommandError extends ExtendableError {
   }
 }
 
+export class UserCancelledError extends ExtendableError {}
+
 export class SSEConnectionError extends ExtendableError {
   public statusCode: number
   constructor(message: string, statusCode: number) {

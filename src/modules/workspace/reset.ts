@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
+import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 
 const promptWorkspaceReset = (name: string): Bluebird<void> =>
@@ -13,7 +14,7 @@ const promptWorkspaceReset = (name: string): Bluebird<void> =>
   })
     .then(({ confirm }) => {
       if (!confirm) {
-        process.exit()
+        throw new UserCancelledError()
       }
     })
 
