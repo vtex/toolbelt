@@ -90,7 +90,7 @@ const logGraphQLErrorMessage = (e) => {
 }
 
 export default async (optionalApp: string, options) => {
-  await validateAppAction(optionalApp)
+  await validateAppAction('install', optionalApp)
   const app = optionalApp || toAppLocator(await getManifest())
   const appsList = prepend(app, parseArgs(options._))
   log.debug('Installing app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
