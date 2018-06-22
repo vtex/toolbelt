@@ -4,7 +4,7 @@ import * as Table from 'cli-table2'
 import { createReadStream } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import { join } from 'path'
-import { __, compose, concat, curry, drop, head, last, map, prop, reduce, split, tail } from 'ramda'
+import { __, compose, concat, contains, curry, drop, head, last, map, prop, reduce, split, tail } from 'ramda'
 import * as semverDiff from 'semver-diff'
 
 import { createClients } from '../../clients'
@@ -18,9 +18,14 @@ export const pathToFileObject = (root = process.cwd()) => (path: string): BatchS
 
 const workspaceExampleName = process.env.USER || 'example'
 
+const workspaceMasterAllowedOperations = [
+  'install',
+  'uninstall',
+]
+
 export const workspaceMasterMessage =
-  `Workspace ${chalk.green('master')} is ${chalk.red('read-only')}, please use another workspace.
-You can run "${chalk.blue(`vtex use ${workspaceExampleName} -r`)}" to create and use a workspace named "${chalk.green(workspaceExampleName)}".`
+  `This action is ${chalk.red('not allowed')} in workspace ${chalk.green('master')}, please use another workspace.
+You can run "${chalk.blue(`vtex use ${workspaceExampleName} -r`)}" to use a workspace named "${chalk.green(workspaceExampleName)}"`
 
 export const parseArgs = (args: string[]): string[] => {
   return drop(1, args)
@@ -36,17 +41,13 @@ export const promptWorkspaceMaster = async () => {
   if (!confirm) {
     throw new UserCancelledError()
   }
-  log.warn('Using master workspace. I hope you know what you\'re doing. 💥')
+  log.warn(`Using ${chalk.green('master')} workspace. I hope you know what you\'re doing. 💥`)
 }
 
 export const validateAppAction = async (operation: string, app?) => {
   if (getWorkspace() === 'master') {
-    if (operation !== 'install' && operation !== 'uninstall') {
-      if (process.argv.indexOf('--force-master') >= 0) {
-        await promptWorkspaceMaster()
-      } else {
-        throw new CommandError(workspaceMasterMessage)
-      }
+    if (!contains(operation, workspaceMasterAllowedOperations)) {
+      throw new CommandError(workspaceMasterMessage)
     } else {
       await promptWorkspaceMaster()
     }
