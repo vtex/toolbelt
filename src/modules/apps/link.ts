@@ -87,7 +87,7 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
 }
 
 export default async (options) => {
-  await validateAppAction()
+  await validateAppAction('link')
   const manifest = await getManifest()
 
   if (manifest.builders.render

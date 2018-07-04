@@ -39,7 +39,7 @@ const uninstallApps = async (appsList: string[]): Promise<void> => {
 }
 
 export default async (optionalApp: string, options) => {
-  await validateAppAction(optionalApp)
+  await validateAppAction('uninstall', optionalApp)
   const app = optionalApp || toAppLocator(await getManifest())
   const appsList = prepend(app, parseArgs(options._))
   const preConfirm = options.y || options.yes

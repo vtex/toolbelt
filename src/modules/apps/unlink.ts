@@ -33,10 +33,10 @@ export default async (optionalApp: string, options) => {
   }
   if (options.a || options.all) {
     appsList = linkedApps
-    await validateAppAction(appsList)
+    await validateAppAction('unlink', appsList)
   } else {
     appsList = prepend(optionalApp || toMajorLocator(await getManifest()), parseArgs(options._))
-    await validateAppAction(appsList)
+    await validateAppAction('unlink', appsList)
   }
   log.debug('Starting to unlink apps:', appsList.join(', '))
   return unlinkApps(appsList)
