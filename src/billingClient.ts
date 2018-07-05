@@ -7,9 +7,9 @@ export default class Billing {
     this.http = HttpClient.forWorkspace('billing.vtex', ioContext, opts)
   }
 
-  public installApp = async (appName: string, registry: string, termsOfUseAccepted: boolean): Promise<InstallResponse> => {
+  public installApp = async (appName: string, termsOfUseAccepted: boolean): Promise<InstallResponse> => {
     const graphQLQuery = `mutation InstallApps{
-      install(appName:"${appName}", registry:"${registry}", termsOfUseAccepted:${termsOfUseAccepted}) {
+      install(appName:"${appName}", termsOfUseAccepted:${termsOfUseAccepted}) {
         code
         billingOptions
       }

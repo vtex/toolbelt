@@ -26,7 +26,7 @@ const interceptor = <T>(client): T => new Proxy({}, {
   },
 }) as T
 
-const createClients = (customContext: Partial<IOContext>, customOptions: InstanceOptions = {}) => {
+const createClients = (customContext: Partial<IOContext> = {}, customOptions: InstanceOptions = {}) => {
   const mergedContext = { ...context, ...customContext }
   const mergedOptions = { ...options, ...customOptions }
   return {
