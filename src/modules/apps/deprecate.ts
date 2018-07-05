@@ -42,9 +42,7 @@ const deprecateApps = async (appsList: string[], optionAccount: string, registry
 
 export default async (optionalApp: string, options) => {
   const preConfirm = options.y || options.yes
-  const optionRegistry = options.r || options.registry
-  const optionPublic = options.p || options.public
-  const optionAccount = optionPublic ? 'smartcheckout' : optionRegistry ? optionRegistry : getAccount()
+  const optionAccount = getAccount()
   const context = { account: optionAccount, workspace: 'master' }
   const { registry } = createClients(context)
   const appsList = prepend(optionalApp || toAppLocator(await getManifest()), parseArgs(options._))

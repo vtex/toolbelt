@@ -80,7 +80,7 @@ export const handleError = curry((app: string, err: any) => {
 })
 
 export const appsLatestVersion = (app: string): Promise<string | never> => {
-  return createClients({ account: 'smartcheckout' }).registry
+  return createClients().registry
     .listVersionsByApp(app)
     .then<RegistryAppVersionsListItem[]>(prop('data'))
     .then<string[]>(map(extractVersionFromId))
@@ -90,7 +90,7 @@ export const appsLatestVersion = (app: string): Promise<string | never> => {
 }
 
 export const appsLastVersion = (app: string): Promise<string | never> => {
-  return createClients({ account: 'smartcheckout' }).registry
+  return createClients().registry
     .listVersionsByApp(app)
     .then<RegistryAppVersionsListItem[]>(prop('data'))
     .then<string[]>(map(extractVersionFromId))

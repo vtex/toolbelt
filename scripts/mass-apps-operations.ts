@@ -42,7 +42,7 @@ const errorLogs = {}
 let accounts
 let authToken
 
-const confirm = (accountsNumber: number, commandName: string, appName: string): Promise<Boolean> =>
+const confirm = (accountsNumber: number, commandName: string, appName: string): Promise<boolean> =>
   prompt({
     name: 'c',
     type: 'confirm',

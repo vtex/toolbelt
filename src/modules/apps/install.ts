@@ -20,7 +20,7 @@ const promptPolicies = async () => {
   }))
 }
 
-const checkBillingOptions = async (app: string, reg: string, billingOptions: BillingOptions) => {
+const checkBillingOptions = async (app: string, billingOptions: BillingOptions) => {
   log.warn(`${chalk.green(app)} is a paid app. In order for you to install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`)
   const confirm = await promptPolicies()
   if (!confirm) {
@@ -28,11 +28,11 @@ const checkBillingOptions = async (app: string, reg: string, billingOptions: Bil
   }
 
   log.info('Starting to install app with accepted Terms')
-  await installApp(app, reg, true)
+  await installApp(app, true)
   log.debug('Installed after accepted terms')
 }
 
-export const prepareInstall = async (appsList: string[], reg: string): Promise<void> => {
+export const prepareInstall = async (appsList: string[]): Promise<void> => {
   if (appsList.length === 0) {
     return
   }
@@ -41,9 +41,9 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
   try {
     log.debug('Starting to install app', app)
     if (app === 'vtex.billing' || head(app.split('@')) === 'vtex.billing') {
-      await legacyInstallApp('vtex.billing', reg)
+      await legacyInstallApp('vtex.billing')
     } else {
-      const {code, billingOptions} = await installApp(app, reg, false)
+      const {code, billingOptions} = await installApp(app, false)
       switch (code) {
         case 'installed_from_own_registry':
           log.debug('Installed from own registry')
@@ -61,7 +61,7 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
           if (!billingOptions) {
             throw new Error('Failed to get billing options')
           }
-          await checkBillingOptions(app, reg, JSON.parse(billingOptions))
+          await checkBillingOptions(app, JSON.parse(billingOptions))
       }
     }
     log.info(`Installed app ${chalk.green(app)} successfully`)
@@ -79,7 +79,7 @@ export const prepareInstall = async (appsList: string[], reg: string): Promise<v
     log.warn(`The following app was not installed: ${app}`)
   }
 
-  await prepareInstall(tail(appsList), reg)
+  await prepareInstall(tail(appsList))
 }
 
 const logGraphQLErrorMessage = (e) => {
@@ -94,5 +94,5 @@ export default async (optionalApp: string, options) => {
   const app = optionalApp || toAppLocator(await getManifest())
   const appsList = prepend(app, parseArgs(options._))
   log.debug('Installing app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
-  return prepareInstall(appsList, options.r || options.registry || 'smartcheckout')
+  return prepareInstall(appsList)
 }
