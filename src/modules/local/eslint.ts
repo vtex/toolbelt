@@ -1,6 +1,6 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import { mkdir, symlink, unlink } from 'fs-extra'
+import { copy, mkdir, remove } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import { basename, dirname, join } from 'path'
 import { curry, prop } from 'ramda'
@@ -18,8 +18,8 @@ const eslintAssets = [
 
 const overwriteFile = (origin: string, dest: string, asset: string): Bluebird<void> => {
   const destFilePath = join(dest, asset)
-  return unlink(destFilePath)
-    .then(() => symlink(join(origin, asset), destFilePath))
+  return remove(destFilePath)
+    .then(() => copy(join(origin, asset), destFilePath))
     .tap(() => log.warn(`Overwrote ${destFilePath}`))
 }
 
@@ -52,17 +52,17 @@ const handleLinkError = curry((origin: string, dest: string, asset: string, preC
   return Promise.reject(err)
 })
 
-const linkEslint = (origin: string, dest: string, preConfirm: boolean): Bluebird<never | void[]> => {
-  const symlinks = eslintAssets.map(a => {
+const copyEslint = (origin: string, dest: string, preConfirm: boolean): Bluebird<never | void[]> => {
+  const toCopy = eslintAssets.map(a => {
     return () =>
-      symlink(join(origin, a), join(dest, a))
+      copy(join(origin, a), join(dest, a))
         .catch(handleLinkError(origin, dest, a, preConfirm))
   })
-  return mapSeries(symlinks, fn => fn())
+  return mapSeries(toCopy, fn => fn())
 }
 
 export default (options) => {
-  log.info('Linking eslint setup...')
+  log.info('Linking eslint setup... LOL')
   const preConfirm = options.y || options.yes
   const root = process.cwd()
   const pkg = join(__dirname, '../../..')
@@ -73,6 +73,6 @@ export default (options) => {
         ? Promise.resolve()
         : Promise.reject(err)
     })
-    .then(() => linkEslint(pkg, root, preConfirm))
+    .then(() => copyEslint(pkg, root, preConfirm))
     .then(() => log.info('Successfully linked eslint setup!'))
 }
