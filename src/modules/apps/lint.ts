@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird'
 import { copy, mkdir, remove } from 'fs-extra'
 import { join } from 'path'
-import { curry } from 'ramda'
+import { compose, cond, curry, equals, path, T } from 'ramda'
 import log from '../../logger'
 
 const eslintAssets = [
@@ -11,31 +11,26 @@ const eslintAssets = [
   'node_modules/babel-eslint',
 ]
 
-const lint = async (root: string): Promise<any> => {
-  const pkg = join(__dirname, '../../..')
-  return mkdir(join(root, 'node_modules'))
+const lint = async (root: string): Promise<any> =>
+  mkdir(join(root, 'node_modules'))
     .then(() => mkdir(join(root, 'node_modules/.bin')))
-    .catch(err => {
-      return err.code && err.code === 'EEXIST'
-        ? Promise.resolve()
-        : Promise.reject(err)
-    })
-    .then(() => copyEslint(pkg, root))
+    .catch(cond([
+      [compose(equals('EEXIST'), path(['code'])), _ => Promise.resolve()],
+      [T, Promise.reject]
+    ]))
+    .then(() => copyEslint(join(__dirname, '../../..'), root))
     .then(() => log.info('Successfully copied eslint setup!'))
-}
 
-const copyEslint = (origin: string, dest: string): Bluebird<never | void[]> => {
-  const toCopy = eslintAssets.map(a => {
-    return () => {
-      const originAsset: string = join(origin, a)
-      const destAsset: string = join(dest, a)
-      return copy(originAsset, destAsset)
-        .catch(overwriteFile(originAsset, destAsset))
-    }
 
-  })
-  return Bluebird.mapSeries(toCopy, fn => fn())
-}
+const copySeries = (origin: string, dest: string): Array<() => Promise<void>> =>
+  eslintAssets.map(a => () =>
+    copy(join(origin, a), join(dest, a))
+      .catch(overwriteFile(join(origin, a), join(dest, a)))
+  )
+
+const copyEslint = (origin: string, dest: string): Bluebird<never | void[]> =>
+  Bluebird.mapSeries(copySeries(origin, dest), fn => fn())
+
 
 const overwriteFile = curry((origin: string, dest: string, err: any): Bluebird<void> => {
   if (err.code && err.code === 'EEXIST') {
