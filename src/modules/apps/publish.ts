@@ -1,7 +1,5 @@
 import * as Bluebird from 'bluebird'
-import { readFileSync } from 'fs-extra'
 import * as ora from 'ora'
-import { resolve } from 'path'
 import { map, prop } from 'ramda'
 
 import { BuildResult } from '@vtex/api'
@@ -10,8 +8,10 @@ import * as inquirer from 'inquirer'
 import { createClients } from '../../clients'
 import { Environment, forceEnvironment, getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
+import { UserCancelledError } from '../../errors'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
+import { getManifest } from '../../manifest'
 import { logAll } from '../../sse'
 import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
@@ -27,7 +27,7 @@ const getSwitchAccountMessage = (previousAccount: string, currentAccount = getAc
 }
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
-  if (previousAccount != getAccount()) {
+  if (previousAccount !== getAccount()) {
     const canSwitchToPrevious = await promptPublishOnVendor(getSwitchAccountMessage(previousAccount))
     if (canSwitchToPrevious) {
       return await switchAccount(previousAccount, {workspace: previousWorkspace})
@@ -58,17 +58,17 @@ const publisher = (workspace: string = 'master') => {
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
     const previousAccount = getAccount()
     const previousWorkspace = getWorkspace()
-    
-    const manifest = JSON.parse(readFileSync(resolve(path, 'manifest.json'), 'utf8'))
+
+    const manifest = await getManifest()
     const account = getAccount()
 
-      if (manifest.vendor !== account) {
-      const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(manifest.vendor)}?`
-      const canSwitchToVendor = await promptPublishOnVendor(switchToVendorMsg)
-      if (!canSwitchToVendor) {
-        return
-      }
-      await switchAccount(manifest.vendor, {})
+    if (manifest.vendor !== account) {
+    const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(manifest.vendor)}?`
+    const canSwitchToVendor = await promptPublishOnVendor(switchToVendorMsg)
+    if (!canSwitchToVendor) {
+      throw new UserCancelledError()
+    }
+    await switchAccount(manifest.vendor, {})
     }
 
     const context = { account: manifest.vendor, workspace, region: region(), authToken: getToken() }
@@ -100,7 +100,7 @@ const publisher = (workspace: string = 'master') => {
       }
     }
     await switchToPreviousAccount(previousAccount, previousWorkspace)
-    
+
     Promise.resolve()
   }
 
