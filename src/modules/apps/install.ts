@@ -21,7 +21,7 @@ const promptPolicies = async () => {
 }
 
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions) => {
-  log.warn(`${chalk.green(app)} is a paid app. In order for you to install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`)
+  log.warn(`${chalk.blue(app)} is a ${billingOptions.free ? chalk.green('free') : chalk.red('paid')} app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`)
   const confirm = await promptPolicies()
   if (!confirm) {
     throw new UserCancelledError()
@@ -67,6 +67,9 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
     log.info(`Installed app ${chalk.green(app)} successfully`)
 
   } catch (e) {
+    if (e.name === UserCancelledError.name) {
+      throw new UserCancelledError()
+    }
     if (e.response && e.response.data && e.response.data.error) {
       if (e.response.data.code === 'routing_error' && e.response.data.error.includes('not found')) {
         log.warn(`Billing app not found in current workspace. Please install it with ${chalk.green('vtex install vtex.billing')}`)
