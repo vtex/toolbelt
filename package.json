@@ -78,6 +78,7 @@
     "pad": "^2.0.3",
     "pipe-streams-to-promise": "^0.2.0",
     "ramda": "^0.25.0",
+    "ramda-adjunct": "^2.9.0",
     "randomstring": "^1.1.5",
     "request": "^2.83.0",
     "semver": "^5.3.0",
