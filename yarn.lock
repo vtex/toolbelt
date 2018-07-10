@@ -268,7 +268,7 @@
 
 "@types/ramda@types/npm-ramda":
   version "0.25.0"
-  resolved "https://codeload.github.com/types/npm-ramda/tar.gz/c813ecac1716f3200b82233d8e87c98db1dd4015"
+  resolved "https://codeload.github.com/types/npm-ramda/tar.gz/9e9d9ef132300bb7a5c2d7905a69aa51fdf82a3c"
 
 "@types/rx-core-binding@*":
   version "4.0.4"
@@ -4414,6 +4414,10 @@ query-string@^5.0.1:
 querystringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/querystringify/-/querystringify-2.0.0.tgz#fa3ed6e68eb15159457c89b37bc6472833195755"
+
+ramda-adjunct@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/ramda-adjunct/-/ramda-adjunct-2.9.0.tgz#1d9b149f987c0bec77fa34caa19cc7b9b9b55021"
 
 ramda@^0.24.1:
   version "0.24.1"
