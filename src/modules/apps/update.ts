@@ -62,5 +62,5 @@ export default async () => {
   }
 
   const appsList = map(pipe(updateVersion, toAppLocator), updateableApps)
-  await prepareInstall(appsList, 'smartcheckout')
+  await prepareInstall(appsList)
 }

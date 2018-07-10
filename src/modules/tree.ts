@@ -20,20 +20,6 @@ export default {
     description: 'Deprecate app(s)',
     handler: './apps/deprecate',
     optionalArgs: 'app',
-    options: [
-      {
-        description: 'Specify the registry for the app(s)',
-        long: 'registry',
-        short: 'r',
-        type: 'string',
-      },
-      {
-        description: 'Use the public registry (smartcheckout)',
-        long: 'public',
-        short: 'p',
-        type: 'boolean',
-      },
-    ],
   },
   deps: {
     list: {
@@ -102,14 +88,6 @@ export default {
     description: 'Install an app (defaults to the app in the current directory)',
     handler: './apps/install',
     optionalArgs: 'app',
-    options: [
-      {
-        description: 'Specify the registry for the app',
-        long: 'registry',
-        short: 'r',
-        type: 'string',
-      },
-    ],
   },
   link: {
     description: 'Start a development session for this app',
@@ -215,22 +193,10 @@ export default {
         type: 'string',
       },
       {
-        description: 'Specify the account for the app registry',
-        long: 'registry',
-        short: 'r',
-        type: 'string',
-      },
-      {
         description: 'Specify the workspace for the app registry',
         long: 'workspace',
         short: 'w',
         type: 'string',
-      },
-      {
-        description: 'Use the public registry (smartcheckout)',
-        long: 'public',
-        short: 'p',
-        type: 'boolean',
       },
       {
         description: 'Use the staging environment',
