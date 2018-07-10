@@ -6,7 +6,8 @@ import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
 import * as moment from 'moment'
 import * as path from 'path'
-import { without } from 'ramda'
+import { reject, without } from 'ramda'
+import { isFunction } from 'ramda-adjunct'
 
 import * as pkg from '../package.json'
 import { getToken } from './conf'
@@ -152,7 +153,7 @@ const onError = e => {
         break
       default:
         log.error('Something went wrong.')
-        log.error(e)
+        log.error(reject(isFunction, e))
     }
   }
 
