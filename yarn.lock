@@ -268,7 +268,7 @@
 
 "@types/ramda@types/npm-ramda":
   version "0.25.0"
-  resolved "https://codeload.github.com/types/npm-ramda/tar.gz/c813ecac1716f3200b82233d8e87c98db1dd4015"
+  resolved "https://codeload.github.com/types/npm-ramda/tar.gz/9e9d9ef132300bb7a5c2d7905a69aa51fdf82a3c"
 
 "@types/rx-core-binding@*":
   version "4.0.4"
