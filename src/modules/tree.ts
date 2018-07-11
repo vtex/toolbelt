@@ -111,18 +111,6 @@ export default {
       description: 'Run a Colossus function locally',
       handler: './local/debug',
     },
-    eslint: {
-      description: 'Setup a local eslint environment',
-      handler: './local/eslint',
-      options: [
-        {
-          description: 'Auto confirm prompts',
-          long: 'yes',
-          short: 'y',
-          type: 'boolean',
-        },
-      ],
-    },
     manifest: {
       description: 'Generate manifest from package.json',
       handler: './local/manifest',

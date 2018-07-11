@@ -7,7 +7,7 @@ import * as moment from 'moment'
 import { resolve as resolvePath, sep } from 'path'
 import { map } from 'ramda'
 import { createInterface } from 'readline'
-
+import lint from './lint'
 
 import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
@@ -21,8 +21,6 @@ import { getIgnoredPaths, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
 
-
-
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
@@ -33,19 +31,19 @@ const pathToChange = (path: string, remove?: boolean): Change => ({
   path: path.split(sep).join('/'),
 })
 
-const warnAndLinkFromStart = (performInitialLink) => {
+const warnAndLinkFromStart = (appId: string, builder: Builder) => {
   log.warn('Initial link requested by builder')
-  performInitialLink()
+  performInitialLink(appId, builder)
   return null
 }
 
-const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
+const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
     if (data && data.code && data.code === 'initial_link_required') {
-      return warnAndLinkFromStart(performInitialLink)
+      return warnAndLinkFromStart(appId, builder)
     }
     throw e
   }
@@ -86,6 +84,20 @@ const watchAndSendChanges = (appId, builder: Builder, performInitialLink) => {
   })
 }
 
+const performInitialLink = async (appId: string, builder: Builder): Promise<void> => {
+  const paths = await listLocalFiles(root)
+  const filesWithContent = map(pathToFileObject(root), paths)
+
+  log.debug('Sending files:')
+  paths.forEach(p => log.debug(p))
+  log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
+
+  const { code } = await builder.linkApp(appId, filesWithContent)
+  if (code !== 'build.accepted') {
+    throw new Error('Please, update your builder-hub to the latest version!')
+  }
+}
+
 export default async (options) => {
   await validateAppAction('link')
   const manifest = await getManifest()
@@ -95,6 +107,8 @@ export default async (options) => {
     || manifest.name === 'builder-hub') {
     return legacyLink(options)
   }
+
+  await lint(root)
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace() }
@@ -106,23 +120,9 @@ export default async (options) => {
     log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
   }
 
-  const performInitialLink = async () => {
-    const paths = await listLocalFiles(root)
-    const filesWithContent = map(pathToFileObject(root), paths)
-
-    log.debug('Sending files:')
-    paths.forEach(p => log.debug(p))
-    log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
-
-    const { code } = await builder.linkApp(appId, filesWithContent)
-    if (code !== 'build.accepted') {
-      throw new Error('Please, update your builder-hub to the latest version!')
-    }
-  }
-
   const onError = {
     build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
-    initial_link_required: () => warnAndLinkFromStart(performInitialLink),
+    initial_link_required: () => warnAndLinkFromStart(appId, builder),
   }
 
   let debuggerStarted = false
@@ -139,7 +139,8 @@ export default async (options) => {
 
   let unlistenBuild
   try {
-    const { unlisten } = await listenBuild(appId, performInitialLink, { waitCompletion: false, onBuild, onError })
+    const buildTrigger = performInitialLink.bind(this, appId, builder)
+    const { unlisten } = await listenBuild(appId, buildTrigger, { waitCompletion: false, onBuild, onError })
     unlistenBuild = unlisten
   } catch (e) {
     if (e.response) {
@@ -161,5 +162,5 @@ export default async (options) => {
       process.exit()
     })
 
-  await watchAndSendChanges(appId, builder, performInitialLink)
+  await watchAndSendChanges(appId, builder)
 }
