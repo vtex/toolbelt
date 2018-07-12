@@ -108,7 +108,11 @@ export default async (options) => {
     return legacyLink(options)
   }
 
-  await lint(root)
+  try {
+    await lint(root)
+  } catch (e) {
+    log.error('Failed to copy eslint setup')
+  }
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace() }
