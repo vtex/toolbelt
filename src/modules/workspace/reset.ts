@@ -34,7 +34,7 @@ export default async (name: string, options) => {
     await (workspaces as any).reset(account, workspace)
     log.info(`Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')}`)
   } catch (err) {
-    log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reseted`)
+    log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
     if (err.response) {
       const { status, statusText, data = { message: null } } = err.response
       const message = data.message || data
