@@ -2,7 +2,7 @@ import * as Bluebird from 'bluebird'
 import * as Table from 'cli-table'
 import * as inquirer from 'inquirer'
 import * as ora from 'ora'
-import { isEmpty, map, pipe, prop, reject } from 'ramda'
+import { contains, isEmpty, map, pipe, prop, propSatisfies, reject } from 'ramda'
 
 import { apps } from '../../clients'
 import { parseLocator, toAppLocator } from '../../locator'
@@ -24,6 +24,11 @@ const promptUpdate = (): Bluebird<boolean> =>
   )
 
 const sameVersion = ({ version, latest }: Manifest) => version === latest
+
+const extractAppLocator = pipe(prop('app'), parseLocator)
+
+const isLinked = propSatisfies(contains('+build'), 'version')
+
 const updateVersion = (app) => {
   app.version = app.latest
   return app
@@ -32,7 +37,7 @@ const updateVersion = (app) => {
 export default async () => {
   const spinner = ora('Getting available updates').start()
   const { data } = await listApps()
-  const installedApps = map(pipe(prop('app'), parseLocator), data)
+  const installedApps = reject(isLinked, map(extractAppLocator, data))
   const withLatest = await Bluebird.all(map(async (app) => {
     app.latest = await appLatestVersion(`${app.vendor}.${app.name}`)
     return app
