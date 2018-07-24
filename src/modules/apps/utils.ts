@@ -80,13 +80,8 @@ export const handleError = curry((app: string, err: any) => {
 })
 
 export const appLatestMajor = (app: string): Promise<string | never> => {
-  return createClients().registry
-    .listVersionsByApp(app)
-    .then<RegistryAppVersionsListItem[]>(prop('data'))
-    .then<string[]>(map(extractVersionFromId))
-    .then<string>(pickLatestVersion)
-    .then(wildVersionByMajor)
-    .catch(handleError(app))
+  return appLatestVersion(app)
+    .then<string>(wildVersionByMajor)
 }
 
 export const appLatestVersion = (app: string): Promise<string | never> => {
