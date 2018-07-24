@@ -1,10 +1,9 @@
-import { RegistryAppVersionsListItem } from '@vtex/api'
 import chalk from 'chalk'
 import * as Table from 'cli-table2'
 import { createReadStream } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import { join } from 'path'
-import { __, compose, concat, contains, curry, drop, head, last, map, prop, reduce, split, tail } from 'ramda'
+import { __, compose, concat, contains, curry, drop, head, last, prop, reduce, split, tail } from 'ramda'
 import * as semverDiff from 'semver-diff'
 
 import { createClients } from '../../clients'
@@ -63,7 +62,7 @@ export const validateAppAction = async (operation: string, app?) => {
 export const wildVersionByMajor = compose<string, string[], string, string>(concat(__, '.x'), head, split('.'))
 
 export const extractVersionFromId =
-  compose<VersionByApp, string, string[], string>(last, split('@'), prop('versionIdentifier'))
+  compose<VersionByApp, string, string[], string>(last, split('@'))
 
 export const pickLatestVersion = (versions: string[]): string => {
   const start = head(versions)
@@ -79,22 +78,16 @@ export const handleError = curry((app: string, err: any) => {
   return Promise.reject(err)
 })
 
-export const appsLatestVersion = (app: string): Promise<string | never> => {
-  return createClients().registry
-    .listVersionsByApp(app)
-    .then<RegistryAppVersionsListItem[]>(prop('data'))
-    .then<string[]>(map(extractVersionFromId))
-    .then<string>(pickLatestVersion)
-    .then(wildVersionByMajor)
-    .catch(handleError(app))
+export const appLatestMajor = (app: string): Promise<string | never> => {
+  return appLatestVersion(app)
+    .then<string>(wildVersionByMajor)
 }
 
-export const appsLastVersion = (app: string): Promise<string | never> => {
+export const appLatestVersion = (app: string): Promise<string | never> => {
   return createClients().registry
-    .listVersionsByApp(app)
-    .then<RegistryAppVersionsListItem[]>(prop('data'))
-    .then<string[]>(map(extractVersionFromId))
-    .then<string>(pickLatestVersion)
+    .getAppManifest(app, 'x')
+    .then<string>(prop('id'))
+    .then<string>(extractVersionFromId)
     .catch(handleError(app))
 }
 
