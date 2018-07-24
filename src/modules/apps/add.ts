@@ -23,7 +23,7 @@ import {
   wildVersionPattern,
 } from '../../manifest'
 
-import { appsLatestVersion, handleError, parseArgs, pickLatestVersion, wildVersionByMajor } from './utils'
+import { appLatestMajor, handleError, parseArgs, pickLatestVersion, wildVersionByMajor } from './utils'
 
 const unprefixName = compose<string, string[], string>(last, split(':'))
 const invalidAppMessage =
@@ -68,7 +68,7 @@ const addApp = (app: string): Promise<void> => {
   const appName = app.includes(':') ? unprefixName(app) : app
   const versionRequest = isNpm ? npmLatestVersion(appName)
     : isInfra ? infraLatestVersion(appName)
-      : appsLatestVersion(appName)
+      : appLatestMajor(appName)
   return versionRequest
     .then((version: string) => updateManifestDependencies(app, version))
 }

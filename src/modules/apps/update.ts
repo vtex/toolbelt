@@ -9,7 +9,7 @@ import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
 import { diffVersions } from '../infra/utils'
 import { prepareInstall } from './install'
-import { appsLastVersion } from './utils'
+import { appLatestVersion } from './utils'
 
 const { listApps } = apps
 
@@ -34,7 +34,7 @@ export default async () => {
   const { data } = await listApps()
   const installedApps = map(pipe(prop('app'), parseLocator), data)
   const withLatest = await Bluebird.all(map(async (app) => {
-    app.latest = await appsLastVersion(`${app.vendor}.${app.name}`)
+    app.latest = await appLatestVersion(`${app.vendor}.${app.name}`)
     return app
   }, installedApps))
   const updateableApps = reject(sameVersion, withLatest)
