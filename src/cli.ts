@@ -129,7 +129,7 @@ const onError = e => {
           log.error(`${e.config.method} ${e.config.url}`)
         }
         if (isVerbose) {
-          log.error(e)
+          log.error(reject(isFunction, e))
         }
     }
   } else {
@@ -152,7 +152,7 @@ const onError = e => {
         log.debug('User Cancelled')
         break
       default:
-        log.error('Something went wrong.')
+        log.error('Something went wrong, I don\'t know what do to :(')
         log.error(reject(isFunction, e))
     }
   }

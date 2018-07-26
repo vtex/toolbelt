@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import { head, prepend, prop, tail } from 'ramda'
+import { head, isFunction, prepend, prop, reject, tail } from 'ramda'
 
 import { apps, billing } from '../../clients'
 import { UserCancelledError } from '../../errors'
@@ -89,7 +89,8 @@ const logGraphQLErrorMessage = (e) => {
   const errorMessage = e instanceof Array
     ? e.forEach(err => log.error(err.message ? err.message : err))
     : e
-  log.error(errorMessage)
+  log.error('Installation failed!')
+  log.error(reject(isFunction, errorMessage))
 }
 
 export default async (optionalApp: string, options) => {
