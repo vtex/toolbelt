@@ -1,10 +1,10 @@
 import chalk from 'chalk'
-import * as EventSource from 'eventsource'
 import { compose, forEach, path, pathOr } from 'ramda'
 
 import { getToken } from './conf'
 import { endpoint, publicEndpoint } from './env'
 import { SSEConnectionError } from './errors'
+import EventSource from './eventsource'
 import log from './logger'
 import userAgent from './user-agent'
 
