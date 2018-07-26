@@ -1,6 +1,12 @@
 import * as EventSource from 'eventsource'
 import { forEach } from 'ramda'
 
+// Colossus ping is set at 45s
+const COLOSSUS_PING = 45000
+const EPSILON = 5000
+const BEFORE_NEXT_PING = COLOSSUS_PING - EPSILON
+const AFTER_NEXT_PING = COLOSSUS_PING + EPSILON
+
 const CONNECTION_CLOSED = 2
 const DEFAULT_RECONNECT_INTERVAL = 1000
 
@@ -8,21 +14,26 @@ export default class CustomEventSource {
   private source: string
   private configuration: any
 
-  private esOnError: any
-  private esOnMessage: any
-  private esOnOpen: any
+  private esOnError: (err: any) => void
+  private esOnMessage: () => void
+  private esOnOpen: () => void
   private events: any
   private eventSource: EventSource
   private reconnectInterval: number
+  private status: any
 
   constructor (source, configuration) {
     this.source = source
     this.configuration = configuration
+
     this.events = []
     this.eventSource = null
+    this.status = {}
+
+    this.eventHandler = this.eventHandler.bind(this)
     this.reconnect = this.reconnect.bind(this)
 
-    this.makeNewEventSource()
+    this.connectEventSource()
     this.reconnectInterval = this.eventSource &&
       this.eventSource.reconnectInterval ||
       DEFAULT_RECONNECT_INTERVAL
@@ -50,14 +61,19 @@ export default class CustomEventSource {
   }
 
   public close () {
-    this.eventSource.close()
-    this.eventSource = null
+    if (this.eventSource) {
+      this.eventSource.close()
+      this.eventSource = null
+    }
   }
 
-  public addEventListener (event: string, handler: any) {
-    this.events.push({event, handler})
+  public addEventListener (event: string, handler: any, checkStatus: boolean = false) {
+    this.events.push({event, handler, checkStatus})
+
     if (this.eventSource) {
-      this.eventSource.addEventListener(event, handler)
+      this.eventSource.addEventListener(
+        event,
+        () => this.eventHandler(event, handler, checkStatus))
     }
   }
 
@@ -67,9 +83,29 @@ export default class CustomEventSource {
       this.eventSource.onopen = this.esOnOpen
       this.eventSource.onerror = this.handleError
 
-      forEach(({event, handler}) => {
-        this.eventSource.addEventListener(event, handler)
+      forEach(({event, handler, checkStatus}) => {
+        this.eventSource.addEventListener(
+          event,
+          () => this.eventHandler(event, handler, checkStatus)
+        )
       }, this.events)
+    }
+  }
+
+  private eventHandler(event: string, handler: any, checkStatus: boolean) {
+    if (handler) {
+      handler()
+    }
+    if (checkStatus) {
+      this.status[event] = true
+      setTimeout(
+        () => { this.status[event] = false },
+        BEFORE_NEXT_PING
+      )
+      setTimeout(
+        () => !this.status[event] && this.reconnect(),
+        AFTER_NEXT_PING
+      )
     }
   }
 
@@ -81,7 +117,7 @@ export default class CustomEventSource {
     }
   }
 
-  private makeNewEventSource () {
+  private connectEventSource () {
     if (this.eventSource) {
       this.eventSource.close()
       this.eventSource = null
@@ -93,7 +129,7 @@ export default class CustomEventSource {
   }
 
   private reconnect () {
-    this.makeNewEventSource()
+    this.connectEventSource()
     this.addMethods()
   }
 }
