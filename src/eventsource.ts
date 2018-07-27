@@ -93,7 +93,7 @@ export default class CustomEventSource {
   }
 
   private eventHandler(event: string, handler: any, checkStatus: boolean) {
-    if (handler) {
+    if (handler && typeof handler === 'function') {
       handler()
     }
     if (checkStatus) {
