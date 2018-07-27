@@ -118,10 +118,7 @@ export default class CustomEventSource {
   }
 
   private connectEventSource () {
-    if (this.eventSource) {
-      this.eventSource.close()
-      this.eventSource = null
-    }
+    this.close()
     this.eventSource = new EventSource(
       this.source,
       this.configuration
