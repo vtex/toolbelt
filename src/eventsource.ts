@@ -11,15 +11,15 @@ const CONNECTION_CLOSED = 2
 const DEFAULT_RECONNECT_INTERVAL = 1000
 
 export default class CustomEventSource {
-  private source: string
-  private configuration: any
+  public esOnError: (err: any) => void
+  public esOnMessage: () => void
+  public esOnOpen: () => void
 
-  private esOnError: (err: any) => void
-  private esOnMessage: () => void
-  private esOnOpen: () => void
+  private configuration: any
   private events: any
   private eventSource: EventSource
   private reconnectInterval: number
+  private source: string
   private status: any
 
   constructor (source, configuration) {
@@ -31,6 +31,7 @@ export default class CustomEventSource {
     this.status = {}
 
     this.eventHandler = this.eventHandler.bind(this)
+    this.handleError = this.handleError.bind(this)
     this.reconnect = this.reconnect.bind(this)
 
     this.connectEventSource()
@@ -41,29 +42,25 @@ export default class CustomEventSource {
 
   set onopen (newOnOpen) {
     this.esOnOpen = newOnOpen
+    this.esOnOpen = this.esOnOpen.bind(this)
     if (this.eventSource) {
-      this.eventSource.onopen = newOnOpen
+      this.eventSource.onopen = this.esOnOpen
     }
   }
 
   set onmessage (newOnMessage) {
     this.esOnMessage = newOnMessage
+    this.esOnMessage = this.esOnMessage.bind(this)
     if(this.eventSource) {
-      this.eventSource.onmessage = newOnMessage
+      this.eventSource.onmessage = this.esOnMessage
     }
   }
 
   set onerror (newOnError) {
     this.esOnError = newOnError
+    this.esOnError = this.esOnError.bind(this)
     if (this.eventSource) {
       this.eventSource.onerror = this.handleError
-    }
-  }
-
-  public close () {
-    if (this.eventSource) {
-      this.eventSource.close()
-      this.eventSource = null
     }
   }
 
@@ -74,6 +71,24 @@ export default class CustomEventSource {
       this.eventSource.addEventListener(
         event,
         () => this.eventHandler(event, handler, checkStatus))
+    }
+  }
+
+  public close () {
+    if (this.eventSource) {
+      this.eventSource.close()
+      this.eventSource = null
+    }
+  }
+
+  public handleError (err) {
+    if (typeof this.esOnError === 'function') {
+      this.esOnError(err)
+    }
+    if (!this.eventSource ||
+        this.eventSource &&
+        this.eventSource.readyState === CONNECTION_CLOSED) {
+      setTimeout(this.reconnect, this.reconnectInterval)
     }
   }
 
@@ -92,6 +107,14 @@ export default class CustomEventSource {
     }
   }
 
+  private connectEventSource () {
+    this.close()
+    this.eventSource = new EventSource(
+      this.source,
+      this.configuration
+    )
+  }
+
   private eventHandler(event: string, handler: any, checkStatus: boolean) {
     if (handler && typeof handler === 'function') {
       handler()
@@ -107,22 +130,6 @@ export default class CustomEventSource {
         AFTER_NEXT_PING
       )
     }
-  }
-
-  private handleError (err) {
-    this.esOnError(err)
-    if (this.eventSource &&
-        this.eventSource.readyState === CONNECTION_CLOSED) {
-      setTimeout(this.reconnect, this.reconnectInterval)
-    }
-  }
-
-  private connectEventSource () {
-    this.close()
-    this.eventSource = new EventSource(
-      this.source,
-      this.configuration
-    )
   }
 
   private reconnect () {
