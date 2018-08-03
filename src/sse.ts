@@ -1,10 +1,10 @@
 import chalk from 'chalk'
-import * as EventSource from 'eventsource'
 import { compose, forEach, path, pathOr } from 'ramda'
 
 import { getToken } from './conf'
 import { endpoint, publicEndpoint } from './env'
 import { SSEConnectionError } from './errors'
+import EventSource from './eventsource'
 import log from './logger'
 import userAgent from './user-agent'
 
@@ -73,6 +73,7 @@ const onLog = (ctx: Context, subject: string, logLevel: string, callback: (messa
   es.onopen = onOpen(`${logLevel} log`)
   es.onmessage = compose(maybeCall(callback), filterSubject(subject, true), parseMessage)
   es.onerror = onError(`${logLevel} log`)
+  es.addEventListener('ping', undefined, true)
   return es.close.bind(es)
 }
 
@@ -82,6 +83,7 @@ export const onEvent = (ctx: Context, sender: string, subject: string, keys: str
   es.onopen = onOpen('event')
   es.onmessage = compose(maybeCall(callback), filterSubject(subject), parseMessage)
   es.onerror = onError('event')
+  es.addEventListener('ping', undefined, true)
   return es.close.bind(es)
 }
 
