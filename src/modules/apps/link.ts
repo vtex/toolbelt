@@ -92,9 +92,16 @@ const performInitialLink = async (appId: string, builder: Builder): Promise<void
   paths.forEach(p => log.debug(p))
   log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
 
-  const { code } = await builder.linkApp(appId, filesWithContent)
-  if (code !== 'build.accepted') {
-    throw new Error('Please, update your builder-hub to the latest version!')
+  try {
+    const { code } = await builder.linkApp(appId, filesWithContent)
+    if (code !== 'build.accepted') {
+      throw new Error('Please, update your builder-hub to the latest version!')
+    }
+  } catch (e) {
+    const data = e.response && e.response.data
+    if (data && data.code && data.code === 'build_in_progress') {
+      log.warn(`Trying to link ${appId} while build is already in progress`)
+    }
   }
 }
 
