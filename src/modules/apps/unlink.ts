@@ -1,4 +1,4 @@
-import { head, prepend, tail } from 'ramda'
+import { prepend } from 'ramda'
 
 import { apps } from '../../clients'
 import log from '../../logger'
@@ -6,38 +6,46 @@ import { getManifest, validateApp } from '../../manifest'
 import { toMajorLocator } from './../../locator'
 import { parseArgs, validateAppAction } from './utils'
 
-const { unlink, listLinks } = apps
+const { unlink, unlinkAll, listLinks } = apps
 
-const unlinkApps = async (appsList: string[]): Promise<void> => {
-  if (appsList.length === 0) {
-    return
-  }
-  const app = validateApp(head(appsList))
-  const unlinkApp = async () => {
+const unlinkApp = async (app: string) => {
+  validateApp(app)
+
+  try {
     log.info('Starting to unlink app:', app)
     await unlink(app)
     log.info('Successfully unlinked', app)
-  }
-  try {
-    await Promise.all([unlinkApp(), unlinkApps(tail(appsList))])
   } catch (e) {
     log.error(`Error unlinking ${app}.`, e.message)
   }
 }
 
+const unlinkApps = async (appsList: string[]): Promise<void> => {
+  await validateAppAction('unlink', appsList)
+  await Promise.map(appsList, unlinkApp)
+}
+
+const unlinkAllApps = async (): Promise<void> => {
+  try {
+    log.info('Starting to unlink all apps')
+    await unlinkAll()
+    log.info('Successfully unlinked all apps')
+  } catch (e) {
+    log.error('Error unlinking all apps.', e.message)
+  }
+}
+
 export default async (optionalApp: string, options) => {
-  let appsList
+  if (options.a || options.all) {
+    return unlinkAllApps()
+  }
+
   const linkedApps = await listLinks()
   if (linkedApps.length === 0) {
     return log.info('No linked apps')
   }
-  if (options.a || options.all) {
-    appsList = linkedApps
-    await validateAppAction('unlink', appsList)
-  } else {
-    appsList = prepend(optionalApp || toMajorLocator(await getManifest()), parseArgs(options._))
-    await validateAppAction('unlink', appsList)
-  }
-  log.debug('Starting to unlink apps:', appsList.join(', '))
+
+  const app = optionalApp || toMajorLocator(await getManifest())
+  const appsList = prepend(app, parseArgs(options._))
   return unlinkApps(appsList)
 }
