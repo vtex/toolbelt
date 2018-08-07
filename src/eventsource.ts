@@ -18,9 +18,12 @@ export default class CustomEventSource {
   private configuration: any
   private events: any
   private eventSource: EventSource
+  private isClosed: boolean
+  private pingStatus: any
   private reconnectInterval: number
   private source: string
-  private status: any
+  private timerAfterNextPing: any
+  private timerBeforeNextPing: any
 
   constructor (source, configuration) {
     this.source = source
@@ -28,13 +31,15 @@ export default class CustomEventSource {
 
     this.events = []
     this.eventSource = null
-    this.status = {}
+    this.isClosed = false
+    this.pingStatus = {}
 
-    this.eventHandler = this.eventHandler.bind(this)
+    this.checkPing = this.checkPing.bind(this)
     this.handleError = this.handleError.bind(this)
     this.reconnect = this.reconnect.bind(this)
 
     this.connectEventSource()
+    this.addColossusPing()
     this.reconnectInterval = this.eventSource &&
       this.eventSource.reconnectInterval ||
       DEFAULT_RECONNECT_INTERVAL
@@ -64,21 +69,18 @@ export default class CustomEventSource {
     }
   }
 
-  public addEventListener (event: string, handler: any, checkStatus: boolean = false) {
-    this.events.push({event, handler, checkStatus})
+  public addEventListener (event: string, handler: any) {
+    this.events.push({event, handler})
 
     if (this.eventSource) {
-      this.eventSource.addEventListener(
-        event,
-        () => this.eventHandler(event, handler, checkStatus))
+      this.eventSource.addEventListener(event, handler)
     }
   }
 
   public close () {
-    if (this.eventSource) {
-      this.eventSource.close()
-      this.eventSource = null
-    }
+    this.closeEventSource()
+    this.clearTimers()
+    this.isClosed = true
   }
 
   public handleError (err) {
@@ -92,48 +94,60 @@ export default class CustomEventSource {
     }
   }
 
+  private addColossusPing () {
+    if (this.eventSource) {
+      this.eventSource.addEventListener('ping', this.checkPing)
+    }
+  }
+
   private addMethods () {
     if (this.eventSource) {
       this.eventSource.onmessage = this.esOnMessage
       this.eventSource.onopen = this.esOnOpen
       this.eventSource.onerror = this.handleError
 
-      forEach(({event, handler, checkStatus}) => {
-        this.eventSource.addEventListener(
-          event,
-          () => this.eventHandler(event, handler, checkStatus)
-        )
+      forEach(({event, handler}) => {
+        this.eventSource.addEventListener(event, handler)
       }, this.events)
     }
   }
 
+  private checkPing () {
+    this.pingStatus = true
+    this.timerBeforeNextPing = setTimeout(
+      () => { this.pingStatus = false },
+      BEFORE_NEXT_PING
+    )
+    this.timerAfterNextPing = setTimeout(
+      () => !this.pingStatus && this.reconnect(),
+      AFTER_NEXT_PING
+    )
+  }
+
+  private clearTimers () {
+    clearTimeout(this.timerBeforeNextPing)
+    clearTimeout(this.timerAfterNextPing)
+  }
+
+  private closeEventSource () {
+    if (this.eventSource) {
+      this.eventSource.close()
+    }
+  }
+
   private connectEventSource () {
-    this.close()
+    this.closeEventSource()
     this.eventSource = new EventSource(
       this.source,
       this.configuration
     )
   }
 
-  private eventHandler(event: string, handler: any, checkStatus: boolean) {
-    if (handler && typeof handler === 'function') {
-      handler()
-    }
-    if (checkStatus) {
-      this.status[event] = true
-      setTimeout(
-        () => { this.status[event] = false },
-        BEFORE_NEXT_PING
-      )
-      setTimeout(
-        () => !this.status[event] && this.reconnect(),
-        AFTER_NEXT_PING
-      )
-    }
-  }
-
   private reconnect () {
-    this.connectEventSource()
-    this.addMethods()
+    if (!this.isClosed){
+      this.connectEventSource()
+      this.addColossusPing()
+      this.addMethods()
+    }
   }
 }
