@@ -38,7 +38,7 @@ const unlinkAllApps = async (): Promise<void> => {
 export default async (optionalApp: string, options) => {
   const linkedApps = await listLinks()
   if (linkedApps.length === 0) {
-    return log.info('No linked apps')
+    return log.info('No linked apps?')
   }
 
   if (options.a || options.all) {
