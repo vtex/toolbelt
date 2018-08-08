@@ -36,13 +36,13 @@ const unlinkAllApps = async (): Promise<void> => {
 }
 
 export default async (optionalApp: string, options) => {
-  if (options.a || options.all) {
-    return unlinkAllApps()
-  }
-
   const linkedApps = await listLinks()
   if (linkedApps.length === 0) {
     return log.info('No linked apps')
+  }
+
+  if (options.a || options.all) {
+    return unlinkAllApps()
   }
 
   const app = optionalApp || toMajorLocator(await getManifest())
