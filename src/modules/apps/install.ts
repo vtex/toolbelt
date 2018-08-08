@@ -41,7 +41,7 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
   try {
     log.debug('Starting to install app', app)
     if (app === 'vtex.billing' || head(app.split('@')) === 'vtex.billing') {
-      await legacyInstallApp('vtex.billing')
+      await legacyInstallApp(app)
     } else {
       const {code, billingOptions} = await installApp(app, false)
       switch (code) {
