@@ -1,4 +1,8 @@
 import ExtendableError from 'extendable-error'
+import { compose, join, map, prop, reject } from 'ramda'
+import { isFunction } from 'ramda-adjunct'
+
+const joinErrorMessages = compose(join('\n'), map(prop('message')), reject(isFunction))
 
 export class CommandError extends ExtendableError {
   public message
@@ -27,5 +31,12 @@ export class BuildFailError extends ExtendableError {
     super(message)
     this.message = message
     this.code = code
+  }
+}
+
+export class GraphQlError extends ExtendableError {
+  constructor(errors: [any]) {
+    const message = joinErrorMessages(errors)
+    super(message)
   }
 }

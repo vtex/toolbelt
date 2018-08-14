@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import { compose, equals, head, isFunction, path, prepend, prop, reject, tail } from 'ramda'
+import { compose, equals, head, path, prepend, prop, tail } from 'ramda'
 
 import { apps, billing } from '../../clients'
 import { UserCancelledError } from '../../errors'
@@ -72,6 +72,8 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
     }
     if (isNotFoundError(e)) {
       log.warn(`Billing app not found in current workspace. Please install it with ${chalk.green('vtex install vtex.billing')}`)
+    } else if (hasErrorMessage(e)) {
+      log.error(e.response.data.message)
     } else {
       logGraphQLErrorMessage(e)
     }
@@ -82,13 +84,11 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
 }
 
 const isNotFoundError = compose(equals(404), path(['response', 'status']))
+const hasErrorMessage = path(['response', 'data', 'message'])
 
 const logGraphQLErrorMessage = (e) => {
-  const errorMessage = e instanceof Array
-    ? e.forEach(err => log.error(err.message ? err.message : err))
-    : e
   log.error('Installation failed!')
-  log.error(reject(isFunction, errorMessage))
+  log.error(e.message)
 }
 
 export default async (optionalApp: string, options) => {
