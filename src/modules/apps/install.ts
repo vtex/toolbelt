@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import { head, isFunction, prepend, prop, reject, tail } from 'ramda'
+import { compose, equals, head, isFunction, path, prepend, prop, reject, tail } from 'ramda'
 
 import { apps, billing } from '../../clients'
 import { UserCancelledError } from '../../errors'
@@ -70,12 +70,8 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
     if (e.name === UserCancelledError.name) {
       throw new UserCancelledError()
     }
-    if (e.response && e.response.data && e.response.data.error) {
-      if (e.response.data.code === 'routing_error' && e.response.data.error.includes('not found')) {
-        log.warn(`Billing app not found in current workspace. Please install it with ${chalk.green('vtex install vtex.billing')}`)
-      } else {
-        log.error(e.response.data.error)
-      }
+    if (isNotFoundError(e)) {
+      log.warn(`Billing app not found in current workspace. Please install it with ${chalk.green('vtex install vtex.billing')}`)
     } else {
       logGraphQLErrorMessage(e)
     }
@@ -84,6 +80,8 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
 
   await prepareInstall(tail(appsList))
 }
+
+const isNotFoundError = compose(equals(404), path(['response', 'status']))
 
 const logGraphQLErrorMessage = (e) => {
   const errorMessage = e instanceof Array
