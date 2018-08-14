@@ -152,7 +152,7 @@ const onError = e => {
         log.debug('User Cancelled')
         break
       default:
-        log.error('Something went wrong, I don\'t know what do to :(')
+        log.error('Something went wrong, I don\'t know what to do :(')
         log.error(reject(isFunction, e))
     }
   }
