@@ -11,6 +11,7 @@ import lint from './lint'
 
 import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
+import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getManifest } from '../../manifest'
@@ -25,6 +26,8 @@ const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'win32' ? 200 : 50
+const AVAILABILITY_TIMEOUT = 1000
+const N_HOSTS = 3
 
 const pathToChange = (path: string, remove?: boolean): Change => ({
   content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'),
@@ -85,6 +88,17 @@ const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
 }
 
 const performInitialLink = async (appId: string, builder: Builder): Promise<void> => {
+  const stickyHint = await getMostAvailableHost(
+    appId,
+    builder,
+    N_HOSTS,
+    AVAILABILITY_TIMEOUT
+  )
+  const linkOptions = {
+    sticky: true,
+    stickyHint,
+  }
+
   const paths = await listLocalFiles(root)
   const filesWithContent = map(pathToFileObject(root), paths)
 
@@ -93,7 +107,7 @@ const performInitialLink = async (appId: string, builder: Builder): Promise<void
   log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
 
   try {
-    const { code } = await builder.linkApp(appId, filesWithContent)
+    const { code } = await builder.linkApp(appId, filesWithContent, linkOptions)
     if (code !== 'build.accepted') {
       throw new Error('Please, update your builder-hub to the latest version!')
     }
