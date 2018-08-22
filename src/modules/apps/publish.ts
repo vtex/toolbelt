@@ -9,6 +9,7 @@ import { createClients } from '../../clients'
 import { Environment, forceEnvironment, getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
+import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getManifest } from '../../manifest'
@@ -21,6 +22,8 @@ import { pathToFileObject } from './utils'
 
 
 const root = process.cwd()
+const AVAILABILITY_TIMEOUT = 1000
+const N_HOSTS = 5
 
 const getSwitchAccountMessage = (previousAccount: string, currentAccount = getAccount()) :string => {
   return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
@@ -49,10 +52,22 @@ const promptPublishOnVendor = (msg: string): Bluebird<boolean> =>
 const publisher = (workspace: string = 'master') => {
 
   const publishApp = async (appRoot: string, appId: string, tag: string, builder): Promise<BuildResult> => {
+    const stickyHint = await getMostAvailableHost(
+      appId,
+      builder,
+      N_HOSTS,
+      AVAILABILITY_TIMEOUT
+    )
+    const publishOptions = {
+      sticky: true,
+      stickyHint,
+      tag,
+    }
+
     const paths = await listLocalFiles(appRoot)
     const filesWithContent = map(pathToFileObject(appRoot), paths)
     log.debug('Sending files:', '\n' + paths.join('\n'))
-    return await builder.publishApp(appId, filesWithContent, tag)
+    return await builder.publishApp(appId, filesWithContent, publishOptions)
   }
 
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
