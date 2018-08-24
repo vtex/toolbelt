@@ -114,7 +114,7 @@ const performInitialLink = async (appId: string, builder: Builder): Promise<void
   } catch (e) {
     const data = e.response && e.response.data
     if (data && data.code && data.code === 'build_in_progress') {
-      log.warn(`Trying to link ${appId} while build is already in progress`)
+      log.warn(`Build for ${appId} is already in progress`)
     } else {
       throw e
     }
