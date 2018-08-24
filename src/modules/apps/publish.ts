@@ -67,7 +67,15 @@ const publisher = (workspace: string = 'master') => {
     const paths = await listLocalFiles(appRoot)
     const filesWithContent = map(pathToFileObject(appRoot), paths)
     log.debug('Sending files:', '\n' + paths.join('\n'))
-    return await builder.publishApp(appId, filesWithContent, publishOptions)
+    try {
+      return await builder.publishApp(appId, filesWithContent, publishOptions)
+    } catch (e) {
+      const data = e.response && e.response.data
+      if (data && data.code && data.code === 'build_in_progress') {
+        log.warn(`Build for ${appId} is already in progress`)
+      }
+      throw e
+    }
   }
 
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
