@@ -52,7 +52,7 @@ const logToolbeltVersion = () => {
 
 const checkLogin = args => {
   const first = args[0]
-  const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init']
+  const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version']
   if (!getToken() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
     return run({ command: loginCmd })
