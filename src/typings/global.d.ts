@@ -169,4 +169,10 @@ declare global {
     inclusiveTo: number
     multiplier: number
   }
+
+  interface AvailabilityResponse {
+    host: string | undefined
+    hostname: string | undefined
+    score: number
+  }
 }

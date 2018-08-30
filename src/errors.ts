@@ -40,3 +40,14 @@ export class GraphQlError extends ExtendableError {
     super(message)
   }
 }
+
+export class BuilderHubTimeoutError extends ExtendableError {
+  public code: string
+  public message: string
+
+  constructor(message: string) {
+    super(message)
+    this.code = 'builder_hub_timeout'
+    this.message = message
+  }
+}
