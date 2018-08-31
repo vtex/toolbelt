@@ -9,6 +9,7 @@ const AFTER_NEXT_PING = COLOSSUS_PING + EPSILON
 
 const CONNECTION_CLOSED = 2
 const DEFAULT_RECONNECT_INTERVAL = 1000
+const MAX_RETRIES = 3
 
 export default class CustomEventSource {
   public esOnError: (err: any) => void
@@ -19,6 +20,7 @@ export default class CustomEventSource {
   private events: any
   private eventSource: EventSource
   private isClosed: boolean
+  private nRetries: number
   private pingStatus: any
   private reconnectInterval: number
   private source: string
@@ -32,6 +34,7 @@ export default class CustomEventSource {
     this.events = []
     this.eventSource = null
     this.isClosed = false
+    this.nRetries = 0
     this.pingStatus = {}
 
     this.checkPing = this.checkPing.bind(this)
@@ -87,6 +90,12 @@ export default class CustomEventSource {
     if (typeof this.esOnError === 'function') {
       this.esOnError(err)
     }
+
+    this.nRetries += 1
+    if (this.nRetries > MAX_RETRIES) {
+      this.close()
+    }
+
     if (!this.eventSource ||
         this.eventSource &&
         this.eventSource.readyState === CONNECTION_CLOSED) {
@@ -113,6 +122,7 @@ export default class CustomEventSource {
   }
 
   private checkPing () {
+    this.nRetries = 0
     this.pingStatus = true
     this.timerBeforeNextPing = setTimeout(
       () => { this.pingStatus = false },
@@ -144,7 +154,7 @@ export default class CustomEventSource {
   }
 
   private reconnect () {
-    if (!this.isClosed){
+    if (!this.isClosed) {
       this.connectEventSource()
       this.addColossusPing()
       this.addMethods()
