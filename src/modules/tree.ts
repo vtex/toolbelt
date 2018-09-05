@@ -107,10 +107,6 @@ export default {
     handler: './apps/list',
   },
   local: {
-    debug: {
-      description: 'Run a Colossus function locally',
-      handler: './local/debug',
-    },
     manifest: {
       description: 'Generate manifest from package.json',
       handler: './local/manifest',
@@ -118,6 +114,14 @@ export default {
     package: {
       description: 'Generate package.json from manifest',
       handler: './local/package',
+    },
+    account: {
+      description: 'Show current account and copy it to clipboard',
+      handler: './local/account',
+    },
+    workspace: {
+      description: 'Show current workspace and copy it to clipboard',
+      handler: './local/workspace',
     },
     token: {
       description: 'Show user\'s auth token and copy it to clipboard',
