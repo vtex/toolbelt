@@ -5,6 +5,7 @@ import { name as pkgName } from '../package.json'
 const conf = new Configstore(pkgName)
 
 export enum Environment {
+  Azure = 'azure',
   Production = 'prod',
   Staging = 'staging',
 }
@@ -37,6 +38,7 @@ export const getWorkspace = (): string =>
   conf.get('workspace')
 
 const envFromProcessEnv = {
+  'azure': Environment.Azure,
   'beta': Environment.Staging,
   'prod': Environment.Production,
   'staging': Environment.Staging
@@ -64,4 +66,5 @@ export const currentContext: Context = {
 export enum Region {
   Production = 'aws-us-east-1',
   Staging = 'aws-us-east-2',
+  Azure = 'azure-us-east-1',
 }
