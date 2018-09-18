@@ -158,8 +158,8 @@ export default async (options) => {
     if (debuggerStarted) {
       return
     }
-    const debuggerPort = await startDebuggerTunnel(manifest)
     debuggerStarted = true
+    const debuggerPort = await startDebuggerTunnel(manifest)
     log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
   }
 
