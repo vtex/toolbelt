@@ -21,6 +21,7 @@ import startDebuggerTunnel from './debugger'
 import { getIgnoredPaths, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
+import { CommandError } from '../../errors';
 
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
@@ -157,8 +158,8 @@ export default async (options) => {
     if (debuggerStarted) {
       return
     }
-    const debuggerPort = await startDebuggerTunnel(manifest)
     debuggerStarted = true
+    const debuggerPort = await startDebuggerTunnel(manifest)
     log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
   }
 
@@ -174,6 +175,10 @@ export default async (options) => {
       const { data } = e.response
       if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
         return log.error('Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)')
+      }
+
+      if (data.code === 'link_on_production') {
+        throw new CommandError(`Please remove your workspace from production (${chalk.blue('vtex workspace production false')}) to enable app linking`)
       }
     }
     throw e
