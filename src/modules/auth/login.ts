@@ -85,7 +85,8 @@ const isStagingRegionEnabled = async (): Promise<boolean> => {
 }
 
 export default async (options) => {
-  const optionAccount = options ? (options.a || options.account) : null
+  const defaultArgumentAccount = options && options._ && options._[0]
+  const optionAccount = options ? (options.a || options.account || defaultArgumentAccount) : null
   const optionWorkspace = options ? (options.w || options.workspace) : null
   const usePrevious = !(optionAccount || optionWorkspace) && details && await promptUsePrevious()
   const account = optionAccount || (usePrevious && cachedAccount) || await promptAccount(cachedAccount && optionWorkspace)
