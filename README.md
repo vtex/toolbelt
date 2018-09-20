@@ -37,7 +37,7 @@ Now you can use the `vtex` command:
 
 ```
 $ vtex
-  Welcome to VTEX IO
+  Welcome to VTEX I/O
   Login with vtex login <account>
 
   Usage: vtex <command> [options]
@@ -72,10 +72,10 @@ $ vtex
     infra list [name]        List installed services
     infra update             Update all installed services
 
-    local debug       Run a Colossus function locally
-    local eslint      Setup a local eslint environment
     local manifest    Generate manifest from package.json
     local package     Generate package.json from manifest
+    local account     Show current account and copy it to clipboard
+    local workspace   Show current workspace and copy it to clipboard
     local token       Show user's auth token and copy it to clipboard
 
     port react       Convert your app from React 0.x to React 2.x
@@ -92,6 +92,7 @@ $ vtex
     workspace production [production] Set this workspace's production mode to true or false
     workspace promote                 Promote this workspace to master
     workspace reset [name]            Delete and create a workspace
+    workspace test [weight]           Set AB test in current workspace
     workspace use <name>              Use a workspace to perform operations
 
   Options:
