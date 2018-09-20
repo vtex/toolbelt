@@ -11,6 +11,8 @@ const keepAliveDelayMs = 3 * 60 * 1000
 
 const wsCloseCodeGoingAway = 1001
 const wsCloseCodeError = 1011
+const DEFAULT_DEBUGGER_PORT = 9229
+const MAX_RETRY_COUNT = 40
 
 function getErrorMessage(raw: string): string {
   try {
@@ -88,7 +90,7 @@ function webSocketTunnelHandler(host, path: string, server: net.Server): (socket
   }
 }
 
-export default function startDebuggerTunnel(manifest: Manifest, port: number = 5858): Promise<number> {
+export default function startDebuggerTunnel(manifest: Manifest, port: number = DEFAULT_DEBUGGER_PORT): Promise<number> {
   const { name, vendor, version } = manifest
   const majorRange = toMajorRange(version)
   const host = `${name}.${vendor}.${region()}.vtex.io`
@@ -99,7 +101,7 @@ export default function startDebuggerTunnel(manifest: Manifest, port: number = 5
     server.on('connection', webSocketTunnelHandler(host, path, server))
 
     server.on('error', err => {
-      if (port < 5900) {
+      if (port < DEFAULT_DEBUGGER_PORT + MAX_RETRY_COUNT) {
         log.warn(`Port ${port} in use, will try to open tunnel on port ${port + 1}`)
         resolve(startDebuggerTunnel(manifest, port + 1))
       } else {
