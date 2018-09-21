@@ -23,9 +23,8 @@ type BuildEvent = 'logs' | 'build.status'
 const allEvents: BuildEvent[] = ['logs', 'build.status']
 
 const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
-  const [subject] = appOrKey.split('@')
-  const unlistenLogs = logAll(ctx, log.level, subject)
-  const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', subject, ['build.status'], message => callback('build.status', message))
+  const unlistenLogs = logAll(ctx, log.level, appOrKey)
+  const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', appOrKey, ['build.status'], message => callback('build.status', message))
   const unlistenMap: Record<BuildEvent, AnyFunction> = {
     'build.status': unlistenBuild,
     logs: unlistenLogs,
