@@ -32,7 +32,7 @@ const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 if (isVerbose) {
   log.level = 'debug'
   log.default.transports.console['timestamp'] = () =>
-    chalk.grey(moment().format('HH:mm:ss.SSS'))
+    chalk.grey(moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 }
 
 if (process.env.NODE_ENV === 'development') {
