@@ -12,19 +12,19 @@
       "es2017"
     ],
     "outDir": "lib",
-    "allowJs": false,
     "sourceMap": false,
     "target": "es2015",
     "module": "commonjs",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types"],
+    "skipLibCheck": true
   },
   "typeAcquisition": {
     "enable": false
   },
   "include": [
-    "./src/**/*",
+    "./src/**/*"
   ],
   "exclude": [
     "node_modules"
