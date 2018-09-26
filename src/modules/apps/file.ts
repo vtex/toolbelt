@@ -41,7 +41,7 @@ export const getIgnoredPaths = (root: string): string[] => {
   }
 }
 
-export const listLocalFiles = (root: string, folder?: string): Bluebird<string[]> =>
+export const listLocalFiles = (root: string, folder?: string): Promise<string[]> =>
   Promise.resolve(
     glob(`{manifest.json,policies.json,${safeFolder(folder)}}`, {
       cwd: root,

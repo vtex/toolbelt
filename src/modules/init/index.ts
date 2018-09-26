@@ -59,9 +59,9 @@ const promptDescription = async () => {
   }))
 }
 
-const promptTemplates = async () => {
+const promptTemplates = async (): Promise<string> => {
   const cancel = 'Cancel'
-  const chosen = prop('service', await inquirer.prompt({
+  const chosen = prop<string>('service', await inquirer.prompt({
     name: 'service',
     message: 'Choose where do you want to start from',
     type: 'list',

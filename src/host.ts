@@ -29,7 +29,7 @@ const withTimeout = (promise: Promise<any>, timeout: number) => {
 }
 
 const mapAvailability = (appId: string, builder: Builder, timeout: number) => {
-  return map(async (hintIdx) => {
+  return map(async (hintIdx: number) => {
     try {
       const availabilityP = builder.availability(appId, hintIdx)
       const response = await withTimeout(availabilityP, timeout) as AvailabilityResponse
@@ -47,7 +47,7 @@ const mapAvailability = (appId: string, builder: Builder, timeout: number) => {
   })
 }
 
-const highestAvailability = reduce((acc, current) => {
+const highestAvailability = reduce((acc: any, current: any) => {
   const { score: scoreAcc } = acc
   const { score: scoreCurrent } = current
   return scoreCurrent > scoreAcc ? current : acc

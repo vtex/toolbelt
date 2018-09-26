@@ -1,3 +1,4 @@
+import { AvailableServices, InstalledService } from '@vtex/api'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as Table from 'cli-table'
@@ -13,7 +14,7 @@ const { listAvailableServices, listInstalledServices, getAvailableVersions } = r
 
 const printAvailableServices = (): Bluebird<void> =>
   listAvailableServices()
-    .then((availableRes: InfraAvailableResources) => {
+    .then((availableRes: AvailableServices) => {
       const table = new Table({ head: ['Name', 'Last stable', 'Last prerelease'] })
       Object.keys(availableRes).forEach(res => {
         const [stable, prerelease] = getLastStableAndPrerelease(availableRes[res])
@@ -48,7 +49,7 @@ const printAvailableServiceVersions = (name: string, filter: string): Bluebird<v
 
 const printInstalledServices = (): Bluebird<void> =>
   listInstalledServices()
-    .then((installedRes: InfraInstalledResources[]) => {
+    .then((installedRes: InstalledService[]) => {
       const table = new Table({ head: ['Name', 'Version'] })
       installedRes.forEach(({ name, version }) => {
         const validVersion = semver.valid(version)

@@ -20,7 +20,7 @@ declare global {
     name?: string,
     title?: string,
     vendor?: string,
-    version?: string,
+    version: string,
     dependencies?: {},
     builders?: {
       [builder: string]: string
@@ -41,15 +41,6 @@ declare global {
     versions: {
       [region: string]: string[],
     },
-  }
-
-  interface InfraAvailableResources {
-    [name: string]: InfraResourceVersions,
-  }
-
-  interface InfraInstalledResources {
-    name: string,
-    version: string,
   }
 
   interface IoVersions {

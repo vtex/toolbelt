@@ -31,7 +31,7 @@ const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 if (isVerbose) {
   log.level = 'debug'
-  log.default.transports.console.timestamp = () =>
+  ;(log.default.transports.console as any).timestamp = () =>
     chalk.grey(moment().format('HH:mm:ss.SSS'))
 }
 

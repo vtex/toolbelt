@@ -55,9 +55,9 @@ interface File {
 export const legacyPublisher = (account: string, workspace: string = 'master') => {
   const context = { account, workspace }
 
-  const prePublish = async (files, tag, unlistenBuild) => {
+  const prePublish = async (files, _, unlistenBuild) => {
     const builder = new LegacyBuilder(context)
-    const response = await builder.prePublishApp(files, tag)
+    const response = await builder.prePublishApp(files)
     if (response.status === 200) {
       unlistenBuild(response)
       return

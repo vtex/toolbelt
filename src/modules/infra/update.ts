@@ -1,3 +1,4 @@
+import { AvailableServices, InstalledService } from '@vtex/api'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
@@ -41,7 +42,7 @@ const logVersionMap = ({ latest, update }: InfraVersionMap): void => {
   updateKeys.map(k => logUpdate(k, update[k].current, update[k].latest, colSize))
 }
 
-const createVersionMap = (availableRes: InfraAvailableResources, installedRes: InfraInstalledResources[]): InfraVersionMap =>
+const createVersionMap = (availableRes: AvailableServices, installedRes: InstalledService[]): InfraVersionMap =>
   installedRes.reduce((acc, { name, version: currentVersion }) => {
     const tag = getTag(currentVersion)
     const latestVersion = availableRes[name].versions['aws-us-east-1'] // See comment in src/modules/infra/install.ts:82
