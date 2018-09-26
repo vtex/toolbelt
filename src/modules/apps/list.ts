@@ -21,13 +21,13 @@ const isLinked =
   compose<string, string[], number, boolean>(flippedGt(1), length, split('+build'))
 
 const renderTable = curry<string, string, any, void>(
-  (title: string, emptyMessage: string, apps): void => {
+  (title: string, emptyMessage: string, appArray): void => {
     console.log(title)
-    if (apps.length === 0) {
+    if (appArray.length === 0) {
       return console.log(`${emptyMessage}\n`)
     }
     const table = new Table({ head: ['Vendor', 'Name', 'Version', 'Linked'] })
-    apps.forEach(({ vendor, name, version }) => {
+    appArray.forEach(({ vendor, name, version }) => {
       const linked = isLinked(version) ? chalk.green('yes') : 'no'
       const cleanedVersion = cleanVersion(version)
       table.push([vendor, name, cleanedVersion, linked])

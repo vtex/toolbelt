@@ -29,7 +29,7 @@ const transformCommandsToObj = (commandSettings) => {
   return zipObj(k, v)
 }
 
-export default (app: string, _field, _value, options) => {
+export default (app: string, _, ___, options) => {
   const commandSettings = transformCommandsToObj(parseArgs(options))
   return getAppSettings(app)
     .then(merge(__, commandSettings))

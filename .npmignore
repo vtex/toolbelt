@@ -16,5 +16,8 @@ test/
 lib/*.test.js
 yarn-error.log
 lib/**/*.test.js
-scripts/create-account.sh
-scripts/make-executable.js
+tslint.json
+tsconfig.json
+coverage/
+scripts/
+yarn.lock

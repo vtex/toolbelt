@@ -93,7 +93,9 @@ export default async (options) => {
   await watch(root, sendChanges, folder)
 
   const debuggerPort = await startDebuggerTunnel(manifest)
-  log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
+  if (debuggerPort) {
+    log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}`)
+  }
 
   if (hasServiceOnBuilders(manifest)) {
     await checkAppStatus(manifest)

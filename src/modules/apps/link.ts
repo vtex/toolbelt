@@ -11,6 +11,7 @@ import lint from './lint'
 
 import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
+import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
@@ -21,7 +22,6 @@ import startDebuggerTunnel from './debugger'
 import { getIgnoredPaths, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
-import { CommandError } from '../../errors';
 
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
@@ -160,7 +160,9 @@ export default async (options) => {
     }
     debuggerStarted = true
     const debuggerPort = await startDebuggerTunnel(manifest)
-    log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
+    if (debuggerPort) {
+      log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
+    }
   }
 
   log.info(`Linking app ${appId}`)
@@ -169,7 +171,7 @@ export default async (options) => {
   try {
     const buildTrigger = performInitialLink.bind(this, appId, builder)
     const [subject] = appId.split('@')
-    const { unlisten } = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }) 
+    const { unlisten } = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError })
     unlistenBuild = unlisten
   } catch (e) {
     if (e.response) {

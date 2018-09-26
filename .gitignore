@@ -9,3 +9,4 @@ temp/
 yarn-error.log
 .DS_Store
 scripts/errors.json
+package-lock.json

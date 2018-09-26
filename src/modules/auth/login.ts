@@ -77,7 +77,7 @@ const authAndSave = async (account, workspace, optionWorkspace): Promise<{ login
 
 const isStagingRegionEnabled = async (): Promise<boolean> => {
   try {
-    let resp = await axios.get(`http://router.${conf.Region.Staging}.vtex.io/_production`)
+    const resp = await axios.get(`http://router.${conf.Region.Staging}.vtex.io/_production`)
     return resp.data
   } catch {
     return false

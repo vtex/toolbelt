@@ -35,7 +35,7 @@ export const parseManifest = (content: string): Manifest => {
   }
 }
 
-export const validateAppManifest = (manifest: Manifest) => {
+export const validateAppManifest = (manifest: any) => {
   const vendorRegex = new RegExp(`^${vendorPattern}$`)
   const nameRegex = new RegExp(`^${namePattern}$`)
   const versionRegex = new RegExp(`^${versionPattern}$`)

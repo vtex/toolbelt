@@ -27,7 +27,7 @@ const sameVersion = ({ version, latest }: Manifest) => version === latest
 
 const extractAppLocator = pipe(prop('app'), parseLocator)
 
-const isLinked = propSatisfies(contains('+build'), 'version')
+const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')
 
 const updateVersion = (app) => {
   app.version = app.latest
@@ -37,7 +37,7 @@ const updateVersion = (app) => {
 export default async () => {
   const spinner = ora('Getting available updates').start()
   const { data } = await listApps()
-  const installedApps = reject(isLinked, map(extractAppLocator, data))
+  const installedApps = reject<Manifest>(isLinked, map(extractAppLocator, data))
   const withLatest = await Bluebird.all(map(async (app) => {
     app.latest = await appLatestVersion(`${app.vendor}.${app.name}`)
     return app

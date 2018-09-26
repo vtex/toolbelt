@@ -29,7 +29,7 @@ class LegacyBuilder {
     })
   }
 
-  public prePublishApp = (files: File[], _tag: string) => {
+  public prePublishApp = (files: File[]) => {
     if (!(files[0] && files[0].path && files[0].content)) {
       throw new Error('Argument files must be an array of {path, content}, where content can be a String, a Buffer or a ReadableStream.')
     }
@@ -55,9 +55,9 @@ interface File {
 export const legacyPublisher = (account: string, workspace: string = 'master') => {
   const context = { account, workspace }
 
-  const prePublish = async (files, tag, unlistenBuild) => {
+  const prePublish = async (files, _, unlistenBuild) => {
     const builder = new LegacyBuilder(context)
-    const response = await builder.prePublishApp(files, tag)
+    const response = await builder.prePublishApp(files)
     if (response.status === 200) {
       unlistenBuild(response)
       return

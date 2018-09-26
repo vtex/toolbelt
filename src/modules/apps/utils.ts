@@ -62,7 +62,7 @@ export const validateAppAction = async (operation: string, app?) => {
 export const wildVersionByMajor = compose<string, string[], string, string>(concat(__, '.x'), head, split('.'))
 
 export const extractVersionFromId =
-  compose<VersionByApp, string, string[], string>(last, split('@'))
+  compose<string, string[], string>(last, split('@'))
 
 export const pickLatestVersion = (versions: string[]): string => {
   const start = head(versions)
