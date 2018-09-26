@@ -90,8 +90,11 @@ function webSocketTunnelHandler(host, path: string, server: net.Server): (socket
   }
 }
 
-export default function startDebuggerTunnel(manifest: Manifest, port: number = DEFAULT_DEBUGGER_PORT): Promise<number> {
-  const { name, vendor, version } = manifest
+export default function startDebuggerTunnel(manifest: Manifest, port: number = DEFAULT_DEBUGGER_PORT): Promise<number | void> {
+  const { name, vendor, version, builders: {node} } = manifest
+  if (!node) {
+    return
+  }
   const majorRange = toMajorRange(version)
   const host = `${name}.${vendor}.${region()}.vtex.io`
   const path = `/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
