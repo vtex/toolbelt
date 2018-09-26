@@ -29,7 +29,7 @@ class LegacyBuilder {
     })
   }
 
-  public prePublishApp = (files: File[], _tag: string) => {
+  public prePublishApp = (files: File[]) => {
     if (!(files[0] && files[0].path && files[0].content)) {
       throw new Error('Argument files must be an array of {path, content}, where content can be a String, a Buffer or a ReadableStream.')
     }

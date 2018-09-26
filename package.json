@@ -97,7 +97,7 @@
     "@types/fs-extra": "^5.0.1",
     "@types/inquirer": "^0.0.42",
     "@types/node": "^10.1.1",
-    "@types/ramda": "types/npm-ramda",
+    "@types/ramda": "types/npm-ramda#dist",
     "@types/semver-diff": "^2.1.0",
     "@types/winston": "^2.2.0",
     "ava": "^0.25.0",

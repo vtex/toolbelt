@@ -11,6 +11,7 @@ import lint from './lint'
 
 import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
+import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
@@ -21,7 +22,6 @@ import startDebuggerTunnel from './debugger'
 import { getIgnoredPaths, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
-import { CommandError } from '../../errors';
 
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')

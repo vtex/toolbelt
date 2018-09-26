@@ -11,8 +11,8 @@ export default () => {
   log.debug('Listing workspaces')
   const table = new Table({ head: ['Name', 'Weight', 'Production'] })
   return workspaces.list(account)
-    .then((workspaces: WorkspaceResponse[]) =>
-      workspaces.forEach(workspace => {
+    .then((workspaceArray: WorkspaceResponse[]) =>
+      workspaceArray.forEach(workspace => {
         const name = workspace.name === currentWorkspace
           ? chalk.green(`* ${workspace.name}`) : workspace.name
         const weight = workspace.weight
