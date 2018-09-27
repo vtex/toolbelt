@@ -4,7 +4,7 @@ import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
-import { resolve as resolvePath, sep } from 'path'
+import { resolve as resolvePath, sep, join } from 'path'
 import { map } from 'ramda'
 import { createInterface } from 'readline'
 import lint from './lint'
@@ -19,7 +19,7 @@ import { getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles } from './file'
+import { getIgnoredPaths, listLocalFiles, getLinkedDependenciesPaths } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
 
@@ -41,7 +41,7 @@ const warnAndLinkFromStart = (appId: string, builder: Builder) => {
   return null
 }
 
-const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
@@ -63,7 +63,11 @@ const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
       .catch(onInitialLinkRequired)
   }, 10)
 
-  const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
+  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
+  const linkedDependenciesDirectories = await getLinkedDependenciesPaths(root)
+  const linkedDependencyPatterns = map(path => join(path, '**'), linkedDependenciesDirectories)
+
+  const watcher = chokidar.watch([...defaultPatterns, ...linkedDependencyPatterns], {
     atomic: true,
     awaitWriteFinish: {
       stabilityThreshold,

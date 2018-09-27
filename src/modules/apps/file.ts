@@ -3,6 +3,7 @@ import * as chokidar from 'chokidar'
 import { createReadStream, readFileSync, stat } from 'fs-extra'
 import * as glob from 'globby'
 import * as path from 'path'
+import { map } from 'ramda'
 
 import log from '../../logger'
 
@@ -27,6 +28,11 @@ const safeFolder = folder => {
     log.warn('Using unknown service', folder)
   }
   return folder ? './' + folder + '/**' : '*/**'
+}
+
+export const getLinkedDependenciesPaths = async (root : string) => {
+  const linkedPackagePaths = await glob([".linked_deps/**/package.json", "!.*/**/node_modules/**"], {cwd : root})
+  return map(packageJson => path.dirname(packageJson), linkedPackagePaths)
 }
 
 export const getIgnoredPaths = (root: string): string[] => {
