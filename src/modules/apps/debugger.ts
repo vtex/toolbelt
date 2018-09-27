@@ -91,8 +91,9 @@ function webSocketTunnelHandler(host, path: string, server: net.Server): (socket
 }
 
 export default function startDebuggerTunnel(manifest: Manifest, port: number = DEFAULT_DEBUGGER_PORT): Promise<number | void> {
-  const { name, vendor, version, builders: {node} } = manifest
-  if (!node) {
+  const { name, vendor, version, builders } = manifest
+  const { node, 'service-js': serviceJs } = builders
+  if (!node && !serviceJs) {
     return
   }
   const majorRange = toMajorRange(version)
