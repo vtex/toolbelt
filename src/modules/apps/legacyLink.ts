@@ -90,7 +90,6 @@ export default async (options) => {
   log.info(`Sending ${batch.length} file` + (batch.length > 1 ? 's' : ''))
   await link(majorLocator, batch)
   log.info(`${batch.length} file` + (batch.length > 1 ? 's' : '') + ' sent')
-  await watch(root, sendChanges, folder)
 
   const debuggerPort = await startDebuggerTunnel(manifest)
   if (debuggerPort) {
@@ -100,6 +99,8 @@ export default async (options) => {
   if (hasServiceOnBuilders(manifest)) {
     await checkAppStatus(manifest)
   }
+
+  await watch(root, sendChanges, folder)
 
   createInterface({ input: process.stdin, output: process.stdout })
     .on('SIGINT', () => {
