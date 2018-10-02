@@ -4,10 +4,11 @@ import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
-import { resolve as resolvePath, sep, join } from 'path'
-import { map } from 'ramda'
+import { resolve as resolvePath, sep, join, relative } from 'path'
+import { map, pipe, concat } from 'ramda'
 import { createInterface } from 'readline'
 import lint from './lint'
+import { Readable } from 'stream'
 
 import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
@@ -19,7 +20,7 @@ import { getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles, getLinkedDependenciesPaths } from './file'
+import { getIgnoredPaths, listLocalFiles, getLinkedDependenciesPaths, createLinkedDepsJSON, listLinkedModules, getLinkFolder } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
 
@@ -30,10 +31,6 @@ const stabilityThreshold = process.platform === 'win32' ? 200 : 50
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 
-const pathToChange = (path: string, remove?: boolean): Change => ({
-  content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'),
-  path: path.split(sep).join('/'),
-})
 
 const warnAndLinkFromStart = (appId: string, builder: Builder) => {
   log.warn('Initial link requested by builder')
@@ -52,6 +49,12 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
     throw e
   }
 
+  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
+  const linkedDependenciesDirectories = await getLinkedDependenciesPaths()
+  const linkedDependencyPatterns = map(path => join(path, '**'), linkedDependenciesDirectories)
+  const linkFolder = await getLinkFolder()
+  const linkedPrefix = relative(root, linkFolder)
+
   const queueChange = (path: string, remove?: boolean) => {
     console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
     changeQueue.push(pathToChange(path, remove))
@@ -63,9 +66,13 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
       .catch(onInitialLinkRequired)
   }, 10)
 
-  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
-  const linkedDependenciesDirectories = await getLinkedDependenciesPaths(root)
-  const linkedDependencyPatterns = map(path => join(path, '**'), linkedDependenciesDirectories)
+  const pathToChange = (path: string, remove?: boolean): Change => ({
+    content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'), path : pathModifier(path)
+  })
+
+  const pathModifier = pipe(
+    path => path.startsWith(linkedPrefix) ? path.replace(linkedPrefix, '.linked_deps') : path,
+    path => path.split(sep).join('/'))
 
   const watcher = chokidar.watch([...defaultPatterns, ...linkedDependencyPatterns], {
     atomic: true,
@@ -78,6 +85,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
     persistent: true,
     usePolling: true,
   })
+
   return new Promise((resolve, reject) => {
     watcher
       .on('add', (file, { size }) => size > 0 ? queueChange(file) : null)
@@ -92,6 +100,20 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
   })
 }
 
+async function linkedDepsConfigStream() : Promise<BatchStream> {
+  const stream = new Readable
+  stream.push(await createLinkedDepsJSON(root))
+  stream.push(null) // EOF
+  return { path: '.linked_deps/config', content: stream }
+}
+
+async function getLinkedFiles() : Promise<BatchStream[]> {
+  const [linkedModulesPaths, linkFolder] = await Promise.all([listLinkedModules(), getLinkFolder()])
+  const linkedModulesFiles = map(pathToFileObject(linkFolder, '.linked_deps'), linkedModulesPaths)
+  linkedModulesFiles.push(await linkedDepsConfigStream())
+  return linkedModulesFiles
+}
+
 const performInitialLink = async (appId: string, builder: Builder): Promise<void> => {
   const stickyHint = await getMostAvailableHost(
     appId,
@@ -104,12 +126,17 @@ const performInitialLink = async (appId: string, builder: Builder): Promise<void
     stickyHint,
   }
 
-  const paths = await listLocalFiles(root)
-  const filesWithContent = map(pathToFileObject(root), paths)
+  const [localFiles, linkedFiles] = 
+    await Promise.all([
+      listLocalFiles(root).then(map(pathToFileObject(root))) as Promise<BatchStream[]>,
+      getLinkedFiles()
+    ])
+  const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
 
-  log.debug('Sending files:')
-  paths.forEach(p => log.debug(p))
-  log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
+  const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from node modules linked by yarn)` : ''
+  log.info(`Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`)
+  log.debug('Sending files')
+  filesWithContent.forEach(p => log.debug(p.path))
 
   try {
     const { code } = await builder.linkApp(appId, filesWithContent, linkOptions)
