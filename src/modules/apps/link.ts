@@ -64,7 +64,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
   const sendChanges = debounce(() => {
     builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
       .catch(onInitialLinkRequired)
-  }, 10)
+  }, 300)
 
   const pathToChange = (path: string, remove?: boolean): Change => ({
     content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'), path : pathModifier(path)
