@@ -83,7 +83,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
     ignoreInitial: true,
     ignored: getIgnoredPaths(root),
     persistent: true,
-    usePolling: true,
+    usePolling: process.platform === 'win32',
   })
 
   return new Promise((resolve, reject) => {
