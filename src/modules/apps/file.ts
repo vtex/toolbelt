@@ -4,10 +4,12 @@ import * as chokidar from 'chokidar'
 import { createReadStream, readFileSync, stat, lstat } from 'fs-extra'
 import * as glob from 'globby'
 import * as path from 'path'
-import { map, filter, memoizeWith, identity } from 'ramda'
+import { map, filter, memoizeWith, identity, toPairs } from 'ramda'
 import {join} from 'path'
 
 import log from '../../logger'
+import { pathToFileObject } from './utils'
+import { Readable } from 'stream'
 
 type AnyFunction = (...args: any[]) => any
 
@@ -30,12 +32,6 @@ const safeFolder = folder => {
     log.warn('Using unknown service', folder)
   }
   return folder ? './' + folder + '/**' : '*/**'
-}
-
-export const getLinkedDependenciesPaths = async () : Promise<string[]> => {
-  const root = await getLinkFolder()
-  const linkedPackagePaths = await glob(["**/package.json", "!**/node_modules/**"], {cwd : root})
-  return map(packageJson => join(root, path.dirname(packageJson)), linkedPackagePaths)
 }
 
 export const getLinkFolder = memoizeWith(identity, async () => {
@@ -69,26 +65,75 @@ const mapAsync = (f) => (data) => Promise.map(data, f)
 async function getLinkedDependencies(root: string): Promise<string[]> {
   const modulesDir = join(root, 'node_modules')
   const keepSymlinks = async (module: string) =>
-    lstat(join(modulesDir, module)).catch(() => null).then(stat => stat != null && stat.isSymbolicLink() ? module : null)
+    lstat(join(modulesDir, module.split('/').join(path.sep))).catch(() => null).then(stat => stat != null && stat.isSymbolicLink() ? module : null)
   const mods = await getNodeModules(modulesDir)
     .then(mapAsync(keepSymlinks))
     .then(paths => filter(path => path != null, paths))
   return mods
 }
 
-export const createLinkedDepsJSON = async (root: string): Promise<string> => {
-  const linkedDepsObj = { app: {}, linkedPackages: {} }
-  const linkFolder = await getLinkFolder()
+export async function createLinkedDepsConfig(root: string, linkFolder: string): Promise<any> {
+  const appModules = {}, linkedPackages = {}
 
   const appsPromise = glob([join('*', 'package.json')], { cwd: root })
     .then(map(path.dirname))
-    .then(mapAsync(async module => linkedDepsObj.app[module] = await getLinkedDependencies(join(root, module))))
+    .then(mapAsync(async module => appModules[module] = await getLinkedDependencies(join(root, module.split('/').join(path.sep)))))
 
   const linkedPromise = getNodeModules(linkFolder)
-    .then(mapAsync(async module => linkedDepsObj.linkedPackages[module] = await getLinkedDependencies(join(linkFolder, module))))
+    .then(mapAsync(async module => linkedPackages[module] = await getLinkedDependencies(join(linkFolder, module.split('/').join(path.sep)))))
 
   await Promise.all([appsPromise, linkedPromise])
-  return JSON.stringify(linkedDepsObj)
+  return { app: appModules, linkedPackages }
+}
+
+function optimizeLinkedDepsConfig(localConfig: any, usedDeps: Set<string>) {
+  const { app: appModules, linkedPackages } = localConfig
+  const linkedDepsConfig = { app: appModules, linkedPackages: {} }
+  for (const [module, deps] of toPairs(linkedPackages)) if (usedDeps.has(module))
+    linkedDepsConfig.linkedPackages[module] = deps
+  return linkedDepsConfig
+}
+
+export function getUsedDependencies(linkedDepsConfig: any): string[] {
+  const { app: appModules, linkedPackages } = linkedDepsConfig
+  const used = new Set(), queue = []
+  function checkDeps(deps: string[]) {
+    for (const dep of deps) {
+      if (used.has(dep)) continue
+      queue.push(dep)
+      used.add(dep)
+    }
+  }
+
+  for (const [, deps] of toPairs(appModules)) checkDeps(deps)
+  while (queue.length > 0) {
+    const module = queue.pop()
+    checkDeps(linkedPackages[module] || [])
+  }
+  return [...used]
+}
+
+export async function getLinkedDepsDirs(appSrc : string, linkFolder : string): Promise<string[]> {
+  const localConfig = await createLinkedDepsConfig(appSrc, linkFolder)
+  const usedDeps = getUsedDependencies(localConfig)
+  return map(module => join(linkFolder, module.split('/').join(path.sep)), [...usedDeps])
+}
+
+export async function getLinkedFiles(localConfig: any, linkFolder: string, usedDeps : string[]): Promise<BatchStream[]> {
+  const linkedDepsConfig = optimizeLinkedDepsConfig(localConfig, new Set(usedDeps))
+
+  const linkedModulesFiles = await listLinkedFiles(linkFolder, [...usedDeps])
+    .then(paths => map(pathToFileObject(linkFolder, '.linked_deps'), paths)) as BatchStream[]
+
+  function jsonToStream(path: string, content: any): BatchStream {
+    const stream = new Readable
+    stream.push(JSON.stringify(content))
+    stream.push(null) // EOF
+    return { path, content: stream }
+  }
+
+  linkedModulesFiles.push(jsonToStream('.linked_deps/config', linkedDepsConfig))
+  return linkedModulesFiles
 }
 
 export const getIgnoredPaths = (root: string): string[] => {
@@ -104,9 +149,8 @@ export const getIgnoredPaths = (root: string): string[] => {
   }
 }
 
-export const listLinkedModules = async (): Promise<string[]> => {
-  const linkFolder = await getLinkFolder()
-  const modules = await getNodeModules(linkFolder).then(map(module => join(module, '**')))
+export const listLinkedFiles = async (linkFolder : string, usedDeps : string[]): Promise<string[]> => {
+  const modules = map(dep => join(dep.split('/').join(path.sep), '**'), usedDeps)
   return await glob(modules, { cwd: linkFolder, ignore: getIgnoredPaths(linkFolder), nodir: true, })
 }
 

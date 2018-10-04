@@ -8,7 +8,6 @@ import { resolve as resolvePath, sep, join, relative } from 'path'
 import { map, pipe, concat } from 'ramda'
 import { createInterface } from 'readline'
 import lint from './lint'
-import { Readable } from 'stream'
 
 import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
@@ -20,7 +19,7 @@ import { getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles, getLinkedDependenciesPaths, createLinkedDepsJSON, listLinkedModules, getLinkFolder } from './file'
+import { getIgnoredPaths, listLocalFiles, getLinkedDepsDirs, getLinkFolder, getLinkedFiles, getUsedDependencies, createLinkedDepsConfig } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
 
@@ -49,11 +48,12 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
     throw e
   }
 
-  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
-  const linkedDependenciesDirectories = await getLinkedDependenciesPaths()
-  const linkedDependencyPatterns = map(path => join(path, '**'), linkedDependenciesDirectories)
   const linkFolder = await getLinkFolder()
   const linkedPrefix = relative(root, linkFolder)
+
+  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
+  const linkedDepsPatterns = await getLinkedDepsDirs(root, linkFolder)
+    .then(map(path => join(path, '**')))
 
   const queueChange = (path: string, remove?: boolean) => {
     console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
@@ -74,7 +74,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
     path => path.startsWith(linkedPrefix) ? path.replace(linkedPrefix, '.linked_deps') : path,
     path => path.split(sep).join('/'))
 
-  const watcher = chokidar.watch([...defaultPatterns, ...linkedDependencyPatterns], {
+  const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
     atomic: true,
     awaitWriteFinish: {
       stabilityThreshold,
@@ -100,20 +100,6 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
   })
 }
 
-async function linkedDepsConfigStream() : Promise<BatchStream> {
-  const stream = new Readable
-  stream.push(await createLinkedDepsJSON(root))
-  stream.push(null) // EOF
-  return { path: '.linked_deps/config', content: stream }
-}
-
-async function getLinkedFiles() : Promise<BatchStream[]> {
-  const [linkedModulesPaths, linkFolder] = await Promise.all([listLinkedModules(), getLinkFolder()])
-  const linkedModulesFiles = map(pathToFileObject(linkFolder, '.linked_deps'), linkedModulesPaths)
-  linkedModulesFiles.push(await linkedDepsConfigStream())
-  return linkedModulesFiles
-}
-
 const performInitialLink = async (appId: string, builder: Builder): Promise<void> => {
   const stickyHint = await getMostAvailableHost(
     appId,
@@ -126,14 +112,24 @@ const performInitialLink = async (appId: string, builder: Builder): Promise<void
     stickyHint,
   }
 
+  const linkFolder = await getLinkFolder()
+  const linkedDepsConfig = await createLinkedDepsConfig(root, linkFolder)
+  const usedDeps = getUsedDependencies(linkedDepsConfig)
+  if (usedDeps.length) {
+    const plural = usedDeps.length > 1
+    log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
+    for(const dep of usedDeps) log.info(dep)
+    log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your linked app, please unlink ${plural ? 'them' : 'it'}`)
+  }
+
   const [localFiles, linkedFiles] = 
     await Promise.all([
       listLocalFiles(root).then(map(pathToFileObject(root))) as Promise<BatchStream[]>,
-      getLinkedFiles()
+      getLinkedFiles(linkedDepsConfig, linkFolder, usedDeps)
     ])
   const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
 
-  const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from node modules linked by yarn)` : ''
+  const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
   log.info(`Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`)
   log.debug('Sending files')
   filesWithContent.forEach(p => log.debug(p.path))
