@@ -87,7 +87,7 @@
     "unzip-stream": "^0.3.0",
     "update-notifier": "^2.3.0",
     "winston": "^2.4.0",
-    "ws": "^6.0.0"
+    "ws": "^6.0.0",
     "yarn": "^1.10.1"
   },
   "preferGlobal": true,
