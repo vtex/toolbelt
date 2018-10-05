@@ -31,19 +31,19 @@ const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 
 
-const warnAndLinkFromStart = (appId: string, builder: Builder) => {
+const warnAndLinkFromStart = (appId: string, builder: Builder, extraData : any = {}) => {
   log.warn('Initial link requested by builder')
-  performInitialLink(appId, builder)
+  performInitialLink(appId, builder, extraData)
   return null
 }
 
-const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder, extraData : any): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
     if (data && data.code && data.code === 'initial_link_required') {
-      return warnAndLinkFromStart(appId, builder)
+      return warnAndLinkFromStart(appId, builder, extraData)
     }
     throw e
   }
@@ -52,7 +52,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
   const linkedPrefix = relative(root, linkFolder)
 
   const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
-  const linkedDepsPatterns = await getLinkedDepsDirs(root, linkFolder)
+  const linkedDepsPatterns = await getLinkedDepsDirs(linkFolder, extraData.usedDeps)
     .then(map(path => join(path, '**')))
 
   const queueChange = (path: string, remove?: boolean) => {
@@ -100,21 +100,17 @@ const watchAndSendChanges = async (appId: string, builder: Builder): Promise<any
   })
 }
 
-const performInitialLink = async (appId: string, builder: Builder): Promise<void> => {
-  const stickyHint = await getMostAvailableHost(
-    appId,
-    builder,
-    N_HOSTS,
-    AVAILABILITY_TIMEOUT
-  )
-  const linkOptions = {
-    sticky: true,
-    stickyHint,
-  }
-
+const performInitialLink = async (appId: string, builder: Builder, extraData : any): Promise<void> => {
   const linkFolder = await getLinkFolder()
-  const linkedDepsConfig = await createLinkedDepsConfig(root, linkFolder)
+  const [linkedDepsConfig, stickyHint] = await Promise.all([
+    createLinkedDepsConfig(root, linkFolder),
+    getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
+  ])
+
+  const linkOptions = { sticky: true, stickyHint }
   const usedDeps = getUsedDependencies(linkedDepsConfig)
+  extraData.usedDeps = usedDeps
+
   if (usedDeps.length) {
     const plural = usedDeps.length > 1
     log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
@@ -195,8 +191,9 @@ export default async (options) => {
   log.info(`Linking app ${appId}`)
 
   let unlistenBuild
+  let extraData = {}
   try {
-    const buildTrigger = performInitialLink.bind(this, appId, builder)
+    const buildTrigger = performInitialLink.bind(this, appId, builder, extraData)
     const [subject] = appId.split('@')
     const { unlisten } = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError })
     unlistenBuild = unlisten
@@ -224,5 +221,5 @@ export default async (options) => {
       process.exit()
     })
 
-  await watchAndSendChanges(appId, builder)
+  await watchAndSendChanges(appId, builder, extraData)
 }

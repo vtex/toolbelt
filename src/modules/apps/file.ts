@@ -72,12 +72,12 @@ async function getLinkedDependencies(root: string): Promise<string[]> {
   return mods
 }
 
-export async function createLinkedDepsConfig(root: string, linkFolder: string): Promise<any> {
+export async function createLinkedDepsConfig(appSrc: string, linkFolder: string): Promise<any> {
   const appModules = {}, linkedPackages = {}
 
-  const appsPromise = glob([join('*', 'package.json')], { cwd: root })
+  const appsPromise = glob([join('*', 'package.json')], { cwd: appSrc })
     .then(map(path.dirname))
-    .then(mapAsync(async module => appModules[module] = await getLinkedDependencies(join(root, module.split('/').join(path.sep)))))
+    .then(mapAsync(async module => appModules[module] = await getLinkedDependencies(join(appSrc, module.split('/').join(path.sep)))))
 
   const linkedPromise = getNodeModules(linkFolder)
     .then(mapAsync(async module => linkedPackages[module] = await getLinkedDependencies(join(linkFolder, module.split('/').join(path.sep)))))
@@ -113,16 +113,15 @@ export function getUsedDependencies(linkedDepsConfig: any): string[] {
   return [...used]
 }
 
-export async function getLinkedDepsDirs(appSrc : string, linkFolder : string): Promise<string[]> {
-  const localConfig = await createLinkedDepsConfig(appSrc, linkFolder)
-  const usedDeps = getUsedDependencies(localConfig)
-  return map(module => join(linkFolder, module.split('/').join(path.sep)), [...usedDeps])
+export async function getLinkedDepsDirs(linkFolder : string, usedDeps : string[]): Promise<string[]> {
+  return map(module => join(linkFolder, module.split('/').join(path.sep)), usedDeps)
 }
 
 export async function getLinkedFiles(localConfig: any, linkFolder: string, usedDeps : string[]): Promise<BatchStream[]> {
   const linkedDepsConfig = optimizeLinkedDepsConfig(localConfig, new Set(usedDeps))
 
-  const linkedModulesFiles = await listLinkedFiles(linkFolder, [...usedDeps])
+  const linkedModules = map(dep => join(dep.split('/').join(path.sep), '**'), usedDeps)
+  const linkedModulesFiles = await glob(linkedModules, { cwd: linkFolder, ignore: getIgnoredPaths(linkFolder), nodir: true, })
     .then(paths => map(pathToFileObject(linkFolder, '.linked_deps'), paths)) as BatchStream[]
 
   function jsonToStream(path: string, content: any): BatchStream {
@@ -147,11 +146,6 @@ export const getIgnoredPaths = (root: string): string[] => {
   } catch (e) {
     return defaultIgnored
   }
-}
-
-export const listLinkedFiles = async (linkFolder : string, usedDeps : string[]): Promise<string[]> => {
-  const modules = map(dep => join(dep.split('/').join(path.sep), '**'), usedDeps)
-  return await glob(modules, { cwd: linkFolder, ignore: getIgnoredPaths(linkFolder), nodir: true, })
 }
 
 export const listLocalFiles = (root: string, folder?: string): Promise<string[]> =>
