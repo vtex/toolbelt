@@ -1,10 +1,10 @@
 import {fork} from 'child-process-es6-promise'
 import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
-import { createReadStream, readFileSync, stat, lstat } from 'fs-extra'
+import { createReadStream, readFileSync, stat, lstat, readdir } from 'fs-extra'
 import * as glob from 'globby'
 import * as path from 'path'
-import { map, filter, memoizeWith, identity, toPairs } from 'ramda'
+import { map, filter, memoizeWith, identity, toPairs, partition, unnest, fromPairs } from 'ramda'
 import {join} from 'path'
 
 import log from '../../logger'
@@ -54,35 +54,52 @@ export const getLinkFolder = memoizeWith(identity, async () => {
   return linkFolder
 }) as () => Promise<string>
 
-async function getNodeModules(root: string): Promise<string[]> {
-  const packages = join('*', 'package.json')
-  const namespacePackages = join('@*', '*', 'package.json')
-  return await glob([packages, namespacePackages], { cwd: root }).then(map(path.dirname))
-}
-
 const mapAsync = (f) => (data) => Promise.map(data, f)
 
-async function getLinkedDependencies(root: string): Promise<string[]> {
-  const modulesDir = join(root, 'node_modules')
-  const keepSymlinks = async (module: string) =>
-    lstat(join(modulesDir, module.split('/').join(path.sep))).catch(() => null).then(stat => stat != null && stat.isSymbolicLink() ? module : null)
-  const mods = await getNodeModules(modulesDir)
-    .then(mapAsync(keepSymlinks))
-    .then(paths => filter(path => path != null, paths))
-  return mods
+async function getDirs(root: string, predicate: (string, Stats) => string): Promise<string[]> {
+  const nullInvalidPaths = async (path: string) => await lstat(join(root, path))
+    .catch(() => null)
+    .then(stat => predicate(path, stat) ? path : null)
+  return await readdir(root)
+    .then(mapAsync(nullInvalidPaths))
+    .then(dirs => filter(dir => dir != null, dirs))
+}
+
+async function getNodeModules(root: string, onlyLinks : boolean): Promise<string[]> {
+  const isNamespaceOrLink = (path, stat) => stat != null && (path.startsWith('@') && stat.isDirectory() || stat.isSymbolicLink())
+  const isDirOrLink = (_, stat) => stat != null && (stat.isDirectory() || stat.isSymbolicLink())
+  const isLink = (_, stat) => stat != null && stat.isSymbolicLink()
+
+  const [namespaces, modules] = await getDirs(root, onlyLinks ? isNamespaceOrLink : isDirOrLink)
+    .then(partition(dir => dir.startsWith('@')))
+    .catch(() => [[], []])
+
+  const namesepaceModules = await Promise.map(
+    namespaces,
+    async namespace =>
+      await getDirs(join(root, namespace), onlyLinks ? isLink : isDirOrLink)
+        .then(map(dir => [namespace, dir].join('/'))))
+    .then(unnest) as string[]
+
+  return [...modules, ...namesepaceModules]
 }
 
 export async function createLinkedDepsConfig(appSrc: string, linkFolder: string): Promise<any> {
-  const appModules = {}, linkedPackages = {}
+  const dependenciesPath =
+    (root, module) => join(root, module.split('/').join(path.sep), 'node_modules')
+  const moduleToModuleAndDeps = root =>
+    async module => [module, await getNodeModules(dependenciesPath(root, module), true)]
+
+  const linkedPromise = getNodeModules(linkFolder, false)
+    .then(mapAsync(moduleToModuleAndDeps(linkFolder)))
+    .then(fromPairs)
 
   const appsPromise = glob([join('*', 'package.json')], { cwd: appSrc })
     .then(map(path.dirname))
-    .then(mapAsync(async module => appModules[module] = await getLinkedDependencies(join(appSrc, module.split('/').join(path.sep)))))
+    .then(mapAsync(moduleToModuleAndDeps(appSrc)))
+    .then(fromPairs)
 
-  const linkedPromise = getNodeModules(linkFolder)
-    .then(mapAsync(async module => linkedPackages[module] = await getLinkedDependencies(join(linkFolder, module.split('/').join(path.sep)))))
-
-  await Promise.all([appsPromise, linkedPromise])
+  const [appModules, linkedPackages] = await Promise.all([appsPromise, linkedPromise])
   return { app: appModules, linkedPackages }
 }
 
