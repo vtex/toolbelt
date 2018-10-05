@@ -118,8 +118,9 @@ export async function getLinkedDepsDirs(linkFolder : string, usedDeps : string[]
 }
 
 export async function getLinkedFiles(localConfig: any, linkFolder: string, usedDeps : string[]): Promise<BatchStream[]> {
-  const linkedDepsConfig = optimizeLinkedDepsConfig(localConfig, new Set(usedDeps))
+  if (usedDeps.length === 0) return []
 
+  const linkedDepsConfig = optimizeLinkedDepsConfig(localConfig, new Set(usedDeps))
   const linkedModules = map(dep => join(dep.split('/').join(path.sep), '**'), usedDeps)
   const linkedModulesFiles = await glob(linkedModules, { cwd: linkFolder, ignore: getIgnoredPaths(linkFolder), nodir: true, })
     .then(paths => map(pathToFileObject(linkFolder, '.linked_deps'), paths)) as BatchStream[]
