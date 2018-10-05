@@ -48,6 +48,7 @@ export const listLocalFiles = (root: string, folder?: string): Promise<string[]>
       follow: true,
       ignore: getIgnoredPaths(root),
       nodir: true,
+      dot: true,
     }),
   )
     .then((files: string[]) =>
