@@ -132,7 +132,7 @@ export async function getLinkedFiles(localConfig: any, linkFolder: string, usedD
     return { path, content: stream }
   }
 
-  linkedModulesFiles.push(jsonToStream('.linked_deps/config', linkedDepsConfig))
+  linkedModulesFiles.push(jsonToStream(join('.linked_deps', '.config'), linkedDepsConfig))
   return linkedModulesFiles
 }
 
