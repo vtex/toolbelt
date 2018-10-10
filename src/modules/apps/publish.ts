@@ -1,5 +1,4 @@
 import * as Bluebird from 'bluebird'
-import * as ora from 'ora'
 import { map, prop } from 'ramda'
 
 import { BuildResult } from '@vtex/api'
@@ -11,7 +10,7 @@ import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
-import log from '../../logger'
+import log, { spinner } from '../../logger'
 import { getManifest } from '../../manifest'
 import { logAll } from '../../sse'
 import switchAccount from '../auth/switch'
@@ -106,8 +105,9 @@ const publisher = (workspace: string = 'master') => {
       await legacyPublishApp(path, pubTag, manifest).finally(unlisten)
     } else {
       const appId = toAppLocator(manifest)
-      const oraMessage = ora(`Publishing ${appId} ...`)
-      const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
+      if (log.level === 'debug') spinner.info(`Publishing ${appId} ...`)
+      else spinner.start(`Publishing ${appId} ...`)
+
       try {
         const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, builder), { waitCompletion: true, context })
         if (response.code !== 'build.accepted') {

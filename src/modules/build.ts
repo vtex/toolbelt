@@ -1,6 +1,6 @@
 import { currentContext } from '../conf'
 import { BuildFailError } from '../errors'
-import log from '../logger'
+import log, {spinner} from '../logger'
 import { logAll, onEvent } from '../sse'
 
 interface ListeningOptions {
@@ -82,6 +82,7 @@ export const listenBuild = async <T = void>(appOrKey: string, triggerBuild: Buil
   const listenPromise = listen(appOrKey, options)
   try {
     const response = await triggerBuild()
+    spinner.start('Building app')
     const unlisten = await listenPromise
     return { response, unlisten }
   } catch (e) {

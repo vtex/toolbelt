@@ -3,7 +3,6 @@ import chalk from 'chalk'
 import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
-import * as moment from 'moment'
 import { resolve as resolvePath, sep } from 'path'
 import { map } from 'ramda'
 import { createInterface } from 'readline'
@@ -14,7 +13,7 @@ import { getAccount, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
-import log from '../../logger'
+import log, { spinner } from '../../logger'
 import { getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
@@ -53,13 +52,20 @@ const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
   }
 
   const queueChange = (path: string, remove?: boolean) => {
-    console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
     changeQueue.push(pathToChange(path, remove))
     sendChanges()
   }
 
   const sendChanges = debounce(() => {
-    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
+    const fileChanges = changeQueue.splice(0, changeQueue.length)
+    const updates = fileChanges.map(
+      ({ content, path }) => `${content == null ? DELETE_SIGN : UPDATE_SIGN} - ${path}`
+    )
+    const updateMessage = fileChanges.length > 1
+      ? ['Sent patch on files:', ...updates].join('\n\t')
+      : `Sent patch on ${fileChanges[0].content == null ? 'removed' : 'updated'} file ${fileChanges[0].path} `
+    log.info(updateMessage)
+    builder.relinkApp(appId, fileChanges)
       .catch(onInitialLinkRequired)
   }, 10)
 
@@ -89,6 +95,9 @@ const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
 }
 
 const performInitialLink = async (appId: string, builder: Builder): Promise<void> => {
+  spinner.start('Packing and sending files')
+  const linkStart = process.hrtime()
+
   const stickyHint = await getMostAvailableHost(
     appId,
     builder,
@@ -105,24 +114,33 @@ const performInitialLink = async (appId: string, builder: Builder): Promise<void
 
   log.debug('Sending files:')
   paths.forEach(p => log.debug(p))
-  log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
+  log.info(`Found ${paths.length} file` + (paths.length > 1 ? 's' : ''))
 
-  try {
-    const { code } = await builder.linkApp(appId, filesWithContent, linkOptions)
-    if (code !== 'build.accepted') {
-      throw new Error('Please, update your builder-hub to the latest version!')
-    }
-  } catch (e) {
-    const data = e.response && e.response.data
-    if (data && data.code && data.code === 'build_in_progress') {
-      log.warn(`Build for ${appId} is already in progress`)
-    } else {
-      throw e
-    }
+  function formatElapsedTime(elapsed: [number, number]): string {
+    return `${elapsed[0] ? `${elapsed[0]}s ` : ''}${(elapsed[1] / 1000000).toFixed(0)}ms`
   }
+
+  await builder.linkApp(appId, filesWithContent, linkOptions)
+    .then(({ code }) => {
+      spinner.succeed(`Files delivered in ${formatElapsedTime(process.hrtime(linkStart))}`)
+      if (code !== 'build.accepted') {
+        throw new Error('Please, update your builder-hub to the latest version!')
+      }
+    })
+    .catch(e => {
+      const data = e.response && e.response.data
+      if (data && data.code && data.code === 'build_in_progress') {
+        log.warn(`Build for ${appId} is already in progress`)
+      } else {
+        throw e
+      }
+    })
+    .finally(() => spinner.stop())
 }
 
 export default async (options) => {
+  spinner.start('Validating link')
+
   await validateAppAction('link')
   const manifest = await getManifest()
 
@@ -158,6 +176,8 @@ export default async (options) => {
     if (debuggerStarted) {
       return
     }
+    spinner.succeed('App built')
+    spinner.start('Watching for changes')
     debuggerStarted = true
     const debuggerPort = await startDebuggerTunnel(manifest)
     if (debuggerPort) {

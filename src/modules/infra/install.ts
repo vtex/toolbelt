@@ -1,12 +1,11 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import * as ora from 'ora'
 import { curry, path, prop } from 'ramda'
 import * as semver from 'semver'
 
 import { router } from '../../clients'
-import log from '../../logger'
+import log, { spinner } from '../../logger'
 import { diffVersions, getTag } from './utils'
 
 const { getAvailableVersions, listInstalledServices, installService } = router
@@ -78,7 +77,7 @@ const getInstalledVersion = (service: string): Bluebird<string> =>
 
 export default (name: string) => {
   const [service, suffix] = name.split('@')
-  const spinner = ora('Getting versions').start()
+  spinner.start('Getting versions')
   // We force getting versions from the aws-us-east-1 region as currently all
   // regions use the same ECR on us-east-1 region. This API is old and weird,
   // as it shouldn't return the regions in the response if I'm already querying

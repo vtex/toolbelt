@@ -2,13 +2,12 @@ import { AvailableServices, InstalledService } from '@vtex/api'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import * as ora from 'ora'
 import * as pad from 'pad'
 import { prop } from 'ramda'
 import * as semver from 'semver'
 
 import { router } from '../../clients'
-import log from '../../logger'
+import log, { spinner } from '../../logger'
 import { diffVersions, getTag } from './utils'
 
 const { listAvailableServices, listInstalledServices, installService } = router
@@ -62,13 +61,13 @@ const createVersionMap = (availableRes: AvailableServices, installedRes: Install
 const hasUpdate = (update: InfraUpdate): boolean =>
   Object.keys(update).length > 0
 
-const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
+const installUpdates = (update: InfraUpdate): Promise<void[]> =>
   Promise.all(
     Object.keys(update).map(name => installService(name, update[name].latest)),
   )
 
 export default () => {
-  const spinner = ora('Getting available updates').start()
+  spinner.start('Getting available updates')
   return Promise.all([listAvailableServices(), listInstalledServices()])
     .tap(() => spinner.stop())
     .spread(createVersionMap)

@@ -1,12 +1,11 @@
 import * as archiver from 'archiver'
 import axios, { AxiosInstance } from 'axios'
-import * as ora from 'ora'
 import { map } from 'ramda'
 
 import { publicEndpoint } from '../../env'
 import { BuildFailError } from '../../errors'
 import { toAppLocator } from '../../locator'
-import log from '../../logger'
+import log, { spinner } from '../../logger'
 import { listenBuild } from '../utils'
 import { listLocalFiles } from './file'
 import { pathToFileObject } from './utils'
@@ -67,7 +66,7 @@ export const legacyPublisher = (account: string, workspace: string = 'master') =
   }
 
   const publishApp = async (appRoot: string, tag: string, manifest: Manifest): Promise<void> => {
-    const spinner = ora('Publishing legacy app...').start()
+    spinner.start('Publishing legacy app...')
     const appId = toAppLocator(manifest)
     const options = { context, timeout: null }
 
