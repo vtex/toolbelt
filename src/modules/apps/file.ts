@@ -1,11 +1,9 @@
-import {fork} from 'child-process-es6-promise'
 import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
-import { createReadStream, readFileSync, stat, lstat, readdir } from 'fs-extra'
+import { createReadStream, readFileSync, stat, lstat, readdir, realpath } from 'fs-extra'
 import * as glob from 'globby'
-import * as path from 'path'
-import { map, filter, memoizeWith, identity, toPairs, partition, unnest, fromPairs } from 'ramda'
-import {join} from 'path'
+import { map, filter, partition, unnest } from 'ramda'
+import { join, sep, resolve, dirname } from 'path'
 
 import log from '../../logger'
 import { pathToFileObject } from './utils'
@@ -34,26 +32,6 @@ const safeFolder = folder => {
   return folder ? './' + folder + '/**' : '*/**'
 }
 
-export const getLinkFolder = memoizeWith(identity, async () => {
-  const options = {
-    env: { ...process.env },
-    execArgv: [],
-    stdio: ['pipe', 'pipe', 'pipe', 'ipc']
-  }
-  const yarnPath = join(__dirname, '../../../node_modules/yarn/bin/yarn.js')
-  const yarnProc = fork(yarnPath, ['config', 'current'], options)
-  let linkFolder
-  yarnProc.child.stdout.on('data', data => {
-    try {
-      const obj = JSON.parse(data)
-      if (obj.linkFolder) linkFolder = obj.linkFolder
-    }
-    catch (e) { /* Ignore non JSON formats */ }
-  })
-  await yarnProc;
-  return linkFolder
-}) as () => Promise<string>
-
 const mapAsync = (f) => (data) => Promise.map(data, f)
 
 async function getDirs(root: string, predicate: (string, Stats) => string): Promise<string[]> {
@@ -65,7 +43,7 @@ async function getDirs(root: string, predicate: (string, Stats) => string): Prom
     .then(dirs => filter(dir => dir != null, dirs))
 }
 
-async function getNodeModules(root: string, onlyLinks : boolean): Promise<string[]> {
+async function getNodeModules(root: string, onlyLinks : boolean = true): Promise<string[]> {
   const isNamespaceOrLink = (path, stat) => stat != null && (path.startsWith('@') && stat.isDirectory() || stat.isSymbolicLink())
   const isDirOrLink = (_, stat) => stat != null && (stat.isDirectory() || stat.isSymbolicLink())
   const isLink = (_, stat) => stat != null && stat.isSymbolicLink()
@@ -84,78 +62,87 @@ async function getNodeModules(root: string, onlyLinks : boolean): Promise<string
   return [...modules, ...namesepaceModules]
 }
 
-export async function createLinkedDepsConfig(appSrc: string, linkFolder: string): Promise<any> {
-  const dependenciesPath =
-    (root, module) => join(root, module.split('/').join(path.sep), 'node_modules')
-  const moduleToModuleAndDeps = root =>
-    async module => [module, await getNodeModules(dependenciesPath(root, module), true)]
+export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
+  const stack = []
+  const graph: Record<string, string[]> = {}
+  const metadata: Record<string, string> = {}
 
-  const linkedPromise = getNodeModules(linkFolder, false)
-    .then(mapAsync(moduleToModuleAndDeps(linkFolder)))
-    .then(fromPairs)
+  const app = await glob([join('*', 'package.json')], { cwd: appSrc })
+    .then(map(dirname))
 
-  const appsPromise = glob([join('*', 'package.json')], { cwd: appSrc })
-    .then(map(path.dirname))
-    .then(mapAsync(moduleToModuleAndDeps(appSrc)))
-    .then(fromPairs)
-
-  const [appModules, linkedPackages] = await Promise.all([appsPromise, linkedPromise])
-  return { app: appModules, linkedPackages }
-}
-
-function optimizeLinkedDepsConfig(localConfig: any, usedDeps: Set<string>) {
-  const { app: appModules, linkedPackages } = localConfig
-  const linkedDepsConfig = { app: appModules, linkedPackages: {} }
-  for (const [module, deps] of toPairs(linkedPackages)) if (usedDeps.has(module))
-    linkedDepsConfig.linkedPackages[module] = deps
-  return linkedDepsConfig
-}
-
-export function getUsedDependencies(linkedDepsConfig: any): string[] {
-  const { app: appModules, linkedPackages } = linkedDepsConfig
-  const used = new Set(), queue = []
-  function checkDeps(deps: string[]) {
+  function checkLinks(deps: string[]) {
     for (const dep of deps) {
-      if (used.has(dep)) continue
-      queue.push(dep)
-      used.add(dep)
+      if (dep in graph) continue
+      stack.push(dep)
+      graph[dep] = []
     }
   }
 
-  for (const [, deps] of toPairs(appModules)) checkDeps(deps)
-  while (queue.length > 0) {
-    const module = queue.pop()
-    checkDeps(linkedPackages[module] || [])
+  async function discoverDependencies(module : string) : Promise<string[]> {
+    const path = metadata[module] ? metadata[module] : join(appSrc, module)
+    const depsRoot = join(path, 'node_modules')
+    const moduleRealPath = async (module: string) =>
+      ({ module, path: await realpath(join(depsRoot, ...module.split('/'))) })
+
+    const addMetadata = ({ module, path }) => {
+      if (module in metadata && metadata[module] != path) {
+        log.warn(`Found ${module} from two sources as linked dependencies. Ignoring the one from ${path}`)
+      }
+      metadata[module] = path
+      return module
+    }
+
+    return await getNodeModules(depsRoot)
+      .then(mapAsync(moduleRealPath))
+      .then(map(addMetadata)) as string[]
   }
-  return [...used]
+
+  stack.push(...app)
+  while (stack.length > 0) {
+    const module = stack.pop()
+    const dependencies = await discoverDependencies(module)
+    graph[module] = dependencies
+    checkLinks(dependencies)
+  }
+
+  return { metadata, graph }
 }
 
-export async function getLinkedDepsDirs(linkFolder : string, usedDeps : string[]): Promise<string[]> {
-  return map(module => join(linkFolder, module.split('/').join(path.sep)), usedDeps)
-}
+export async function getLinkedFiles(linkConfig: LinkConfig): Promise<BatchStream[]> {
+  const ignore = [
+    '.DS_Store',
+    'README.md',
+    '.eslintrc',
+    '.gitignore',
+    'CHANGELOG.md',
+    'node_modules/**',
+    '**/node_modules/**',
+  ]
+  const getFiles = async ([module, path]) => {
+    return await glob(['**'], { cwd: path, ignore, nodir: true, })
+      .then(map(pathToFileObject(path, join('.linked_deps', module)))) as BatchStream[]
+  }
 
-export async function getLinkedFiles(localConfig: any, linkFolder: string, usedDeps : string[]): Promise<BatchStream[]> {
-  if (usedDeps.length === 0) return []
+  const linkedModulesFiles = unnest(await Promise.map(Object.entries(linkConfig.metadata), getFiles))
 
-  const linkedDepsConfig = optimizeLinkedDepsConfig(localConfig, new Set(usedDeps))
-  const linkedModules = map(dep => join(dep.split('/').join(path.sep), '**'), usedDeps)
-  const linkedModulesFiles = await glob(linkedModules, { cwd: linkFolder, ignore: getIgnoredPaths(linkFolder), nodir: true, })
-    .then(paths => map(pathToFileObject(linkFolder, '.linked_deps'), paths)) as BatchStream[]
-
-  function jsonToStream(path: string, content: any): BatchStream {
+  function jsonToStream(path: string, linkConfig : LinkConfig): BatchStream {
     const stream = new Readable
-    stream.push(JSON.stringify(content))
+    stream.push(JSON.stringify(linkConfig))
     stream.push(null) // EOF
     return { path, content: stream }
   }
 
-  linkedModulesFiles.push(jsonToStream(join('.linked_deps', '.config'), linkedDepsConfig))
+  linkedModulesFiles.push(jsonToStream(join('.linked_deps', '.config'), linkConfig))
   return linkedModulesFiles
+}
+
+export function getLinkedDepsDirs(linkConfig : LinkConfig): string[] {
+  return Object.values(linkConfig.metadata)
 }
 
 export const getIgnoredPaths = (root: string): string[] => {
   try {
-    return readFileSync(path.join(root, '.vtexignore'))
+    return readFileSync(join(root, '.vtexignore'))
       .toString()
       .split('\n')
       .map(p => p.trim())
@@ -178,7 +165,7 @@ export const listLocalFiles = (root: string, folder?: string): Promise<string[]>
     .then((files: string[]) =>
       Promise.all(
         files.map(file =>
-          stat(path.join(root, file)).then(stats => ({ file, stats })),
+          stat(join(root, file)).then(stats => ({ file, stats })),
         ),
       ),
   )
@@ -195,9 +182,9 @@ export const addChangeContent = (changes: Change[]): Batch[] =>
   changes.map(({ path: filePath, action }) => {
     return {
       content: action === 'save'
-        ? createReadStream(path.resolve(process.cwd(), filePath))
+        ? createReadStream(resolve(process.cwd(), filePath))
         : null,
-      path: filePath.split(path.sep).join('/'),
+      path: filePath.split(sep).join('/'),
     }
   })
 

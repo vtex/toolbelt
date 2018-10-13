@@ -4,7 +4,7 @@ import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
-import { resolve as resolvePath, sep, join, relative } from 'path'
+import { resolve as resolvePath, sep, join } from 'path'
 import { map, pipe, concat } from 'ramda'
 import { createInterface } from 'readline'
 import lint from './lint'
@@ -19,7 +19,7 @@ import { getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles, getLinkedDepsDirs, getLinkFolder, getLinkedFiles, getUsedDependencies, createLinkedDepsConfig } from './file'
+import { getIgnoredPaths, listLocalFiles, getLinkedDepsDirs, createLinkConfig, getLinkedFiles } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
 
@@ -31,13 +31,13 @@ const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 
 
-const warnAndLinkFromStart = (appId: string, builder: Builder, extraData : any = {}) => {
+const warnAndLinkFromStart = (appId: string, builder: Builder, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
   log.warn('Initial link requested by builder')
   performInitialLink(appId, builder, extraData)
   return null
 }
 
-const watchAndSendChanges = async (appId: string, builder: Builder, extraData : any): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
@@ -48,12 +48,8 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     throw e
   }
 
-  const linkFolder = await getLinkFolder()
-  const linkedPrefix = relative(root, linkFolder)
-
   const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
-  const linkedDepsPatterns = await getLinkedDepsDirs(linkFolder, extraData.usedDeps)
-    .then(map(path => join(path, '**')))
+  const linkedDepsPatterns = map(path => join(path, '**'), getLinkedDepsDirs(extraData.linkConfig))
 
   const queueChange = (path: string, remove?: boolean) => {
     console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
@@ -70,8 +66,20 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'), path : pathModifier(path)
   })
 
+  const moduleAndMetadata = Object.entries(extraData.linkConfig.metadata)
+
+  const mapLocalToBuiderPath = path => {
+    const abs = resolvePath(path)
+    for (const [module, path] of moduleAndMetadata) {
+      if (abs.startsWith(path)) {
+        return abs.replace(path, join('.linked_deps', module))
+      }
+    }
+    return path
+  }
+
   const pathModifier = pipe(
-    path => path.startsWith(linkedPrefix) ? path.replace(linkedPrefix, '.linked_deps') : path,
+    mapLocalToBuiderPath,
     path => path.split(sep).join('/'))
 
   const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
@@ -101,27 +109,27 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
 }
 
 const performInitialLink = async (appId: string, builder: Builder, extraData : any): Promise<void> => {
-  const linkFolder = await getLinkFolder()
-  const [linkedDepsConfig, stickyHint] = await Promise.all([
-    createLinkedDepsConfig(root, linkFolder),
+  const [linkConfig , stickyHint] = await Promise.all([
+    createLinkConfig(root),
     getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
   ])
-
+  
   const linkOptions = { sticky: true, stickyHint }
-  const usedDeps = getUsedDependencies(linkedDepsConfig)
-  extraData.usedDeps = usedDeps
+
+  extraData.linkConfig = linkConfig
+  const usedDeps = Object.entries(linkConfig.metadata)
 
   if (usedDeps.length) {
     const plural = usedDeps.length > 1
     log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
-    for(const dep of usedDeps) log.info(dep)
-    log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your linked app, please unlink ${plural ? 'them' : 'it'}`)
+    for(const [dep, path] of usedDeps) log.info(`${dep} (from: ${path})`)
+    log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
   }
 
   const [localFiles, linkedFiles] = 
     await Promise.all([
-      listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)) as Promise<BatchStream[]>,
-      getLinkedFiles(linkedDepsConfig, linkFolder, usedDeps)
+      listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
+      getLinkedFiles(linkConfig)
     ])
   const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
 
@@ -191,7 +199,7 @@ export default async (options) => {
   log.info(`Linking app ${appId}`)
 
   let unlistenBuild
-  let extraData = {}
+  let extraData = { linkConfig: null }
   try {
     const buildTrigger = performInitialLink.bind(this, appId, builder, extraData)
     const [subject] = appId.split('@')
