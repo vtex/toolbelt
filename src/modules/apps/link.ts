@@ -122,9 +122,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
   if (usedDeps.length) {
     const plural = usedDeps.length > 1
     log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
-    for (const [dep, path] of usedDeps) {
-      log.info(`${dep} (from: ${path})`)
-    }
+    usedDeps.forEach(([dep, path]) => log.info(`${dep} (from: ${path})`))
     log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
   }
 

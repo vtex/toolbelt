@@ -43,23 +43,22 @@ async function getDirs(root: string, predicate: (path: string, stat: Stats) => s
     .then(dirs => filter(dir => dir != null, dirs))
 }
 
-const getNodeModules = async (root: string, onlyLinks : boolean = true): Promise<string[]> => {
+const getNodeModules = async (root: string): Promise<string[]> => {
   const isNamespaceOrLink = (path, stat) => stat != null && (path.startsWith('@') && stat.isDirectory() || stat.isSymbolicLink())
-  const isDirOrLink = (_, stat) => stat != null && (stat.isDirectory() || stat.isSymbolicLink())
   const isLink = (_, stat) => stat != null && stat.isSymbolicLink()
 
-  const [namespaces, modules] = await getDirs(root, onlyLinks ? isNamespaceOrLink : isDirOrLink)
+  const [namespaces, modules] = await getDirs(root, isNamespaceOrLink)
     .then(partition(dir => dir.startsWith('@')))
     .catch(() => [[], []])
 
-  const namesepaceModules = await Promise.map(
+  const namespaceModules = await Promise.map(
     namespaces,
     async namespace =>
-      await getDirs(join(root, namespace), onlyLinks ? isLink : isDirOrLink)
+      await getDirs(join(root, namespace), isLink)
         .then(map(dir => [namespace, dir].join('/'))))
     .then(unnest) as string[]
 
-  return [...modules, ...namesepaceModules]
+  return [...modules, ...namespaceModules]
 }
 
 export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
@@ -81,7 +80,7 @@ export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
   }
 
   async function discoverDependencies(module : string) : Promise<string[]> {
-    const path = metadata[module] ? metadata[module] : join(appSrc, module)
+    const path = module in metadata ? metadata[module] : join(appSrc, module)
     const depsRoot = join(path, 'node_modules')
     const moduleRealPath = async (moduleName: string) =>
       ({ moduleName, path: await realpath(join(depsRoot, ...moduleName.split('/'))) })
@@ -94,8 +93,9 @@ export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
   const addMetadata = ({ moduleName, path }) => {
     if (moduleName in metadata && metadata[moduleName] !== path) {
       log.warn(`Found ${moduleName} from two sources as linked dependencies. Ignoring the one from ${path}`)
+    } else {
+      metadata[moduleName] = path
     }
-    metadata[moduleName] = path
     return moduleName
   }
 
