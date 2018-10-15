@@ -4,8 +4,8 @@ import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
-import { resolve as resolvePath, sep, join } from 'path'
-import { map, pipe, concat } from 'ramda'
+import { join, resolve as resolvePath, sep} from 'path'
+import { concat, map, pipe } from 'ramda'
 import { createInterface } from 'readline'
 import lint from './lint'
 
@@ -19,7 +19,7 @@ import { getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles, getLinkedDepsDirs, createLinkConfig, getLinkedFiles } from './file'
+import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
 
@@ -70,9 +70,9 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
 
   const mapLocalToBuiderPath = path => {
     const abs = resolvePath(path)
-    for (const [module, path] of moduleAndMetadata) {
-      if (abs.startsWith(path)) {
-        return abs.replace(path, join('.linked_deps', module))
+    for (const [module, modulePath] of moduleAndMetadata) {
+      if (abs.startsWith(modulePath)) {
+        return abs.replace(modulePath, join('.linked_deps', module))
       }
     }
     return path
@@ -108,7 +108,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   })
 }
 
-const performInitialLink = async (appId: string, builder: Builder, extraData : any): Promise<void> => {
+const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<void> => {
   const [linkConfig , stickyHint] = await Promise.all([
     createLinkConfig(root),
     getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
@@ -122,7 +122,9 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : a
   if (usedDeps.length) {
     const plural = usedDeps.length > 1
     log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
-    for(const [dep, path] of usedDeps) log.info(`${dep} (from: ${path})`)
+    for (const [dep, path] of usedDeps) {
+      log.info(`${dep} (from: ${path})`)
+    }
     log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
   }
 
@@ -199,7 +201,7 @@ export default async (options) => {
   log.info(`Linking app ${appId}`)
 
   let unlistenBuild
-  let extraData = { linkConfig: null }
+  const extraData = { linkConfig: null }
   try {
     const buildTrigger = performInitialLink.bind(this, appId, builder, extraData)
     const [subject] = appId.split('@')

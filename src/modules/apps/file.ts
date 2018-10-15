@@ -1,13 +1,13 @@
 import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
-import { createReadStream, readFileSync, stat, lstat, readdir, realpath } from 'fs-extra'
+import { createReadStream, lstat, readdir, readFileSync, realpath, Stats } from 'fs-extra'
 import * as glob from 'globby'
-import { map, filter, partition, unnest } from 'ramda'
-import { join, sep, resolve, dirname } from 'path'
+import { dirname, join, resolve as resolvePath, sep } from 'path'
+import { filter, map, partition, unnest } from 'ramda'
 
+import { Readable } from 'stream'
 import log from '../../logger'
 import { pathToFileObject } from './utils'
-import { Readable } from 'stream'
 
 type AnyFunction = (...args: any[]) => any
 
@@ -34,7 +34,7 @@ const safeFolder = folder => {
 
 const mapAsync = (f) => (data) => Promise.map(data, f)
 
-async function getDirs(root: string, predicate: (string, Stats) => string): Promise<string[]> {
+async function getDirs(root: string, predicate: (path: string, stat: Stats) => string): Promise<string[]> {
   const nullInvalidPaths = async (path: string) => await lstat(join(root, path))
     .catch(() => null)
     .then(stat => predicate(path, stat) ? path : null)
@@ -43,7 +43,7 @@ async function getDirs(root: string, predicate: (string, Stats) => string): Prom
     .then(dirs => filter(dir => dir != null, dirs))
 }
 
-async function getNodeModules(root: string, onlyLinks : boolean = true): Promise<string[]> {
+const getNodeModules = async (root: string, onlyLinks : boolean = true): Promise<string[]> => {
   const isNamespaceOrLink = (path, stat) => stat != null && (path.startsWith('@') && stat.isDirectory() || stat.isSymbolicLink())
   const isDirOrLink = (_, stat) => stat != null && (stat.isDirectory() || stat.isSymbolicLink())
   const isLink = (_, stat) => stat != null && stat.isSymbolicLink()
@@ -72,7 +72,9 @@ export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
 
   function checkLinks(deps: string[]) {
     for (const dep of deps) {
-      if (dep in graph) continue
+      if (dep in graph) {
+        continue
+      }
       stack.push(dep)
       graph[dep] = []
     }
@@ -81,20 +83,20 @@ export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
   async function discoverDependencies(module : string) : Promise<string[]> {
     const path = metadata[module] ? metadata[module] : join(appSrc, module)
     const depsRoot = join(path, 'node_modules')
-    const moduleRealPath = async (module: string) =>
-      ({ module, path: await realpath(join(depsRoot, ...module.split('/'))) })
-
-    const addMetadata = ({ module, path }) => {
-      if (module in metadata && metadata[module] != path) {
-        log.warn(`Found ${module} from two sources as linked dependencies. Ignoring the one from ${path}`)
-      }
-      metadata[module] = path
-      return module
-    }
+    const moduleRealPath = async (moduleName: string) =>
+      ({ moduleName, path: await realpath(join(depsRoot, ...moduleName.split('/'))) })
 
     return await getNodeModules(depsRoot)
       .then(mapAsync(moduleRealPath))
       .then(map(addMetadata)) as string[]
+  }
+
+  const addMetadata = ({ moduleName, path }) => {
+    if (moduleName in metadata && metadata[moduleName] !== path) {
+      log.warn(`Found ${moduleName} from two sources as linked dependencies. Ignoring the one from ${path}`)
+    }
+    metadata[moduleName] = path
+    return moduleName
   }
 
   stack.push(...app)
@@ -124,16 +126,15 @@ export async function getLinkedFiles(linkConfig: LinkConfig): Promise<BatchStrea
   }
 
   const linkedModulesFiles = unnest(await Promise.map(Object.entries(linkConfig.metadata), getFiles))
-
-  function jsonToStream(path: string, linkConfig : LinkConfig): BatchStream {
-    const stream = new Readable
-    stream.push(JSON.stringify(linkConfig))
-    stream.push(null) // EOF
-    return { path, content: stream }
-  }
-
   linkedModulesFiles.push(jsonToStream(join('.linked_deps', '.config'), linkConfig))
   return linkedModulesFiles
+}
+
+function jsonToStream(path: string, linkConfig: LinkConfig): BatchStream {
+  const stream = new Readable
+  stream.push(JSON.stringify(linkConfig))
+  stream.push(null) // EOF
+  return { path, content: stream }
 }
 
 export function getLinkedDepsDirs(linkConfig : LinkConfig): string[] {
@@ -165,7 +166,7 @@ export const listLocalFiles = (root: string, folder?: string): Promise<string[]>
     .then((files: string[]) =>
       Promise.all(
         files.map(file =>
-          stat(join(root, file)).then(stats => ({ file, stats })),
+          lstat(join(root, file)).then(stats => ({ file, stats })),
         ),
       ),
   )
@@ -182,7 +183,7 @@ export const addChangeContent = (changes: Change[]): Batch[] =>
   changes.map(({ path: filePath, action }) => {
     return {
       content: action === 'save'
-        ? createReadStream(resolve(process.cwd(), filePath))
+        ? createReadStream(resolvePath(process.cwd(), filePath))
         : null,
       path: filePath.split(sep).join('/'),
     }
