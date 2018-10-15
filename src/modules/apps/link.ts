@@ -65,6 +65,7 @@ const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
       ? ['Sent patch on files:', ...updates].join('\n\t')
       : `Sent patch on ${fileChanges[0].content == null ? 'removed' : 'updated'} file ${fileChanges[0].path} `
     log.info(updateMessage)
+    spinner.start('Rebuilding app')
     builder.relinkApp(appId, fileChanges)
       .catch(onInitialLinkRequired)
   }, 10)
@@ -142,6 +143,7 @@ export default async (options) => {
   spinner.start('Validating link')
 
   await validateAppAction('link')
+    .catch(() => spinner.stop())
   const manifest = await getManifest()
 
   if (manifest.builders.render
@@ -173,11 +175,11 @@ export default async (options) => {
 
   let debuggerStarted = false
   const onBuild = async () => {
+    spinner.succeed(`App ${debuggerStarted ? 're' : ''}built`)
+    spinner.start('Watching for changes')
     if (debuggerStarted) {
       return
     }
-    spinner.succeed('App built')
-    spinner.start('Watching for changes')
     debuggerStarted = true
     const debuggerPort = await startDebuggerTunnel(manifest)
     if (debuggerPort) {
