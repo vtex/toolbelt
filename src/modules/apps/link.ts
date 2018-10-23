@@ -82,6 +82,10 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     mapLocalToBuiderPath,
     path => path.split(sep).join('/'))
 
+  const addIgnoreNodeModulesRule =
+    (paths: Array<string | ((path: string) => boolean)>) =>
+      paths.concat((path: string) => path.includes('node_modules'))
+
   const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
     atomic: true,
     awaitWriteFinish: {
@@ -89,7 +93,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     },
     cwd: root,
     ignoreInitial: true,
-    ignored: getIgnoredPaths(root),
+    ignored: addIgnoreNodeModulesRule(getIgnoredPaths(root)),
     persistent: true,
     usePolling: process.platform === 'win32',
   })
