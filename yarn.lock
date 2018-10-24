@@ -1547,11 +1547,6 @@ chardet@^0.7.0:
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
-child-process-es6-promise@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/child-process-es6-promise/-/child-process-es6-promise-1.2.0.tgz#090ce3cac90e841874c1e4e97c6a5f98f875e629"
-  integrity sha512-15CDhq/RGyYjeAvezWjZQs4Mw/t5WNxO6+dw8w5xEs+C/w3htoUv0TWQBjO6MyTbIuom0LWNWS9xN7yD46j8sA==
-
 chokidar@^1.4.2:
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/chokidar/-/chokidar-1.7.0.tgz#798e689778151c8076b4b360e5edd28cda2bb468"
@@ -6532,11 +6527,6 @@ yargs@11.1.0:
     which-module "^2.0.0"
     y18n "^3.2.1"
     yargs-parser "^9.0.2"
-
-yarn@^1.10.1:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.10.1.tgz#b792ba28f050ae94cd7e719dbca80639d70da76f"
-  integrity sha512-EH0H1fyfFxkE4UpG4b+VCaVY4I488I2EyQNmGjGGKmvsSIb0G3b+1IcfGYPI2gqa1du43g4ZA3jH8fXlq6oVxg==
 
 zip-stream@^1.2.0:
   version "1.2.0"

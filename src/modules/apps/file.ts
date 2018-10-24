@@ -33,16 +33,16 @@ const safeFolder = folder => {
 
 const mapAsync = (f) => (data) => Promise.map(data, f)
 
-async function getDirs(root: string, predicate: (path: string, stat: Stats) => string): Promise<string[]> {
-  const nullInvalidPaths = async (path: string) => await lstat(join(root, path))
+function getDirs(root: string, predicate: (path: string, stat: Stats) => string): Promise<string[]> {
+  const nullInvalidPaths = (path: string) => lstat(join(root, path))
     .catch(() => null)
     .then(stat => predicate(path, stat) ? path : null)
-  return await readdir(root)
+  return readdir(root)
     .then(mapAsync(nullInvalidPaths))
     .then(dirs => filter(dir => dir != null, dirs))
 }
 
-const getNodeModules = async (root: string): Promise<string[]> => {
+const getLinkedNodeModules = async (root: string): Promise<string[]> => {
   const isNamespaceOrLink = (path, stat) => stat != null && (path.startsWith('@') && stat.isDirectory() || stat.isSymbolicLink())
   const isLink = (_, stat) => stat != null && stat.isSymbolicLink()
 
@@ -50,12 +50,12 @@ const getNodeModules = async (root: string): Promise<string[]> => {
     .then(partition(dir => dir.startsWith('@')))
     .catch(() => [[], []])
 
-  const namespaceModules = await Promise.map(
-    namespaces,
-    async namespace =>
-      await getDirs(join(root, namespace), isLink)
-        .then(map(dir => [namespace, dir].join('/'))))
-    .then(unnest) as string[]
+  const getNamespaceLinks =
+    namespace =>
+      getDirs(join(root, namespace), isLink)
+        .then(map(dir => [namespace, dir].join('/')))
+
+  const namespaceModules = await Promise.map(namespaces, getNamespaceLinks).then(unnest) as string[]
 
   return [...modules, ...namespaceModules]
 }
@@ -78,18 +78,18 @@ export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
     }
   }
 
-  async function discoverDependencies(module : string) : Promise<string[]> {
+  function discoverDependencies(module : string) : Promise<string[]> {
     const path = module in metadata ? metadata[module] : join(appSrc, module)
     const depsRoot = join(path, 'node_modules')
     const moduleRealPath = async (moduleName: string) =>
-      ({ moduleName, path: await realpath(join(depsRoot, ...moduleName.split('/'))) })
+      ([moduleName, await realpath(join(depsRoot, ...moduleName.split('/')))])
 
-    return await getNodeModules(depsRoot)
+    return getLinkedNodeModules(depsRoot)
       .then(mapAsync(moduleRealPath))
-      .then(map(addMetadata)) as string[]
+      .then(map(addMetadata)) as Promise<string[]>
   }
 
-  const addMetadata = ({ moduleName, path }) => {
+  function addMetadata([moduleName, path]): string {
     if (moduleName in metadata && metadata[moduleName] !== path) {
       log.warn(`Found ${moduleName} from two sources as linked dependencies. Ignoring the one from ${path}`)
     } else {
