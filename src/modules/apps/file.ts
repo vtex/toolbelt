@@ -31,7 +31,7 @@ const safeFolder = folder => {
   return folder ? './' + folder + '/**' : '*/**'
 }
 
-const mapAsync = (f) => (data) => Promise.map(data, f)
+const mapAsync = <I, O>(f : (datum : I) => Promise<O>) => (data : I[]) => Promise.map(data, f) as Promise<O[]>
 
 function getDirs(root: string, predicate: (path: string, stat: Stats) => string): Promise<string[]> {
   const nullInvalidPaths = (path: string) => lstat(join(root, path))
@@ -39,7 +39,7 @@ function getDirs(root: string, predicate: (path: string, stat: Stats) => string)
     .then(stat => predicate(path, stat) ? path : null)
   return readdir(root)
     .then(mapAsync(nullInvalidPaths))
-    .then(dirs => filter(dir => dir != null, dirs))
+    .then(dirs => filter(dir => dir != null, dirs)) as Promise<string[]>
 }
 
 const getLinkedNodeModules = async (root: string): Promise<string[]> => {
@@ -47,8 +47,8 @@ const getLinkedNodeModules = async (root: string): Promise<string[]> => {
   const isLink = (_, stat) => stat != null && stat.isSymbolicLink()
 
   const [namespaces, modules] = await getDirs(root, isNamespaceOrLink)
-    .then(partition(dir => dir.startsWith('@')))
-    .catch(() => [[], []])
+    .catch(() => [])
+    .then(partition(dir => dir.startsWith('@'))) as [string[], string[]]
 
   const getNamespaceLinks =
     namespace =>
@@ -81,7 +81,7 @@ export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
   function discoverDependencies(module : string) : Promise<string[]> {
     const path = module in metadata ? metadata[module] : join(appSrc, module)
     const depsRoot = join(path, 'node_modules')
-    const moduleRealPath = async (moduleName: string) =>
+    const moduleRealPath = async (moduleName: string): Promise<[string, string]> =>
       ([moduleName, await realpath(join(depsRoot, ...moduleName.split('/')))])
 
     return getLinkedNodeModules(depsRoot)
