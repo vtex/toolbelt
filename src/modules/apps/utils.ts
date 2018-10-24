@@ -12,8 +12,8 @@ import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { isManifestReadable } from '../../manifest'
 
-export const pathToFileObject = (root = process.cwd()) => (path: string): BatchStream =>
-  ({ path, content: createReadStream(join(root, path)) })
+export const pathToFileObject = (root = process.cwd(), prefix : string = '') => (path: string): BatchStream =>
+  ({ path : join(prefix, path), content: createReadStream(join(root, path)) })
 
 const workspaceExampleName = process.env.USER || 'example'
 

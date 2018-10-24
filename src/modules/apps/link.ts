@@ -4,8 +4,8 @@ import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
-import { resolve as resolvePath, sep } from 'path'
-import { map } from 'ramda'
+import { join, resolve as resolvePath, sep} from 'path'
+import { concat, map, pipe } from 'ramda'
 import { createInterface } from 'readline'
 import lint from './lint'
 
@@ -19,7 +19,7 @@ import { getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles } from './file'
+import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import { pathToFileObject, validateAppAction } from './utils'
 
@@ -30,27 +30,26 @@ const stabilityThreshold = process.platform === 'win32' ? 200 : 50
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 
-const pathToChange = (path: string, remove?: boolean): Change => ({
-  content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'),
-  path: path.split(sep).join('/'),
-})
 
-const warnAndLinkFromStart = (appId: string, builder: Builder) => {
+const warnAndLinkFromStart = (appId: string, builder: Builder, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
   log.warn('Initial link requested by builder')
-  performInitialLink(appId, builder)
+  performInitialLink(appId, builder, extraData)
   return null
 }
 
-const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
     if (data && data.code && data.code === 'initial_link_required') {
-      return warnAndLinkFromStart(appId, builder)
+      return warnAndLinkFromStart(appId, builder, extraData)
     }
     throw e
   }
+
+  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
+  const linkedDepsPatterns = map(path => join(path, '**'), getLinkedDepsDirs(extraData.linkConfig))
 
   const queueChange = (path: string, remove?: boolean) => {
     console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
@@ -61,19 +60,44 @@ const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
   const sendChanges = debounce(() => {
     builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
       .catch(onInitialLinkRequired)
-  }, 10)
+  }, 300)
 
-  const watcher = chokidar.watch(['*/**', 'manifest.json', 'policies.json'], {
+  const pathToChange = (path: string, remove?: boolean): Change => ({
+    content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'), path : pathModifier(path)
+  })
+
+  const moduleAndMetadata = Object.entries(extraData.linkConfig.metadata)
+
+  const mapLocalToBuiderPath = path => {
+    const abs = resolvePath(path)
+    for (const [module, modulePath] of moduleAndMetadata) {
+      if (abs.startsWith(modulePath)) {
+        return abs.replace(modulePath, join('.linked_deps', module))
+      }
+    }
+    return path
+  }
+
+  const pathModifier = pipe(
+    mapLocalToBuiderPath,
+    path => path.split(sep).join('/'))
+
+  const addIgnoreNodeModulesRule =
+    (paths: Array<string | ((path: string) => boolean)>) =>
+      paths.concat((path: string) => path.includes('node_modules'))
+
+  const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
     atomic: true,
     awaitWriteFinish: {
       stabilityThreshold,
     },
     cwd: root,
     ignoreInitial: true,
-    ignored: getIgnoredPaths(root),
+    ignored: addIgnoreNodeModulesRule(getIgnoredPaths(root)),
     persistent: true,
-    usePolling: true,
+    usePolling: process.platform === 'win32',
   })
+
   return new Promise((resolve, reject) => {
     watcher
       .on('add', (file, { size }) => size > 0 ? queueChange(file) : null)
@@ -88,24 +112,35 @@ const watchAndSendChanges = (appId: string, builder: Builder): Promise<any> => {
   })
 }
 
-const performInitialLink = async (appId: string, builder: Builder): Promise<void> => {
-  const stickyHint = await getMostAvailableHost(
-    appId,
-    builder,
-    N_HOSTS,
-    AVAILABILITY_TIMEOUT
-  )
-  const linkOptions = {
-    sticky: true,
-    stickyHint,
+const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<void> => {
+  const [linkConfig , stickyHint] = await Promise.all([
+    createLinkConfig(root),
+    getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
+  ])
+  
+  const linkOptions = { sticky: true, stickyHint }
+
+  extraData.linkConfig = linkConfig
+  const usedDeps = Object.entries(linkConfig.metadata)
+
+  if (usedDeps.length) {
+    const plural = usedDeps.length > 1
+    log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
+    usedDeps.forEach(([dep, path]) => log.info(`${dep} (from: ${path})`))
+    log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
   }
 
-  const paths = await listLocalFiles(root)
-  const filesWithContent = map(pathToFileObject(root), paths)
+  const [localFiles, linkedFiles] = 
+    await Promise.all([
+      listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
+      getLinkedFiles(linkConfig)
+    ])
+  const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
 
-  log.debug('Sending files:')
-  paths.forEach(p => log.debug(p))
-  log.info(`Sending ${paths.length} file` + (paths.length > 1 ? 's' : ''))
+  const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
+  log.info(`Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`)
+  log.debug('Sending files')
+  filesWithContent.forEach(p => log.debug(p.path))
 
   try {
     const { code } = await builder.linkApp(appId, filesWithContent, linkOptions)
@@ -168,8 +203,9 @@ export default async (options) => {
   log.info(`Linking app ${appId}`)
 
   let unlistenBuild
+  const extraData = { linkConfig: null }
   try {
-    const buildTrigger = performInitialLink.bind(this, appId, builder)
+    const buildTrigger = performInitialLink.bind(this, appId, builder, extraData)
     const [subject] = appId.split('@')
     const { unlisten } = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError })
     unlistenBuild = unlisten
@@ -197,5 +233,5 @@ export default async (options) => {
       process.exit()
     })
 
-  await watchAndSendChanges(appId, builder)
+  await watchAndSendChanges(appId, builder, extraData)
 }
