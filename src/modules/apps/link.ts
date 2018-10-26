@@ -26,7 +26,7 @@ import { pathToFileObject, validateAppAction } from './utils'
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
-const stabilityThreshold = process.platform === 'win32' ? 200 : 50
+const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 
@@ -87,7 +87,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
       paths.concat((path: string) => path.includes('node_modules'))
 
   const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
-    atomic: true,
+    atomic: stabilityThreshold,
     awaitWriteFinish: {
       stabilityThreshold,
     },
