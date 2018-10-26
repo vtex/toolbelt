@@ -125,7 +125,9 @@ export async function getLinkedFiles(linkConfig: LinkConfig): Promise<BatchStrea
   }
 
   const linkedModulesFiles = unnest(await Promise.map(toPairs(linkConfig.metadata), getFiles))
-  linkedModulesFiles.push(jsonToStream(join('.linked_deps', '.config'), linkConfig))
+  if (linkedModulesFiles.length > 0) {
+    linkedModulesFiles.push(jsonToStream(join('.linked_deps', '.config'), linkConfig))
+  }
   return linkedModulesFiles
 }
 
