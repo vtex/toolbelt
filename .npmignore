@@ -20,4 +20,5 @@ tslint.json
 tsconfig.json
 coverage/
 scripts/
+!scripts/prompt.bash
 yarn.lock
