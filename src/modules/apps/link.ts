@@ -5,7 +5,7 @@ import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
 import { join, resolve as resolvePath, sep} from 'path'
-import { concat, map, pipe } from 'ramda'
+import { concat, map, pipe, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import lint from './lint'
 
@@ -66,7 +66,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'), path : pathModifier(path)
   })
 
-  const moduleAndMetadata = Object.entries(extraData.linkConfig.metadata)
+  const moduleAndMetadata = toPairs(extraData.linkConfig.metadata)
 
   const mapLocalToBuiderPath = path => {
     const abs = resolvePath(path)
@@ -121,8 +121,8 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
   const linkOptions = { sticky: true, stickyHint }
 
   extraData.linkConfig = linkConfig
-  const usedDeps = Object.entries(linkConfig.metadata)
 
+  const usedDeps = toPairs(linkConfig.metadata)
   if (usedDeps.length) {
     const plural = usedDeps.length > 1
     log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
