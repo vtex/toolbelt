@@ -22,8 +22,9 @@
     "prereleasy": "npm run prepublish",
     "postreleasy": "npm publish"
   },
+  "engineStrict" : true,
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   },
   "repository": {
     "type": "git",

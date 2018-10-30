@@ -117,7 +117,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     createLinkConfig(root),
     getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
   ])
-  
+
   const linkOptions = { sticky: true, stickyHint }
 
   extraData.linkConfig = linkConfig
@@ -130,7 +130,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
   }
 
-  const [localFiles, linkedFiles] = 
+  const [localFiles, linkedFiles] =
     await Promise.all([
       listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
       getLinkedFiles(linkConfig)
