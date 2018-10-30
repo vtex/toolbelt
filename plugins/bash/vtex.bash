@@ -1,5 +1,3 @@
-
-
 ###############################################################################
 #                                   GLOBALS                                   #
 ###############################################################################
@@ -33,7 +31,7 @@ get_vtex_workspace() {
 __vtex_ps1() {
     local account=$(get_vtex_account)
     local workspace=$(get_vtex_workspace)
-    
+
     local white="\[\e[37m\]"
     local blue="\[\e[34m\]"
     local darkred="\[\e[1;31m\]"
@@ -49,7 +47,7 @@ __vtex_ps1() {
         local vtex=$blue
         local dynamic=$blue
         local symbols=$blue
-    else     
+    else
         local parenthesis=$darkred
         local vtex=$darkred
         local dynamic=$white
@@ -60,16 +58,3 @@ __vtex_ps1() {
     	echo -e "${parenthesis}(${vtex}vtex${symbols}: ${dynamic}$account${symbols}@${dynamic}$workspace${parenthesis})${default} "
     fi
 }
-
-toolbeltify_prompt() {
-    if [ -z "$PS1_BAK" ]; then
-    	PS1_BAK=$PS1
-	export PS1_BAK
-    fi
-    
-    local suffix=${PS1_BAK:(-2)}
-    PS1="${PS1_BAK::-2}$(__vtex_ps1)$suffix"
-    export PS1
-}
-
-PROMPT_COMMAND=toolbeltify_prompt

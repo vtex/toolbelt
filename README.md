@@ -27,7 +27,13 @@ If you don't have it installed, you can get it bundled with [node](https://nodej
 
 ## Installing the VTEX Toolbelt
 
-It's recommended that you install it globally (you may need [sudo](http://wiki.ubuntu-br.org/RootSudo) or administrative privileges):
+It's recommended that you install it globally using `yarn`:
+
+```sh
+yarn global add vtex
+```
+
+Or, using `npm`:
 
 ```sh
 npm install -g vtex
@@ -113,21 +119,40 @@ VTEX Toolbelt will now monitor your files for changes and sync them automaticall
 
 ## Customizing your prompt
 
-If you are a _bash_ user and wish to have information regarding the account and the workspace 
-you are logged in visible at your command prompt it is achievable by running the following 
-command:
+You can configure your **terminal prompt** to display relevant information about your current context, like what **environment** you are using (`prod` or `staging`), which **account** you're logged into and which **workspace** you are currently using. 
+
+Just like knowing which `git` branch you're currently in, having this info in your prompt you help you avoid mistakes and be faster when using VTEX IO.
+
+### `bash` users
+
+If you are a _bash_ user you can customize your command prompt by running the following command:
 
 ```sh
-echo "source $(npm root -g)/vtex/scripts/prompt.bash" >> ~/.bashrc
+echo "source $(npm root -g)/vtex/plugins/bash/vtex.bash" >> ~/.bashrc
+echo "source $(npm root -g)/vtex/plugins/bash/prompt.bash" >> ~/.bashrc
 ```
 
-Or, similarly, if you are a _zsh_ user:
+For fine grained control, use only the first script and add `__vtex_ps1` manually to your prompt.
+
+### `fish` users
+
+The file `plugins/fish/vtex.fish` defines utilitary functions to get your current vtex environment, account and workspace. You can have access to those functions by copying this file to `~/.config/fish/functions/`.
 
 ```sh
-echo "source $(npm root -g)/vtex/scripts/prompt.bash" >> ~/.zshrc
+cp (npm root -g)/vtex/plugins/fish/vtex.fish ~/.config/fish/functions/
 ```
 
-Disclaimer: _fish_ is not yet supported.
+Now, simply use the function `prompt_vtex` wherever you want in your prompt.
+
+**However,** If you just want a pretty, ready-made Git + VTEX prompt you can copy `plugins/fish/fish_prompt.fish` to the same `functions` folder, along with `vtex.fish`. To see the changes, simply restart your shell by typing `fish`.
+
+```sh
+cp (npm root -g)/vtex/plugins/fish/vtex.fish ~/.config/fish/functions/
+cp (npm root -g)/vtex/plugins/fish/fish_prompt.fish ~/.config/fish/functions/
+fish
+```
+
+PS: If you used `yarn` to install, you should replace `(npm root -g)` with `(yarn global dir)`.
 
 ---
 
