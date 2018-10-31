@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.32.0",
+  "version": "2.32.1",
   "description": "The platform for e-commerce apps",
   "main": "lib/index.js",
   "bin": "lib/cli.js",
@@ -22,7 +22,7 @@
     "prereleasy": "npm run prepublish",
     "postreleasy": "npm publish"
   },
-  "engineStrict" : true,
+  "engineStrict": true,
   "engines": {
     "node": ">=8"
   },
