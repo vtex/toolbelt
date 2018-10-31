@@ -3,7 +3,7 @@ import * as chokidar from 'chokidar'
 import { createReadStream, lstat, readdir, readFileSync, realpath, Stats } from 'fs-extra'
 import * as glob from 'globby'
 import { dirname, join, resolve as resolvePath, sep } from 'path'
-import { filter, map, partition, unnest } from 'ramda'
+import { filter, map, partition, toPairs, unnest, values } from 'ramda'
 
 import { Readable } from 'stream'
 import log from '../../logger'
@@ -124,7 +124,7 @@ export async function getLinkedFiles(linkConfig: LinkConfig): Promise<BatchStrea
       .then(map(pathToFileObject(path, join('.linked_deps', module)))) as BatchStream[]
   }
 
-  const linkedModulesFiles = unnest(await Promise.map(Object.entries(linkConfig.metadata), getFiles))
+  const linkedModulesFiles = unnest(await Promise.map(toPairs(linkConfig.metadata), getFiles))
   linkedModulesFiles.push(jsonToStream(join('.linked_deps', '.config'), linkConfig))
   return linkedModulesFiles
 }
@@ -137,7 +137,7 @@ function jsonToStream(path: string, linkConfig: LinkConfig): BatchStream {
 }
 
 export function getLinkedDepsDirs(linkConfig : LinkConfig): string[] {
-  return Object.values(linkConfig.metadata)
+  return values(linkConfig.metadata)
 }
 
 export const getIgnoredPaths = (root: string): string[] => {
