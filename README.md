@@ -136,18 +136,9 @@ For fine grained control, use only the first script and add `__vtex_ps1` manuall
 
 ### `fish` users
 
-The file `plugins/fish/vtex.fish` defines utilitary functions to get your current vtex environment, account and workspace. You can have access to those functions by copying this file to `~/.config/fish/functions/`.
+If you want a pretty, ready-made Git + VTEX prompt you can copy `plugins/fish/fish_prompt.fish` to the  `~/.config/fish/functions` folder. To see the changes, simply restart your shell by typing `fish`.
 
 ```sh
-cp (npm root -g)/vtex/plugins/fish/vtex.fish ~/.config/fish/functions/
-```
-
-Now, simply use the function `prompt_vtex` wherever you want in your prompt.
-
-**However,** If you just want a pretty, ready-made Git + VTEX prompt you can copy `plugins/fish/fish_prompt.fish` to the same `functions` folder, along with `vtex.fish`. To see the changes, simply restart your shell by typing `fish`.
-
-```sh
-cp (npm root -g)/vtex/plugins/fish/vtex.fish ~/.config/fish/functions/
 cp (npm root -g)/vtex/plugins/fish/fish_prompt.fish ~/.config/fish/functions/
 fish
 ```

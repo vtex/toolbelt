@@ -1,3 +1,25 @@
+function parse_vtex_json
+  cat $HOME/.config/configstore/vtex.json | grep $argv[1] | sed -n 's/.*\:.*\"\(.*\)\".*/\1/p'
+end
+
+function get_vtex_account
+  parse_vtex_json account
+end
+
+function get_vtex_env
+  parse_vtex_json env
+end
+
+function get_vtex_workspace
+  parse_vtex_json workspace
+end
+
+function prompt_vtex
+  if test (get_vtex_workspace 2> /dev/null)
+    echo (get_vtex_env):(get_vtex_account)/(get_vtex_workspace)
+  end
+end
+
 function fish_prompt --description 'Write out the prompt'
 	set -l last_status $status
 
@@ -17,13 +39,13 @@ function fish_prompt --description 'Write out the prompt'
 				commandline -f repaint ^/dev/null
 			end
 		end
-		
+
 		function __fish_repaint_host --on-variable fish_color_host --description "Event handler, repaint when fish_color_host changes"
 			if status --is-interactive
 				commandline -f repaint ^/dev/null
 			end
 		end
-		
+
 		function __fish_repaint_status --on-variable fish_color_status --description "Event handler; repaint when fish_color_status changes"
 			if status --is-interactive
 				commandline -f repaint ^/dev/null
