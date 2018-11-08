@@ -8,7 +8,6 @@ import log from '../../logger'
 import { parseArgs } from '../apps/utils'
 import { removeNpm } from './utils'
 
-const DEFAULT_REGISTRY = 'smartcheckout'
 const { getDependencies, updateDependencies, updateDependency } = apps
 
 const cleanDeps = compose(keys, removeNpm)
@@ -31,7 +30,7 @@ export default async (optionalApp: string, options) => {
         } else {
           try {
             log.debug(`Starting to update ${locator}`)
-            await updateDependency(`${vendor}.${name}`, version, DEFAULT_REGISTRY)
+            await updateDependency(`${vendor}.${name}`, version, vendor)
           } catch (e) {
             log.error(e.message)
           }
