@@ -89,7 +89,8 @@ const publisher = (workspace: string = 'master') => {
 
   const checkActiveToggle = async (): Promise<any> => {
     const http = axios.create({
-      baseURL: `https://vtex.myvtex.com`
+      baseURL: `https://vtex.myvtex.com`,
+      timeout: 15000,
     })
     try {
       const res = await http.get('/_v/private/builder/0/toggle')
@@ -105,9 +106,6 @@ const publisher = (workspace: string = 'master') => {
 
     const manifest = await getManifest()
     const account = getAccount()
-
-    const context = { account: manifest.vendor, workspace, region: region(), authToken: getToken() }
-    const { builder } = createClients(context, { timeout: 60000 })
 
     const activeToggle = await checkActiveToggle()
     if (activeToggle.isActive) {
@@ -127,6 +125,9 @@ const publisher = (workspace: string = 'master') => {
       }
       await switchAccount(manifest.vendor, {})
     }
+
+    const context = { account: manifest.vendor, workspace, region: region(), authToken: getToken() }
+    const { builder } = createClients(context, { timeout: 60000 })
 
     const pubTag = tag || automaticTag(manifest.version)
 
