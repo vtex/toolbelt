@@ -1,3 +1,4 @@
+import axios from 'axios'
 import * as Bluebird from 'bluebird'
 import * as ora from 'ora'
 import { map, prop } from 'ramda'
@@ -8,7 +9,7 @@ import * as inquirer from 'inquirer'
 import { createClients } from '../../clients'
 import { Environment, forceEnvironment, getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
-import { UserCancelledError } from '../../errors'
+import { CommandError, UserCancelledError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
@@ -49,6 +50,14 @@ const promptPublishOnVendor = (msg: string): Bluebird<boolean> =>
   })
     .then<boolean>(prop('confirm'))
 
+const promptConfirmPublishing = (msg: string): Bluebird<string> =>
+  inquirer.prompt({
+    message: msg,
+    name: 'appName',
+    type: 'input',
+  })
+    .then<string>(prop('appName'))
+
 const publisher = (workspace: string = 'master') => {
 
   const publishApp = async (appRoot: string, appId: string, tag: string, builder): Promise<BuildResult> => {
@@ -78,6 +87,19 @@ const publisher = (workspace: string = 'master') => {
     }
   }
 
+  const checkActiveToggle = async (): Promise<any> => {
+    const http = axios.create({
+      baseURL: `https://vtex.myvtex.com`,
+      timeout: 10000,
+    })
+    try {
+      const res = await http.get('/_v/private/builder/0/toggle')
+      return res.data
+    } catch (e) {
+      return {"isActive": false}
+    }
+  }
+
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
     const previousAccount = getAccount()
     const previousWorkspace = getWorkspace()
@@ -85,13 +107,23 @@ const publisher = (workspace: string = 'master') => {
     const manifest = await getManifest()
     const account = getAccount()
 
-    if (manifest.vendor !== account) {
-    const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(manifest.vendor)}?`
-    const canSwitchToVendor = await promptPublishOnVendor(switchToVendorMsg)
-    if (!canSwitchToVendor) {
-      throw new UserCancelledError()
+    const activeToggle = await checkActiveToggle()
+    if (activeToggle.isActive) {
+      const confirmPublishingMsg = `Are you absolutely sure? ${activeToggle.message ? activeToggle.message : ""}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
+      const appNameInput = await promptConfirmPublishing(confirmPublishingMsg)
+      const appToBePublished = `${manifest.vendor}.${manifest.name}`
+      if (appNameInput != appToBePublished) {
+        throw new CommandError(`${appToBePublished} doesn't match with the app name.`)
+      }
     }
-    await switchAccount(manifest.vendor, {})
+
+    if (manifest.vendor !== account) {
+      const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(manifest.vendor)}?`
+      const canSwitchToVendor = await promptPublishOnVendor(switchToVendorMsg)
+      if (!canSwitchToVendor) {
+        throw new UserCancelledError()
+      }
+      await switchAccount(manifest.vendor, {})
     }
 
     const context = { account: manifest.vendor, workspace, region: region(), authToken: getToken() }
