@@ -90,7 +90,7 @@ const publisher = (workspace: string = 'master') => {
   const checkActiveToggle = async (): Promise<any> => {
     const http = axios.create({
       baseURL: `https://vtex.myvtex.com`,
-      timeout: 15000,
+      timeout: 10000,
     })
     try {
       const res = await http.get('/_v/private/builder/0/toggle')
@@ -109,7 +109,7 @@ const publisher = (workspace: string = 'master') => {
 
     const activeToggle = await checkActiveToggle()
     if (activeToggle.isActive) {
-      const confirmPublishingMsg = `We need a confirmation to continue. Reason: ${activeToggle.cause}.\nEnter the name of the app to continue (ex: vtex.getting-started):`
+      const confirmPublishingMsg = `Are you absolutely sure? ${activeToggle.message ? activeToggle.message : ""}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
       const appNameInput = await promptConfirmPublishing(confirmPublishingMsg)
       const appToBePublished = `${manifest.vendor}.${manifest.name}`
       if (appNameInput != appToBePublished) {
