@@ -51,6 +51,7 @@
     "babel-eslint": "^8.2.2",
     "bluebird": "^3.5.0",
     "chalk": "^2.3.2",
+    "child-process-es6-promise": "^1.2.0",
     "chokidar": "^2.0.4",
     "clear-module": "^3.0.0",
     "cli-table": "^0.3.1",
@@ -87,7 +88,8 @@
     "unzip-stream": "^0.3.0",
     "update-notifier": "^2.3.0",
     "winston": "^2.4.0",
-    "ws": "^6.0.0"
+    "ws": "^6.0.0",
+    "yarn": "^1.9.4"
   },
   "preferGlobal": true,
   "devDependencies": {
