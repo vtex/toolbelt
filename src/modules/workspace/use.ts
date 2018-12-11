@@ -17,7 +17,7 @@ const promptWorkspaceCreation = (name: string): Bluebird<boolean> => {
       type: 'confirm',
       name: 'confirm',
       message: 'Do you wish to create it?',
-    }),
+    })
   )
     .then<boolean>(prop('confirm'))
 }

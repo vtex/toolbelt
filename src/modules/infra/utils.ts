@@ -47,7 +47,7 @@ export const diffVersions = (a: string, b: string): [string, string] => {
   const semverB = semver(b)
   const [aMain, bMain] = diff(
     [semverA.major, semverA.minor, semverA.patch],
-    [semverB.major, semverB.minor, semverB.patch],
+    [semverB.major, semverB.minor, semverB.patch]
   )
   const [aPre, bPre] = diff(semverA.prerelease, semverB.prerelease)
   return [stitch(aMain, aPre), stitch(bMain, bPre)]

@@ -20,7 +20,7 @@ const promptUpdate = (): Bluebird<boolean> =>
       name: 'confirm',
       type: 'confirm',
     })
-      .then<boolean>(prop('confirm')),
+      .then<boolean>(prop('confirm'))
   )
 
 const calculateColSize = (names: string[]): number =>
@@ -64,7 +64,7 @@ const hasUpdate = (update: InfraUpdate): boolean =>
 
 const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
   Promise.all(
-    Object.keys(update).map(name => installService(name, update[name].latest)),
+    Object.keys(update).map(name => installService(name, update[name].latest))
   )
 
 export default () => {

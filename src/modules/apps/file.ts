@@ -162,14 +162,14 @@ export const listLocalFiles = (root: string, folder?: string): Promise<string[]>
       follow: true,
       ignore: getIgnoredPaths(root),
       nodir: true,
-    }),
+    })
   )
     .then((files: string[]) =>
       Promise.all(
         files.map(file =>
-          lstat(join(root, file)).then(stats => ({ file, stats })),
-        ),
-      ),
+          lstat(join(root, file)).then(stats => ({ file, stats }))
+        )
+      )
   )
     .then(filesStats =>
       filesStats.reduce((acc, { file, stats }) => {
@@ -177,7 +177,7 @@ export const listLocalFiles = (root: string, folder?: string): Promise<string[]>
           acc.push(file)
         }
         return acc
-      }, []),
+      }, [])
   )
 
 export const addChangeContent = (changes: Change[]): Batch[] =>

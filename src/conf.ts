@@ -39,7 +39,7 @@ export const getWorkspace = (): string =>
 const envFromProcessEnv = {
   'beta': Environment.Staging,
   'prod': Environment.Production,
-  'staging': Environment.Staging
+  'staging': Environment.Staging,
 }
 let forcedEnv = null
 

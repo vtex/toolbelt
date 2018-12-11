@@ -20,7 +20,7 @@ const promptUpdate = (): Bluebird<boolean> =>
       name: 'confirm',
       type: 'confirm',
     })
-      .then<boolean>(prop('confirm')),
+      .then<boolean>(prop('confirm'))
   )
 
 const sameVersion = ({ version, latest }: Manifest) => version === latest

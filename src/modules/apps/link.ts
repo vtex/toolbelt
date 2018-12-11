@@ -63,7 +63,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   }, 300)
 
   const pathToChange = (path: string, remove?: boolean): Change => ({
-    content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'), path : pathModifier(path)
+    content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'), path : pathModifier(path),
   })
 
   const moduleAndMetadata = toPairs(extraData.linkConfig.metadata)
@@ -115,7 +115,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
 const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<void> => {
   const [linkConfig , stickyHint] = await Promise.all([
     createLinkConfig(root),
-    getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
+    getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT),
   ])
 
   const linkOptions = { sticky: true, stickyHint }
@@ -133,7 +133,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
   const [localFiles, linkedFiles] =
     await Promise.all([
       listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
-      getLinkedFiles(linkConfig)
+      getLinkedFiles(linkConfig),
     ])
   const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
 

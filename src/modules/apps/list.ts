@@ -33,7 +33,7 @@ const renderTable = curry<string, string, any, void>(
       table.push([vendor, name, cleanedVersion, linked])
     })
     console.log(`${table.toString()}\n`)
-  },
+  }
 )
 
 export default () => {

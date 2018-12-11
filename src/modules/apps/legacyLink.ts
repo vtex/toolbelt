@@ -36,7 +36,7 @@ const sendChanges = (() => {
         .tap(() => console.log(changesToString(queue, moment().format('HH:mm:ss'))))
         .tap(() => { queue = [] })
     },
-    50,
+    50
   )
   return async (changes: Change[]) => {
     if (changes.length === 0) {

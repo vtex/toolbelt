@@ -7,14 +7,14 @@ import log from './logger'
 const NOT_AVAILABLE = {
   hostname: undefined,
   score: -1000,
-  stickyHint: undefined
+  stickyHint: undefined,
 }
 
 const withTimeout = (promise: Promise<any>, timeout: number) => {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(
       () => reject(new BuilderHubTimeoutError(`Timeout of ${timeout}ms exceeded`)),
-      timeout,
+      timeout
     )
     promise
       .then((res) => {

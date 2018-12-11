@@ -18,7 +18,7 @@ const promptInstall = (): Bluebird<boolean> =>
       name: 'confirm',
       message: 'Continue with the installation?',
     })
-      .then<boolean>(prop('confirm')),
+      .then<boolean>(prop('confirm'))
   )
 
 const findVersion = (pool: string[], predicate: (version: string) => boolean): string =>
@@ -48,7 +48,7 @@ const getNewVersion = curry<string, string, string[], [string, string]>(
           : v => getTag(v) === tag
     const newVersion = findVersion(availableVersions, fn)
     return [installedVersion, newVersion]
-  },
+  }
 )
 
 const logInstall = curry<string, [string, string], void>(
@@ -65,7 +65,7 @@ const logInstall = curry<string, [string, string], void>(
       return console.log(`${name}  ${from} ${chalk.gray('->')} ${to}`)
     }
     return console.log(`${name}  ${chalk.green(newVersion)}`)
-  },
+  }
 )
 
 const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolean =>

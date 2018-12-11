@@ -18,7 +18,7 @@ export default () => {
         const weight = workspace.weight
         const production = workspace.production
         table.push([name, weight, production])
-      }),
+      })
   )
     .then(() => console.log(table.toString()))
 }

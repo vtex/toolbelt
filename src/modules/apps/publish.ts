@@ -96,7 +96,7 @@ const publisher = (workspace: string = 'master') => {
       const res = await http.get('/_v/private/builder/0/toggle')
       return res.data
     } catch (e) {
-      return {"isActive": false}
+      return {'isActive': false}
     }
   }
 
@@ -109,10 +109,10 @@ const publisher = (workspace: string = 'master') => {
 
     const activeToggle = await checkActiveToggle()
     if (activeToggle.isActive) {
-      const confirmPublishingMsg = `Are you absolutely sure? ${activeToggle.message ? activeToggle.message : ""}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
+      const confirmPublishingMsg = `Are you absolutely sure? ${activeToggle.message ? activeToggle.message : ''}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
       const appNameInput = await promptConfirmPublishing(confirmPublishingMsg)
       const appToBePublished = `${manifest.vendor}.${manifest.name}`
-      if (appNameInput != appToBePublished) {
+      if (appNameInput !== appToBePublished) {
         throw new CommandError(`${appToBePublished} doesn't match with the app name.`)
       }
     }

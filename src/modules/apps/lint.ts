@@ -16,7 +16,7 @@ const lint = async (root: string): Promise<any> =>
     .then(() => mkdir(join(root, 'node_modules/.bin')))
     .catch(cond([
       [compose(equals('EEXIST'), path(['code'])), _ => Promise.resolve()],
-      [T, Promise.reject]
+      [T, Promise.reject],
     ]))
     .then(() => copyEslint(join(__dirname, '../../..'), root))
     .then(() => log.info('Successfully copied eslint setup!'))

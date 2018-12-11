@@ -73,5 +73,5 @@ export const listenBuild = (appOrKey: string, triggerBuild: (unlistenBuild?: (re
 
 export const formatNano = (nanoseconds: number): string =>
   `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(
-    0,
+    0
   )}ms`
