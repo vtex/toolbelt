@@ -1,3 +1,4 @@
+import axios from 'axios'
 import chalk from 'chalk'
 import * as Table from 'cli-table2'
 import { createReadStream } from 'fs-extra'
@@ -143,4 +144,40 @@ export function optionsFormatter(billingOptions: BillingOptions) {
   }
   table.push([{ content: chalk.bold('Terms of use:'), hAlign: 'center' }, { content: billingOptions.termsURL, hAlign: 'center' }])
   return table.toString()
+}
+
+export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
+  const http = axios.create({
+    baseURL: `https://calasans--basedevmkp.myvtexdev.com`,
+    timeout: 10000,
+  })
+  try {
+    const res = await http.get(`/_v/private/builder/0/getmessage/${cliRoute}`)
+    return res.data
+  } catch (e) {
+    return {}
+  }
+}
+
+const promptConfirm = (msg: string): Promise<string> =>
+  inquirer.prompt({
+    message: msg,
+    name: 'appName',
+    type: 'input',
+  })
+    .then<string>(prop('appName'))
+
+export async function showBuilderHubMessage(message: string, showPrompt: boolean, manifest: Manifest) {
+  if(message) {
+    if (showPrompt) {
+      const confirmMsg = `Are you absolutely sure?\n${message ? message : ''}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
+      const appNameInput = await promptConfirm(confirmMsg)
+      const AppName = `${manifest.vendor}.${manifest.name}`
+      if (appNameInput !== AppName) {
+        throw new CommandError(`${appNameInput} doesn't match with the app name.`)
+      }
+    } else {
+      console.log(message)
+    }
+  }
 }

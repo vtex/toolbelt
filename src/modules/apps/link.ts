@@ -5,7 +5,7 @@ import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
 import { join, resolve as resolvePath, sep} from 'path'
-import { concat, map, pipe, toPairs } from 'ramda'
+import { concat, isEmpty, map, pipe, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import lint from './lint'
 
@@ -21,7 +21,7 @@ import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
-import { pathToFileObject, validateAppAction } from './utils'
+import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
 
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
@@ -160,6 +160,10 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 export default async (options) => {
   await validateAppAction('link')
   const manifest = await getManifest()
+  const builderHubMessage = await checkBuilderHubMessage('link')
+  if (!isEmpty(builderHubMessage)) {
+    await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
+  }
 
   if (manifest.builders.render
     || manifest.builders['functions-ts']
