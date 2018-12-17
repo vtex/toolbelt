@@ -148,7 +148,7 @@ export function optionsFormatter(billingOptions: BillingOptions) {
 
 export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
   const http = axios.create({
-    baseURL: `https://calasans--basedevmkp.myvtexdev.com`,
+    baseURL: `https://vtex.myvtex.com`,
     timeout: 10000,
   })
   try {
@@ -177,7 +177,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
         throw new CommandError(`${appNameInput} doesn't match with the app name.`)
       }
     } else {
-      console.log(message)
+      log.info(message)
     }
   }
 }
