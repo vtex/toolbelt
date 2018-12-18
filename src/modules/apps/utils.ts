@@ -23,6 +23,9 @@ const workspaceMasterAllowedOperations = [
   'uninstall',
 ]
 
+const builderHubMessagesLinkTimeout = 2000  // 2 seconds
+const builderHubMessagesPublishTimeout = 10000  // 10 seconds
+
 export const workspaceMasterMessage =
   `This action is ${chalk.red('not allowed')} in workspace ${chalk.green('master')}, please use another workspace.
 You can run "${chalk.blue(`vtex use ${workspaceExampleName} -r`)}" to use a workspace named "${chalk.green(workspaceExampleName)}"`
@@ -149,7 +152,7 @@ export function optionsFormatter(billingOptions: BillingOptions) {
 export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
   const http = axios.create({
     baseURL: `https://vtex.myvtex.com`,
-    timeout: 10000,
+    timeout: (cliRoute === 'link') ? builderHubMessagesLinkTimeout : builderHubMessagesPublishTimeout,
   })
   try {
     const res = await http.get(`/_v/private/builder/0/getmessage/${cliRoute}`)
