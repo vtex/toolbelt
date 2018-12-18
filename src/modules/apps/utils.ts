@@ -1,3 +1,4 @@
+import axios from 'axios'
 import chalk from 'chalk'
 import * as Table from 'cli-table2'
 import { createReadStream } from 'fs-extra'
@@ -21,6 +22,9 @@ const workspaceMasterAllowedOperations = [
   'install',
   'uninstall',
 ]
+
+const builderHubMessagesLinkTimeout = 2000  // 2 seconds
+const builderHubMessagesPublishTimeout = 10000  // 10 seconds
 
 export const workspaceMasterMessage =
   `This action is ${chalk.red('not allowed')} in workspace ${chalk.green('master')}, please use another workspace.
@@ -143,4 +147,40 @@ export function optionsFormatter(billingOptions: BillingOptions) {
   }
   table.push([{ content: chalk.bold('Terms of use:'), hAlign: 'center' }, { content: billingOptions.termsURL, hAlign: 'center' }])
   return table.toString()
+}
+
+export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
+  const http = axios.create({
+    baseURL: `https://vtex.myvtex.com`,
+    timeout: (cliRoute === 'link') ? builderHubMessagesLinkTimeout : builderHubMessagesPublishTimeout,
+  })
+  try {
+    const res = await http.get(`/_v/private/builder/0/getmessage/${cliRoute}`)
+    return res.data
+  } catch (e) {
+    return {}
+  }
+}
+
+const promptConfirm = (msg: string): Promise<string> =>
+  inquirer.prompt({
+    message: msg,
+    name: 'appName',
+    type: 'input',
+  })
+    .then<string>(prop('appName'))
+
+export async function showBuilderHubMessage(message: string, showPrompt: boolean, manifest: Manifest) {
+  if(message) {
+    if (showPrompt) {
+      const confirmMsg = `Are you absolutely sure?\n${message ? message : ''}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
+      const appNameInput = await promptConfirm(confirmMsg)
+      const AppName = `${manifest.vendor}.${manifest.name}`
+      if (appNameInput !== AppName) {
+        throw new CommandError(`${appNameInput} doesn't match with the app name.`)
+      }
+    } else {
+      log.info(message)
+    }
+  }
 }

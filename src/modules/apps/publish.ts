@@ -1,7 +1,6 @@
-import axios from 'axios'
 import * as Bluebird from 'bluebird'
 import * as ora from 'ora'
-import { map, prop } from 'ramda'
+import { isEmpty, map, prop } from 'ramda'
 
 import { BuildResult } from '@vtex/api'
 import chalk from 'chalk'
@@ -9,7 +8,7 @@ import * as inquirer from 'inquirer'
 import { createClients } from '../../clients'
 import { Environment, forceEnvironment, getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
-import { CommandError, UserCancelledError } from '../../errors'
+import { UserCancelledError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
@@ -19,7 +18,7 @@ import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { listLocalFiles } from './file'
 import { legacyPublisher } from './legacyPublish'
-import { pathToFileObject } from './utils'
+import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
 
 
 const root = process.cwd()
@@ -50,13 +49,6 @@ const promptPublishOnVendor = (msg: string): Bluebird<boolean> =>
   })
     .then<boolean>(prop('confirm'))
 
-const promptConfirmPublishing = (msg: string): Bluebird<string> =>
-  inquirer.prompt({
-    message: msg,
-    name: 'appName',
-    type: 'input',
-  })
-    .then<string>(prop('appName'))
 
 const publisher = (workspace: string = 'master') => {
 
@@ -87,19 +79,6 @@ const publisher = (workspace: string = 'master') => {
     }
   }
 
-  const checkActiveToggle = async (): Promise<any> => {
-    const http = axios.create({
-      baseURL: `https://vtex.myvtex.com`,
-      timeout: 10000,
-    })
-    try {
-      const res = await http.get('/_v/private/builder/0/toggle')
-      return res.data
-    } catch (e) {
-      return {'isActive': false}
-    }
-  }
-
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
     const previousAccount = getAccount()
     const previousWorkspace = getWorkspace()
@@ -107,14 +86,9 @@ const publisher = (workspace: string = 'master') => {
     const manifest = await getManifest()
     const account = getAccount()
 
-    const activeToggle = await checkActiveToggle()
-    if (activeToggle.isActive) {
-      const confirmPublishingMsg = `Are you absolutely sure? ${activeToggle.message ? activeToggle.message : ''}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
-      const appNameInput = await promptConfirmPublishing(confirmPublishingMsg)
-      const appToBePublished = `${manifest.vendor}.${manifest.name}`
-      if (appNameInput !== appToBePublished) {
-        throw new CommandError(`${appToBePublished} doesn't match with the app name.`)
-      }
+    const builderHubMessage = await checkBuilderHubMessage('publish')
+    if (!isEmpty(builderHubMessage)) {
+      await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
     }
 
     if (manifest.vendor !== account) {
