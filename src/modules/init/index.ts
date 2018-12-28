@@ -15,10 +15,7 @@ const currentFolderName = process.cwd().replace(/.*\//, '')
 const templates = {
   'react getting-started': 'render-getting-started',
   'graphql getting-started': 'product-review-graphql-example',
-  'react+graphql': 'catalogue',
-  'hello graphql': 'hello-graphql',
-  'hello react': 'hello-react',
-  'dreamstore getting-started': 'dreamstore-getting-started',
+  'react+graphql': 'render-guide',
 }
 
 const promptName = async () => {
