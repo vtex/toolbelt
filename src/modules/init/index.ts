@@ -16,6 +16,7 @@ const templates = {
   'react getting-started': 'render-getting-started',
   'graphql getting-started': 'product-review-graphql-example',
   'react+graphql': 'render-guide',
+  'support app': 'hello-support',
 }
 
 const promptName = async () => {
