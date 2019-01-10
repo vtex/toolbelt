@@ -1,4 +1,5 @@
 import { Builder, Change } from '@vtex/api'
+import axios from 'axios'
 import chalk from 'chalk'
 import {execSync} from 'child-process-es6-promise'
 import * as chokidar from 'chokidar'
@@ -6,9 +7,10 @@ import * as debounce from 'debounce'
 import { existsSync, readFileSync, writeFileSync } from 'fs'
 import * as moment from 'moment'
 import { join, resolve as resolvePath, sep} from 'path'
-import { concat, forEachObjIndexed, map, pipe, toPairs } from 'ramda'
+import { concat, has, isEmpty, map, merge, pipe, prop, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
+import {apps} from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
@@ -16,12 +18,12 @@ import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getManifest } from '../../manifest'
 import { listenBuild } from '../build'
-import { formatNano } from '../utils'
+import { formatNano} from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
-import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
 import lint from './lint'
+import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
 
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
@@ -29,35 +31,68 @@ const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
-const reactPackageJsonPath = resolvePath(process.cwd(), 'react/package.json')
+const builderHubInjectedDepsTimeout = 2000  // 2 seconds
 const yarn = join(__dirname, '../../../node_modules/yarn/bin/yarn.js install --force')
 
-const assetServerTypingsBaseURL = (account: string, workspace: string, environment: string): string => {
-  let extension = 'myvtexdev'
-  if (environment === 'prod') {
-    extension = 'myvtex'
+const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
+
+const resolveAppId = async (appName: string, appVersion: string) => await apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
+
+const injectedDependencies = async (builderName: string, builderVersion: string, workspace: string, account: string, environment: string) => {
+  const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'  // Remove this
+  const http = axios.create({
+    baseURL: `https://${workspace}--${account}.${extension}.com`, // change this route!!!
+    timeout: builderHubInjectedDepsTimeout,
+  })
+  try {
+    const res = await http.get(`/_v/private/builder/0/getdeps/${builderName}/${builderVersion}`)
+    return res.data
+  } catch (e) {
+    return {}
   }
-  return `https://${workspace}--${account}.${extension}.com/_v/public/typings/v1`
 }
 
-const getReactTypings = (manifest: Manifest, account: string, workspace: string, environment: string): void => {
-  if (existsSync(reactPackageJsonPath)) {
-  const appDependencies = manifest.dependencies
-    if (appDependencies) {
-      log.info('Exporting app dependencies to react/package.json')
-      const assetServerBaseURL = assetServerTypingsBaseURL(account, workspace, environment)
-      const reactPackageJson = JSON.parse(readFileSync(reactPackageJsonPath, 'utf8'))
-      forEachObjIndexed(
-        (version, appName) => {
-          reactPackageJson.devDependencies[appName] = `${assetServerBaseURL}/${appName}@${version}/react`},
-        appDependencies
-      )
-      writeFileSync(reactPackageJsonPath, JSON.stringify(reactPackageJson, null, 2))
-      log.info('Running yarn in react/')
-      process.chdir('./react')
-      execSync(yarn, {stdio: 'inherit'})
-      process.chdir('../')
-      log.info('Finished running yarn')
+const appTypingsURL = async (account: string, workspace: string, environment: string, appName: string, appVersion: string, builder: string): Promise<string> => {
+  const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'  // Remove this
+  const appId = await resolveAppId(appName, appVersion)
+  const typingsPath = /\+build/.test(appId) ? 'linked/v1' : 'v1'
+  return `https://${workspace}--${account}.${extension}.com/_v/private/typings/${typingsPath}/${appId}/${builder}` // change this route!!!!!!
+}
+
+const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, environment: string, appDependencies: {[key: string]: string}) => {
+  const result: {[key: string]: string} = {}
+  for (const [appName, appVersion] of Object.entries(appDependencies)) {
+    result[appName] = await appTypingsURL(account, workspace, environment, appName, appVersion, builder)
+  }
+  return result
+}
+
+const mergeDevDeps = (currentPackageJson: {[key: string]: any}, newDevDepsEntries: {[key: string]: string}) =>
+  merge(currentPackageJson.devDependencies, newDevDepsEntries)
+
+const runYarn = () => {
+  log.info('Running yarn in ./react/')
+  process.chdir('./react')
+  execSync(yarn, {stdio: 'inherit'})
+  process.chdir('../')
+  log.info('Finished running yarn')
+}
+
+const getTypings = async (builder: string, manifest: Manifest, account: string, workspace: string, environment: string) => {
+  const packageJsonPath = resolvePackageJsonPath(builder)
+  if (existsSync(packageJsonPath)) {
+    if (has(builder, manifest.builders)) {
+      const declaredDependencies = manifest.dependencies
+      const implicitDependencies = await injectedDependencies(builder, manifest.builders[builder], workspace, account, environment)
+      const appDependencies = merge(declaredDependencies, implicitDependencies)
+      if (appDependencies) {
+        log.info('Exporting app dependencies to react/package.json')
+        const reactPackageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+        const newDevDepsEntries = await appsWithTypingsURLs(builder, account, workspace, environment, appDependencies)
+        reactPackageJson.devDependencies = mergeDevDeps(reactPackageJson, newDevDepsEntries)
+        writeFileSync(packageJsonPath, JSON.stringify(reactPackageJson, null, 2))
+        runYarn()
+      }
     }
   }
 }
@@ -210,7 +245,7 @@ export default async (options) => {
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  getReactTypings(manifest, context.account, context.workspace, context.environment)
+  await getTypings('react', manifest, context.account, context.workspace, context.environment)  // remove the await?
   const { builder } = createClients(context, { timeout: 60000 })
 
   if (options.c || options.clean) {
@@ -243,7 +278,7 @@ export default async (options) => {
   try {
     const buildTrigger = performInitialLink.bind(this, appId, builder, extraData)
     const [subject] = appId.split('@')
-    const { unlisten } = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError })
+    const { unlisten } = await listenBuild(subject, buildTrigger, { waitCompletion: true, onBuild, onError })
     unlistenBuild = unlisten
   } catch (e) {
     if (e.response) {
