@@ -23,7 +23,7 @@ const workspaceMasterAllowedOperations = [
   'uninstall',
 ]
 
-export const builderHubMessagesLinkTimeout = 2000  // 2 seconds
+const builderHubMessagesLinkTimeout = 2000  // 2 seconds
 const builderHubMessagesPublishTimeout = 10000  // 10 seconds
 
 export const workspaceMasterMessage =
