@@ -122,10 +122,7 @@ const publisher = (workspace: string = 'master') => {
             spinner.succeed(`${appId} was published successfully!`)
         }
       } catch (e) {
-        spinner.fail(`Fail to publish ${appId}`)
-        log.error(e.message)
-        await switchToPreviousAccount(previousAccount, previousWorkspace)
-        throw e
+        spinner.fail(`Failed to publish ${appId}`)
       }
     }
     await switchToPreviousAccount(previousAccount, previousWorkspace)
