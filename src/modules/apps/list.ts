@@ -34,10 +34,12 @@ const renderTable = (
     const table = new Table({
       head: !short && ['Vendor', 'Name', 'Version', 'Linked'],
       ...(short && {
-        chars: { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': ''
-          , 'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': ''
-          , 'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': ''
-          , 'right': '' , 'right-mid': '' , 'middle': '   ' },
+        chars: {
+          'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': '',
+          'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': '',
+          'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': '',
+          'right': '' , 'right-mid': '' , 'middle': '   '
+        },
         style: { 'padding-left': 0, 'padding-right': 0 }
       }),
     })
