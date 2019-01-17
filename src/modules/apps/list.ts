@@ -50,7 +50,7 @@ const renderTable = (
       const cleanedVersion = cleanVersion(version)
 
       table.push(short
-        ? [`${chalk.black(vendor)}.${name}`, cleanedVersion, linkedLabel]
+        ? [`${chalk.gray(vendor)}.${name}`, cleanedVersion, linkedLabel]
         : [vendor, name, cleanedVersion, linkedLabel]
       )
     })
