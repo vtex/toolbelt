@@ -1,4 +1,4 @@
-### Unreleased
+### v2.35.0 (2018-01-17)
 
 Features:
 - Add `--short` option to `list`
