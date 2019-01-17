@@ -111,8 +111,8 @@ export default {
         long: 'short',
         short: 's',
         type: 'boolean',
-      }
-    ]
+      },
+    ],
   },
   local: {
     manifest: {
