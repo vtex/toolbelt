@@ -1,3 +1,8 @@
+### Unreleased
+
+Features:
+- Add `--short` option to `list`
+
 ### v0.19.2 (2016-05-19)
 
 Travis deploy test
