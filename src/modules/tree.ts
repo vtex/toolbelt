@@ -105,6 +105,14 @@ export default {
     alias: 'ls',
     description: 'List your installed VTEX apps',
     handler: './apps/list',
+    options: [
+      {
+        description: 'Short version, without table lines',
+        long: 'short',
+        short: 's',
+        type: 'boolean',
+      }
+    ]
   },
   local: {
     manifest: {
