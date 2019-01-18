@@ -184,3 +184,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
     }
   }
 }
+
+export const switchAccountMessage = (previousAccount: string, currentAccount: string): string => {
+  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
+}

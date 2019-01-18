@@ -10,14 +10,11 @@ import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
 import switchAccount from '../auth/switch'
 import { parseLocator, toAppLocator } from './../../locator'
-import { parseArgs } from './utils'
+import { parseArgs, switchAccountMessage } from './utils'
 
 let originalAccount
 let originalWorkspace
 
-const switchAccountMessage = (previousAccount: string, currentAccount: string): string => {
-  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
-}
 
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to deprecate this app in an account that differs from the indicated vendor. Do you want to deprecate in account ${chalk.blue(vendor)}?`

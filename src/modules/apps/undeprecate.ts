@@ -10,15 +10,11 @@ import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
 import switchAccount from '../auth/switch'
 import { parseLocator, toAppLocator } from './../../locator'
-import { parseArgs } from './utils'
+import { parseArgs, switchAccountMessage } from './utils'
 
 const undeprecateRequestTimeOut = 10000  // 10 seconds
 let originalAccount
 let originalWorkspace
-
-const switchAccountMessage = (previousAccount: string, currentAccount: string): string => {
-  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
-}
 
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to undeprecate this app in an account that differs from the indicated vendor. Do you want to undeprecate in account ${chalk.blue(vendor)}?`
@@ -65,12 +61,16 @@ const undeprecateApp = async (app: string): Promise<AxiosResponse> => {
   // `undeprecateApp` method in node-vtex-api and upgrade the library version
   // used in this project.
   const http = axios.create({
-    baseURL: `http://apps.aws-us-east-1.vtex.io`,
+    baseURL: `http://apps.aws-us-east-1.vtex.io/`,
     timeout: undeprecateRequestTimeOut,
-    data: {deprecated: false},
-    headers: {Authorization: getToken()},
+    headers: {
+      'Authorization': getToken(),
+      'Content-Type': 'application/json',
+    },
   })
-  return await http.patch(`/${vendor}/master/registry/${vendor}.${name}/${version}`)
+  const finalroute = `http://apps.aws-us-east-1.vtex.io/${vendor}/master/registry/${vendor}.${name}/${version}`
+  console.log(finalroute)
+  return await http.patch(finalroute, {deprecated: false})
 }
 
 const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
@@ -89,7 +89,8 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
       log.error(`Error undeprecating ${app}. App not found`)
     } else if (e.message && e.response.statusText) {
       log.error(`Error undeprecating ${app}. ${e.message}. ${e.response.statusText}`)
-      return await switchToPreviousAccount(originalAccount, originalWorkspace)
+      await switchToPreviousAccount(originalAccount, originalWorkspace)
+      return
     } else {
       await switchToPreviousAccount(originalAccount, originalWorkspace)
       throw e
@@ -107,6 +108,6 @@ export default async (optionalApp: string, options) => {
   if (!preConfirm && !await promptUndeprecate(appsList)) {
     throw new UserCancelledError()
   }
-  log.debug('Undeprecating app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
+  log.debug(`Undeprecating app ${appsList.length > 1 ? 's' : ''} : ${appsList.join(', ')}`)
   return prepareUndeprecate(appsList)
 }
