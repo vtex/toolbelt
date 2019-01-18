@@ -41,7 +41,8 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
   if (previousAccount !== currentAccount) {
     const canSwitchToPrevious = await promptUndeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
-      return await switchAccount(previousAccount, {workspace: previousWorkspace})
+      await switchAccount(previousAccount, {workspace: previousWorkspace})
+      return
     }
   }
   return
