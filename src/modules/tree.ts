@@ -21,6 +21,11 @@ export default {
     handler: './apps/deprecate',
     optionalArgs: 'app',
   },
+  undeprecate: {
+    description: 'Undeprecate app(s)',
+    handler: './apps/undeprecate',
+    optionalArgs: 'app',
+  },
   deps: {
     list: {
       alias: 'ls',
