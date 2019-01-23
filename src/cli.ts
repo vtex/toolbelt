@@ -51,12 +51,12 @@ const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
-const validToken = () => {
+const validToken = (): boolean => {
   const token = getToken()
   if (!token) { return false }
 
-  const decoded = decode(token, {complete: true})
-  if (Number(decoded.payload.exp) < (Date.now() / 1000)) { return false }
+  const decoded = decode(token)
+  if (decoded === null || typeof decoded === 'string' || decoded.exp === undefined || Number(decoded.exp) < (Date.now() / 1000)) { return false }
 
   return true
 }
