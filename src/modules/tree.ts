@@ -177,8 +177,8 @@ export default {
     options: [
       {
         description: 'Specify account to give support to',
-        long: 'supportedAccount',
-        short: 's',
+        long: 'account',
+        short: 'a',
         type: 'string',
       },
     ],
