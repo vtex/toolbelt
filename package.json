@@ -67,6 +67,7 @@
     "fs-extra": "^7.0.0",
     "get-stream": "^4.0.0",
     "globby": "^8.0.1",
+    "inquirer": "^6.3.1",
     "js-yaml": "^3.13.0",
     "jsonwebtoken": "^8.2.0",
     "latest-version": "^4.0.0",
