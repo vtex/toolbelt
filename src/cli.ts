@@ -56,7 +56,8 @@ const validToken = (): boolean => {
   if (!token) { return false }
 
   const decoded = decode(token)
-  if (decoded === null || typeof decoded === 'string' || decoded.exp === undefined || Number(decoded.exp) < (Date.now() / 1000)) { return false }
+  if (decoded === null || typeof decoded === 'string' || decoded.exp === undefined) { return false }
+  if (Number(decoded.exp) < (Date.now() / 1000)) { return false }
 
   return true
 }
