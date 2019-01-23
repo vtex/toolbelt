@@ -51,13 +51,12 @@ const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
-const validToken = (): boolean => {
+const hasValidToken = (): boolean => {
   const token = getToken()
   if (!token) { return false }
 
   const decoded = decode(token)
-  if (decoded === null || typeof decoded === 'string' || decoded.exp === undefined) { return false }
-  if (Number(decoded.exp) < (Date.now() / 1000)) { return false }
+  if (!decoded || !decoded.exp || Number(decoded.exp) < (Date.now() / 1000)) { return false }
 
   return true
 }
@@ -65,7 +64,7 @@ const validToken = (): boolean => {
 const checkLogin = args => {
   const first = args[0]
   const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version']
-  if (!validToken() && whitelist.indexOf(first) === -1) {
+  if (!hasValidToken() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
     return run({ command: loginCmd })
   }
