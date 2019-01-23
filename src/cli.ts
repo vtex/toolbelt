@@ -4,6 +4,7 @@ import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
+import { decode } from 'jsonwebtoken'
 import * as moment from 'moment'
 import * as path from 'path'
 import { reject, without } from 'ramda'
@@ -50,10 +51,20 @@ const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
+const hasValidToken = (): boolean => {
+  const token = getToken()
+  if (!token) { return false }
+
+  const decoded = decode(token)
+  if (!decoded || !decoded.exp || Number(decoded.exp) < (Date.now() / 1000)) { return false }
+
+  return true
+}
+
 const checkLogin = args => {
   const first = args[0]
   const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version']
-  if (!getToken() && whitelist.indexOf(first) === -1) {
+  if (!hasValidToken() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
     return run({ command: loginCmd })
   }
