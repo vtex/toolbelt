@@ -23,7 +23,7 @@ import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import lint from './lint'
-import { checkBuilderHubMessage, pathToFileObject, resolveAppId, showBuilderHubMessage, validateAppAction } from './utils'
+import { checkBuilderHubMessage, pathToFileObject, isLinked, resolveAppId, showBuilderHubMessage, validateAppAction } from './utils'
 
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
@@ -54,7 +54,7 @@ const typingsInfo = async (workspace: string, account: string, environment: stri
 const appTypingsURL = async (account: string, workspace: string, environment: string, appName: string, appVersion: string, builder: string): Promise<string> => {
   const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'  // Remove this
   const appId = await resolveAppId(appName, appVersion)
-  const typingsPath = /\+build/.test(appId) ? 'linked/v1' : 'v1'
+  const typingsPath = isLinked(appId) ? 'linked/v1' : 'v1'
   return `https://${workspace}--${account}.${extension}.com/_v/private/typings/${typingsPath}/${appId}/${builder}` // change this route!!!!!!
 }
 
