@@ -1,7 +1,7 @@
 import { Builder, Change } from '@vtex/api'
 import axios from 'axios'
 import chalk from 'chalk'
-import {execSync} from 'child-process-es6-promise'
+import { execSync } from 'child-process-es6-promise'
 import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
@@ -32,7 +32,6 @@ const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 const builderHubInjectedDepsTimeout = 2000  // 2 seconds
-const yarn = join(__dirname, '../../../node_modules/yarn/bin/yarn.js install --force')
 
 const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
 
@@ -54,7 +53,7 @@ const typingsInfo = async (workspace: string, account: string, environment: stri
 const appTypingsURL = async (account: string, workspace: string, environment: string, appName: string, appVersion: string, builder: string): Promise<string> => {
   const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'  // Remove this
   const appId = await resolveAppId(appName, appVersion)
-  const typingsPath = isLinked(appId) ? 'linked/v1' : 'v1'
+  const typingsPath = isLinked({'version': appId}) ? 'linked/v1' : 'v1'
   return `https://${workspace}--${account}.${extension}.com/_v/private/typings/${typingsPath}/${appId}/${builder}` // change this route!!!!!!
 }
 
@@ -67,10 +66,11 @@ const appsWithTypingsURLs = async (builder: string, account: string, workspace: 
 }
 
 const runYarn = (relativePath: string) => {
-  log.info('Running yarn in ./react/')
-  process.chdir(`./${relativePath}`)
-  execSync(yarn, {stdio: 'inherit'})
-  process.chdir('../')
+  log.info(`Running yarn in ${relativePath}`)
+  execSync(
+    join(__dirname, '../../../node_modules/yarn/bin/yarn.js --force'),
+    {stdio: 'inherit', cwd: `./${relativePath}`}
+  )
   log.info('Finished running yarn')
 }
 
@@ -92,6 +92,7 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
       ramdaReject(isNil)
     )(manifest)
 
+
   const buildersWithAppDeps =
     pipe(
       mapObjIndexed(
@@ -99,6 +100,7 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
       ),
       ramdaReject(isEmpty)
     )(buildersWithInjectedDeps as Record<string, any>)
+
 
   const buildersToRunYarn = await pipe(
     mapObjIndexed(
@@ -134,7 +136,7 @@ const warnAndLinkFromStart = (appId: string, builder: Builder, extraData: { link
   return null
 }
 
-const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, manifest: Manifest, context: any): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
@@ -199,7 +201,6 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     watcher
       .on('add', (file, { size }) => size > 0 ? queueChange(file) : null)
       .on('change', (file, { size }) => {
-        getTypings(manifest, context.account, context.workspace, context.environment)
         return size > 0
           ? queueChange(file)
           : queueChange(file, true)
@@ -336,5 +337,5 @@ export default async (options) => {
       process.exit()
     })
 
-  await watchAndSendChanges(appId, builder, extraData, manifest, context)
+  await watchAndSendChanges(appId, builder, extraData)
 }
