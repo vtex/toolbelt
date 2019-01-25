@@ -136,7 +136,7 @@ const warnAndLinkFromStart = (appId: string, builder: Builder, extraData: { link
   return null
 }
 
-const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, manifest: Manifest, context: any): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
@@ -201,7 +201,6 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     watcher
       .on('add', (file, { size }) => size > 0 ? queueChange(file) : null)
       .on('change', (file, { size }) => {
-        if (!/package\.json$/.test(file)) { getTypings(manifest, context.account, context.workspace, context.environment) }
         return size > 0
           ? queueChange(file)
           : queueChange(file, true)
@@ -338,5 +337,5 @@ export default async (options) => {
       process.exit()
     })
 
-  await watchAndSendChanges(appId, builder, extraData, manifest, context)
+  await watchAndSendChanges(appId, builder, extraData)
 }
