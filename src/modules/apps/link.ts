@@ -23,7 +23,7 @@ import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import lint from './lint'
-import { checkBuilderHubMessage, pathToFileObject, isLinked, resolveAppId, showBuilderHubMessage, validateAppAction } from './utils'
+import { checkBuilderHubMessage, isLinked, pathToFileObject, resolveAppId, showBuilderHubMessage, validateAppAction } from './utils'
 
 const root = process.cwd()
 const DELETE_SIGN = chalk.red('D')
@@ -92,7 +92,6 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
       ramdaReject(isNil)
     )(manifest)
 
-
   const buildersWithAppDeps =
     pipe(
       mapObjIndexed(
@@ -101,33 +100,34 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
       ramdaReject(isEmpty)
     )(buildersWithInjectedDeps as Record<string, any>)
 
-
-  const buildersToRunYarn = await pipe(
-    mapObjIndexed(
-      async (appDeps: Record<string, any>, builder: string) => {
-        const packageJsonPath = resolvePackageJsonPath(builder)
-        if (await pathExists(packageJsonPath)) {
-          const packageJson = await readJson(packageJsonPath)
-          const oldDevDeps = packageJson.devDependencies
-          const newDevDeps = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
-          const mergedDevDeps = merge(oldDevDeps, newDevDeps)
-          if (!equals(oldDevDeps, mergedDevDeps)) {
-            await outputJson(
-              packageJsonPath,
-              { ...packageJson, ...{ 'devDependencies': mergedDevDeps } },
-              { spaces: '\t' }
-            )
-            return builder
+  const buildersToRunYarn = ramdaReject(isNil,
+    await pipe(
+      mapObjIndexed(
+        async (appDeps: Record<string, any>, builder: string) => {
+          const packageJsonPath = resolvePackageJsonPath(builder)
+          if (await pathExists(packageJsonPath)) {
+            const packageJson = await readJson(packageJsonPath)
+            const oldDevDeps = packageJson.devDependencies
+            const newDevDeps = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
+            const mergedDevDeps = merge(oldDevDeps, newDevDeps)
+            if (!equals(oldDevDeps, mergedDevDeps)) {
+              await outputJson(
+                packageJsonPath,
+                { ...packageJson, ...{ 'devDependencies': mergedDevDeps } },
+                { spaces: '\t' }
+              )
+              return builder
+            }
           }
+          return null
         }
-        return null
-      }
-    ),
-    values,
-    Promise.all
-  )(buildersWithAppDeps as Record<string, any>)
+      ),
+      values,
+      Promise.all
+    )(buildersWithAppDeps as Record<string, any>)
+  )
 
-  map(runYarn)(ramdaReject(isNil, buildersToRunYarn))
+  map(runYarn)(buildersToRunYarn)
 }
 
 const warnAndLinkFromStart = (appId: string, builder: Builder, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
@@ -136,7 +136,7 @@ const warnAndLinkFromStart = (appId: string, builder: Builder, extraData: { link
   return null
 }
 
-const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, manifest: Manifest, context: any): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
@@ -201,6 +201,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     watcher
       .on('add', (file, { size }) => size > 0 ? queueChange(file) : null)
       .on('change', (file, { size }) => {
+        if (!/package\.json$/.test(file)) { getTypings(manifest, context.account, context.workspace, context.environment) }
         return size > 0
           ? queueChange(file)
           : queueChange(file, true)
@@ -337,5 +338,5 @@ export default async (options) => {
       process.exit()
     })
 
-  await watchAndSendChanges(appId, builder, extraData)
+  await watchAndSendChanges(appId, builder, extraData, manifest, context)
 }
