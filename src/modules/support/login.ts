@@ -59,6 +59,10 @@ const saveSupportCredentials = (account: string, token: string): void => {
 
 export default async ({ a, account, _ }) => {
   const supportedAccount = account || a || (_ && _[0])
+  if (!supportedAccount) {
+    log.error(`Please specify the account that will receive support. type vtex --help for more information.`)
+    return
+  }
   const actualToken = getToken()
   const region = env.region()
   try {
