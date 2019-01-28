@@ -47,7 +47,7 @@ const loginAsRole = async (region: string, token: string, supportedAccount: stri
 
 const assertToken = (raw: string): void => {
   if (!jwt.decode(raw)) {
-    throw Error('Could not validate new token!')
+    throw Error(`Could not validate new token! token = '${raw}'`)
   }
 }
 
@@ -70,6 +70,10 @@ export default async ({ a, account, _ }) => {
     saveSupportCredentials(supportedAccount, newToken)
   }
   catch (err) {
+    if (err.message) {
+      log.error(err.message)
+      return
+    }
     log.error(err)
   }
 }
