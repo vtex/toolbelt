@@ -46,6 +46,7 @@ const typingsInfo = async (workspace: string, account: string, environment: stri
     const res = await http.get(`/_v/private/builder/0/typings`)
     return res.data.typingsInfo
   } catch (e) {
+    log.error('Unable to get typings info from vtex.builder-hub')
     return {}
   }
 }
