@@ -37,9 +37,9 @@ const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `
 
 
 const typingsInfo = async (workspace: string, account: string, environment: string) => {
-  const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'  // Remove this
+  const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'
   const http = axios.create({
-    baseURL: `https://${workspace}--${account}.${extension}.com`, // change this route!!!
+    baseURL: `https://${workspace}--${account}.${extension}.com`,
     timeout: builderHubInjectedDepsTimeout,
   })
   try {
@@ -52,10 +52,10 @@ const typingsInfo = async (workspace: string, account: string, environment: stri
 }
 
 const appTypingsURL = async (account: string, workspace: string, environment: string, appName: string, appVersion: string, builder: string): Promise<string> => {
-  const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'  // Remove this
+  const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'
   const appId = await resolveAppId(appName, appVersion)
   const typingsPath = isLinked({'version': appId}) ? 'linked/v1' : 'v1'
-  return `https://${workspace}--${account}.${extension}.com/_v/private/typings/${typingsPath}/${appId}/${builder}` // change this route!!!!!!
+  return `https://${workspace}--${account}.${extension}.com/_v/private/typings/${typingsPath}/${appId}/${builder}`
 }
 
 const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, environment: string, appDependencies: Record<string, any>) => {
