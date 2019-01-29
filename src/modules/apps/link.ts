@@ -8,7 +8,7 @@ import { readFileSync } from 'fs'
 import { outputJson, pathExists, readJson } from 'fs-extra'
 import * as moment from 'moment'
 import { join, resolve as resolvePath, sep} from 'path'
-import { concat, equals, has, isEmpty, isNil, map, mapObjIndexed, merge, path as ramdaPath, pipe, prop, reject as ramdaReject, toPairs, values } from 'ramda'
+import { concat, equals, filter, has, isEmpty, isNil, map, mapObjIndexed, merge, path as ramdaPath, pipe, prop, reject as ramdaReject, test, toPairs, values } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
@@ -46,7 +46,7 @@ const typingsInfo = async (workspace: string, account: string, environment: stri
     const res = await http.get(`/_v/private/builder/0/typings`)
     return res.data.typingsInfo
   } catch (e) {
-    log.error('Unable to get typings info from vtex.builder-hub')
+    log.error('Unable to get typings info from vtex.builder-hub.')
     return {}
   }
 }
@@ -104,17 +104,25 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
   const buildersToRunYarn = ramdaReject(isNil,
     await pipe(
       mapObjIndexed(
+        // If Yarn should be run in a builder, the following entry will be
+        // present in the object: {`builder`: `builder`}.
+        // If not, this entry will be in the object: {`builder`: null}. These
+        // entries will then be rejected.
         async (appDeps: Record<string, any>, builder: string) => {
           const packageJsonPath = resolvePackageJsonPath(builder)
           if (await pathExists(packageJsonPath)) {
             const packageJson = await readJson(packageJsonPath)
-            const oldDevDeps = packageJson.devDependencies
-            const newDevDeps = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
-            const mergedDevDeps = merge(oldDevDeps, newDevDeps)
-            if (!equals(oldDevDeps, mergedDevDeps)) {
+            const oldDevDeps = packageJson.devDependencies || {}
+            const oldTypingsEntries = filter(test(/_v\/private\/typings/), oldDevDeps)
+            const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
+            if (!equals(oldTypingsEntries, newTypingsEntries)) {
+              const cleanOldDevDeps = ramdaReject(test(/_v\/private\/typings/), oldDevDeps)
               await outputJson(
                 packageJsonPath,
-                { ...packageJson, ...{ 'devDependencies': mergedDevDeps } },
+                {
+                  ...packageJson,
+                  ...{ 'devDependencies': { ...cleanOldDevDeps, ...newTypingsEntries } },
+                },
                 { spaces: '\t' }
               )
               return builder
@@ -279,7 +287,9 @@ export default async (options) => {
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  await getTypings(manifest, context.account, context.workspace, context.environment)
+  if (options.install || options.i) {
+    await getTypings(manifest, context.account, context.workspace, context.environment)
+  }
   const { builder } = createClients(context, { timeout: 60000 })
 
   if (options.c || options.clean) {
