@@ -104,6 +104,12 @@ export default {
         short: 'c',
         type: 'boolean',
       },
+      {
+        description: 'Add app dependencies to package.json and run Yarn',
+        long: 'install',
+        short: 'i',
+        type: 'boolean',
+      },
     ],
   },
   list: {

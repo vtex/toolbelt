@@ -4,10 +4,10 @@ import * as Table from 'cli-table2'
 import { createReadStream } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import { join } from 'path'
-import { __, compose, concat, contains, curry, drop, head, last, prop, reduce, split, tail } from 'ramda'
+import { __, compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail } from 'ramda'
 import * as semverDiff from 'semver-diff'
 
-import { createClients } from '../../clients'
+import { apps, createClients } from '../../clients'
 import { getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
@@ -188,3 +188,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
 export const switchAccountMessage = (previousAccount: string, currentAccount: string): string => {
   return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
 }
+
+export const resolveAppId = async (appName: string, appVersion: string) =>  await apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
+
+export const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')

@@ -21,10 +21,8 @@ declare global {
     title?: string,
     vendor?: string,
     version: string,
-    dependencies?: {},
-    builders?: {
-      [builder: string]: string
-    },
+    dependencies?: Record<string, string>,
+    builders?: Record<string, string>,
     settingsSchema?: {},
     description?: string,
     categories?: string[],
