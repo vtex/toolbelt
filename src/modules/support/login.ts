@@ -72,10 +72,14 @@ export default async ({ a, account, _ }) => {
     const newToken = await loginAsRole(region, actualToken, supportedAccount, role)
     assertToken(newToken)
     saveSupportCredentials(supportedAccount, newToken)
+    log.info(`Logged into ${chalk.blue(supportedAccount)} with role ${role}!`)
   }
   catch (err) {
     if (err.message) {
       log.error(err.message)
+      if (err.response && err.response.status === 404) {
+        log.info('Make sure vtex.support-authority is installed in your workspace.')
+      }
       return
     }
     log.error(err)
