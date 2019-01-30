@@ -34,6 +34,7 @@ const N_HOSTS = 3
 const builderHubTypingsInfoTimeout = 2000  // 2 seconds
 const typingsPath = 'public/_types'
 const yarnPath = require.resolve('yarn/bin/yarn')
+const typingsURLRegex = /_v\/\w*\/typings/
 
 const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
 
@@ -114,12 +115,12 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
         if (await pathExists(packageJsonPath)) {
           const packageJson = await readJson(packageJsonPath)
           const oldDevDeps = packageJson.devDependencies || {}
-          const oldTypingsEntries = filter(test(/_v\/\w*\/typings/), oldDevDeps)
+          const oldTypingsEntries = filter(test(typingsURLRegex), oldDevDeps)
           const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
           console.log(oldTypingsEntries)
           console.log(newTypingsEntries)
           if (!equals(oldTypingsEntries, newTypingsEntries)) {
-            const cleanOldDevDeps = ramdaReject(test(/_v\/\w*\/typings/), oldDevDeps)
+            const cleanOldDevDeps = ramdaReject(test(typingsURLRegex), oldDevDeps)
             await outputJson(
               packageJsonPath,
               {
