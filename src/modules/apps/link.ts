@@ -114,10 +114,12 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
         if (await pathExists(packageJsonPath)) {
           const packageJson = await readJson(packageJsonPath)
           const oldDevDeps = packageJson.devDependencies || {}
-          const oldTypingsEntries = filter(test(/_v\/private\/typings/), oldDevDeps)
+          const oldTypingsEntries = filter(test(/_v\/\w*\/typings/), oldDevDeps)
           const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
+          console.log(oldTypingsEntries)
+          console.log(newTypingsEntries)
           if (!equals(oldTypingsEntries, newTypingsEntries)) {
-            const cleanOldDevDeps = ramdaReject(test(/_v\/private\/typings/), oldDevDeps)
+            const cleanOldDevDeps = ramdaReject(test(/_v\/\w*\/typings/), oldDevDeps)
             await outputJson(
               packageJsonPath,
               {
