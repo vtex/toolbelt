@@ -73,7 +73,6 @@ const appsWithTypingsURLs = async (builder: string, account: string, workspace: 
 }
 
 const runYarn = (relativePath: string) => {
-  console.log(yarnPath)
   log.info(`Running yarn in ${relativePath}`)
   execSync(
     `${yarnPath} --force`,
@@ -117,8 +116,6 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
           const oldDevDeps = packageJson.devDependencies || {}
           const oldTypingsEntries = filter(test(typingsURLRegex), oldDevDeps)
           const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
-          console.log(oldTypingsEntries)
-          console.log(newTypingsEntries)
           if (!equals(oldTypingsEntries, newTypingsEntries)) {
             const cleanOldDevDeps = ramdaReject(test(typingsURLRegex), oldDevDeps)
             await outputJson(
