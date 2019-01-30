@@ -31,16 +31,17 @@ const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
-const builderHubInjectedDepsTimeout = 2000  // 2 seconds
+const builderHubTypingsInfoTimeout = 2000  // 2 seconds
+const typingsPath = 'public/_types'
+const yarnPath = require.resolve('yarn/bin/yarn')
 
 const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
-
 
 const typingsInfo = async (workspace: string, account: string, environment: string) => {
   const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'
   const http = axios.create({
     baseURL: `https://${workspace}--${account}.${extension}.com`,
-    timeout: builderHubInjectedDepsTimeout,
+    timeout: builderHubTypingsInfoTimeout,
   })
   try {
     const res = await http.get(`/_v/private/builder/0/typings`)
@@ -54,22 +55,27 @@ const typingsInfo = async (workspace: string, account: string, environment: stri
 const appTypingsURL = async (account: string, workspace: string, environment: string, appName: string, appVersion: string, builder: string): Promise<string> => {
   const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'
   const appId = await resolveAppId(appName, appVersion)
-  const typingsPath = isLinked({'version': appId}) ? 'linked/v1' : 'v1'
-  return `https://${workspace}--${account}.${extension}.com/_v/private/typings/${typingsPath}/${appId}/${builder}`
+  const assetServerPath = isLinked({'version': appId}) ? 'private/typings/linked/v1' : 'public/typings/v1'
+  return `https://${workspace}--${account}.${extension}.com/_v/${assetServerPath}/${appId}/${typingsPath}/${builder}`
 }
 
 const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, environment: string, appDependencies: Record<string, any>) => {
   const result: Record<string, any> = {}
   for (const [appName, appVersion] of Object.entries(appDependencies)) {
-    result[appName] = await appTypingsURL(account, workspace, environment, appName, appVersion, builder)
+    try {
+      result[appName] = await appTypingsURL(account, workspace, environment, appName, appVersion, builder)
+    } catch (e) {
+      log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
+    }
   }
   return result
 }
 
 const runYarn = (relativePath: string) => {
+  console.log(yarnPath)
   log.info(`Running yarn in ${relativePath}`)
   execSync(
-    join(__dirname, '../../../node_modules/yarn/bin/yarn.js --force'),
+    `${yarnPath} --force`,
     {stdio: 'inherit', cwd: `./${relativePath}`}
   )
   log.info('Finished running yarn')
@@ -101,42 +107,40 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
       ramdaReject(isEmpty)
     )(buildersWithInjectedDeps as Record<string, any>)
 
-  const buildersToRunYarn = ramdaReject(isNil,
-    await pipe(
-      mapObjIndexed(
-        // If Yarn should be run in a builder, the following entry will be
-        // present in the object: {`builder`: `builder`}.
-        // If not, this entry will be in the object: {`builder`: null}. These
-        // entries will then be rejected.
-        async (appDeps: Record<string, any>, builder: string) => {
-          const packageJsonPath = resolvePackageJsonPath(builder)
-          if (await pathExists(packageJsonPath)) {
-            const packageJson = await readJson(packageJsonPath)
-            const oldDevDeps = packageJson.devDependencies || {}
-            const oldTypingsEntries = filter(test(/_v\/private\/typings/), oldDevDeps)
-            const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
-            if (!equals(oldTypingsEntries, newTypingsEntries)) {
-              const cleanOldDevDeps = ramdaReject(test(/_v\/private\/typings/), oldDevDeps)
-              await outputJson(
-                packageJsonPath,
-                {
-                  ...packageJson,
-                  ...{ 'devDependencies': { ...cleanOldDevDeps, ...newTypingsEntries } },
-                },
-                { spaces: '\t' }
-              )
-              return builder
+  await pipe(
+    mapObjIndexed(
+      async (appDeps: Record<string, any>, builder: string) => {
+        const packageJsonPath = resolvePackageJsonPath(builder)
+        if (await pathExists(packageJsonPath)) {
+          const packageJson = await readJson(packageJsonPath)
+          const oldDevDeps = packageJson.devDependencies || {}
+          const oldTypingsEntries = filter(test(/_v\/private\/typings/), oldDevDeps)
+          const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
+          if (!equals(oldTypingsEntries, newTypingsEntries)) {
+            const cleanOldDevDeps = ramdaReject(test(/_v\/private\/typings/), oldDevDeps)
+            await outputJson(
+              packageJsonPath,
+              {
+                ...packageJson,
+                ...{ 'devDependencies': { ...cleanOldDevDeps, ...newTypingsEntries } },
+              },
+              { spaces: '\t' }
+            )
+            try {
+              runYarn(builder)
+            } catch (e) {
+              log.error(`Error running Yarn in ${builder}.`)
+              await outputJson(packageJsonPath, packageJson)  // Revert package.json to original state.
             }
-          }
-          return null
-        }
-      ),
-      values,
-      Promise.all
-    )(buildersWithAppDeps as Record<string, any>)
-  )
 
-  map(runYarn)(buildersToRunYarn)
+          }
+        }
+      }
+    ),
+    values,
+    Promise.all
+  )(buildersWithAppDeps as Record<string, any>)
+
 }
 
 const warnAndLinkFromStart = (appId: string, builder: Builder, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
