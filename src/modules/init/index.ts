@@ -3,19 +3,19 @@ import chalk from 'chalk'
 import { outputJson, readJson } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import * as moment from 'moment'
+import { basename, join } from 'path'
 import { keys, prop } from 'ramda'
 import log from '../../logger'
-import { manifestPath } from '../../manifest'
+import { manifestPath as rootManifestPath } from '../../manifest'
 import * as git from './git'
 
 const { mapSeries } = Bluebird
+const manifestFileName = basename(rootManifestPath)
 
 const currentFolderName = process.cwd().replace(/.*\//, '')
 
 const templates = {
-  'react getting-started': 'render-getting-started',
-  'graphql getting-started': 'product-review-graphql-example',
-  'react+graphql': 'render-guide',
+  'dreamstore': 'dreamstore',
 }
 
 const promptName = async () => {
@@ -71,10 +71,10 @@ const promptTemplates = async (): Promise<string> => {
   return chosen
 }
 
-const promptContinue = async () => {
+const promptContinue = async (repoName: string) => {
   const proceed = prop('proceed', await inquirer.prompt({
     name: 'proceed',
-    message: `You are about to remove all files in ${process.cwd()}. Do you want to continue?`,
+    message: `You are about to create the new folder ${process.cwd()}/${repoName}. Do you want to continue?`,
     type: 'confirm',
   }))
   if (!proceed) {
@@ -110,7 +110,8 @@ export default async () => {
   log.info('Hello! I will help you generate basic files and folders for your app.')
   try {
     const repo = templates[await promptTemplates()]
-    await promptContinue()
+    const manifestPath = join(process.cwd(), repo, manifestFileName)
+    await promptContinue(repo)
     log.info(`Cloning https://vtex-apps/${repo}.git`)
     const [, [name, vendor, title, description]]: any = await Bluebird.all([
       git.clone(repo),
