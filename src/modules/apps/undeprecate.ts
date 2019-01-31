@@ -70,7 +70,6 @@ const undeprecateApp = async (app: string): Promise<AxiosResponse> => {
     },
   })
   const finalroute = `http://apps.aws-us-east-1.vtex.io/${vendor}/master/registry/${vendor}.${name}/${version}`
-  console.log(finalroute)
   return await http.patch(finalroute, {deprecated: false})
 }
 
