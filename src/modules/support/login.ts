@@ -28,7 +28,7 @@ const promptRoles = async (roles: string[]): Promise<string> => {
     choices: [...roles, cancel],
   }))
   if (chosen === cancel) {
-    console.info('Bye! o/')
+    log.info('Bye! o/')
     return process.exit()
   }
   return chosen
