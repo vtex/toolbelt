@@ -39,6 +39,7 @@ const loginAsRole = async (region: string, token: string, supportedAccount: stri
     {
       headers: {
         'Authorization': token,
+        'X-Vtex-Original-Credential': token,
       },
     }
   )
