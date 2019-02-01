@@ -40,7 +40,7 @@ const renderTable = (
           'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': '',
           'right': '' , 'right-mid': '' , 'middle': '   ',
         },
-        style: { 'padding-left': 0, 'padding-right': 0 }
+        style: { 'padding-left': 0, 'padding-right': 0 },
       }),
     })
 
