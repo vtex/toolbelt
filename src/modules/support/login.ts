@@ -69,8 +69,11 @@ export default async ({ a, account, _ }) => {
   const region = env.region()
   try {
     const roles = await getAvailableRoles(region, actualToken, supportedAccount)
+    if (roles.length === 0) {
+      log.error('No support roles available for this account.')
+      return
+    }
     const role = await promptRoles(roles)
-    console.log({ role })
     const newToken = await loginAsRole(region, actualToken, supportedAccount, role)
     assertToken(newToken)
     saveSupportCredentials(supportedAccount, newToken)
