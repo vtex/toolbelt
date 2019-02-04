@@ -1,4 +1,6 @@
 ### Unreleased
+Features:
+- `vtex release` command analogous to `releasy`
 
 Features:
 - Enable running commands inside subdirectories
@@ -27,7 +29,7 @@ Breaking:
 
 Fixes:
 - `webpack-dev-server` redirect without port
- 
+
 Updates:
 - `shelljs` to v0.7.0
 - `update-notifier` to v0.7.0
@@ -59,7 +61,7 @@ Features:
 
 Updates:
 - `eslint-plugin-react` to v5.0.1
-- Add the sandbox name on webpack's `publicPath` 
+- Add the sandbox name on webpack's `publicPath`
 
 ---
 
@@ -94,7 +96,7 @@ Breaks:
 Fixes:
 - [Fix chalk usage](https://github.com/vtex/toolbelt/commit/fb974d345f5480fb5879ce7971c3f6fa3e34d3d2)
 - [Use stable gallery endpoints](https://github.com/vtex/toolbelt/commit/abe9b41f04c644e9e5ca3ca6211a01b88b78ee45)
- 
+
 Updates deps:
 - shelljs -> 0.6.0
 - glob -> 7.0.0
