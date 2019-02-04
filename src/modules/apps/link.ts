@@ -11,7 +11,7 @@ import { join, resolve as resolvePath, sep} from 'path'
 import { concat, equals, filter, has, isEmpty, isNil, map, mapObjIndexed, merge, path as ramdaPath, pipe, prop, reject as ramdaReject, test, toPairs, values } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getWorkspace } from '../../conf'
+import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
@@ -39,13 +39,16 @@ const typingsURLRegex = /_v\/\w*\/typings/
 const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
 
 const typingsInfo = async (workspace: string, account: string, environment: string) => {
-  const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'
+  const extension = (environment === 'prod') ? '1' : '2'
   const http = axios.create({
-    baseURL: `https://${workspace}--${account}.${extension}.com`,
+    baseURL: `http://builder-hub.vtex.aws-us-east-${extension}.vtex.io/${account}/${workspace}`,
     timeout: builderHubTypingsInfoTimeout,
+    headers: {
+      'Authorization': getToken(),
+    },
   })
   try {
-    const res = await http.get(`/_v/private/builder/0/typings`)
+    const res = await http.get(`/_v/builder/0/typings`)
     return res.data.typingsInfo
   } catch (e) {
     log.error('Unable to get typings info from vtex.builder-hub.')
