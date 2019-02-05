@@ -59,25 +59,24 @@ const saveSupportCredentials = (account: string, token: string): void => {
   saveToken(token)
 }
 
-export default async ({ a, account, _ }) => {
-  const supportedAccount = account || a || (_ && _[0])
-  if (!supportedAccount) {
+export default async (account: string) => {
+  if (!account) {
     log.error(`Please specify the account that will receive support. type vtex --help for more information.`)
     return
   }
   const actualToken = getToken()
   const region = env.region()
   try {
-    const roles = await getAvailableRoles(region, actualToken, supportedAccount)
+    const roles = await getAvailableRoles(region, actualToken, account)
     if (roles.length === 0) {
       log.error('No support roles available for this account.')
       return
     }
     const role = await promptRoles(roles)
-    const newToken = await loginAsRole(region, actualToken, supportedAccount, role)
+    const newToken = await loginAsRole(region, actualToken, account, role)
     assertToken(newToken)
-    saveSupportCredentials(supportedAccount, newToken)
-    log.info(`Logged into ${chalk.blue(supportedAccount)} with role ${role}!`)
+    saveSupportCredentials(account, newToken)
+    log.info(`Logged into ${chalk.blue(account)} with role ${role}!`)
   }
   catch (err) {
     if (err.message) {

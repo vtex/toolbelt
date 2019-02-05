@@ -174,14 +174,7 @@ export default {
   support: {
     description: 'Login as support into another VTEX account',
     handler: './support/login',
-    options: [
-      {
-        description: 'Specify account to give support to',
-        long: 'account',
-        short: 'a',
-        type: 'string',
-      },
-    ],
+    requiredArgs: ['account'],
   },
   logout: {
     description: 'Logout of the current VTEX account',
