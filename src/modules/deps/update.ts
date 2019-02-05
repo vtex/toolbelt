@@ -13,16 +13,17 @@ const { getDependencies, updateDependencies, updateDependency } = apps
 const cleanDeps = compose(keys, removeNpm)
 
 export default async (optionalApp: string, options) => {
-
   const appsList = prepend(optionalApp, parseArgs(options._))
     .filter(arg => arg && arg !== '')
   try {
-    log.debug('Starting update process')
+    log.debug('Starting update process.')
     const previousDeps = await getDependencies()
     let currentDeps
     if (appsList.length === 0) {
+      log.debug('Updating all current dependencies.')
       currentDeps = await updateDependencies()
     } else {
+      log.debug('Updating the following dependencies:', appsList)
       await Promise.mapSeries(appsList, async (locator: string) => {
         const { vendor, name, version } = parseLocator(locator)
         if (!name || !version) {
@@ -32,12 +33,13 @@ export default async (optionalApp: string, options) => {
             log.debug(`Starting to update ${locator}`)
             await updateDependency(`${vendor}.${name}`, version, vendor)
           } catch (e) {
-            log.error(e.message)
+            log.error(`Failed to update ${locator}`, e)
           }
         }
       })
       currentDeps = await getDependencies()
     }
+    log.debug('Cleaning deps.')
     const [cleanPrevDeps, cleanCurrDeps] = map(cleanDeps, [previousDeps, currentDeps])
     const diff = diffJson(cleanPrevDeps, cleanCurrDeps)
     let nAdded = 0
@@ -56,11 +58,12 @@ export default async (optionalApp: string, options) => {
     } else {
       if (nAdded > 0) {
         log.info('', nAdded, nAdded > 1 ? ' dependencies ' : ' dependency ', chalk.green('added'), ' successfully')
-      } if (nRemoved > 0) {
+      }
+      if (nRemoved > 0) {
         log.info('', nRemoved, nRemoved > 1 ? ' dependencies ' : 'dependency ', chalk.red('removed'), ' successfully')
       }
     }
   } catch (e) {
-    log.error(e.message)
+    log.error('deps update failed:', e)
   }
 }
