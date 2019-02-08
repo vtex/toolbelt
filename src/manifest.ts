@@ -9,14 +9,14 @@ const readFileUtf = async (file: string): Promise<string> => {
   return await readFile(file, 'utf8')
 }
 
-export const manifestFilename = 'manifest.json'
+export const manifestFileName = 'manifest.json'
 
 export const getAppRoot = () => {
   const cwd = process.cwd()
 
   const find = dir => {
     try {
-      accessSync(path.join(dir, manifestFilename))
+      accessSync(path.join(dir, manifestFileName))
       return dir
     } catch (e) {
       if (dir === '/') {
@@ -34,11 +34,11 @@ export const namePattern = '[\\w_-]+'
 export const vendorPattern = '[\\w_-]+'
 export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
-export const manifestPath = path.resolve(getAppRoot(), manifestFilename)
+export const getManifestPath = () => path.resolve(getAppRoot(), manifestFileName)
 
 export const isManifestReadable = async (): Promise<boolean> => {
   try {
-    await readFileUtf(manifestPath)
+    await readFileUtf(getManifestPath())
     return true
   } catch (error) {
     return false
@@ -89,7 +89,7 @@ export const validateApp = (app: string, skipVersion: boolean = false) => {
 }
 
 export const getManifest = memoize(async (): Promise<Manifest> => {
-  const manifest = parseManifest(await readFileUtf(manifestPath))
+  const manifest = parseManifest(await readFileUtf(getManifestPath()))
   validateAppManifest(manifest)
   return manifest
 })

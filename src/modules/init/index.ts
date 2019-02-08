@@ -3,14 +3,13 @@ import chalk from 'chalk'
 import { outputJson, readJson } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import * as moment from 'moment'
-import { basename, join } from 'path'
+import { join } from 'path'
 import { keys, prop } from 'ramda'
 import log from '../../logger'
-import { manifestPath as rootManifestPath } from '../../manifest'
+import { manifestFileName } from '../../manifest'
 import * as git from './git'
 
 const { mapSeries } = Bluebird
-const manifestFileName = basename(rootManifestPath)
 
 const currentFolderName = process.cwd().replace(/.*\//, '')
 
