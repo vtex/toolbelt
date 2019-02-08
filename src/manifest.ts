@@ -13,14 +13,17 @@ export const manifestFileName = 'manifest.json'
 
 export const getAppRoot = () => {
   const cwd = process.cwd()
+  const { root: rootDirName } = path.parse(cwd)
 
   const find = dir => {
     try {
       accessSync(path.join(dir, manifestFileName))
       return dir
     } catch (e) {
-      if (dir === '/') {
-        throw new CommandError(`Manifest file doesn't exist or is not readable. Please add a manifest.json file in the root of the app folder.`)
+      if (dir === rootDirName) {
+        throw new CommandError(
+          `Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app.`
+        )
       }
 
       return find(path.resolve(dir, '..'))
