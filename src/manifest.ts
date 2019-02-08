@@ -1,3 +1,4 @@
+import { accessSync } from 'fs'
 import { readFile } from 'fs-extra'
 import * as path from 'path'
 import { memoize } from 'ramda'
@@ -5,18 +6,35 @@ import { memoize } from 'ramda'
 import { CommandError } from './errors'
 
 const readFileUtf = async (file: string): Promise<string> => {
-  try {
-    return await readFile(file, 'utf8')
-  } catch (e) {
-    throw new CommandError(`Manifest file doesn't exist or is not readable. Please add a manifest.json file in the root of the app folder.`)
+  return await readFile(file, 'utf8')
+}
+
+export const manifestFilename = 'manifest.json'
+
+export const getAppRoot = () => {
+  const cwd = process.cwd()
+
+  const find = dir => {
+    try {
+      accessSync(path.join(dir, manifestFilename))
+      return dir
+    } catch (e) {
+      if (dir === '/') {
+        throw new CommandError(`Manifest file doesn't exist or is not readable. Please add a manifest.json file in the root of the app folder.`)
+      }
+
+      return find(path.resolve(dir, '..'))
+    }
   }
+
+  return find(cwd)
 }
 
 export const namePattern = '[\\w_-]+'
 export const vendorPattern = '[\\w_-]+'
 export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
-export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
+export const manifestPath = path.resolve(getAppRoot(), manifestFilename)
 
 export const isManifestReadable = async (): Promise<boolean> => {
   try {
