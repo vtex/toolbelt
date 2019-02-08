@@ -1,3 +1,8 @@
+### Unreleased
+
+Features:
+- Enable linking in any subdirectory of the app
+
 ### v2.35.0 (2018-01-17)
 
 Features:
