@@ -9,7 +9,7 @@ const readFileUtf = async (file: string): Promise<string> => {
   return await readFile(file, 'utf8')
 }
 
-export const manifestFileName = 'manifest.json'
+export const MANIFEST_FILE_NAME = 'manifest.json'
 
 export const getAppRoot = () => {
   const cwd = process.cwd()
@@ -17,7 +17,7 @@ export const getAppRoot = () => {
 
   const find = dir => {
     try {
-      accessSync(path.join(dir, manifestFileName))
+      accessSync(path.join(dir, MANIFEST_FILE_NAME))
       return dir
     } catch (e) {
       if (dir === rootDirName) {
@@ -37,7 +37,7 @@ export const namePattern = '[\\w_-]+'
 export const vendorPattern = '[\\w_-]+'
 export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
-export const getManifestPath = () => path.resolve(getAppRoot(), manifestFileName)
+export const getManifestPath = () => path.resolve(getAppRoot(), MANIFEST_FILE_NAME)
 
 export const isManifestReadable = async (): Promise<boolean> => {
   try {

@@ -6,7 +6,7 @@ import * as moment from 'moment'
 import { join } from 'path'
 import { keys, prop } from 'ramda'
 import log from '../../logger'
-import { manifestFileName } from '../../manifest'
+import { MANIFEST_FILE_NAME } from '../../manifest'
 import * as git from './git'
 
 const { mapSeries } = Bluebird
@@ -109,7 +109,7 @@ export default async () => {
   log.info('Hello! I will help you generate basic files and folders for your app.')
   try {
     const repo = templates[await promptTemplates()]
-    const manifestPath = join(process.cwd(), repo, manifestFileName)
+    const manifestPath = join(process.cwd(), repo, MANIFEST_FILE_NAME)
     await promptContinue(repo)
     log.info(`Cloning https://vtex-apps/${repo}.git`)
     const [, [name, vendor, title, description]]: any = await Bluebird.all([
