@@ -63,7 +63,7 @@ const hasValidToken = (): boolean => {
 
 const checkLogin = args => {
   const first = args[0]
-  const whitelist = [undefined, 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version']
+  const whitelist = [undefined, 'config', 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version']
   if (!hasValidToken() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
     return run({ command: loginCmd })
