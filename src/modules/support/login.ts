@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import * as jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
-import { getAccount, getToken, getWorkspace, saveAccount, saveToken } from '../../conf'
+import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../../conf'
 import * as env from '../../env'
 import log from '../../logger'
 
@@ -56,7 +56,7 @@ const assertToken = (raw: string): void => {
 
 const saveSupportCredentials = (account: string, token: string): void => {
   saveAccount(account)
-  // saveWorkspace('master')
+  saveWorkspace('master')
   saveToken(token)
 }
 
