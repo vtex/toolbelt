@@ -3,14 +3,13 @@ import chalk from 'chalk'
 import { outputJson, readJson } from 'fs-extra'
 import * as inquirer from 'inquirer'
 import * as moment from 'moment'
-import { basename, join } from 'path'
+import { join } from 'path'
 import { keys, prop } from 'ramda'
 import log from '../../logger'
-import { manifestPath as rootManifestPath } from '../../manifest'
+import { MANIFEST_FILE_NAME } from '../../manifest'
 import * as git from './git'
 
 const { mapSeries } = Bluebird
-const manifestFileName = basename(rootManifestPath)
 
 const currentFolderName = process.cwd().replace(/.*\//, '')
 
@@ -110,7 +109,7 @@ export default async () => {
   log.info('Hello! I will help you generate basic files and folders for your app.')
   try {
     const repo = templates[await promptTemplates()]
-    const manifestPath = join(process.cwd(), repo, manifestFileName)
+    const manifestPath = join(process.cwd(), repo, MANIFEST_FILE_NAME)
     await promptContinue(repo)
     log.info(`Cloning https://vtex-apps/${repo}.git`)
     const [, [name, vendor, title, description]]: any = await Bluebird.all([

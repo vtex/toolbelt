@@ -1,3 +1,4 @@
+import { accessSync } from 'fs'
 import { readFile } from 'fs-extra'
 import * as path from 'path'
 import { memoize } from 'ramda'
@@ -5,22 +6,42 @@ import { memoize } from 'ramda'
 import { CommandError } from './errors'
 
 const readFileUtf = async (file: string): Promise<string> => {
-  try {
-    return await readFile(file, 'utf8')
-  } catch (e) {
-    throw new CommandError(`Manifest file doesn't exist or is not readable. Please add a manifest.json file in the root of the app folder.`)
+  return await readFile(file, 'utf8')
+}
+
+export const MANIFEST_FILE_NAME = 'manifest.json'
+
+export const getAppRoot = () => {
+  const cwd = process.cwd()
+  const { root: rootDirName } = path.parse(cwd)
+
+  const find = dir => {
+    try {
+      accessSync(path.join(dir, MANIFEST_FILE_NAME))
+      return dir
+    } catch (e) {
+      if (dir === rootDirName) {
+        throw new CommandError(
+          `Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app.`
+        )
+      }
+
+      return find(path.resolve(dir, '..'))
+    }
   }
+
+  return find(cwd)
 }
 
 export const namePattern = '[\\w_-]+'
 export const vendorPattern = '[\\w_-]+'
 export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
-export const manifestPath = path.resolve(process.cwd(), 'manifest.json')
+export const getManifestPath = () => path.resolve(getAppRoot(), MANIFEST_FILE_NAME)
 
 export const isManifestReadable = async (): Promise<boolean> => {
   try {
-    await readFileUtf(manifestPath)
+    await readFileUtf(getManifestPath())
     return true
   } catch (error) {
     return false
@@ -71,7 +92,7 @@ export const validateApp = (app: string, skipVersion: boolean = false) => {
 }
 
 export const getManifest = memoize(async (): Promise<Manifest> => {
-  const manifest = parseManifest(await readFileUtf(manifestPath))
+  const manifest = parseManifest(await readFileUtf(getManifestPath()))
   validateAppManifest(manifest)
   return manifest
 })

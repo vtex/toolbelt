@@ -17,7 +17,7 @@ import { CommandError } from '../../errors'
 import log from '../../logger'
 import {
   getManifest,
-  manifestPath,
+  getManifestPath,
   namePattern,
   vendorPattern,
   wildVersionPattern,
@@ -54,7 +54,7 @@ const updateManifestDependencies = (app: string, version: string): Promise<void>
       }
     })
     .then((newManifest: Manifest) => JSON.stringify(newManifest, null, 2) + '\n')
-    .then((manifestJson: string) => writeFile(manifestPath, manifestJson))
+    .then((manifestJson: string) => writeFile(getManifestPath(), manifestJson))
 }
 
 const addApp = (app: string): Promise<void> => {
