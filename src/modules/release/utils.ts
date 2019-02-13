@@ -79,19 +79,19 @@ const runCommand = (
   hideSuccessMessage = false,
   hideOutput = false
 ) => {
+  let output
   if (!dryRun) {
-    let output
     try {
       output = execSync(cmd, {stdio: hideOutput ? 'pipe' : ['inherit', 'pipe']})
     } catch(e) {
       log.error(`Command '${cmd}' exited with error code: ${e.code}`)
       throw e
     }
-    if (!hideSuccessMessage) {
-      log.info(successMessage + chalk.blue(` >  ${cmd}`))
-    }
-    return output
   }
+  if (!hideSuccessMessage) {
+    log.info(successMessage + chalk.blue(` >  ${cmd}`))
+  }
+  return output
 }
 
 const runScript = (
