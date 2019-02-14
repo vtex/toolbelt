@@ -5,26 +5,35 @@ import * as inquirer from 'inquirer'
 import * as moment from 'moment'
 import { join } from 'path'
 import { keys, prop } from 'ramda'
+
+import { getAccount } from '../../conf'
 import log from '../../logger'
 import { MANIFEST_FILE_NAME } from '../../manifest'
+
 import * as git from './git'
 
 const { mapSeries } = Bluebird
 
-const currentFolderName = process.cwd().replace(/.*\//, '')
-
 const templates = {
-  'dreamstore': 'dreamstore',
+  'store-theme': 'store-theme',
 }
 
-const promptName = async () => {
+const titles = {
+  'store-theme': 'Store Theme',
+}
+
+const descriptions = {
+  'store-theme': 'VTEX IO Store Theme',
+}
+
+const promptName = async (repo: string) => {
   const message = 'The app name should only contain numbers, lowercase letters, underscores and hyphens.'
   return prop('name', await inquirer.prompt({
     name: 'name',
     message: 'What\'s your VTEX app name?',
     validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
     filter: s => s.trim(),
-    default: currentFolderName,
+    default: repo,
   }))
 }
 
@@ -35,23 +44,25 @@ const promptVendor = async () => {
     message: 'What\'s your VTEX app vendor?',
     validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
     filter: s => s.trim(),
-    default: null,
+    default: getAccount(),
   }))
 }
 
-const promptTitle = async () => {
+const promptTitle = async (repo: string) => {
   return prop('title', await inquirer.prompt({
     name: 'title',
     message: 'What\'s your VTEX app title?',
     filter: s => s.trim(),
+    default: titles[repo],
   }))
 }
 
-const promptDescription = async () => {
+const promptDescription = async (repo: string) => {
   return prop('description', await inquirer.prompt({
     name: 'description',
     message: 'What\'s your VTEX app description?',
     filter: s => s.trim(),
+    default: descriptions[repo],
   }))
 }
 
@@ -82,13 +93,13 @@ const promptContinue = async (repoName: string) => {
   }
 }
 
-const manifestFromPrompt = async () => {
-  return mapSeries([
+const manifestFromPrompt = async (repo: string) => {
+  return mapSeries<any, string>([
     promptName,
     promptVendor,
     promptTitle,
     promptDescription,
-  ], f => f())
+  ], f => f(repo))
 }
 
 const createManifest = (name: string, vendor: string, title = '', description = ''): Manifest => {
@@ -114,12 +125,12 @@ export default async () => {
     log.info(`Cloning https://vtex-apps/${repo}.git`)
     const [, [name, vendor, title, description]]: any = await Bluebird.all([
       git.clone(repo),
-      manifestFromPrompt(),
+      manifestFromPrompt(repo),
     ])
     const synthetic = createManifest(name, vendor, title, description)
     const manifest: any = Object.assign(await readJson(manifestPath) || {}, synthetic)
     await outputJson(manifestPath, manifest, { spaces: 2 })
-    log.info(`Run ${chalk.bold.green('vtex link')} to start developing!`)
+    log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
   } catch (err) {
     log.error(err.message)
     err.printStackTrace()
