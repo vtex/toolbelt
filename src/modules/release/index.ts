@@ -74,7 +74,7 @@ export default async (
   const [month, day, year] = new Date()
     .toLocaleDateString(
       'en-US',
-      {year: '2-digit', month: '2-digit', day: '2-digit'}
+      {year: 'numeric', month: '2-digit', day: '2-digit'}
     ).split('/')
 
   // Pachamama v2 requires that version tags start with a 'v' character.
