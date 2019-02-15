@@ -21,7 +21,7 @@ const pretty = p => p ? chalk.green('production mode') : chalk.red('development 
 export default async (production: any) => {
   let prod
 
-  if (production === null || production === 'true') {
+  if (production === null || production === 'true' || production === undefined) {
     prod = true
   } else if (production === 'false') {
     prod = false
