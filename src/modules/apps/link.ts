@@ -1,4 +1,5 @@
 import { Builder, Change } from '@vtex/api'
+import * as retry from 'async-retry'
 import axios from 'axios'
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
@@ -228,12 +229,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
 }
 
 const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<void> => {
-  const [linkConfig , stickyHint] = await Promise.all([
-    createLinkConfig(root),
-    getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT),
-  ])
-
-  const linkOptions = { sticky: true, stickyHint }
+  const linkConfig = await createLinkConfig(root)
 
   extraData.linkConfig = linkConfig
 
@@ -257,19 +253,38 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
   log.debug('Sending files')
   filesWithContent.forEach(p => log.debug(p.path))
 
-  try {
-    const { code } = await builder.linkApp(appId, filesWithContent, linkOptions)
-    if (code !== 'build.accepted') {
-      throw new Error('Please, update your builder-hub to the latest version!')
+  const retryOpts = {
+    retries: 2,
+    minTimeout: 1000,
+    factor: 2,
+  }
+
+  const linkApp = async (bail: any, tryCount: number) => {
+    // wrapper for builder.linkApp to be used with the retry function below.
+    if (tryCount > 1) {
+      log.info(`Retrying...${tryCount-1}`)
     }
-  } catch (e) {
-    const data = e.response && e.response.data
-    if (data && data.code && data.code === 'build_in_progress') {
-      log.warn(`Build for ${appId} is already in progress`)
-    } else {
-      throw e
+    let linkOptions
+    const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
+    linkOptions = { sticky: true, stickyHint }
+    try {
+      const { code } = await builder.linkApp(appId, filesWithContent, linkOptions)
+      if (code !== 'build.accepted') {
+        bail(new Error('Please, update your builder-hub to the latest version!'))
+      }
+    } catch (err) {
+      const data = err.response && err.response.data
+      if (data && data.code && data.code === 'build_in_progress') {
+        log.warn(`Build for ${appId} is already in progress`)
+        bail()
+      }
+      const statusMessage = err.response.status ?
+        `: Status ${err.response.status}` : null
+      log.error(`Error linking app${statusMessage}`)
+      throw err
     }
   }
+  await retry(linkApp, retryOpts)
 }
 
 export default async (options) => {
