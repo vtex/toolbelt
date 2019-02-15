@@ -2777,7 +2777,7 @@ find-up@^3.0.0:
   dependencies:
     locate-path "^3.0.0"
 
-findhelp@^1.0.4:
+findhelp@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/findhelp/-/findhelp-1.1.0.tgz#5e7e8f911635235ecf0dd47a306f941a305b2367"
   integrity sha512-fQ6DjHejGlejExSkmqNAhEvWCbmClFBHNpy4qnrXLdSyyXmHmucIz5vSQNWBK/sgZK+WtHdxqvqZY2DSBQLsog==
