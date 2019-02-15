@@ -12,7 +12,7 @@ const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 const canGoLive = async (): Promise<void> => {
   const links = await listLinks()
   if (links.length > 0) {
-    throw new CommandError(`You have links on your workspace. Please unlink all apps (${chalk.blue('vtex unlink --all')}) before setting production mode`)
+    throw new CommandError(`You have links on your workspace. Please try another workspace or reset this one (${chalk.blue('vtex workspace reset ' + currentWorkspace)}) before setting production mode`)
   }
 }
 
