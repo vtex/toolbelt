@@ -497,6 +497,15 @@ ajv@^6.5.3, ajv@^6.5.5, ajv@^6.6.1:
     json-schema-traverse "^0.4.1"
     uri-js "^4.2.2"
 
+align-text@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/align-text/-/align-text-1.0.2.tgz#d35cf1c99bc16089af1b2a887683adcb7e6ca68a"
+  integrity sha512-uBPDs72zrRTdiTBY0YjBbuBOdXtRyT4qsKPb4bL4O7vH4utz/7KjwTJVsVbdThxMbVzkRGAfk8Ml3xoMvXSEYw==
+  dependencies:
+    kind-of "^5.0.2"
+    longest "^2.0.1"
+    repeat-string "^1.6.1"
+
 ansi-align@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-2.0.0.tgz#c36aeccba563b89ceb556f3690f0b1d9e3547f7f"
@@ -1590,6 +1599,14 @@ caseless@~0.12.0:
   version "0.12.0"
   resolved "https://registry.yarnpkg.com/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
+
+center-align@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/center-align/-/center-align-1.0.1.tgz#2a1fdfdb6cd0dd2d25fbfcf6751e746b313e50a4"
+  integrity sha1-Kh/f22zQ3S0l+/z2dR50azE+UKQ=
+  dependencies:
+    align-text "^1.0.0"
+    repeat-string "^1.6.1"
 
 chainsaw@~0.1.0:
   version "0.1.0"
@@ -3978,7 +3995,7 @@ kind-of@^4.0.0:
   dependencies:
     is-buffer "^1.1.5"
 
-kind-of@^5.0.0:
+kind-of@^5.0.0, kind-of@^5.0.2:
   version "5.1.0"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-5.1.0.tgz#729c91e2d857b7a419a1f9aa65685c4c33f5845d"
   integrity sha512-NGEErnH6F2vUuXDh+OlbcKW7/wOcfdRHaZ7VWtqCztfHri/++YKmP51OdWeGPuqCOba6kk2OTe5d02VmTB80Pw==
@@ -4204,6 +4221,11 @@ log-symbols@^2.2.0:
   integrity sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==
   dependencies:
     chalk "^2.0.1"
+
+longest@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/longest/-/longest-2.0.1.tgz#781e183296aa94f6d4d916dc335d0d17aefa23f8"
+  integrity sha1-eB4YMpaqlPbU2RbcM10NF676I/g=
 
 longjohn@^0.2.12:
   version "0.2.12"
