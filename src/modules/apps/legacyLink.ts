@@ -7,7 +7,7 @@ import { createInterface } from 'readline'
 
 import chalk from 'chalk'
 import { changesToString } from '../../apps'
-import { apps, colossus } from '../../clients'
+import { apps, events } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import { currentContext } from '../../conf'
 import { region } from '../../env'
@@ -49,7 +49,7 @@ const sendChanges = (() => {
 })()
 
 const cleanCache = (manifest: Manifest): Bluebird<void> => {
-  return colossus.sendEvent('-', 'cleanCache', {
+  return events.sendEvent('-', 'cleanCache', {
     id: toAppLocator(manifest),
     type: 'clean',
   })
