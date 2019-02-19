@@ -264,9 +264,8 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     if (tryCount > 1) {
       log.info(`Retrying...${tryCount-1}`)
     }
-    let linkOptions
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-    linkOptions = { sticky: true, stickyHint }
+    const linkOptions = { sticky: true, stickyHint }
     try {
       const { code } = await builder.linkApp(appId, filesWithContent, linkOptions)
       if (code !== 'build.accepted') {
@@ -279,8 +278,8 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
         bail()
       }
       const statusMessage = err.response.status ?
-        `: Status ${err.response.status}` : null
-      log.error(`Error linking app${statusMessage}`)
+        `: Status ${err.response.status}` : ''
+      log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
       throw err
     }
   }

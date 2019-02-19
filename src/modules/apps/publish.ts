@@ -66,14 +66,13 @@ const publisher = (workspace: string = 'master') => {
       if (tryCount > 1) {
         log.info(`Retrying...${tryCount-1}`)
       }
-      let publishOptions
       const stickyHint = await getMostAvailableHost(
         appId,
         builder,
         N_HOSTS,
         AVAILABILITY_TIMEOUT
       )
-      publishOptions = {
+      const publishOptions = {
         sticky: true,
         stickyHint,
         tag,
@@ -87,8 +86,8 @@ const publisher = (workspace: string = 'master') => {
           bail()
         }
         const statusMessage = err.response.status ?
-          `: Status ${err.response.status}` : null
-        log.error(`Error publishing app${statusMessage}`)
+          `: Status ${err.response.status}` : ''
+        log.error(`Error publishing app${statusMessage} (try: ${tryCount})`)
         throw err
       }
     }
