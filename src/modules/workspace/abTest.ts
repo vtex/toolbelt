@@ -43,7 +43,7 @@ export default async (optionWeight: number) => {
   } else if (Number.isInteger(optionWeight) && optionWeight >= 0) {
     weight = optionWeight
   } else {
-    throw new CommandError('The weight for workspace AB test must be a positive integer')
+    throw new CommandError('The weight for workspace AB test must be a non-negative integer')
   }
 
   if (weight) {
