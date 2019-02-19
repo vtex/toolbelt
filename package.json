@@ -51,7 +51,6 @@
     "async-retry": "^1.2.3",
     "babel-eslint": "^8.2.2",
     "bluebird": "^3.5.0",
-    "center-align": "^1.0.1",
     "chalk": "^2.3.2",
     "child-process-es6-promise": "^1.2.0",
     "chokidar": "^2.1.2",
