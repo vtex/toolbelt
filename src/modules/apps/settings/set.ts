@@ -30,7 +30,7 @@ const transformCommandsToObj = (commandSettings) => {
 }
 
 export default (app: string, _, ___, options) => {
-  const commandSettings = transformCommandsToObj(parseArgs(options))
+  const commandSettings = transformCommandsToObj(parseArgs(options._))
   return getAppSettings(app)
     .then(merge(__, commandSettings))
     .then(newSettings => JSON.stringify(newSettings, null, 2))
