@@ -9,7 +9,6 @@ import * as moment from 'moment'
 import * as path from 'path'
 import { reject, without } from 'ramda'
 import { isFunction } from 'ramda-adjunct'
-
 import * as pkg from '../package.json'
 import { getToken } from './conf'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
@@ -167,7 +166,6 @@ const onError = e => {
         log.error(reject(isFunction, e))
     }
   }
-
   process.exit(1)
 }
 

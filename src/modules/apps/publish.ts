@@ -1,10 +1,10 @@
-import * as Bluebird from 'bluebird'
-import * as ora from 'ora'
-import { isEmpty, map, prop } from 'ramda'
-
 import { BuildResult } from '@vtex/api'
+import * as retry from 'async-retry'
+import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
+import * as ora from 'ora'
+import { isEmpty, map, prop } from 'ramda'
 import { createClients } from '../../clients'
 import { Environment, forceEnvironment, getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
@@ -53,30 +53,45 @@ const promptPublishOnVendor = (msg: string): Bluebird<boolean> =>
 const publisher = (workspace: string = 'master') => {
 
   const publishApp = async (appRoot: string, appId: string, tag: string, builder): Promise<BuildResult> => {
-    const stickyHint = await getMostAvailableHost(
-      appId,
-      builder,
-      N_HOSTS,
-      AVAILABILITY_TIMEOUT
-    )
-    const publishOptions = {
-      sticky: true,
-      stickyHint,
-      tag,
-    }
 
     const paths = await listLocalFiles(appRoot)
     const filesWithContent = map(pathToFileObject(appRoot), paths)
     log.debug('Sending files:', '\n' + paths.join('\n'))
-    try {
-      return await builder.publishApp(appId, filesWithContent, publishOptions)
-    } catch (e) {
-      const data = e.response && e.response.data
-      if (data && data.code && data.code === 'build_in_progress') {
-        log.warn(`Build for ${appId} is already in progress`)
-      }
-      throw e
+    const retryOpts = {
+      retries: 2,
+      minTimeout: 1000,
+      factor: 2,
     }
+    const publish = async (bail, tryCount) => {
+      if (tryCount > 1) {
+        log.info(`Retrying...${tryCount-1}`)
+      }
+      const stickyHint = await getMostAvailableHost(
+        appId,
+        builder,
+        N_HOSTS,
+        AVAILABILITY_TIMEOUT
+      )
+      const publishOptions = {
+        sticky: true,
+        stickyHint,
+        tag,
+      }
+      try {
+        return await builder.publishApp(appId, filesWithContent, publishOptions)
+      } catch (err) {
+        const data = err.response && err.response.data
+        if (data && data.code && data.code === 'build_in_progress') {
+          log.warn(`Build for ${appId} is already in progress`)
+          bail()
+        }
+        const statusMessage = err.response.status ?
+          `: Status ${err.response.status}` : ''
+        log.error(`Error publishing app${statusMessage} (try: ${tryCount})`)
+        throw err
+      }
+    }
+    return await retry(publish, retryOpts)
   }
 
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
