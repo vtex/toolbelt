@@ -63,13 +63,13 @@ export const matchedDepsDiffTable = (
   // Setting the objects values.
   setObjectValues(
     removedDeps,
-    (k) => chalk.green(`-${k}`),
+    (k) => chalk.red(`-${k}`),
     'right',
     (k:any) => !!k.removed
   )
   setObjectValues(
     addedDeps,
-    (k) => chalk.red(`+${k}`),
+    (k) => chalk.green(`+${k}`),
     'left',
     (k:any) => !!k.added
   )
