@@ -275,7 +275,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       const data = err.response && err.response.data
       if (data && data.code && data.code === 'build_in_progress') {
         log.warn(`Build for ${appId} is already in progress`)
-        bail()
+        return
       }
       const statusMessage = err.response.status ?
         `: Status ${err.response.status}` : ''
