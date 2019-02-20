@@ -62,7 +62,7 @@ const publisher = (workspace: string = 'master') => {
       minTimeout: 1000,
       factor: 2,
     }
-    const publish = async (bail, tryCount) => {
+    const publish = async (_, tryCount) => {
       if (tryCount > 1) {
         log.info(`Retrying...${tryCount-1}`)
       }
@@ -83,7 +83,6 @@ const publisher = (workspace: string = 'master') => {
         const data = err.response && err.response.data
         if (data && data.code && data.code === 'build_in_progress') {
           log.warn(`Build for ${appId} is already in progress`)
-          bail()
         }
         const statusMessage = err.response.status ?
           `: Status ${err.response.status}` : ''
