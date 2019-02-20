@@ -60,7 +60,7 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
   const changelogVersion = `\n\n## [${newVersion}] - ${year}-${month}-${day}`
 
   if (!(await confirmRelease())) {
-    // Abort release process.
+    // Abort release.
     return
   }
   log.info('Starting release...')
