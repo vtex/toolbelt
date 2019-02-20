@@ -78,6 +78,7 @@ export const matchedDepsDiffTable = (
   deps1: string[],
   deps2: string[]
 ) => {
+  try {
   const colWidth = 40 // column width of the table.
   const depsDiff = diffArrays(deps1, deps2)
   // Get deduplicated names (no version) of the changed deps.
@@ -89,22 +90,31 @@ export const matchedDepsDiffTable = (
       R.filter((k: any) => !!k.removed || !!k.added)
     )(depsDiff)
   )].sort()
-  const startValues = R.map(R.always(''))(depNames) as any
-  // Each of the following objects will start as {`depName`: '', ...}-like.
-  const addedDeps = R.zipObj(depNames, startValues)
-  const removedDeps = R.zipObj(depNames, startValues)
+    const produceStartValues = () => (R.map((_) => ({content: []}))(depNames) as any)
+  // Each of the following objects will start as {`depName`: {content: []}, ...}-like.
+  const addedDeps = R.zipObj(depNames, produceStartValues())
+  const removedDeps = R.zipObj(depNames, produceStartValues())
 
   // Custom function to set the objects values.
   const setObjectValues = (obj, formatter, hAlign, filterFunction) => {
     R.compose<any[], any[], any[], any[], any[]>(
       R.map(k => {
         const index = k.split('@')[0]
-        obj[index] = {content: formatter(k), hAlign}
+        console.log(`Here is the index ${index}`)
+        obj[index].hAlign = hAlign
+        obj[index].content.push(formatter(k))
       }),
       R.flatten,
       R.pluck('value'),
       R.filter(filterFunction)
     )(depsDiff)
+    R.mapObjIndexed(
+      (_, index) => {
+        console.log(index)
+        console.log(obj[index])
+        obj[index].content = obj[index].content.join('\n')
+      }
+    )(obj)
   }
 
   // Setting the objects values.
@@ -143,4 +153,8 @@ export const matchedDepsDiffTable = (
     R.zip(R.values(removedDeps), R.values(addedDeps))
   )
   return table
-}
+
+  } catch (e) {
+    console.log(e)
+  }
+  }
