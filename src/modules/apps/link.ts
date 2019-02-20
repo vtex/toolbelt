@@ -343,7 +343,9 @@ export default async (options) => {
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  await getTypings(manifest, context.account, context.workspace, context.environment)
+  if (!options['no-install'] && !options.n) {
+    await getTypings(manifest, context.account, context.workspace, context.environment)
+  }
   const { builder } = createClients(context, { timeout: 60000 })
 
   if (options.c || options.clean) {

@@ -115,9 +115,9 @@ export default {
         type: 'boolean',
       },
       {
-        description: 'Add app dependencies to package.json and run Yarn',
-        long: 'install',
-        short: 'i',
+        description: 'Do not add app dependencies to package.json and do not run Yarn',
+        long: 'no-install',
+        short: 'n',
         type: 'boolean',
       },
       {
