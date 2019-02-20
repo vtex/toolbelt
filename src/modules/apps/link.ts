@@ -276,12 +276,11 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       if (data && data.code && data.code === 'build_in_progress') {
         log.warn(`Build for ${appId} is already in progress`)
         return
-      } else {
-        const statusMessage = err.response.status ?
-          `: Status ${err.response.status}` : ''
-        log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
-        throw err
       }
+      const statusMessage = err.response.status ?
+        `: Status ${err.response.status}` : ''
+      log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
+      throw err
     }
   }
   await retry(linkApp, retryOpts)
