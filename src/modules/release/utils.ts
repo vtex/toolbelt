@@ -49,20 +49,7 @@ export const getNewVersion = (
   tagName: string
 ) => {
   const oldVersion = semver.valid(rawOldVersion, true)
-  // Support for "promote" predicate, which bumps prerelease to stable,
-  // without changing version number.
-  if (releaseType === 'promote') {
-    // Promote only makes sense when there is a prerelease.
-    if (!semver.prerelease(oldVersion)) {
-      throw new Error(`The version you are trying to promote to stable (
-        ${oldVersion}) is already stable.\n`)
-    } else {
-      // returns the same version without prelease part.
-      return semver.inc(oldVersion)
-    }
-  }
-  // For other types, simply increment.
-  if (tagName && tagName !== 'stable') {
+  if (tagName !== 'stable' && releaseType !== 'prerelease') {
     return semver.inc(oldVersion, `pre${releaseType}`, tagName)
   }
   return semver.inc(oldVersion, releaseType)
@@ -72,43 +59,24 @@ const getScript = (key: string): string => {
   return path(['scripts', key], readVersionFile())
 }
 
-const runCommand = (
-  cmd: string,
-  successMessage: string,
-  dryRun: boolean,
-  hideSuccessMessage = false,
-  hideOutput = false
-) => {
+const runCommand = (cmd: string, successMessage: string, hideOutput = false) => {
   let output
-  if (!dryRun) {
-    try {
-      output = execSync(cmd, {stdio: hideOutput ? 'pipe' : ['inherit', 'pipe']})
-    } catch(e) {
-      log.error(`Command '${cmd}' exited with error code: ${e.code}`)
-      throw e
-    }
+  try {
+    output = execSync(cmd, {stdio: hideOutput ? 'pipe' : ['inherit', 'pipe']})
+  } catch(e) {
+    log.error(`Command '${cmd}' exited with error code: ${e.code}`)
+    throw e
   }
-  if (!hideSuccessMessage) {
-    log.info(successMessage + chalk.blue(` >  ${cmd}`))
-  }
+  log.info(successMessage + chalk.blue(` >  ${cmd}`))
   return output
 }
 
-const runScript = (
-  key: string,
-  msg: string,
-  dryRun: boolean,
-  quiet: boolean
-) => {
+const runScript = (key: string, msg: string) => {
   const cmd: string = getScript(key)
-  return cmd ? runCommand(cmd, msg, dryRun, quiet, false) : undefined
+  return cmd ? runCommand(cmd, msg, false) : undefined
 }
 
-export const commit = (
-  tagName: string,
-  dryRun: boolean,
-  quiet: boolean
-) => {
+export const commit = (tagName: string) => {
   const commitMessage = `Release ${tagName}`
   let successMessage = `File(s) ${versionFile} commited`
   if (existsSync(changelogPath)) {
@@ -117,50 +85,36 @@ export const commit = (
   return runCommand(
     `git commit -m "${commitMessage}"`,
     successMessage,
-    dryRun,
-    quiet,
     true
   )
 }
 
-export const tag = (
-  tagName: string,
-  dryRun: boolean,
-  quiet: boolean
-) => {
+export const tag = (tagName: string) => {
   const tagMessage = `Release ${tagName}`
   return runCommand(`git tag ${tagName} -m "${tagMessage}"`,
-    `Tag created: ${tagName}`, dryRun, quiet, true)
+    `Tag created: ${tagName}`, true)
 }
 
-export const push = (tagName: string, dryRun: boolean, quiet: boolean) => {
+export const push = (tagName: string) => {
     return runCommand(`git push && git push origin ${tagName}`,
-      'Pushed commit and tags', dryRun, quiet, true)
+      'Pushed commit and tags', true)
 }
 
-export const preRelease = (
-  dryRun: boolean,
-  quiet: boolean
-) => {
+export const preRelease = () => {
   const msg = 'Pre release'
-  if (!checkNothingToCommit(quiet)) {
+  if (!checkNothingToCommit()) {
     throw new Error('Please commit your changes before proceeding.')
   }
   checkIfGitPushWorks()
   const key = 'prereleasy'
-  runScript(key, msg, dryRun, quiet)
-  if (!checkNothingToCommit(quiet)) {
+  runScript(key, msg)
+  if (!checkNothingToCommit()) {
     const commitMessage = `Pre release commit\n\n ${getScript(key)}`
-    return commit(commitMessage, dryRun, true)
+    return commit(commitMessage)
   }
 }
 
-export const confirmRelease = async (silent: boolean): Promise<boolean> => {
-  // No prompt necessary, release and finish.
-  if (silent) {
-    return true
-  }
-  // User wants a confirmation prompt.
+export const confirmRelease = async (): Promise<boolean> => {
   const answer = await inquirer.prompt({
     message: chalk.green('Are you sure?'),
     name: 'confirm',
@@ -211,51 +165,40 @@ export const checkIfGitPushWorks = () => {
   }
 }
 
-export const gitStatus = (quiet: boolean) => {
-  return runCommand('git status', '', false, quiet, true)
+export const gitStatus = () => {
+  return runCommand('git status', '', true)
 }
 
-export const checkNothingToCommit = (quiet: boolean) => {
-  const response = gitStatus(quiet)
+export const checkNothingToCommit = () => {
+  const response = gitStatus()
   return /nothing to commit/.test(response)
 }
 
-export const postRelease = (
-  dryRun: boolean,
-  quiet: boolean
-) => {
+export const postRelease = () => {
   const msg = 'Post releasy'
-  return runScript('postreleasy', msg, dryRun, quiet)
+  return runScript('postreleasy', msg)
 }
 
-export const add = (
-  dryRun: boolean,
-  quiet: boolean
-) => {
+export const add = () => {
   let gitAddCommand = `git add ${versionFile}`
   let successMessage = `File ${versionFile} added`
   if (existsSync(changelogPath)) {
     gitAddCommand += ` ${changelogPath}`
     successMessage = `Files ${versionFile} ${changelogPath} added`
   }
-  return runCommand(gitAddCommand, successMessage, dryRun, quiet, true)
+  return runCommand(gitAddCommand, successMessage, true)
 }
 
-export const bump = (
-  dryRun: boolean,
-  changelogVersion: any,
-  quiet: boolean,
-  newVersion: string
-) => {
+export const bump = (changelogVersion: any, newVersion: string) => {
   // Update version on CHANGELOG.md
-  if (existsSync(changelogPath) && !dryRun) {
+  if (existsSync(changelogPath)) {
     let data: string
     try {
       data = readFileSync(changelogPath).toString()
     } catch (e) {
       throw new Error(`Error reading file: ${e}`)
     }
-    if (data.indexOf(unreleased) < 0 && !quiet) {
+    if (data.indexOf(unreleased) < 0) {
       log.info(chalk.red.bold(
       `I can\'t update your CHANGELOG. :( \n
         Make your CHANGELOG great again and follow the CHANGELOG format
@@ -275,12 +218,8 @@ export const bump = (
         }
       }
   }
-  if (!dryRun) {
-    const manifest = readVersionFile()
-    manifest.version = newVersion
-    writeVersionFile(manifest)
-  }
-  if (!quiet) {
-    log.info(`Version bumped to ${chalk.bold.green(newVersion)}`)
-  }
+  const manifest = readVersionFile()
+  manifest.version = newVersion
+  writeVersionFile(manifest)
+  log.info(`Version bumped to ${chalk.bold.green(newVersion)}`)
 }

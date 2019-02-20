@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import {indexOf, merge} from 'ramda'
+import {indexOf} from 'ramda'
 import log from '../../logger'
 import {
   add,
@@ -16,60 +16,38 @@ import {
   tag
 } from './utils'
 
-const supportedReleaseTypes = ['major', 'minor', 'patch']
+const supportedReleaseTypes = ['major', 'minor', 'patch', 'prerelease']
 
 const supportedTagNames = ['stable', 'beta']
 
-interface Options {
-  noCommit?: boolean,
-  noTag?: boolean,
-  noPush?: boolean,
-  notes?: boolean,
-  dryRun?: boolean,
-  silent?: boolean,
-  quiet?: boolean,
-}
-
-const defaultOptions: Options = {
-  noCommit: false,
-  noTag: false,
-  noPush: false,
-  notes: false,
-  dryRun: false,
-  silent: false,
-  quiet: false,
-}
-
 export default async (
   releaseType = 'patch',
-  tagName = 'beta',
-  opts: Options = {}
+  tagName = 'beta'
 ) => {
   checkGit()
   checkIfInGitRepo()
   // Check if releaseType is valid.
   if (indexOf(releaseType, supportedReleaseTypes) === -1) {
     // TODO: Remove the below log.error when toolbelt has better error handling.
-    log.error(`Invalid release type: ${releaseType}`)
-    throw new Error(`Invalid release type: ${releaseType}`)
+    log.error(`Invalid release type: ${releaseType}
+Valid release types are: ${supportedReleaseTypes.join(', ')}`)
+    throw new Error(`Invalid release type: ${releaseType}
+Valid release types are: ${supportedReleaseTypes.join(', ')}`)
   }
   // Check if tagName is valid.
   if (indexOf(tagName, supportedTagNames) === -1) {
     // TODO: Remove the below log.error when toolbelt has better error handling.
-    log.error(`Invalid release tag: ${tagName}`)
-    throw new Error(`Invalid release tag: ${tagName}`)
+    log.error(`Invalid release tag: ${tagName}
+Valid release tags are: ${supportedTagNames.join(', ')}`)
+    throw new Error(`Invalid release tag: ${tagName}
+Valid release tags are: ${supportedTagNames.join(', ')}`)
   }
-
-  // Assign default values for arguments and options.
-  opts = merge(defaultOptions, opts)
 
   const oldVersion = readVersion()
   const newVersion = getNewVersion(oldVersion, releaseType, tagName)
 
-  if (!opts.quiet) {
-    log.info(`Old version: ${chalk.bold(oldVersion)}`)
-    log.info(`New version: ${chalk.bold.yellow(newVersion)}`)
-  }
+  log.info(`Old version: ${chalk.bold(oldVersion)}`)
+  log.info(`New version: ${chalk.bold.yellow(newVersion)}`)
 
   const [month, day, year] = new Date()
     .toLocaleDateString(
@@ -81,30 +59,20 @@ export default async (
   const tagText = `v${newVersion}`
   const changelogVersion = `\n\n## [${newVersion}] - ${year}-${month}-${day}`
 
-  if (!(await confirmRelease(opts.silent))) {
+  if (!(await confirmRelease())) {
     // Abort release process.
     return
   }
-  if (!opts.quiet) {
-    log.info('Starting release...')
-  }
+  log.info('Starting release...')
   try {
-    await preRelease(opts.dryRun, opts.quiet)
-    await bump(opts.dryRun, changelogVersion, opts.quiet, newVersion)
-    if (!opts.noCommit) {
-      await add(opts.dryRun, opts.quiet)
-      await commit(tagText, opts.dryRun, opts.quiet)
-    }
-    if (!opts.noTag) {
-      await tag(tagText, opts.dryRun, opts.quiet)
-    }
-    if (!opts.noPush) {
-      await push(tagText, opts.dryRun, opts.quiet)
-    }
-    await postRelease(opts.dryRun, opts.quiet)
+    await preRelease()
+    await bump(changelogVersion, newVersion)
+    await add()
+    await commit(tagText)
+    await tag(tagText)
+    await push(tagText)
+    await postRelease()
   } catch (e) {
-    if (!opts.quiet) {
-      log.error(`Failed to release \n${e}`)
-    }
+    log.error(`Failed to release \n${e}`)
   }
 }

@@ -363,40 +363,5 @@ export default {
     description: 'Bump app version, commit and push to remote. Only for git users',
     handler: './release',
     optionalArgs: ['releaseType', 'tagName'],
-    options: [
-      {
-        description: 'Do not commit the version change',
-        long: 'noCommit',
-        type: 'boolean',
-      },
-      {
-        description: 'Do not tag the version change',
-        long: 'noTag',
-        type: 'boolean',
-      },
-      {
-        description: 'Do not push the version change',
-        long: 'noPush',
-        type: 'boolean',
-      },
-      {
-        description: `Don't do anything, just show what would be done`,
-        long: 'dryRun',
-        short: 'd',
-        type: 'boolean',
-      },
-      {
-        description: `Don't ask for confirmation`,
-        long: 'silent',
-        short: 's',
-        type: 'boolean',
-      },
-      {
-        description: `Don't write messages to console`,
-        long: 'quiet',
-        short: 'q',
-        type: 'boolean',
-      },
-    ],
   },
 }
