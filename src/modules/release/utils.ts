@@ -59,15 +59,32 @@ const getScript = (key: string): string => {
   return path(['scripts', key], readVersionFile())
 }
 
-const runCommand = (cmd: string, successMessage: string, hideOutput = false) => {
+const runCommand = (
+  cmd: string,
+  successMessage: string,
+  hideOutput = false,
+  retries = 0,
+  hideSuccessMessage = false
+) => {
   let output
-  try {
-    output = execSync(cmd, {stdio: hideOutput ? 'pipe' : ['inherit', 'pipe']})
-  } catch(e) {
-    log.error(`Command '${cmd}' exited with error code: ${e.code}`)
-    throw e
+  let tryCount = 0
+  while(true) {
+    try {
+      output = execSync(cmd, {stdio: hideOutput ? 'pipe' : ['inherit', 'pipe']})
+      break
+    } catch (e) {
+      tryCount++
+      log.error(`Command '${cmd}' exited with error code: ${e.status}`)
+      if (tryCount > retries) {
+        throw e
+      } else {
+        log.info(`Retrying...${tryCount}`)
+      }
+    }
   }
-  log.info(successMessage + chalk.blue(` >  ${cmd}`))
+  if (!hideSuccessMessage) {
+    log.info(successMessage + chalk.blue(` >  ${cmd}`))
+  }
   return output
 }
 
@@ -97,7 +114,7 @@ export const tag = (tagName: string) => {
 
 export const push = (tagName: string) => {
     return runCommand(`git push && git push origin ${tagName}`,
-      'Pushed commit and tags', true)
+      'Pushed commit and tags', true, 2)
 }
 
 export const preRelease = () => {
@@ -158,7 +175,7 @@ Please run ${chalk.bold(`vtex release`)} from inside a git repo.`)
 
 export const checkIfGitPushWorks = () => {
   try {
-    execSync('git push', {stdio: 'pipe'})
+    runCommand('git push', '', true, 2, true)
   } catch (e) {
     log.error(`Failed pushing to remote.`)
     throw e
