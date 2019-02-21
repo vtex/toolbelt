@@ -1618,10 +1618,19 @@ chalk@^1.1.3:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
-chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.3.1, chalk@^2.3.2, chalk@^2.4.1:
+chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.3.0, chalk@^2.3.1, chalk@^2.3.2:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.1.tgz#18c49ab16a037b6eb0152cc83e3471338215b66e"
   integrity sha512-ObN6h1v2fTJSmUXoS3nMQ92LbDK9be4TV+6G+omQlGJFdcUX5heKi1LZ1YnRMIgwTLEj3E24bT6tYni50rlCfQ==
+  dependencies:
+    ansi-styles "^3.2.1"
+    escape-string-regexp "^1.0.5"
+    supports-color "^5.3.0"
+
+chalk@^2.4.1:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
+  integrity sha512-Mti+f9lpJNcwF4tWV8/OrTTtF1gZi+f8FqlyAdouralcFWFQWF2+NgCHShjkCb+IFBLq9buZwE1xckQU4peSuQ==
   dependencies:
     ansi-styles "^3.2.1"
     escape-string-regexp "^1.0.5"
@@ -2768,10 +2777,10 @@ find-up@^3.0.0:
   dependencies:
     locate-path "^3.0.0"
 
-findhelp@^1.0.4:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/findhelp/-/findhelp-1.0.4.tgz#244efb207f4979e2ac96600a809f8de2c0c9d8cf"
-  integrity sha512-J12H0Rz8J3U7T3jHPqgFKtXteCsFfyC44N8ZlMwaAS0b66gsBKXFWt+g5SzUaLrHRM7x1naRToEeusEIPkGCTg==
+findhelp@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/findhelp/-/findhelp-1.1.0.tgz#5e7e8f911635235ecf0dd47a306f941a305b2367"
+  integrity sha512-fQ6DjHejGlejExSkmqNAhEvWCbmClFBHNpy4qnrXLdSyyXmHmucIz5vSQNWBK/sgZK+WtHdxqvqZY2DSBQLsog==
   dependencies:
     chalk "^2.4.1"
     es6-error "^4.1.1"
@@ -4932,10 +4941,17 @@ package-json@^5.0.0:
     registry-url "^3.1.0"
     semver "^5.5.0"
 
-pad@^2.0.3, pad@^2.2.1:
+pad@^2.0.3:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/pad/-/pad-2.2.1.tgz#e53e5de1304bc4c6c38004cad803f7641cff3220"
   integrity sha512-lVia7rFne82Flf8V5Szzw2oP2zcQBGtCUXvo0pF1c6CmUHc9QLSZ1NQM/YujaM5YdQBsLJ1u90om+T1zKF42HQ==
+  dependencies:
+    wcwidth "^1.0.1"
+
+pad@^2.2.1:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/pad/-/pad-2.2.2.tgz#121a3055be234f27f35a002ee21ccc1364a1f00d"
+  integrity sha512-w5m0/ISM+Jc/xsxNwKzHhOX+KHKYP3tT+UMmZfCgMSLdCccbjMNYx6LtafOql60qI4NYv13ZGAkSiehJj9ttcQ==
   dependencies:
     wcwidth "^1.0.1"
 

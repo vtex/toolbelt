@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.40.9",
+  "version": "2.41.0",
   "description": "The platform for e-commerce apps",
   "main": "lib/index.js",
   "bin": "lib/cli.js",
@@ -68,7 +68,7 @@
     "eslint-plugin-react": "^7.0.0",
     "eventsource": "^1.0.1",
     "extendable-error": "^0.1.5",
-    "findhelp": "^1.0.4",
+    "findhelp": "^1.1.0",
     "fs-extra": "^7.0.0",
     "get-stream": "^4.0.0",
     "globby": "^8.0.1",

@@ -359,4 +359,9 @@ export default {
       requiredArgs: 'name',
     },
   },
+  release: {
+    description: 'Bump app version, commit and push to remote. Only for git users',
+    handler: './release',
+    optionalArgs: ['releaseType', 'tagName'],
+  },
 }
