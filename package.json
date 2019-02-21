@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.40.8",
+  "version": "2.40.9",
   "description": "The platform for e-commerce apps",
   "main": "lib/index.js",
   "bin": "lib/cli.js",
@@ -53,7 +53,7 @@
     "bluebird": "^3.5.0",
     "chalk": "^2.3.2",
     "child-process-es6-promise": "^1.2.0",
-    "chokidar": "^2.0.4",
+    "chokidar": "^2.1.2",
     "clear-module": "^3.0.0",
     "cli-table": "^0.3.1",
     "cli-table2": "^0.2.0",
