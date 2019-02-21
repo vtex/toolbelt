@@ -16,7 +16,12 @@ const unlinkApp = async (app: string) => {
     await unlink(app)
     log.info('Successfully unlinked', app)
   } catch (e) {
-    log.error(`Error unlinking ${app}.`, e.message)
+    if (e.response.status === 404) {
+      log.error(`${app} is not linked in the current workspace. \
+Make sure you typed the right app vendor, name and version.`)
+    } else {
+      log.error(`Error unlinking ${app}.`, e.message)
+    }
   }
 }
 
