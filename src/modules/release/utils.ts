@@ -67,25 +67,26 @@ const runCommand = (
   hideSuccessMessage = false
 ) => {
   let output
-  let tryCount = 0
-  while(true) {
-    try {
-      output = execSync(cmd, {stdio: hideOutput ? 'pipe' : ['inherit', 'pipe']})
-      break
-    } catch (e) {
-      tryCount++
-      log.error(`Command '${cmd}' exited with error code: ${e.status}`)
-      if (tryCount > retries) {
-        throw e
-      } else {
-        log.info(`Retrying...${tryCount}`)
-      }
+  try {
+    output = execSync(cmd, {stdio: hideOutput ? 'pipe' : ['inherit', 'pipe']})
+    if (!hideSuccessMessage) {
+      log.info(successMessage + chalk.blue(` >  ${cmd}`))
     }
+    return output
+  } catch (e) {
+    log.error(`Command '${cmd}' exited with error code: ${e.status}`)
+    if (retries <= 0) {
+      throw e
+    }
+    log.info(`Retrying...`)
+    return runCommand(
+      cmd,
+      successMessage,
+      hideOutput,
+      retries - 1,
+      hideSuccessMessage
+    )
   }
-  if (!hideSuccessMessage) {
-    log.info(successMessage + chalk.blue(` >  ${cmd}`))
-  }
-  return output
 }
 
 const runScript = (key: string, msg: string) => {
