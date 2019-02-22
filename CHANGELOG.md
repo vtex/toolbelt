@@ -1,6 +1,12 @@
 ### [Unreleased]
+
+
+### v2.41.0 (2018-02-21)
+
 Features:
 - `vtex release` command analogous to `releasy`
+
+### v2.38.0 (2018-02-12)
 
 Features:
 - Enable running commands inside subdirectories
