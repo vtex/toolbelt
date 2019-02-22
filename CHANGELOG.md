@@ -1,4 +1,4 @@
-### Unreleased
+### [Unreleased]
 Features:
 - `vtex release` command analogous to `releasy`
 
