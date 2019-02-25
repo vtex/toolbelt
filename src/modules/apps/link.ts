@@ -342,8 +342,12 @@ export default async (options) => {
   try {
     const buildTrigger = performInitialLink.bind(this, appId, builder, extraData)
     const [subject] = appId.split('@')
-    const { unlisten } = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError })
-    unlistenBuild = unlisten
+    if (options.watch === false) {
+      await listenBuild(subject, buildTrigger, { waitCompletion: true })
+      return
+    } else {
+      unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
+    }
   } catch (e) {
     if (e.response) {
       const { data } = e.response
