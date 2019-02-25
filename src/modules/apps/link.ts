@@ -217,11 +217,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   return new Promise((resolve, reject) => {
     watcher
       .on('add', (file, { size }) => size > 0 ? queueChange(file) : null)
-      .on('change', (file, { size }) => {
-        return size > 0
-          ? queueChange(file)
-          : queueChange(file, true)
-      })
+      .on('change', file => queueChange(file))
       .on('unlink', file => queueChange(file, true))
       .on('error', reject)
       .on('ready', resolve)
