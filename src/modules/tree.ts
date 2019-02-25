@@ -116,6 +116,11 @@ export default {
         short: 'i',
         type: 'boolean',
       },
+      {
+        description: `Don't watch for file changes after initial link`,
+        long: 'no-watch',
+        type: 'boolean',
+      },
     ],
   },
   list: {

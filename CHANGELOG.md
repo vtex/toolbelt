@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.41.1] - 2019-02-25
+## [2.41.2] - 2019-02-25
+### Added
+- `--no-watch` option for `vtex link`
 
 
 ## [2.41.0] - 2018-02-21
