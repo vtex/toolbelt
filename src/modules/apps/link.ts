@@ -345,9 +345,8 @@ export default async (options) => {
     if (options.watch === false) {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
       return
-    } else {
-      unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
     }
+    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
   } catch (e) {
     if (e.response) {
       const { data } = e.response
