@@ -101,7 +101,7 @@ export const logAll = (context: Context, logLevel: string, id: string) => {
 }
 
 export const onAuth = (account: string, workspace: string, state: string): Promise<string> => {
-  const source = `https://${workspace}--${account}.${publicEndpoint()}/_v/auth-server/v1/sse/${state}`
+  const source = `https://${workspace}--${account}.${publicEndpoint()}/_v/private/auth-server/v1/sse/${state}`
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
     es.onmessage = (msg: MessageJSON) => {
