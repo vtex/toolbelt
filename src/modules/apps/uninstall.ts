@@ -1,9 +1,11 @@
 import * as inquirer from 'inquirer'
 import { head, prepend, tail } from 'ramda'
+import chalk from 'chalk'
 
 import { apps } from '../../clients'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
+import { getAccount, getWorkspace } from '../../conf'
 import { getManifest, validateApp } from '../../manifest'
 import { toAppLocator } from './../../locator'
 import { parseArgs, validateAppAction } from './utils'
@@ -12,7 +14,7 @@ const { uninstallApp } = apps
 
 const promptAppUninstall = (appsList: string[]): Promise<void> =>
   inquirer.prompt({
-    message: `Are you sure you want to uninstall ${appsList.join(', ')}?`,
+    message: `Are you sure you want to uninstall ${appsList.join(', ')}?\n  ${chalk.black(`(account ${chalk.blue(getAccount())}, workspace ${chalk.green(getWorkspace())})`)}`,
     name: 'confirm',
     type: 'confirm',
   })
