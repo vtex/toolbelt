@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.41.4] - 2019-02-26
+### Added
+- Add confirmation of account/workspace before uninstalling apps.
+
 ## [2.41.3] - 2019-02-25
 ### Changed
 - Use new auth-server routes
