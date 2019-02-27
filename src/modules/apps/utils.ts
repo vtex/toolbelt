@@ -100,6 +100,7 @@ export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
 }
 
 export function optionsFormatter(billingOptions: BillingOptions) {
+  /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({ head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }], chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' } })
 
   if (billingOptions.free) {
