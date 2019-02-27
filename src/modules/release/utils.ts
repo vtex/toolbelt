@@ -243,7 +243,6 @@ export const updateChangelog = (changelogVersion: any) => {
 }
 
 export const bump = (newVersion: string) => {
-  // Update version on CHANGELOG.md
   const manifest = readVersionFile()
   manifest.version = newVersion
   writeVersionFile(manifest)
