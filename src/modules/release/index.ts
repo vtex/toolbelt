@@ -13,12 +13,19 @@ import {
   preRelease,
   push,
   readVersion,
-  tag
+  tag,
+  updateChangelog,
 } from './utils'
 
 const supportedReleaseTypes = ['major', 'minor', 'patch', 'prerelease']
-
 const supportedTagNames = ['stable', 'beta']
+const releaseTypesToUpdateChangelog = ['major', 'minor', 'patch']
+const tagNamesToUpdateChangelog = ['stable']
+
+const shouldUpdateChangelog = (releaseType, tagName) => {
+  return (releaseTypesToUpdateChangelog.indexOf(releaseType) >= 0) &&
+    (tagNamesToUpdateChangelog.indexOf(tagName) >= 0)
+}
 
 export default async (
   releaseType = 'patch',
@@ -66,7 +73,10 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
   log.info('Starting release...')
   try {
     await preRelease()
-    await bump(changelogVersion, newVersion)
+    await bump(newVersion)
+    if (shouldUpdateChangelog(releaseType, tagName)) {
+      updateChangelog(changelogVersion)
+    }
     await add()
     await commit(tagText)
     await tag(tagText)
