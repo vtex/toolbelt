@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Make `short` the default and only option for `vtex ls`
 - Adjust colors of vendor name on `vtex ls`
+- Use clean tables on `update`, `infra list`, and `workspace list` commands
 
 ## [2.41.4] - 2019-02-26
 ### Added
