@@ -27,9 +27,11 @@ const renderTable = (
     appArray: any,
   }): void => {
     console.log(title)
+
     if (appArray.length === 0) {
       return console.log(`${emptyMessage}\n`)
     }
+
     const table = createTable()
 
     appArray.forEach(({ vendor, name, version }) => {
