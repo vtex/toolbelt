@@ -39,9 +39,9 @@ const renderTable = (
 
       const cleanedVersion = cleanVersion(version)
 
-      const formattedAppName = `${chalk.blue(vendor)}${chalk.gray('.')}${name}`
+      const formattedName = `${chalk.blue(vendor)}${chalk.gray('.')}${name}`
 
-      table.push([formattedAppName, cleanedVersion, linkedLabel])
+      table.push([formattedName, cleanedVersion, linkedLabel])
     })
 
     console.log(`${table.toString()}\n`)
