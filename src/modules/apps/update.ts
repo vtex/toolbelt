@@ -1,9 +1,9 @@
 import * as Bluebird from 'bluebird'
-import * as Table from 'cli-table'
 import * as inquirer from 'inquirer'
 import * as ora from 'ora'
 import { isEmpty, map, pipe, prop, reject } from 'ramda'
 
+import { createTable } from '../../table'
 import { apps } from '../../clients'
 import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
@@ -42,7 +42,7 @@ export default async () => {
   }, installedApps))
   const updateableApps = reject(sameVersion, withLatest)
 
-  const table = new Table({ head: ['Vendor', 'Name', 'Current', 'Latest'] })
+  const table = createTable({ head: ['Vendor', 'Name', 'Current', 'Latest'] })
   updateableApps.forEach(({ vendor, name, version, latest }) => {
     if (!latest) {
       log.debug(`Couldn't find latest version of ${vendor}.${name}`)
