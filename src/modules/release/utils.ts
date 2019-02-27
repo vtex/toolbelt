@@ -211,8 +211,7 @@ export const add = () => {
   return runCommand(gitAddCommand, successMessage, true)
 }
 
-export const bump = (changelogVersion: any, newVersion: string) => {
-  // Update version on CHANGELOG.md
+export const updateChangelog = (changelogVersion: any) => {
   if (existsSync(changelogPath)) {
     let data: string
     try {
@@ -222,24 +221,28 @@ export const bump = (changelogVersion: any, newVersion: string) => {
     }
     if (data.indexOf(unreleased) < 0) {
       log.info(chalk.red.bold(
-      `I can\'t update your CHANGELOG. :( \n
+        `I can\'t update your CHANGELOG. :( \n
         Make your CHANGELOG great again and follow the CHANGELOG format
         http://keepachangelog.com/en/1.0.0/`
       ))
-      } else {
-        const position = data.indexOf(unreleased) + unreleased.length
-        const bufferedText = Buffer.from(
-          `${changelogVersion}${data.substring(position)}`
-        )
-        const file = openSync(changelogPath, 'r+')
-        try {
-          writeSync(file, bufferedText, 0, bufferedText.length, position)
-          close(file)
-        } catch (e) {
-          throw new Error(`Error writing file: ${e}`)
-        }
+    } else {
+      const position = data.indexOf(unreleased) + unreleased.length
+      const bufferedText = Buffer.from(
+        `${changelogVersion}${data.substring(position)}`
+      )
+      const file = openSync(changelogPath, 'r+')
+      try {
+        writeSync(file, bufferedText, 0, bufferedText.length, position)
+        close(file)
+        log.info(`updated CHANGELOG`)
+      } catch (e) {
+        throw new Error(`Error writing file: ${e}`)
       }
+    }
   }
+}
+
+export const bump = (newVersion: string) => {
   const manifest = readVersionFile()
   manifest.version = newVersion
   writeVersionFile(manifest)

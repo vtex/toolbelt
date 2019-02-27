@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.41.7] - 2019-02-27
+### Fixed
+- `vtex release` only updates CHANGELOG.md on stable releases
+
 ## [2.41.6] - 2019-02-27
 ### Fixed
 - Post release scripts run with `vtex release` have output correctly piped to stdio
