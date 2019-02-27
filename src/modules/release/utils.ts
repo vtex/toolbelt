@@ -68,7 +68,7 @@ const runCommand = (
 ) => {
   let output
   try {
-    output = execSync(cmd, {stdio: hideOutput ? 'pipe' : ['inherit', 'pipe']})
+    output = execSync(cmd, {stdio: hideOutput ? 'pipe' : 'inherit'})
     if (!hideSuccessMessage) {
       log.info(successMessage + chalk.blue(` >  ${cmd}`))
     }
@@ -193,8 +193,12 @@ export const checkNothingToCommit = () => {
 }
 
 export const postRelease = () => {
-  const msg = 'Post releasy'
-  return runScript('postreleasy', msg)
+  const msg = 'Post release'
+  if (getScript('postrelease')) {
+    return runScript('postrelease', msg)
+  } else if (getScript('postreleasy')) {
+    return runScript('postreleasy', msg)
+  }
 }
 
 export const add = () => {
