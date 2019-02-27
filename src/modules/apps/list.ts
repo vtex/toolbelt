@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import * as Table from 'cli-table'
 import { compose, flip, gt, head, length, map, prop, split } from 'ramda'
 
+import { createTable } from '../../table'
 import { apps } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { parseLocator } from '../../locator'
@@ -27,27 +27,21 @@ const renderTable = (
     appArray: any,
   }): void => {
     console.log(title)
+
     if (appArray.length === 0) {
       return console.log(`${emptyMessage}\n`)
     }
-    const table = new Table({
-      chars: {
-        'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': '',
-        'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': '',
-        'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': '',
-        'right': '' , 'right-mid': '' , 'middle': '   ',
-      },
-      style: { 'padding-left': 0, 'padding-right': 0 }
-    })
+
+    const table = createTable()
 
     appArray.forEach(({ vendor, name, version }) => {
       const linkedLabel = isLinked(version) ? chalk.green('linked') : 'not linked'
 
       const cleanedVersion = cleanVersion(version)
 
-      const formattedAppName = `${chalk.blue(vendor)}${chalk.gray('.')}${name}`
+      const formattedName = `${chalk.blue(vendor)}${chalk.gray('.')}${name}`
 
-      table.push([formattedAppName, cleanedVersion, linkedLabel])
+      table.push([formattedName, cleanedVersion, linkedLabel])
     })
 
     console.log(`${table.toString()}\n`)

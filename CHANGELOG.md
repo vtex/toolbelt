@@ -5,9 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.41.5] - 2019-02-27
 ### Changed
 - Make `short` the default and only option for `vtex ls`
 - Adjust colors of vendor name on `vtex ls`
+- Use clean tables on `update`, `infra list`, and `workspace list` commands
 
 ## [2.41.4] - 2019-02-26
 ### Added

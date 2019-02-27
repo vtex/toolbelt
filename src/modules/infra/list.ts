@@ -1,9 +1,9 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as Table from 'cli-table'
 import * as semver from 'semver'
 
+import { createTable } from '../../table'
 import { router } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
@@ -15,7 +15,7 @@ const { listAvailableServices, listInstalledServices, getAvailableVersions } = r
 const printAvailableServices = (): Bluebird<void> =>
   listAvailableServices()
     .then((availableRes: AvailableServices) => {
-      const table = new Table({ head: ['Name', 'Last stable', 'Last prerelease'] })
+      const table = createTable({ head: ['Name', 'Last stable', 'Last prerelease'] })
       Object.keys(availableRes).forEach(res => {
         const [stable, prerelease] = getLastStableAndPrerelease(availableRes[res])
         table.push([res, chalk.bold.green(stable), chalk.yellow(prerelease)])
@@ -50,7 +50,7 @@ const printAvailableServiceVersions = (name: string, filter: string): Bluebird<v
 const printInstalledServices = (): Bluebird<void> =>
   listInstalledServices()
     .then((installedRes: InstalledService[]) => {
-      const table = new Table({ head: ['Name', 'Version'] })
+      const table = createTable()
       installedRes.forEach(({ name, version }) => {
         const validVersion = semver.valid(version)
         const styledVersion = semver.prerelease(validVersion) !== null
