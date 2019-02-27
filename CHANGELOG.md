@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Post release scripts run with `vtex release` have output correctly piped to stdio.
+- Post release scripts run with `vtex release` have output correctly piped to stdio
 
 ## [2.41.5] - 2019-02-27
 ### Changed
