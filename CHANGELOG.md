@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.42.1] - 2019-02-28
+
 ## [2.42.0] - 2019-02-28
 ### Added
 - Close Chrome tab after successful login on Mac.
