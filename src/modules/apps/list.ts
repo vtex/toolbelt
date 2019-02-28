@@ -35,13 +35,20 @@ const renderTable = (
     const table = createTable()
 
     appArray.forEach(({ vendor, name, version }) => {
-      const linkedLabel = isLinked(version) ? chalk.green('linked') : 'not linked'
 
-      const cleanedVersion = cleanVersion(version)
+      const linked = isLinked(version)
 
-      const formattedName = `${chalk.blue(vendor)}${chalk.gray('.')}${name}`
+      const coloredName = linked ? chalk.green(name) : name
 
-      table.push([formattedName, cleanedVersion, linkedLabel])
+      const linkedLabel = linked ? chalk.green(' (linked)') : ''
+
+      const cleanedVersion = `${cleanVersion(version)}${linkedLabel}`
+
+      const coloredVersion = linked ? chalk.green(cleanedVersion) : cleanedVersion
+
+      const formattedName = `${chalk.blue(vendor)}${chalk.gray('.')}${coloredName}`
+
+      table.push([formattedName, coloredVersion])
     })
 
     console.log(`${table.toString()}\n`)
