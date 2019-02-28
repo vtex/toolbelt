@@ -55,14 +55,16 @@ const publisher = (workspace: string = 'master') => {
   const publishApp = async (appRoot: string, appId: string, tag: string, builder): Promise<BuildResult> => {
 
     const paths = await listLocalFiles(appRoot)
-    const filesWithContent = map(pathToFileObject(appRoot), paths)
-    log.debug('Sending files:', '\n' + paths.join('\n'))
     const retryOpts = {
       retries: 2,
       minTimeout: 1000,
       factor: 2,
     }
     const publish = async (_, tryCount) => {
+      const filesWithContent = map(pathToFileObject(appRoot), paths)
+      if (tryCount === 1) {
+        log.debug('Sending files:', '\n' + paths.join('\n'))
+      }
       if (tryCount > 1) {
         log.info(`Retrying...${tryCount-1}`)
       }
@@ -80,13 +82,18 @@ const publisher = (workspace: string = 'master') => {
       try {
         return await builder.publishApp(appId, filesWithContent, publishOptions)
       } catch (err) {
-        const data = err.response && err.response.data
-        if (data && data.code && data.code === 'build_in_progress') {
-          log.warn(`Build for ${appId} is already in progress`)
-        }
-        const statusMessage = err.response.status ?
-          `: Status ${err.response.status}` : ''
+        const response = err.response
+        const status = response.status
+        const data = response && response.data
+        const message = data.message
+        const statusMessage = status ? `: Status ${status}` : ''
         log.error(`Error publishing app${statusMessage} (try: ${tryCount})`)
+        if (message) {
+          log.error(`Message: ${message}`)
+        }
+        if (status && status < 500) {
+          return
+        }
         throw err
       }
     }

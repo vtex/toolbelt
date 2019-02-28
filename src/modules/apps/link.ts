@@ -237,18 +237,6 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
   }
 
-  const [localFiles, linkedFiles] =
-    await Promise.all([
-      listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
-      getLinkedFiles(linkConfig),
-    ])
-  const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
-
-  const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
-  log.info(`Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`)
-  log.debug('Sending files')
-  filesWithContent.forEach(p => log.debug(p.path))
-
   const retryOpts = {
     retries: 2,
     minTimeout: 1000,
@@ -257,9 +245,24 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 
   const linkApp = async (bail: any, tryCount: number) => {
     // wrapper for builder.linkApp to be used with the retry function below.
+    const [localFiles, linkedFiles] =
+      await Promise.all([
+        listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
+        getLinkedFiles(linkConfig),
+      ])
+    const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
+
+    if (tryCount === 1) {
+      const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
+      log.info(`Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`)
+      log.debug('Sending files')
+      filesWithContent.forEach(p => log.debug(p.path))
+    }
+
     if (tryCount > 1) {
       log.info(`Retrying...${tryCount-1}`)
     }
+
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
     const linkOptions = { sticky: true, stickyHint }
     try {
@@ -268,14 +271,18 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
     } catch (err) {
-      const data = err.response && err.response.data
-      if (data && data.code && data.code === 'build_in_progress') {
-        log.warn(`Build for ${appId} is already in progress`)
+      const response = err.response
+      const status = response.status
+      const data = response && response.data
+      const message = data.message
+      const statusMessage = status ? `: Status ${status}` : ''
+      log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
+      if (message) {
+        log.error(`Message: ${message}`)
+      }
+      if (status && status < 500) {
         return
       }
-      const statusMessage = err.response.status ?
-        `: Status ${err.response.status}` : ''
-      log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
       throw err
     }
   }
