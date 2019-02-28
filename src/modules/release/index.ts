@@ -18,7 +18,7 @@ import {
 } from './utils'
 
 const supportedReleaseTypes = ['major', 'minor', 'patch', 'prerelease']
-const supportedTagNames = ['stable', 'beta']
+const supportedTagNames = ['stable', 'beta', 'hkignore']
 const releaseTypesToUpdateChangelog = ['major', 'minor', 'patch']
 const tagNamesToUpdateChangelog = ['stable']
 
