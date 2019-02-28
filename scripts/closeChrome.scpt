@@ -6,7 +6,7 @@ end is_running
 on run argv
 	-- Check if chrome is running
 	set chromeRunning to is_running("Google Chrome")
-	-- Set URL to the once gived in arguments
+	-- Set URL to the one given in arguments
 	set lookupUrl to item 1 of argv
 
 	-- Engine
