@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.42.0] - 2019-02-28
+### Added
+- Close Chrome tab after successful login on Mac.
+
 ## [2.41.8] - 2019-02-28
 ### Fixed
 - File watcher during `vtex link` should not queue files as 'deleted' when they are simply updated
