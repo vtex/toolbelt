@@ -1,11 +1,11 @@
 import chalk from 'chalk'
-import { compose, flip, gt, head, length, map, prop, split } from 'ramda'
+import { compose, flip, gt, head, length, map, prop, split, sortBy } from 'ramda'
 
-import { createTable } from '../../table'
 import { apps } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
+import { createTable } from '../../table'
 
 const { listApps } = apps
 
@@ -34,6 +34,8 @@ const renderTable = (
 
     const table = createTable()
 
+    appArray = sortBy(compose(isLinked, prop('version')))(appArray)
+
     appArray.forEach(({ vendor, name, version }) => {
 
       const linked = isLinked(version)
@@ -46,7 +48,7 @@ const renderTable = (
 
       const coloredVersion = linked ? chalk.green(cleanedVersion) : cleanedVersion
 
-      const formattedName = `${chalk.blue(vendor)}${chalk.gray('.')}${coloredName}`
+      const formattedName = `${chalk.blue(vendor)}${chalk.gray.bold('.')}${coloredName}`
 
       table.push([formattedName, coloredVersion])
     })
@@ -63,7 +65,7 @@ export default () => {
     .then(prop('data'))
     .then(parseLocatorFromList)
     .then(appArray => renderTable({
-      title: `${chalk.green('Installed Apps')} in ${chalk.blue(account)} at workspace ${chalk.green(workspace)}`,
+      title: `${chalk.yellow('Installed Apps')} in ${chalk.blue(account)} at workspace ${chalk.yellow(workspace)}`,
       emptyMessage: 'You have no installed apps',
       appArray,
     }))
