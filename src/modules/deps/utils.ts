@@ -1,8 +1,8 @@
 import { Apps } from '@vtex/api'
 import chalk from 'chalk'
-import * as Table from 'cli-table2'
 import { diffArrays } from 'diff'
 import * as R from 'ramda'
+import { createTable } from '../../table'
 
 const isNpm = dep => dep.startsWith('npm:')
 
@@ -18,58 +18,34 @@ export const removeNpm = (deps, inValues?) => {
   return deps
 }
 
-export const cleanDeps = R.compose(R.keys, removeNpm)
+const cleanDeps = R.compose(R.keys, removeNpm)
+
+const formatAppId = (appId: string) => {
+  const [appVendor, appName] = R.split('.', appId)
+  if (!appName) {
+    // Then the app is an 'infra' app.
+    const [infraAppVendor, infraAppName] = R.split(':', appId)
+    return `${chalk.blue(infraAppVendor)}:${infraAppName}`
+  }
+  return `${chalk.blue(appVendor)}.${appName}`
+}
+
+
+const cleanVersion = (appId: string) => {
+  return R.compose<string, string[], string, string>(
+    (version: string) => {
+      const [pureVersion, build] = R.split('+build', version)
+      return (build ? `${pureVersion}(linked)` : pureVersion)
+    },
+    R.last,
+    R.split('@')
+  )(appId)
+}
 
 export const getCleanDependencies = async (context) => {
 return await new Apps(context)
   .getDependencies()
   .then(cleanDeps)
-}
-
-const stringReducer = (s:string, maxLength: number) => {
-  /* The most general app description is as follows:
-   * {vendor}.{appName}@{version}+build{buildNumber}
-   *
-   * This function abbreviates this description so that it does not exceed the
-   * maxLength parameter, but always shows the full version and the beginning
-   * part of the app name.
-   */
-  if (s.length <= maxLength) {
-    return s
-  }
-  // If s.length > maxLength we need to reduce the string's size,
-  // but still keep the useful information.
-  const hideString = '..'
-  const versionPrefix = '@'
-  const buildPrefix = '+build'
-  // First try to remove build number:
-  if (s.indexOf(buildPrefix) > -1) {
-    if (`${s.split(buildPrefix)[0]}${buildPrefix}${hideString}`.length <= maxLength) {
-      return `${s.substring(0, maxLength-hideString.length)}${hideString}`
-    }
-  }
-  // First try didn't work, so do some more elaborated work.
-  // We will abbreviate the both the app name and the build number
-  // (if it exists).
-  const [appName, version] = s.split(versionPrefix)
-  let pureVersion
-  let additionalLength
-  if (version.indexOf(buildPrefix) > -1) {
-    // There is a build number, so we will need to abbreviate it as well.
-    pureVersion = version.split(buildPrefix)[0]
-    additionalLength = buildPrefix.length + hideString.length
-  } else {
-    // No build number.
-    pureVersion = version
-    additionalLength = 0
-  }
-  const appNameDesiredLength = (maxLength - hideString.length -
-    pureVersion.length - versionPrefix.length - additionalLength)
-  const reducedAppName = `${appName.substr(0, appNameDesiredLength)}${hideString}`
-  const stringWithReducedName = `${reducedAppName}${versionPrefix}${version}`
-  const finalString =
-    `${stringWithReducedName.substring(0, maxLength-hideString.length)}${hideString}`
-  return finalString
 }
 
 export const matchedDepsDiffTable = (
@@ -78,31 +54,27 @@ export const matchedDepsDiffTable = (
   deps1: string[],
   deps2: string[]
 ) => {
-  try {
-  const colWidth = 40 // column width of the table.
   const depsDiff = diffArrays(deps1, deps2)
   // Get deduplicated names (no version) of the changed deps.
   const depNames = [...new Set(
-    R.compose<any[], any[], any[], any[], any[]>(
-      R.map(k => k.split('@')[0]),
+    R.compose<string[], any[], string[], string[], string[]>(
+      R.map(k => R.head(R.split('@', k))),
       R.flatten,
       R.pluck('value'),
       R.filter((k: any) => !!k.removed || !!k.added)
     )(depsDiff)
   )].sort()
-    const produceStartValues = () => (R.map((_) => ({content: []}))(depNames) as any)
-  // Each of the following objects will start as {`depName`: {content: []}, ...}-like.
+  const produceStartValues = () => (R.map((_) => ([]))(depNames) as any)
+  // Each of the following objects will start as a { `depName`: [] }, ... }-like.
   const addedDeps = R.zipObj(depNames, produceStartValues())
   const removedDeps = R.zipObj(depNames, produceStartValues())
 
   // Custom function to set the objects values.
-  const setObjectValues = (obj, formatter, hAlign, filterFunction) => {
-    R.compose<any[], any[], any[], any[], any[]>(
+  const setObjectValues = (obj, formatter, filterFunction) => {
+    R.compose<void, any[], any[], any[], any[]>(
       R.map(k => {
-        const index = k.split('@')[0]
-        console.log(`Here is the index ${index}`)
-        obj[index].hAlign = hAlign
-        obj[index].content.push(formatter(k))
+        const index = R.head(R.split('@', k))
+        obj[index].push(formatter(k))
       }),
       R.flatten,
       R.pluck('value'),
@@ -110,9 +82,7 @@ export const matchedDepsDiffTable = (
     )(depsDiff)
     R.mapObjIndexed(
       (_, index) => {
-        console.log(index)
-        console.log(obj[index])
-        obj[index].content = obj[index].content.join('\n')
+        obj[index] = obj[index].join(',')
       }
     )(obj)
   }
@@ -120,41 +90,37 @@ export const matchedDepsDiffTable = (
   // Setting the objects values.
   setObjectValues(
     removedDeps,
-    (k) => chalk.red(stringReducer(`-${k}`, colWidth)),
-    'right',
+    (k) => chalk.red(`${cleanVersion(k)}`),
     (k:any) => !!k.removed
   )
   setObjectValues(
     addedDeps,
-    (k) => chalk.green(stringReducer(`+${k}`, colWidth)),
-    'left',
+    (k) => chalk.green(`${cleanVersion(k)}`),
     (k:any) => !!k.added
   )
 
-  const table = new Table({
-    // Minimalist table style.
-    chars: {
-      'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': '',
-      'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': '',
-      'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': '',
-      'right': '' , 'right-mid': '' , 'middle': ' => ',
-    },
-    style: { 'padding-left': 0, 'padding-right': 0, 'head':'center'},
-    colWidths: [40, 40],
-  })
-  // Set table headers.
+  const table = createTable() // Set table headers.
   table.push([
-    {content: chalk.bold.blue(title1), hAlign: 'right'},
-    {content: chalk.bold.blue(title2), hAlign: 'left'},
+    '',
+    chalk.bold.yellow(title1),
+    chalk.bold.yellow(title2),
   ])
+
+  const formattedDepNames = R.map(formatAppId, depNames)
   // Push array of changed dependencies pairs to the table.
   Array.prototype.push.apply(
     table,
-    R.zip(R.values(removedDeps), R.values(addedDeps))
+    R.map(
+      (k: any[]) => R.flatten(k)
+    )(
+      R.zip( // zipping 3 arrays.
+        R.zip(
+          formattedDepNames,
+          R.values(removedDeps)
+        ),
+        R.values(addedDeps)
+      )
+    )
   )
   return table
-
-  } catch (e) {
-    console.log(e)
-  }
-  }
+}
