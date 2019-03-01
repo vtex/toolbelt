@@ -30,7 +30,6 @@ const formatAppId = (appId: string) => {
   return `${chalk.blue(appVendor)}.${appName}`
 }
 
-
 const cleanVersion = (appId: string) => {
   return R.compose<string, string[], string, string>(
     (version: string) => {
