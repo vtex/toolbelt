@@ -58,7 +58,6 @@ export default {
       optionalArgs: ['app'],
     },
     diff: {
-      alias: 'diff',
       description: 'Diff between workspace dependencies',
       handler: './deps/diff',
       optionalArgs: ['workspace1', 'workspace2'],

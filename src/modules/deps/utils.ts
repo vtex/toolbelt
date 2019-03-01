@@ -43,9 +43,9 @@ const cleanVersion = (appId: string) => {
 }
 
 export const getCleanDependencies = async (context) => {
-return await new Apps(context)
-  .getDependencies()
-  .then(cleanDeps)
+  return await new Apps(context)
+    .getDependencies()
+    .then(cleanDeps)
 }
 
 export const matchedDepsDiffTable = (
