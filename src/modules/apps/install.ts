@@ -57,12 +57,6 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
         case 'installed_free':
           log.debug('Free app')
           break
-        case 'no_buy_app_license':
-          log.error('You do not have the necessary license to purchase apps. Please check your VTEX IO resources access')
-          break
-        case 'area_unavailable':
-          log.error('Unfortunately, app purchases are not yet available in your region')
-          break
         case 'check_terms':
           if (!billingOptions) {
             throw new Error('Failed to get billing options')
@@ -79,11 +73,20 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
     if (isNotFoundError(e)) {
       log.warn(`Billing app not found in current workspace. Please install it with ${chalk.green('vtex install vtex.billing')}`)
     } else if (isForbiddenError(e)) {
-      log.error('You do not have permission to perform this operation. Please check your VTEX IO resources access')
+      log.error(`You do not have permission to install apps. Please check your VTEX IO 'Install App' resource access in Account Management`)
     } else if (hasErrorMessage(e)) {
       log.error(e.response.data.message)
     } else {
-      logGraphQLErrorMessage(e)
+      switch (e.message) {
+        case 'no_buy_app_license':
+          log.error(`You do not have permission to purchase apps. Please check your VTEX IO 'Buy Apps' resource access in Account Managament`)
+          break
+        case 'area_unavailable':
+          log.error('Unfortunately, app purchases are not yet available in your region')
+          break
+        default:
+          logGraphQLErrorMessage(e)
+      }
     }
     log.warn(`The following app was not installed: ${app}`)
   }
