@@ -57,9 +57,6 @@ export const prepareInstall = async (appsList: string[]): Promise<void> => {
         case 'installed_free':
           log.debug('Free app')
           break
-        case 'no_install_app_license':
-          log.error('You do not have the necessary license to install apps. Please check your VTEX IO resources access')
-          break
         case 'no_buy_app_license':
           log.error('You do not have the necessary license to purchase apps. Please check your VTEX IO resources access')
           break
