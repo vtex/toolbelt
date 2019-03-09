@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.42.3] - 2019-03-09
+### Added
+- Error messages for missing install licenses and unsupported regions
+
 ## [2.42.2] - 2019-03-07
 
 ## [2.42.1] - 2019-02-28
