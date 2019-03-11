@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.42.4] - 2019-03-11
+### Added
+- `vtex release pre` alias for `vtex release prerelease`
+
 ## [2.42.3] - 2019-03-09
 ### Added
 - Error messages for missing install licenses and unsupported regions

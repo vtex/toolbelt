@@ -1,5 +1,6 @@
 import chalk from 'chalk'
-import {indexOf} from 'ramda'
+import { indexOf, prop } from 'ramda'
+
 import log from '../../logger'
 import {
   add,
@@ -17,6 +18,9 @@ import {
   updateChangelog,
 } from './utils'
 
+const releaseTypeAliases = {
+  pre: 'prerelease',
+}
 const supportedReleaseTypes = ['major', 'minor', 'patch', 'prerelease']
 const supportedTagNames = ['stable', 'beta', 'hkignore']
 const releaseTypesToUpdateChangelog = ['major', 'minor', 'patch']
@@ -33,12 +37,15 @@ export default async (
 ) => {
   checkGit()
   checkIfInGitRepo()
+
+  const normalizedReleaseType = prop<string>(releaseType, releaseTypeAliases) || releaseType
+
   // Check if releaseType is valid.
-  if (indexOf(releaseType, supportedReleaseTypes) === -1) {
+  if (indexOf(normalizedReleaseType, supportedReleaseTypes) === -1) {
     // TODO: Remove the below log.error when toolbelt has better error handling.
-    log.error(`Invalid release type: ${releaseType}
+    log.error(`Invalid release type: ${normalizedReleaseType}
 Valid release types are: ${supportedReleaseTypes.join(', ')}`)
-    throw new Error(`Invalid release type: ${releaseType}
+    throw new Error(`Invalid release type: ${normalizedReleaseType}
 Valid release types are: ${supportedReleaseTypes.join(', ')}`)
   }
   // Check if tagName is valid.
@@ -51,7 +58,7 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
   }
 
   const oldVersion = readVersion()
-  const newVersion = getNewVersion(oldVersion, releaseType, tagName)
+  const newVersion = getNewVersion(oldVersion, normalizedReleaseType, tagName)
 
   log.info(`Old version: ${chalk.bold(oldVersion)}`)
   log.info(`New version: ${chalk.bold.yellow(newVersion)}`)
@@ -74,7 +81,7 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
   try {
     await preRelease()
     await bump(newVersion)
-    if (shouldUpdateChangelog(releaseType, tagName)) {
+    if (shouldUpdateChangelog(normalizedReleaseType, tagName)) {
       updateChangelog(changelogVersion)
     }
     await add()
