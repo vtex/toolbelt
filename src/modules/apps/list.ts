@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { compose, flip, gt, head, length, map, prop, split, sortBy } from 'ramda'
+import { compose, filter, flip, gt, head, length, map, not, prop, split } from 'ramda'
 
 import { apps } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
@@ -34,39 +34,34 @@ const renderTable = (
 
     const table = createTable()
 
-    appArray = sortBy(compose(isLinked, prop('version')))(appArray)
-
     appArray.forEach(({ vendor, name, version }) => {
 
-      const linked = isLinked(version)
+      const cleanedVersion = cleanVersion(version)
 
-      const coloredName = linked ? chalk.green(name) : name
+      const formattedName = `${chalk.blue(vendor)}${chalk.gray.bold('.')}${name}`
 
-      const linkedLabel = linked ? chalk.green(' (linked)') : ''
-
-      const cleanedVersion = `${cleanVersion(version)}${linkedLabel}`
-
-      const coloredVersion = linked ? chalk.green(cleanedVersion) : cleanedVersion
-
-      const formattedName = `${chalk.blue(vendor)}${chalk.gray.bold('.')}${coloredName}`
-
-      table.push([formattedName, coloredVersion])
+      table.push([formattedName, cleanedVersion])
     })
 
     console.log(`${table.toString()}\n`)
   }
 )
 
-export default () => {
+export default async () => {
   const account = getAccount()
   const workspace = getWorkspace()
   log.debug('Starting to list apps')
-  return listApps()
+  const appArray = await listApps()
     .then(prop('data'))
     .then(parseLocatorFromList)
-    .then(appArray => renderTable({
-      title: `${chalk.yellow('Installed Apps')} in ${chalk.blue(account)} at workspace ${chalk.yellow(workspace)}`,
-      emptyMessage: 'You have no installed apps',
-      appArray,
-    }))
+  renderTable({  // Installed apps
+    title: `${chalk.yellow('Installed Apps')} in ${chalk.blue(account)} at workspace ${chalk.yellow(workspace)}`,
+    emptyMessage: 'You have no installed apps',
+    appArray: filter(compose<any, string, boolean, boolean>(not, isLinked, prop('version')))(appArray),
+  })
+  renderTable({  // Linked apps
+    title: `${chalk.yellow('Linked Apps')} in ${chalk.blue(account)} at workspace ${chalk.yellow(workspace)}`,
+    emptyMessage: 'You have no linked apps',
+    appArray: filter(compose<any, string, boolean>(isLinked, prop('version')))(appArray),
+  })
 }
