@@ -1,5 +1,6 @@
 import chalk from 'chalk'
-import {indexOf} from 'ramda'
+import { indexOf, prop } from 'ramda'
+
 import log from '../../logger'
 import {
   add,
@@ -17,6 +18,9 @@ import {
   updateChangelog,
 } from './utils'
 
+const releaseTypeAliases = {
+  pre: 'prerelease',
+}
 const supportedReleaseTypes = ['major', 'minor', 'patch', 'prerelease']
 const supportedTagNames = ['stable', 'beta', 'hkignore']
 const releaseTypesToUpdateChangelog = ['major', 'minor', 'patch']
@@ -34,7 +38,7 @@ export default async (
   checkGit()
   checkIfInGitRepo()
 
-  const normalizedReleaseType = releaseType === 'pre' ? 'prerelease' : releaseType
+  const normalizedReleaseType = prop<string>(releaseType, releaseTypeAliases) || releaseType
 
   // Check if releaseType is valid.
   if (indexOf(normalizedReleaseType, supportedReleaseTypes) === -1) {
