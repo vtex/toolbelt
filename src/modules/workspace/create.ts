@@ -3,11 +3,12 @@ import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
 import { getAccount, getToken } from '../../conf'
+import { region } from '../../env'
 import { CommandError } from '../../errors'
 import log from '../../logger'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9-]{0,126}[a-z0-9]$/
-const routeMapURL = (workspace) => `http://colossus.aws-us-east-1.vtex.io/${getAccount()}/${workspace}/routes`
+const routeMapURL = (workspace) => `http://colossus.${region()}.vtex.io/${getAccount()}/${workspace}/routes`
 
 export default async (name: string) => {
   if (!VALID_WORKSPACE.test(name)) {

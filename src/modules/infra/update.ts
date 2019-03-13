@@ -8,6 +8,7 @@ import { prop } from 'ramda'
 import * as semver from 'semver'
 
 import { router } from '../../clients'
+import { Region } from '../../conf'
 import log from '../../logger'
 import { diffVersions, getTag } from './utils'
 
@@ -45,7 +46,7 @@ const logVersionMap = ({ latest, update }: InfraVersionMap): void => {
 const createVersionMap = (availableRes: AvailableServices, installedRes: InstalledService[]): InfraVersionMap =>
   installedRes.reduce((acc, { name, version: currentVersion }) => {
     const tag = getTag(currentVersion)
-    const latestVersion = availableRes[name].versions['aws-us-east-1'] // See comment in src/modules/infra/install.ts:82
+    const latestVersion = availableRes[name].versions[Region.Production] // See comment in src/modules/infra/install.ts:82
       .filter(v => getTag(v) === tag)
       .sort(semver.rcompare)[0]
     if (currentVersion !== latestVersion) {
