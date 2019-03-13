@@ -277,6 +277,14 @@ export default {
   update: {
     description: 'Update all installed apps to the latest version',
     handler: './apps/update',
+    options: [
+      {
+        description: 'Update to newest majors',
+        long: 'major',
+        short: 'm',
+        type: 'boolean',
+      }
+    ]
   },
   use: {
     description: 'Use a workspace to perform operations',

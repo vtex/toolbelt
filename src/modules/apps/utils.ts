@@ -87,9 +87,9 @@ export const appLatestMajor = (app: string): Promise<string | never> => {
     .then<string>(wildVersionByMajor)
 }
 
-export const appLatestVersion = (app: string): Promise<string | never> => {
+export const appLatestVersion = (app: string, version='x'): Promise<string | never> => {
   return createClients().registry
-    .getAppManifest(app, 'x')
+    .getAppManifest(app, version)
     .then<string>(prop('id'))
     .then<string>(extractVersionFromId)
     .catch(handleError(app))

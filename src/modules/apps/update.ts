@@ -1,13 +1,13 @@
 import * as Bluebird from 'bluebird'
+import chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import * as ora from 'ora'
-import chalk from 'chalk'
 import { isEmpty, map, pipe, prop, reject } from 'ramda'
 
-import { createTable } from '../../table'
 import { apps } from '../../clients'
 import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
+import { createTable } from '../../table'
 import { diffVersions } from '../infra/utils'
 import { prepareInstall } from './install'
 import { appLatestVersion, isLinked } from './utils'
@@ -33,12 +33,32 @@ const updateVersion = (app) => {
   return app
 }
 
-export default async () => {
+const versionWithWildcards = (version: string, level='major') => {
+  const [major, minor] = version.split('.')
+  if (level === 'minor') {
+    return `${major}.x`
+  } else if (level === 'patch') {
+    return `${major}.${minor}.x`
+  }
+  // Then `level` is 'major'
+  return 'x'
+}
+
+export default async (options: any) => {
   const spinner = ora('Getting available updates').start()
   const { data } = await listApps()
   const installedApps = reject<Manifest>(isLinked, map(extractAppLocator, data))
+  let updateLevel: string
+  if (options.major || options.m) {
+    updateLevel = 'major'
+  } else {
+    updateLevel = 'minor'
+  }
   const withLatest = await Bluebird.all(map(async (app) => {
-    app.latest = await appLatestVersion(`${app.vendor}.${app.name}`)
+    app.latest = await appLatestVersion(
+      `${app.vendor}.${app.name}`,
+      versionWithWildcards(app.version, updateLevel)
+    )
     return app
   }, installedApps))
   const updateableApps = reject(sameVersion, withLatest)
@@ -51,7 +71,7 @@ export default async () => {
     }
     const [fromVersion, toVersion] = diffVersions(version, latest)
 
-    const formattedName = `${chalk.blue(vendor)}${chalk.gray('.')}${name}`
+    const formattedName = `${chalk.blue(vendor)}${chalk.gray.bold('.')}${name}`
     table.push([formattedName, fromVersion, toVersion])
   })
   spinner.stop()

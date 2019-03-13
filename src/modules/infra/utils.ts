@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import * as R from 'ramda'
 import * as semver from 'semver'
 
 const stitch = (main: string, prerelease: string): string =>
@@ -7,21 +8,20 @@ const stitch = (main: string, prerelease: string): string =>
 const diff = (a: string | string[], b: string | string[]): string[] => {
   const from = []
   const to = []
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    const ai = a[i]
-    const bi = b[i]
-    if (ai !== bi) {
-      if (ai !== undefined) {
-        from.push(chalk.red(ai))
+  let fromFormatter = x => x
+  let toFormatter = x => x
+  R.compose(
+    R.map(
+      ([aDigit, bDigit]) => {
+        if (aDigit !== bDigit) {
+          fromFormatter = x => chalk.red(x)
+          toFormatter = x => chalk.green(x)
+        }
+        from.push(fromFormatter(aDigit))
+        to.push(toFormatter(bDigit))
       }
-      if (bi !== undefined) {
-        to.push(chalk.green(bi))
-      }
-    } else {
-      from.push(ai)
-      to.push(bi)
-    }
-  }
+    ),
+    R.zip)(a, b)
   return [from.join('.'), to.join('.')]
 }
 
