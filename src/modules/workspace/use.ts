@@ -22,6 +22,18 @@ const promptWorkspaceCreation = (name: string): Bluebird<boolean> => {
     .then<boolean>(prop('confirm'))
 }
 
+const promptWorkspaceProductionFlag = (): Bluebird<boolean> => {
+  return Promise.resolve(
+    inquirer.prompt({
+      default: false,
+      type: 'confirm',
+      name: 'confirm',
+      message: 'Should the workspace be in production mode?',
+    })
+  )
+    .then<boolean>(prop('confirm'))
+}
+
 export default async (name: string, options?) => {
   const reset = options ? (options.r || options.reset) : null
   let confirm
@@ -33,7 +45,8 @@ export default async (name: string, options?) => {
       if (!confirm) {
         throw new UserCancelledError()
       }
-      await createCmd(name)
+      const production = await promptWorkspaceProductionFlag()
+      await createCmd(name, {production})
     } else {
       throw err
     }

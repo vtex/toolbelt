@@ -305,6 +305,14 @@ export default {
       description: 'Create a new workspace with this name',
       handler: './workspace/create',
       requiredArgs: 'name',
+      options: [
+        {
+          description: 'Create a production workspace',
+          long: 'production',
+          short: 'p',
+          type: 'boolean'
+        }
+      ]
     },
     delete: {
       description: 'Delete a single or various workspaces',
