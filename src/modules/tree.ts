@@ -283,8 +283,8 @@ export default {
         long: 'major',
         short: 'm',
         type: 'boolean',
-      }
-    ]
+      },
+    ],
   },
   use: {
     description: 'Use a workspace to perform operations',
