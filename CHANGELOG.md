@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Warm up workspace route map on creation
+
 ## [2.42.4] - 2019-03-11
 ### Added
 - `vtex release pre` alias for `vtex release prerelease`
