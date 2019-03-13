@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 
+import { split } from 'ramda'
 import { getAccount } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
@@ -17,7 +18,7 @@ export const switchAccount = async (account: string, options, previousAccount = 
   } else if (previousAccount === account) {
     throw new CommandError(`You're already using the account ${chalk.blue(account)}`)
   }
-  
+
   return await loginCmd({ account, workspace })
 }
 
@@ -27,7 +28,13 @@ const hasAccountSwitched = (account: string) => {
 
 export default async (account: string, options) => {
   const previousAccount = getAccount()
-  await switchAccount(account, options)
+  // Enable users to type `vtex switch {account}/{workspace}` and switch
+  // directly to a workspace without typing the `-w` option.
+  const [ parsedAccount, parsedWorkspace ] = split('/', account)
+  if (parsedWorkspace) {
+    options = {...options, w: parsedWorkspace, workspace: parsedWorkspace}
+  }
+  await switchAccount(parsedAccount, options)
   if (hasAccountSwitched(account)) {
     log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(account)}`)
   }
