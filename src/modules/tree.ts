@@ -310,9 +310,9 @@ export default {
           description: 'Create a production workspace',
           long: 'production',
           short: 'p',
-          type: 'boolean'
+          type: 'boolean',
         },
-      ]
+      ],
     },
     delete: {
       description: 'Delete a single or various workspaces',
