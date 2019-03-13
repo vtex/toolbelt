@@ -311,7 +311,7 @@ export default {
           long: 'production',
           short: 'p',
           type: 'boolean'
-        }
+        },
       ]
     },
     delete: {
