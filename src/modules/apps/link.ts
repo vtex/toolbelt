@@ -105,7 +105,7 @@ const appTypingsURL = async (account: string, workspace: string, appName: string
   if (isLinked({'version': appId})) {
   return `https://${workspace}--${account}.${extension}.com/_v/private/typings/linked/v1/${appId}/${typingsPath}/${builder}`
   }
-  return `https://${vendor}.vteximg.com/_v/public/typings/v1/${appId}/${typingsPath}/${builder}`
+  return `https://${vendor}.vteximg.com.br/_v/public/typings/v1/${appId}/${typingsPath}/${builder}`
 }
 
 const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, appDependencies: Record<string, any>) => {
@@ -178,7 +178,7 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
               runYarn(builder)
             } catch (e) {
               log.error(`Error running Yarn in ${builder}.`)
-              await outputJson(packageJsonPath, packageJson)  // Revert package.json to original state.
+              await outputJson(packageJsonPath, packageJson, { spaces: '\t' })  // Revert package.json to original state.
             }
 
           }
