@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.48.1] - 2019-03-14
+### Fixed
+- Answer for switching to previous account after `vtex publish` is now correctly
+  considered
+
 ## [2.48.0] - 2019-03-14
 ### Changed
 - Upgrade @vtex/api to version 2.3.0

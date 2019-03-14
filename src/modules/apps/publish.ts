@@ -32,7 +32,7 @@ const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.
 const switchToPreviousAccount = async (previousConf: any) => {
   const previousAccount = previousConf.account
   if (previousAccount !== conf.getAccount()) {
-    const canSwitchToPrevious = promptPublishOnVendor(getSwitchAccountMessage(previousAccount))
+    const canSwitchToPrevious = await promptPublishOnVendor(getSwitchAccountMessage(previousAccount))
     if (canSwitchToPrevious) {
       conf.saveAll(previousConf)
     }
