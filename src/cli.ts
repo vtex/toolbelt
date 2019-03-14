@@ -6,7 +6,7 @@ import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
 import { decode } from 'jsonwebtoken'
-import * as moment from 'moment'
+// import * as moment from 'moment'
 import * as path from 'path'
 import { reject, without } from 'ramda'
 import { isFunction } from 'ramda-adjunct'
@@ -25,6 +25,29 @@ axios.interceptors.request.use(config => {
   return config
 })
 
+function sleep(miliseconds) {
+  let currentTime = new Date().getTime()
+  while (currentTime + miliseconds >= new Date().getTime()) {
+  }
+}
+log.log({level: 'info', message: 'oi', progressBarSpecs: {value: 10, text: 'Doing something'}})
+sleep(4000)
+log.log({level: 'info', message: 'tchau', append: false, progressBarSpecs: {value: 20, text: 'Doing something'}})
+sleep(4000)
+log.log({level: 'info', message: 'tchauuuu', append: true})
+sleep(4000)
+log.log({level: 'info', message: 'tchauuuuuuuuuuuuuuuuuuuuuuu', append: true})
+sleep(4000)
+log.info('Testing log.........1')
+log.info('Testing log.........2')
+sleep(1000)
+log.info('Testing log.........3')
+log.log({message: '', level: 'info', clear: true})
+log.info(`Testing log.........4`)
+log.log({message: 'Testing log.........5', level: 'info', append: true})
+log.end()
+process.exit()
+
 global.Promise = Bluebird
 Bluebird.config({
   cancellation: true,
@@ -38,11 +61,11 @@ let loginPending = false
 // Setup logging
 const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
-if (isVerbose) {
-  log.level = 'debug'
-  ;(log.default.transports.console as any).timestamp = () =>
-    chalk.grey(moment().format('HH:mm:ss.SSS'))
-}
+// if (isVerbose) {
+  // log.level = 'debug'
+  // ;(log.default.transports.console as any).timestamp = () =>
+    // chalk.grey(moment().format('HH:mm:ss.SSS'))
+// }
 
 if (process.env.NODE_ENV === 'development') {
   try {
