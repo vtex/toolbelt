@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.47.0] - 2019-03-14
+### Fixed
+- Config is saved before changing account for app publishing and is
+  automatically restored when going back to previous account.
+
 ## [2.46.0] - 2019-03-14
 
 ## [2.45.0] - 2019-03-14

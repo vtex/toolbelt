@@ -6,7 +6,7 @@ import * as inquirer from 'inquirer'
 import * as ora from 'ora'
 import { isEmpty, map, prop } from 'ramda'
 import { createClients } from '../../clients'
-import { Environment, forceEnvironment, getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
+import * as conf from '../../conf'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
@@ -25,15 +25,16 @@ const root = process.cwd()
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 5
 
-const getSwitchAccountMessage = (previousAccount: string, currentAccount = getAccount()) :string => {
+const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()) :string => {
   return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
 }
 
-const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
-  if (previousAccount !== getAccount()) {
-    const canSwitchToPrevious = await promptPublishOnVendor(getSwitchAccountMessage(previousAccount))
+const switchToPreviousAccount = async (previousConf: any) => {
+  const previousAccount = previousConf.account
+  if (previousAccount !== conf.getAccount()) {
+    const canSwitchToPrevious = promptPublishOnVendor(getSwitchAccountMessage(previousAccount))
     if (canSwitchToPrevious) {
-      return await switchAccount(previousAccount, {workspace: previousWorkspace})
+      conf.saveAll(previousConf)
     }
   }
 }
@@ -101,11 +102,10 @@ const publisher = (workspace: string = 'master') => {
   }
 
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
-    const previousAccount = getAccount()
-    const previousWorkspace = getWorkspace()
+    const previousConf = conf.getAll()  // Store previous configuration in memory
 
     const manifest = await getManifest()
-    const account = getAccount()
+    const account = conf.getAccount()
 
     const builderHubMessage = await checkBuilderHubMessage('publish')
     if (!isEmpty(builderHubMessage)) {
@@ -121,7 +121,7 @@ const publisher = (workspace: string = 'master') => {
       await switchAccount(manifest.vendor, {})
     }
 
-    const context = { account: manifest.vendor, workspace, region: region(), authToken: getToken() }
+    const context = { account: manifest.vendor, workspace, region: region(), authToken: conf.getToken() }
     const { builder } = createClients(context, { timeout: 60000 })
 
     const pubTag = tag || automaticTag(manifest.version)
@@ -146,7 +146,7 @@ const publisher = (workspace: string = 'master') => {
         spinner.fail(`Failed to publish ${appId}`)
       }
     }
-    await switchToPreviousAccount(previousAccount, previousWorkspace)
+    await switchToPreviousAccount(previousConf)
 
     Promise.resolve()
   }
@@ -156,10 +156,10 @@ const publisher = (workspace: string = 'master') => {
 
 export default (path: string, options) => {
   if (!options.staging) {
-    forceEnvironment(Environment.Production)
+    conf.forceEnvironment(conf.Environment.Production)
   }
 
-  log.debug(`Starting to publish app in ${getEnvironment()}`)
+  log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
 
   path = path || root
   const workspace = options.w || options.workspace

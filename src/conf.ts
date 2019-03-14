@@ -9,6 +9,9 @@ export enum Environment {
   Staging = 'staging',
 }
 
+export const saveAll = (config: any): void => {
+  conf.all = config
+}
 export const saveAccount = (account: string): void =>
   conf.set('account', account)
 
@@ -23,6 +26,8 @@ export const saveWorkspace = (workspace = 'master') =>
 
 export const saveEnvironment = (env: Environment) =>
   conf.set('env', env)
+
+export const getAll = (): any => conf.all
 
 export const getAccount = (): string =>
   conf.get('account')
