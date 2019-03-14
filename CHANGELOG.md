@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.48.0] - 2019-03-14
+### Changed
+- Upgrade @vtex/api to version 2.3.0
+
 ## [2.47.0] - 2019-03-14
 ### Fixed
 - Config is saved before changing account for app publishing and is
