@@ -25,28 +25,28 @@ axios.interceptors.request.use(config => {
   return config
 })
 
-function sleep(miliseconds) {
-  let currentTime = new Date().getTime()
-  while (currentTime + miliseconds >= new Date().getTime()) {
-  }
-}
-log.log({level: 'info', message: 'oi', progressBarSpecs: {value: 10, text: 'Doing something'}})
-sleep(4000)
-log.log({level: 'info', message: 'tchau', append: false, progressBarSpecs: {value: 20, text: 'Doing something'}})
-sleep(4000)
-log.log({level: 'info', message: 'tchauuuu', append: true})
-sleep(4000)
-log.log({level: 'info', message: 'tchauuuuuuuuuuuuuuuuuuuuuuu', append: true})
-sleep(4000)
-log.info('Testing log.........1')
-log.info('Testing log.........2')
-sleep(1000)
-log.info('Testing log.........3')
-log.log({message: '', level: 'info', clear: true})
-log.info(`Testing log.........4`)
-log.log({message: 'Testing log.........5', level: 'info', append: true})
-log.end()
-process.exit()
+//function sleep(miliseconds) {
+  //let currentTime = new Date().getTime()
+  //while (currentTime + miliseconds >= new Date().getTime()) {
+  //}
+//}
+//log.log({level: 'info', message: 'oi', progressBarSpecs: {value: 10, text: 'Doing something'}})
+//sleep(4000)
+//log.log({level: 'info', message: 'tchau', append: false, progressBarSpecs: {value: 20, text: 'Doing something'}})
+//sleep(4000)
+//log.log({level: 'info', message: 'tchauuuu', append: true})
+//sleep(4000)
+//log.log({level: 'info', message: 'tchauuuuuuuuuuuuuuuuuuuuuuu', append: true})
+//sleep(4000)
+//log.info('Testing log.........1')
+//log.info('Testing log.........2')
+//sleep(1000)
+//log.info('Testing log.........3')
+//log.log({message: '', level: 'info', clear: true})
+//log.info(`Testing log.........4`)
+//log.log({message: 'Testing log.........5', level: 'info', append: true})
+//log.end()
+//process.exit()
 
 global.Promise = Bluebird
 Bluebird.config({

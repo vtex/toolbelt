@@ -1,9 +1,9 @@
 import * as progress from 'progress-string'
 import { stdout as singleLineLog } from 'single-line-log'
-import { createLogger, format, transports } from 'winston'
+import { createLogger, format, Logger, transports } from 'winston'
 import  * as Transport from 'winston-transport'
 
-const { combine, timestamp, simple, json, colorize } = format
+const { combine, timestamp, json, colorize } = format
 const bar = progress({
   width: 40,
   total: 100,
@@ -28,7 +28,12 @@ class ConsoleTransport extends Transport {
     setImmediate(() => {
       this.emit('logged', info)
     })
-    const { message, clear=false, append=true, progressBarSpecs } = info
+    const {
+      message,
+      clear=false,
+      append=true,
+      progressBar: progressBarSpecs,
+    } = info
     const newLogText = message || ''
     let newProgressBarText = ''
     let newProgressBar = ''
@@ -51,9 +56,7 @@ class ConsoleTransport extends Transport {
       this.progressBar = newProgressBar || this.progressBar
       this.logText = `${newLogText}\n`
     }
-    singleLineLog(
-      `${this.progressBarText}${this.progressBar}${this.logText}`
-    )
+    singleLineLog(`${this.progressBarText}${this.progressBar}${this.logText}`)
     callback()
   }
 }
@@ -77,12 +80,15 @@ const consoleFormatter = format((info, _) => {
   return info
 })
 
+interface ExtendedLogger extends Logger {
+  progress?(progressSpecs: any): void
+}
+
 const logger = createLogger({
   transports: [
     new ConsoleTransport({
       format: combine(
         timestamp({format: 'hh:mm:ss.SSS'}),
-        simple(),
         colorize({colors: {info: 'blue'}}),
         consoleFormatter()
       ),
@@ -100,7 +106,13 @@ const logger = createLogger({
       level: 'error',
     }),
   ],
-})
+}) as ExtendedLogger
+
+
+logger.clear = () => logger.log({message: '', level: 'info', clear: true})
+logger.progress = (progressSpecs: {text?: string, value?: number}) => {
+  logger.log({message: '', level: 'info', progress: progressSpecs})
+}
 
 logger.on('error', (err) => {
   console.error('A problem occured with the logger:')
