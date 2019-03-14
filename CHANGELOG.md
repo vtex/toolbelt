@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.45.0] - 2019-03-14
+### Added
+- Option `--major` (`-m`) in `vtex update` for updating app majors.
+
 ## [2.44.0] - 2019-03-14
 
 ## [2.43.0] - 2019-03-12
