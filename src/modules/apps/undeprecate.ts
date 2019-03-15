@@ -4,7 +4,7 @@ import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
 import { head, prepend, prop, tail } from 'ramda'
-import { getAccount, getToken, getWorkspace } from '../../conf'
+import { getAccount, getToken, getWorkspace, Region } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
@@ -62,14 +62,14 @@ const undeprecateApp = async (app: string): Promise<AxiosResponse> => {
   // `undeprecateApp` method in node-vtex-api and upgrade the library version
   // used in this project.
   const http = axios.create({
-    baseURL: `http://apps.aws-us-east-1.vtex.io/`,
+    baseURL: `http://apps.${Region.Production}.vtex.io/`,
     timeout: undeprecateRequestTimeOut,
     headers: {
       'Authorization': getToken(),
       'Content-Type': 'application/json',
     },
   })
-  const finalroute = `http://apps.aws-us-east-1.vtex.io/${vendor}/master/registry/${vendor}.${name}/${version}`
+  const finalroute = `http://apps.${Region.Production}.vtex.io/${vendor}/master/registry/${vendor}.${name}/${version}`
   return await http.patch(finalroute, {deprecated: false})
 }
 

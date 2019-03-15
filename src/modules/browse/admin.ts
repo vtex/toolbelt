@@ -1,15 +1,10 @@
 import * as opn from 'opn'
 import * as conf from '../../conf'
-
-const chooseDomain = (region: conf.Environment): string =>
-  region === conf.Environment.Production
-    ? 'myvtex.com'
-    : 'myvtexdev.com'
+import { publicEndpoint } from '../../env'
 
 export default () => {
-  const region = conf.getEnvironment()
   const { account, workspace } = conf.currentContext
-  const uri = `https://${workspace}--${account}.${chooseDomain(region)}/admin`
+  const uri = `https://${workspace}--${account}.${publicEndpoint()}/admin`
 
   opn(uri, { wait: false })
 }

@@ -13,6 +13,7 @@ import { concat, equals, filter, has, isEmpty, isNil, map, mapObjIndexed, merge,
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
+import { region } from '../../env'
 import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
@@ -39,10 +40,9 @@ const typingsURLRegex = /_v\/\w*\/typings/
 
 const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
 
-const typingsInfo = async (workspace: string, account: string, environment: string) => {
-  const extension = (environment === 'prod') ? '1' : '2'
+const typingsInfo = async (workspace: string, account: string) => {
   const http = axios.create({
-    baseURL: `http://builder-hub.vtex.aws-us-east-${extension}.vtex.io/${account}/${workspace}`,
+    baseURL: `http://builder-hub.vtex.${region()}.vtex.io/${account}/${workspace}`,
     timeout: builderHubTypingsInfoTimeout,
     headers: {
       'Authorization': getToken(),
@@ -86,7 +86,7 @@ const runYarn = (relativePath: string) => {
 }
 
 const getTypings = async (manifest: Manifest, account: string, workspace: string, environment: string) => {
-  const typingsData = await typingsInfo(workspace, account, environment)
+  const typingsData = await typingsInfo(workspace, account)
 
   const buildersWithInjectedDeps =
     pipe(
