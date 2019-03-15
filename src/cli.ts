@@ -31,8 +31,10 @@ axios.interceptors.request.use(config => {
   //}
 //}
 //log.log({level: 'info', message: 'oi', progressBarSpecs: {value: 10, text: 'Doing something'}})
+
+//log.log({level: 'info', message: 'oi', progress: {value: 10, text: 'Doing something'}})
 //sleep(4000)
-//log.log({level: 'info', message: 'tchau', append: false, progressBarSpecs: {value: 20, text: 'Doing something'}})
+//log.log({level: 'info', message: 'tchau', append: false, progress: {value: 20, text: 'Doing something'}})
 //sleep(4000)
 //log.log({level: 'info', message: 'tchauuuu', append: true})
 //sleep(4000)
@@ -117,6 +119,7 @@ const main = async () => {
     }
   }
 
+  log.newInfoSection()
   await run(command)
 }
 

@@ -85,7 +85,12 @@ declare global {
       code: string,
       message: string,
       details: any,
+      clear?: boolean,
       subject?: string,
+      progress?: {
+        text: string,
+        value: number
+      },
     },
   }
 

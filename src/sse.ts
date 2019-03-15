@@ -1,8 +1,8 @@
 import chalk from 'chalk'
-import { compose, forEach, contains, path, pathOr } from 'ramda'
+import { compose, contains, forEach, path, pathOr } from 'ramda'
 
 import { getToken } from './conf'
-import { endpoint, publicEndpoint, envCookies } from './env'
+import { endpoint, envCookies, publicEndpoint } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
 import { removeVersion } from './locator'

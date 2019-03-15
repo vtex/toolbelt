@@ -1,9 +1,13 @@
+import * as path from 'path'
 import * as progress from 'progress-string'
 import { stdout as singleLineLog } from 'single-line-log'
 import { createLogger, format, Logger, transports } from 'winston'
 import  * as Transport from 'winston-transport'
+import { name as pkgName, version as pkgVersion } from '../package.json'
+import { logger as colossusLogger } from './clients'
+import { configDir } from './conf'
 
-const { combine, timestamp, json, colorize } = format
+const { combine, timestamp, colorize } = format
 const bar = progress({
   width: 40,
   total: 100,
@@ -11,6 +15,9 @@ const bar = progress({
     return '#'.repeat(complete.length) + '' + ' '.repeat(incomplete.length)
   },
 })
+
+export const debugLogFilePath = path.join(configDir, 'debug.txt')
+const pkgId = `${pkgName}@${pkgVersion}`
 
 class ConsoleTransport extends Transport {
   private progressBarText: any
@@ -32,7 +39,7 @@ class ConsoleTransport extends Transport {
       message,
       clear=false,
       append=true,
-      progressBar: progressBarSpecs,
+      progress: progressBarSpecs,
     } = info
     const newLogText = message || ''
     let newProgressBarText = ''
@@ -42,6 +49,7 @@ class ConsoleTransport extends Transport {
       newProgressBarText = text || ''
       newProgressBar = value ? `  [${bar(value)}]\n` : ''
     }
+    if (true) {
     if (clear) {
       console.log()
       this.progressBarText = newProgressBarText
@@ -50,18 +58,19 @@ class ConsoleTransport extends Transport {
     } else if (append) {
       this.progressBarText = newProgressBarText || this.progressBarText
       this.progressBar = newProgressBar || this.progressBar
-      this.logText = `${this.logText}${newLogText}\n`
+      this.logText = newLogText ? `${this.logText}${newLogText}\n` : this.logText
     } else {
       this.progressBarText = newProgressBarText || this.progressBarText
       this.progressBar = newProgressBar || this.progressBar
-      this.logText = `${newLogText}\n`
+      this.logText = newLogText ? `${newLogText}\n` : ''
     }
     singleLineLog(`${this.progressBarText}${this.progressBar}${this.logText}`)
+    }
     callback()
   }
 }
 
-class ColossusTransport extends Transport {
+export class ColossusTransport extends Transport {
   constructor(opts) {
     super(opts)
   }
@@ -70,8 +79,17 @@ class ColossusTransport extends Transport {
     setImmediate(() => {
       this.emit('logged', info)
     })
+    switch (info.level){
+    case 'debug':
+        colossusLogger.debug(info, pkgId)
+    case 'info':
+        colossusLogger.info(info, pkgId)
+    case 'warn':
+        colossusLogger.warn(info, pkgId)
+    case 'error':
+        colossusLogger.error(info, {}, pkgId)
+    }
     callback()
-
   }
 }
 
@@ -80,29 +98,36 @@ const consoleFormatter = format((info, _) => {
   return info
 })
 
+const fileFormatter = format((info, _) => {
+  // Formatter for file logs
+  const { timestamp: timeString='', sender='', message } = info
+  info.message = `${timeString} - ${sender} ${info.level}:  ${message}`
+  return info
+})
+
 interface ExtendedLogger extends Logger {
   progress?(progressSpecs: any): void
+  newInfoSection?(): void
 }
 
 const logger = createLogger({
   transports: [
     new ConsoleTransport({
       format: combine(
-        timestamp({format: 'hh:mm:ss.SSS'}),
-        colorize({colors: {info: 'blue'}}),
+        colorize({ all: true, colors: { debug: 'blue' }}),
         consoleFormatter()
       ),
       level: 'info',
     }),
     new transports.File({
-      filename: 'debug.txt',
-      level: 'error',
+      filename: debugLogFilePath,
+      format: combine(
+        timestamp({ format: 'hh:mm:ss.SSS' }),
+        fileFormatter()
+      ),
+      level: 'debug',
     }),
     new ColossusTransport({
-      format: combine(
-        timestamp(),
-        json()
-      ),
       level: 'error',
     }),
   ],
