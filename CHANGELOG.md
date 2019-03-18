@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Workspace lifecycle now conforms to Chronos with a workspace being created as dev or production
+- Command `vtex production` is deprecated and it is not possible to change the production flag of a workspace after it is created
+- Links are only allowed in dev workspaces
+- Only production workspaces may be promoted to master
 
 ## [2.48.1] - 2019-03-14
 ### Fixed
