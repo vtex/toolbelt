@@ -56,17 +56,17 @@ const typingsInfo = async (workspace: string, account: string) => {
   }
 }
 
-const appTypingsURL = async (account: string, workspace: string, environment: string, appName: string, appVersion: string, builder: string): Promise<string> => {
+const appTypingsURL = async (account: string, workspace: string, appName: string, appVersion: string, builder: string): Promise<string> => {
   const appId = await resolveAppId(appName, appVersion)
   const assetServerPath = isLinked({'version': appId}) ? 'private/typings/linked/v1' : 'public/typings/v1'
   return `https://${workspace}--${account}.${publicEndpoint()}/_v/${assetServerPath}/${appId}/${typingsPath}/${builder}`
 }
 
-const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, environment: string, appDependencies: Record<string, any>) => {
+const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, appDependencies: Record<string, any>) => {
   const result: Record<string, any> = {}
   for (const [appName, appVersion] of Object.entries(appDependencies)) {
     try {
-      result[appName] = await appTypingsURL(account, workspace, environment, appName, appVersion, builder)
+      result[appName] = await appTypingsURL(account, workspace, appName, appVersion, builder)
     } catch (e) {
       log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
     }
@@ -83,7 +83,7 @@ const runYarn = (relativePath: string) => {
   log.info('Finished running yarn')
 }
 
-const getTypings = async (manifest: Manifest, account: string, workspace: string, environment: string) => {
+const getTypings = async (manifest: Manifest, account: string, workspace: string) => {
   const typingsData = await typingsInfo(workspace, account)
 
   const buildersWithInjectedDeps =
@@ -117,7 +117,7 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
           const packageJson = await readJson(packageJsonPath)
           const oldDevDeps = packageJson.devDependencies || {}
           const oldTypingsEntries = filter(test(typingsURLRegex), oldDevDeps)
-          const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, environment, appDeps)
+          const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, appDeps)
           if (!equals(oldTypingsEntries, newTypingsEntries)) {
             const cleanOldDevDeps = ramdaReject(test(typingsURLRegex), oldDevDeps)
             await outputJson(
@@ -303,7 +303,7 @@ export default async (options) => {
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
   if (options.install || options.i) {
-    await getTypings(manifest, context.account, context.workspace, context.environment)
+    await getTypings(manifest, context.account, context.workspace)
   }
   const { builder } = createClients(context, { timeout: 60000 })
 
