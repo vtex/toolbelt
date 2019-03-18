@@ -6,10 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.49.0] - 2019-03-18
+### Changed
+- Workspace lifecycle now conforms to Chronos with a workspace being created as dev or production
+- Command `vtex production` is deprecated and it is not possible to change the production flag of a workspace after it is created
+- Links are only allowed in dev workspaces
+- Only production workspaces may be promoted to master
+
 ## [2.48.1] - 2019-03-14
 ### Fixed
-- Answer for switching to previous account after `vtex publish` is now correctly
-  considered
+- Answer for switching to previous account after `vtex publish` is now correctly considered
 
 ## [2.48.0] - 2019-03-14
 ### Changed
