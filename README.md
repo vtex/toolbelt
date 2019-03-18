@@ -58,7 +58,6 @@ $ vtex
     list                    List your installed VTEX apps
     login                   Log into a VTEX account
     logout                  Logout of the current VTEX account
-    production [production] Set this workspace's production mode to true or false
     promote                 Promote this workspace to master
     publish [path]          Publish the current app or a path containing an app
     switch <account>        Switch to another VTEX account
@@ -95,7 +94,6 @@ $ vtex
     workspace delete <name>           Delete a single or various workspaces
     workspace info                    Display information about the current workspace
     workspace list                    List workspaces on this account
-    workspace production [production] Set this workspace's production mode to true or false
     workspace promote                 Promote this workspace to master
     workspace reset [name]            Delete and create a workspace
     workspace test [weight]           Set AB test in current workspace
@@ -119,7 +117,7 @@ VTEX Toolbelt will now monitor your files for changes and sync them automaticall
 
 ## Customizing your prompt
 
-You can configure your **terminal prompt** to display relevant information about your current context, like what **environment** you are using (`prod` or `staging`), which **account** you're logged into and which **workspace** you are currently using. 
+You can configure your **terminal prompt** to display relevant information about your current context, like what **environment** you are using (`prod` or `staging`), which **account** you're logged into and which **workspace** you are currently using.
 
 Just like knowing which `git` branch you're currently in, having this info in your prompt you help you avoid mistakes and be faster when using VTEX IO.
 

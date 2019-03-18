@@ -358,7 +358,7 @@ export default async (options) => {
       }
 
       if (data.code === 'link_on_production') {
-        throw new CommandError(`Please remove your workspace from production (${chalk.blue('vtex workspace production false')}) to enable app linking`)
+        throw new CommandError(`Please use a dev workspace to link apps. Create one with (${chalk.blue('vtex use <workspace> -rp')}) to be able to link apps`)
       }
     }
     throw e

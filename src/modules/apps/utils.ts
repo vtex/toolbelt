@@ -7,8 +7,8 @@ import { join } from 'path'
 import { __, compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail } from 'ramda'
 import * as semverDiff from 'semver-diff'
 
-import { apps, createClients } from '../../clients'
-import { getWorkspace } from '../../conf'
+import { apps, createClients, workspaces } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { isManifestReadable } from '../../manifest'
@@ -23,12 +23,21 @@ const workspaceMasterAllowedOperations = [
   'uninstall',
 ]
 
+// It is not allowed to link apps in a production workspace.
+const workspaceProductionAllowedOperatios = [
+  'install',
+  'uninstall',
+]
+
 const builderHubMessagesLinkTimeout = 2000  // 2 seconds
 const builderHubMessagesPublishTimeout = 10000  // 10 seconds
 
 export const workspaceMasterMessage =
   `This action is ${chalk.red('not allowed')} in workspace ${chalk.green('master')}, please use another workspace.
 You can run "${chalk.blue(`vtex use ${workspaceExampleName} -r`)}" to use a workspace named "${chalk.green(workspaceExampleName)}"`
+
+export const workspaceProductionMessage =
+  (workspace) => `This action is ${chalk.red('not allowed')} in workspace ${chalk.green(workspace)} because it is a production workspace. You can create a ${chalk.yellowBright('dev')} workspace called ${chalk.green(workspaceExampleName)} by running ${chalk.blue(`vtex use ${workspaceExampleName} -r`)}`
 
 export const parseArgs = (args: string[]): string[] => {
   return drop(1, args)
@@ -48,12 +57,20 @@ export const promptWorkspaceMaster = async () => {
 }
 
 export const validateAppAction = async (operation: string, app?) => {
-  if (getWorkspace() === 'master') {
+  const account = getAccount()
+  const workspace = getWorkspace()
+
+  if (workspace === 'master') {
     if (!contains(operation, workspaceMasterAllowedOperations)) {
       throw new CommandError(workspaceMasterMessage)
     } else {
       await promptWorkspaceMaster()
     }
+  }
+
+  const workspaceMeta = await workspaces.get(account, workspace)
+  if (workspaceMeta.production && !contains(operation, workspaceProductionAllowedOperatios)) {
+    throw new CommandError(workspaceProductionMessage(workspace))
   }
 
   // No app arguments and no manifest file.

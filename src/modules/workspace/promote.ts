@@ -1,22 +1,15 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as inquirer from 'inquirer'
-import { compose, flip, gt, length } from 'ramda'
 
-import { apps, workspaces } from '../../clients'
+import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
 import useCmd from './use'
 
-const { listLinks } = apps
 const { promote, get } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
-
-const flippedGt = flip(gt)
-
-const hasLinks =
-  compose<any[], number, boolean>(flippedGt(0), length)
 
 const isMaster = Promise.method((workspace: string) => {
   if (workspace === 'master') {
@@ -26,17 +19,10 @@ const isMaster = Promise.method((workspace: string) => {
 
 const isPromotable = (workspace: string): Bluebird<never | void> =>
   isMaster(workspace)
-    .then(listLinks)
-    .then(hasLinks)
-    .then(result => {
-      if (!result) {
-        return
-      }
-      throw new CommandError('You have links on your workspace, please unlink them before promoting')
-    }).then(async () => {
+    .then(async () => {
       const meta = await get(account, currentWorkspace)
       if (!meta.production) {
-        throw new CommandError(`Workspace ${chalk.green(currentWorkspace)} is not in ${chalk.green('production mode')}\nOnly production workspaces with no linked apps may be promoted\nUse the command ${chalk.blue('vtex production')} to set it to production mode`)
+        throw new CommandError(`Workspace ${chalk.green(currentWorkspace)} is not a ${chalk.green('production')} workspace\nOnly production workspaces may be promoted\nUse the command ${chalk.blue('vtex workspace create <workspace> --production')} to create a production workspace`)
       }
     })
 

@@ -22,6 +22,7 @@ export default async (name: string, options) => {
   const account = getAccount()
   const workspace = name || getWorkspace()
   const preConfirm = options.y || options.yes
+  const production = options.p || options.production
 
   log.debug('Resetting workspace', workspace)
 
@@ -31,8 +32,8 @@ export default async (name: string, options) => {
 
   try {
     log.debug('Starting to reset workspace', workspace)
-    await (workspaces as any).reset(account, workspace)
-    log.info(`Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')}`)
+    await (workspaces as any).reset(account, workspace, { production })
+    log.info(`Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')} using ${chalk.green(`production=${production}`)}`)
   } catch (err) {
     log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
     if (err.response) {
