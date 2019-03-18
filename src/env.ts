@@ -27,7 +27,7 @@ export function publicEndpoint(): string {
 }
 
 export function clusterIdDomainInfix(): string {
-  return process.env.VTEX_REGION ? `.${region()}` : ''
+  return process.env.VTEX_REGION ? `.${process.env.VTEX_REGION}` : ''
 }
 
 export function envCookies(): string {
