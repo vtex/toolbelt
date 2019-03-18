@@ -13,7 +13,7 @@ import { concat, equals, filter, has, isEmpty, isNil, map, mapObjIndexed, merge,
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
-import { region } from '../../env'
+import { region, publicEndpoint } from '../../env'
 import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
@@ -57,10 +57,9 @@ const typingsInfo = async (workspace: string, account: string) => {
 }
 
 const appTypingsURL = async (account: string, workspace: string, environment: string, appName: string, appVersion: string, builder: string): Promise<string> => {
-  const extension = (environment === 'prod') ? 'myvtex' : 'myvtexdev'
   const appId = await resolveAppId(appName, appVersion)
   const assetServerPath = isLinked({'version': appId}) ? 'private/typings/linked/v1' : 'public/typings/v1'
-  return `https://${workspace}--${account}.${extension}.com/_v/${assetServerPath}/${appId}/${typingsPath}/${builder}`
+  return `https://${workspace}--${account}.${publicEndpoint()}/_v/${assetServerPath}/${appId}/${typingsPath}/${builder}`
 }
 
 const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, environment: string, appDependencies: Record<string, any>) => {
