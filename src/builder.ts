@@ -1,6 +1,6 @@
 import * as archiver from 'archiver'
 import axios, { AxiosInstance } from 'axios'
-import { publicEndpoint, envCookies } from './env'
+import { publicEndpoint } from './env'
 
 const routes = {
   Publish: '_v/publish',
