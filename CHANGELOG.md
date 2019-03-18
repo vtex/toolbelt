@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.49.1] - 2019-03-18
+### Fixed
+- Forward `production` value to reset command when coming from `use` command.
+
 ## [2.49.0] - 2019-03-18
 ### Changed
 - Workspace lifecycle now conforms to Chronos with a workspace being created as dev or production
