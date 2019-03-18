@@ -198,7 +198,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
         throw new CommandError(`${appNameInput} doesn't match with the app name.`)
       }
     } else {
-      log.info(message)
+      console.log(message)
     }
   }
 }

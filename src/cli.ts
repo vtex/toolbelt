@@ -17,6 +17,8 @@ import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
+//import { sprintf } from 'sprintf-js'
+//import { stdout as singleLineLog } from 'single-line-log'
 
 axios.interceptors.request.use(config => {
   if (envCookies()) {
@@ -25,20 +27,21 @@ axios.interceptors.request.use(config => {
   return config
 })
 
-//function sleep(miliseconds) {
-  //let currentTime = new Date().getTime()
-  //while (currentTime + miliseconds >= new Date().getTime()) {
-  //}
-//}
-//log.log({level: 'info', message: 'oi', progressBarSpecs: {value: 10, text: 'Doing something'}})
-
-//log.log({level: 'info', message: 'oi', progress: {value: 10, text: 'Doing something'}})
+export function sleep(miliseconds) {
+  let currentTime = new Date().getTime()
+  while (currentTime + miliseconds >= new Date().getTime()) {
+  }
+}
 //sleep(4000)
 //log.log({level: 'info', message: 'tchau', append: false, progress: {value: 20, text: 'Doing something'}})
 //sleep(4000)
 //log.log({level: 'info', message: 'tchauuuu', append: true})
 //sleep(4000)
 //log.log({level: 'info', message: 'tchauuuuuuuuuuuuuuuuuuuuuuu', append: true})
+//sleep(4000)
+//log.clear()
+//sleep(4000)
+//log.info('heyo')
 //sleep(4000)
 //log.info('Testing log.........1')
 //log.info('Testing log.........2')
@@ -63,11 +66,6 @@ let loginPending = false
 // Setup logging
 const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
-// if (isVerbose) {
-  // log.level = 'debug'
-  // ;(log.default.transports.console as any).timestamp = () =>
-    // chalk.grey(moment().format('HH:mm:ss.SSS'))
-// }
 
 if (process.env.NODE_ENV === 'development') {
   try {
@@ -119,7 +117,7 @@ const main = async () => {
     }
   }
 
-  log.newInfoSection()
+  log.clear()
   await run(command)
 }
 

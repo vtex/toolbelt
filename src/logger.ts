@@ -1,34 +1,48 @@
+import chalk from 'chalk'
 import * as path from 'path'
 import * as progress from 'progress-string'
+import { replace } from 'ramda'
 import { stdout as singleLineLog } from 'single-line-log'
+import { sprintf } from 'sprintf-js'
 import { createLogger, format, Logger, transports } from 'winston'
 import  * as Transport from 'winston-transport'
 import { name as pkgName, version as pkgVersion } from '../package.json'
 import { logger as colossusLogger } from './clients'
 import { configDir } from './conf'
 
-const { combine, timestamp, colorize } = format
+// Setup logging
+const VERBOSE = '--verbose'
+const isVerbose = process.argv.indexOf(VERBOSE) >= 0
+const consoleLoggerLevel = isVerbose ? 'debug' : 'info'
+
+const { combine, timestamp } = format
 const bar = progress({
-  width: 40,
+  width: Math.floor(0.75 * 0.5 * process.stdout.columns) - 4,
   total: 100,
   style: (complete, incomplete) => {
     return '#'.repeat(complete.length) + '' + ' '.repeat(incomplete.length)
   },
 })
 
-export const debugLogFilePath = path.join(configDir, 'debug.txt')
+export const DEBUG_LOG_FILE_PATH = path.join(configDir, 'vtex_debug.txt')
+const INDENTATION = '    '
+const getProgressBar = (value) => {
+  return `  [${bar(value)}] ${value}%`
+}
 const pkgId = `${pkgName}@${pkgVersion}`
 
 class ConsoleTransport extends Transport {
   private progressBarText: any
   private progressBar: any
   private logText: string
+  private fullLog: string
 
   constructor(opts) {
     super(opts)
     this.progressBarText = ''
     this.progressBar = ''
     this.logText = ''
+    this.fullLog = ''
   }
 
   public log(info, callback) {
@@ -47,25 +61,41 @@ class ConsoleTransport extends Transport {
     if (progressBarSpecs) {
       const { text, value } = progressBarSpecs
       newProgressBarText = text || ''
-      newProgressBar = value ? `  [${bar(value)}]\n` : ''
+      newProgressBar = value !== undefined ? getProgressBar(value) : ''
     }
-    if (true) {
     if (clear) {
-      console.log()
+      singleLineLog()
+      console.log(replace(/\n\s*$/, '', this.fullLog))
       this.progressBarText = newProgressBarText
       this.progressBar = newProgressBar
       this.logText = newLogText
     } else if (append) {
       this.progressBarText = newProgressBarText || this.progressBarText
       this.progressBar = newProgressBar || this.progressBar
-      this.logText = newLogText ? `${this.logText}${newLogText}\n` : this.logText
+      const indentation = (this.progressBarText || this.progressBar) ? INDENTATION : ''
+      this.logText = newLogText ? `${this.logText}${newLogText}\n${indentation}` : this.logText
     } else {
       this.progressBarText = newProgressBarText || this.progressBarText
       this.progressBar = newProgressBar || this.progressBar
-      this.logText = newLogText ? `${newLogText}\n` : ''
+      this.logText = newLogText ? `${newLogText}\n${INDENTATION}` : ''
     }
-    singleLineLog(`${this.progressBarText}${this.progressBar}${this.logText}`)
+
+    let formattedProgressLine
+    if (this.progressBarText || this.progressBar) {
+      const terminalWidth = process.stdout.columns
+      const progressBarPadding = terminalWidth - this.progressBarText.length - 1
+      formattedProgressLine = chalk.bold(
+        sprintf(
+          `%s %${progressBarPadding}s`,
+          this.progressBarText,
+          this.progressBar
+        )
+      )
+      this.fullLog = `${formattedProgressLine}\n${INDENTATION}${this.logText}`
+    } else {
+      this.fullLog = this.logText
     }
+    singleLineLog(this.fullLog)
     callback()
   }
 }
@@ -95,6 +125,10 @@ export class ColossusTransport extends Transport {
 
 const consoleFormatter = format((info, _) => {
   // Formatter for console logs.
+  const { level } = info
+  if (level === 'error') {
+    info.message = chalk.red(info.message)
+  }
   return info
 })
 
@@ -106,7 +140,7 @@ const fileFormatter = format((info, _) => {
 })
 
 interface ExtendedLogger extends Logger {
-  progress?(progressSpecs: any): void
+  progress?(value: number, text?: string): void
   newInfoSection?(): void
 }
 
@@ -114,18 +148,19 @@ const logger = createLogger({
   transports: [
     new ConsoleTransport({
       format: combine(
-        colorize({ all: true, colors: { debug: 'blue' }}),
         consoleFormatter()
       ),
-      level: 'info',
+      level: consoleLoggerLevel,
     }),
     new transports.File({
-      filename: debugLogFilePath,
+      filename: DEBUG_LOG_FILE_PATH,
       format: combine(
         timestamp({ format: 'hh:mm:ss.SSS' }),
         fileFormatter()
       ),
       level: 'debug',
+      maxsize: 10E6,
+      maxFiles: 1,
     }),
     new ColossusTransport({
       level: 'error',
@@ -135,8 +170,8 @@ const logger = createLogger({
 
 
 logger.clear = () => logger.log({message: '', level: 'info', clear: true})
-logger.progress = (progressSpecs: {text?: string, value?: number}) => {
-  logger.log({message: '', level: 'info', progress: progressSpecs})
+logger.progress = (value: number, text?: string) => {
+  logger.log({message: '', level: 'info', progress: {text, value}})
 }
 
 logger.on('error', (err) => {
@@ -147,5 +182,4 @@ logger.on('error', (err) => {
 logger.on('finish', (info) => {
   console.log(`Logging has finished: ${info}`)
 })
-
 export default logger
