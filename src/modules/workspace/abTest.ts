@@ -25,7 +25,7 @@ const promptContinue = async () => {
 const canGoLive = async (): Promise<void> => {
   const workspaceData = await get(account, currentWorkspace)
   if (!workspaceData.production) {
-    throw new CommandError(`Only ${chalk.green('production')} workspaces can be used for testing. Please create a production workspace with ${chalk.blue('vtex use <workspace> -r -p')} or reset this one with ${chalk.blue('vtex workspace reset -p')}`)
+    throw new CommandError(`A workspace must be in production before you can test it. Please run ${chalk.blue('vtex production true')} and try again`)
   }
 }
 

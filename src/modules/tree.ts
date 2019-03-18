@@ -192,7 +192,7 @@ export default {
     },
   },
   production: {
-    description: 'Set this workspace\'s production mode to true or false (deprecated)',
+    description: 'Set this workspace\'s production mode to true or false',
     handler: './workspace/production',
     optionalArgs: 'production',
   },
@@ -295,14 +295,6 @@ export default {
     description: 'Use a workspace to perform operations',
     handler: './workspace/use',
     requiredArgs: 'name',
-    options: [
-      {
-        description: 'If workspace does not exist, whether to create it as a production workspace',
-        long: 'production',
-        short: 'p',
-        type: 'boolean',
-      },
-    ],
   },
   whoami: {
     description: 'See your credentials current status',
@@ -353,7 +345,7 @@ export default {
       handler: './workspace/list',
     },
     production: {
-      description: 'Set this workspace\'s production mode to true or false (deprecated)',
+      description: 'Set this workspace\'s production mode to true or false',
       handler: './workspace/production',
       optionalArgs: 'production',
     },
@@ -364,19 +356,6 @@ export default {
     reset: {
       description: 'Delete and create a workspace',
       handler: './workspace/reset',
-      optionalArgs: 'name',
-      options: [
-        {
-          description: 'Whether to re-create the workspace as a production one',
-          long: 'production',
-          short: 'p',
-          type: 'boolean',
-        },
-      ],
-    },
-    status: {
-      description: 'Display information about a workspace',
-      handler: './workspace/status',
       optionalArgs: 'name',
     },
     test: {
@@ -392,12 +371,6 @@ export default {
           description: 'Resets workspace before using it',
           long: 'reset',
           short: 'r',
-          type: 'boolean',
-        },
-        {
-          description: 'Whether to create the workspace as production if it does not exist or is reset',
-          long: 'production',
-          short: 'p',
           type: 'boolean',
         },
       ],
