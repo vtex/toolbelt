@@ -60,7 +60,7 @@ export default async (name: string, options?) => {
   }
   await saveWorkspace(name)
   if (reset && !confirm) {
-    await resetWks(name, {})
+    await resetWks(name, {production})
   }
   log.info(`You're now using the workspace ${chalk.green(name)}!`)
 }
