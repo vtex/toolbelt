@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.49.0] - 2019-03-18
 ### Changed
 - Workspace lifecycle now conforms to Chronos with a workspace being created as dev or production
 - Command `vtex production` is deprecated and it is not possible to change the production flag of a workspace after it is created
@@ -13,8 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.48.1] - 2019-03-14
 ### Fixed
-- Answer for switching to previous account after `vtex publish` is now correctly
-  considered
+- Answer for switching to previous account after `vtex publish` is now correctly considered
 
 ## [2.48.0] - 2019-03-14
 ### Changed
