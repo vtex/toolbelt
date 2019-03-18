@@ -11,10 +11,19 @@ import { reject, without } from 'ramda'
 import { isFunction } from 'ramda-adjunct'
 import * as pkg from '../package.json'
 import { getToken } from './conf'
+import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
+import axios from 'axios'
+
+axios.interceptors.request.use(config => {
+  if (envCookies()) {
+    config.headers['Cookie'] = `${envCookies()}; ${config.headers['Cookie'] || ''}`
+  }
+  return config
+})
 
 global.Promise = Bluebird
 Bluebird.config({
