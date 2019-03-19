@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.51.1] - 2019-03-19
+### Added
+- Makes possible to switch directly to another account/workspace with the `vtex switch {account}/{workspace}` syntax
+
 ## [2.51.0] - 2019-03-19
 ### Changed
 - Remove eslint setup copying when linking
