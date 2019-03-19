@@ -16,14 +16,20 @@ const { mapSeries } = Bluebird
 
 const templates = {
   'store-theme': 'store-theme',
+  'render-guide': 'render-guide',
+  'masterdata-graphql-guide': 'masterdata-graphql-guide',
 }
 
 const titles = {
   'store-theme': 'Store Theme',
+  'render-guide': 'Render Guide',
+  'masterdata-graphql-guide': 'MasterData GraphQL Guide',
 }
 
 const descriptions = {
   'store-theme': 'VTEX IO Store Theme',
+  'render-guide': 'VTEX IO Render Guide',
+  'masterdata-graphql-guide': 'VTEX IO MasterData GraphQL Guide',
 }
 
 const promptName = async (repo: string) => {
