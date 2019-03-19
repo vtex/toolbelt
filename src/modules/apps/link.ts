@@ -24,7 +24,6 @@ import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
-import lint from './lint'
 import { checkBuilderHubMessage, isLinked, pathToFileObject, resolveAppId, showBuilderHubMessage, validateAppAction } from './utils'
 
 const root = getAppRoot()
@@ -300,12 +299,6 @@ export default async (options) => {
   if (manifest.builders.render
     || manifest.builders['functions-ts']) {
     return legacyLink(options)
-  }
-
-  try {
-    await lint(root)
-  } catch (e) {
-    log.error('Failed to copy eslint setup')
   }
 
   const appId = toAppLocator(manifest)

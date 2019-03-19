@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.51.0] - 2019-03-19
+### Changed
+- Remove eslint setup copying when linking
+- Remove eslint-related dependencies from the project
+
 ## [2.49.1] - 2019-03-18
 ### Fixed
 - Forward `production` value to reset command when coming from `use` command.
