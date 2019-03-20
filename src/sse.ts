@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { compose, forEach, path, pathOr } from 'ramda'
 
 import { getToken } from './conf'
-import { endpoint, publicEndpoint, clusterIdDomainInfix, envCookies } from './env'
+import { endpoint, publicEndpoint, envCookies } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
 import log from './logger'
