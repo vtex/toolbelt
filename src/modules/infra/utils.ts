@@ -6,7 +6,7 @@ const stitch = (main: string, prerelease: string): string =>
   prerelease.length > 0 ? `${main}-${prerelease}` : main
 
 //
-// Zips all items from two lists using `undefined` for any missing items.
+// Zips all items from two lists using '' for any missing items.
 //
 const zipLongest = (xs: string | string[], ys: string | string[]) => {
   let l1 = xs
