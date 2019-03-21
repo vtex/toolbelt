@@ -139,7 +139,7 @@ const onError = e => {
           log.error(`${e.config.method} ${e.config.url}`)
         }
         if (isVerbose) {
-          log.error(reject(isFunction, e))
+          log.error(e)
         }
     }
   } else {
@@ -163,7 +163,11 @@ const onError = e => {
         break
       default:
         log.error('Something went wrong, I don\'t know what to do :(')
-        log.error(reject(isFunction, e))
+        if (isVerbose) {
+          log.error(e)
+        } else {
+          log.error(reject(isFunction, e))
+        }
     }
   }
   process.exit(1)
