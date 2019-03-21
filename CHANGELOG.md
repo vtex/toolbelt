@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.52.1] - 2019-03-21
+### Fixed
+- Conflicts with the master
+
+## [2.52.0] - 2019-03-21
+### Added
+- Allows usage of VTEX IO clusters other than production and staging, by setting
+  the environment variable `VTEXIO_REGION`
+
 ## [2.51.4] - 2019-03-21
 ### Changed
 - Remove filtering of unhandled errors before printing to console (when using `--verbose`)

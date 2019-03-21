@@ -10,7 +10,7 @@ import { prop } from 'ramda'
 import * as randomstring from 'randomstring'
 
 import * as conf from '../../conf'
-import { publicEndpoint } from '../../env'
+import { publicEndpoint, clusterIdDomainInfix } from '../../env'
 import log from '../../logger'
 import { onAuth } from '../../sse'
 
@@ -19,7 +19,7 @@ const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(ca
 
 const startUserAuth = (account: string, workspace: string): Bluebird<string[] | never> => {
   const state = randomstring.generate()
-  const baseUrl = `https://${account}.${publicEndpoint()}`
+  const baseUrl = `https://${account}${clusterIdDomainInfix()}.${publicEndpoint()}`
   const returnUrl = `/_v/private/auth-server/v1/callback?workspace=${workspace}&state=${state}`
   const returnUrlEncoded = encodeURIComponent(returnUrl)
   const fullReturnUrl = baseUrl + returnUrl
