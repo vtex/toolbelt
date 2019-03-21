@@ -5,6 +5,20 @@ import * as semver from 'semver'
 const stitch = (main: string, prerelease: string): string =>
   prerelease.length > 0 ? `${main}-${prerelease}` : main
 
+//
+// Zips all items from two lists using '' for any missing items.
+//
+const zipLongest = (xs: string | string[], ys: string | string[]) => {
+  let l1 = xs
+  let l2 = ys
+  if (xs.length < ys.length) {
+    l1 = R.concat(xs, R.repeat('', ys.length - xs.length))
+  } else if (ys.length < xs.length) {
+    l2 = R.concat(ys, R.repeat('', xs.length - ys.length))
+  }
+  return R.zip(l1, l2)
+}
+
 const diff = (a: string | string[], b: string | string[]): string[] => {
   const from = []
   const to = []
@@ -17,11 +31,15 @@ const diff = (a: string | string[], b: string | string[]): string[] => {
           fromFormatter = x => chalk.red(x)
           toFormatter = x => chalk.green(x)
         }
-        from.push(fromFormatter(aDigit))
-        to.push(toFormatter(bDigit))
+        if (aDigit) {
+          from.push(fromFormatter(aDigit))
+        }
+        if (bDigit) {
+          to.push(toFormatter(bDigit))
+        }
       }
     ),
-    R.zip)(a, b)
+    zipLongest)(a, b)
   return [from.join('.'), to.join('.')]
 }
 

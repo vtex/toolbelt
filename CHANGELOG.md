@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.51.3] - 2019-03-21
+### Fixed
+- App versions colored diff was not showing prerelease tags
+
 ## [2.51.2] - 2019-03-19
 ### Added
 - Add `render-guide` and `masterdata-graphql-guide` to the `vtex init` command options
