@@ -9,6 +9,7 @@ import { keys, prop } from 'ramda'
 import { getAccount } from '../../conf'
 import log from '../../logger'
 import { MANIFEST_FILE_NAME } from '../../manifest'
+import { promptConfirm } from '../utils'
 
 import * as git from './git'
 
@@ -81,7 +82,7 @@ const promptTemplates = async (): Promise<string> => {
   const chosen = prop<string>('service', await enquirer.prompt({
     name: 'service',
     message: 'Choose where do you want to start from',
-    type: 'list',
+    type: 'select',
     choices: [...keys(templates), cancel],
   }))
   if (chosen === cancel) {
@@ -92,11 +93,9 @@ const promptTemplates = async (): Promise<string> => {
 }
 
 const promptContinue = async (repoName: string) => {
-  const proceed = prop('proceed', await enquirer.prompt({
-    name: 'proceed',
-    message: `You are about to create the new folder ${process.cwd()}/${repoName}. Do you want to continue?`,
-    type: 'confirm',
-  }))
+  const proceed = await promptConfirm(
+    `You are about to create the new folder ${process.cwd()}/${repoName}. Do you want to continue?`
+  )
   if (!proceed) {
     log.info('Bye o/')
     process.exit()
