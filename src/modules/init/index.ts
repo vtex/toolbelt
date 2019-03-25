@@ -1,7 +1,7 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
+import * as enquirer from 'enquirer'
 import { outputJson, readJson } from 'fs-extra'
-import * as inquirer from 'inquirer'
 import * as moment from 'moment'
 import { join } from 'path'
 import { keys, prop } from 'ramda'
@@ -34,47 +34,51 @@ const descriptions = {
 
 const promptName = async (repo: string) => {
   const message = 'The app name should only contain numbers, lowercase letters, underscores and hyphens.'
-  return prop('name', await inquirer.prompt({
+  return prop('name', await enquirer.prompt({
     name: 'name',
     message: 'What\'s your VTEX app name?',
     validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
     filter: s => s.trim(),
-    default: repo,
+    type: 'input',
+    initial: repo,
   }))
 }
 
 const promptVendor = async () => {
   const message = 'The vendor should only contain numbers, lowercase letters, underscores and hyphens.'
-  return prop('vendor', await inquirer.prompt({
+  return prop('vendor', await enquirer.prompt({
     name: 'vendor',
     message: 'What\'s your VTEX app vendor?',
     validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
     filter: s => s.trim(),
-    default: getAccount(),
+    type: 'input',
+    initial: getAccount(),
   }))
 }
 
 const promptTitle = async (repo: string) => {
-  return prop('title', await inquirer.prompt({
+  return prop('title', await enquirer.prompt({
     name: 'title',
     message: 'What\'s your VTEX app title?',
     filter: s => s.trim(),
-    default: titles[repo],
+    type: 'input',
+    initial: titles[repo],
   }))
 }
 
 const promptDescription = async (repo: string) => {
-  return prop('description', await inquirer.prompt({
+  return prop('description', await enquirer.prompt({
     name: 'description',
     message: 'What\'s your VTEX app description?',
     filter: s => s.trim(),
-    default: descriptions[repo],
+    type: 'input',
+    initial: descriptions[repo],
   }))
 }
 
 const promptTemplates = async (): Promise<string> => {
   const cancel = 'Cancel'
-  const chosen = prop<string>('service', await inquirer.prompt({
+  const chosen = prop<string>('service', await enquirer.prompt({
     name: 'service',
     message: 'Choose where do you want to start from',
     type: 'list',
@@ -88,7 +92,7 @@ const promptTemplates = async (): Promise<string> => {
 }
 
 const promptContinue = async (repoName: string) => {
-  const proceed = prop('proceed', await inquirer.prompt({
+  const proceed = prop('proceed', await enquirer.prompt({
     name: 'proceed',
     message: `You are about to create the new folder ${process.cwd()}/${repoName}. Do you want to continue?`,
     type: 'confirm',

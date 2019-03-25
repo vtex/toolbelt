@@ -1,22 +1,23 @@
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import {prop} from 'ramda'
 
 import {workspaces} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
 import {CommandError, UserCancelledError} from '../../errors'
 import log from '../../logger'
+import { promptConfirm } from '../utils'
 import list from './list'
 
 const { get, set } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const promptContinue = async () => {
-  const proceed = prop('proceed', await inquirer.prompt({
-    name: 'proceed',
-    message: `You are about to change the weight of workspace ${chalk.red('master')}. Do you want to continue?`,
-    type: 'confirm',
-  }))
+  const proceed = prop('proceed',
+    await promptConfirm(
+      `You are about to change the weight of workspace ${chalk.red('master')}. Do you want to continue?`,
+      true
+    )
+  )
   if (!proceed) {
     throw new UserCancelledError()
   }

@@ -1,38 +1,21 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
-import { prop } from 'ramda'
 
 import { workspaces } from '../../clients'
 import { getAccount, saveWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
+import { promptConfirm } from '../utils'
 import createCmd from './create'
 import resetWks from './reset'
 
 const promptWorkspaceCreation = (name: string): Bluebird<boolean> => {
   console.log(chalk.blue('!'), `Workspace ${chalk.green(name)} doesn't exist`)
-  return Promise.resolve(
-    inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Do you wish to create it?',
-    })
-  )
-    .then<boolean>(prop('confirm'))
+  return promptConfirm('Do you wish to create it?')
 }
 
-const promptWorkspaceProductionFlag = (): Bluebird<boolean> => {
-  return Promise.resolve(
-    inquirer.prompt({
-      default: false,
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Should the workspace be in production mode?',
-    })
-  )
-    .then<boolean>(prop('confirm'))
-}
+const promptWorkspaceProductionFlag = (): Bluebird<boolean> =>
+  promptConfirm('Should the workspace be in production mode?', false)
 
 const shouldPromptProduction = (production: boolean): boolean => {
   return production === undefined || production === null

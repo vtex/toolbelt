@@ -1,7 +1,6 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
-import { head, prepend, prop, tail } from 'ramda'
+import { head, prepend, tail } from 'ramda'
 
 import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
@@ -9,32 +8,24 @@ import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
 import switchAccount from '../auth/switch'
+import { promptConfirm } from '../utils'
 import { parseLocator, toAppLocator } from './../../locator'
 import { parseArgs, switchAccountMessage } from './utils'
 
 let originalAccount
 let originalWorkspace
 
-
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to deprecate this app in an account that differs from the indicated vendor. Do you want to deprecate in account ${chalk.blue(vendor)}?`
 }
 
 const promptDeprecate = (appsList: string[]): Bluebird<boolean> =>
-  inquirer.prompt({
-    message: `Are you sure you want to deprecate app` + (appsList.length > 1 ? 's' : '') + ` ${chalk.green(appsList.join(', '))}?`,
-    name: 'confirm',
-    type: 'confirm',
-  })
-    .then<boolean>(prop('confirm'))
+  promptConfirm(
+    `Are you sure you want to deprecate app` + (appsList.length > 1 ? 's' : '') + ` ${chalk.green(appsList.join(', '))}?`
+  )
 
 const promptDeprecateOnVendor = (msg: string): Bluebird<boolean> =>
-  inquirer.prompt({
-    message: msg,
-    name: 'confirm',
-    type: 'confirm',
-  })
-    .then<boolean>(prop('confirm'))
+  promptConfirm(msg)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()

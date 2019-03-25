@@ -2,7 +2,7 @@ import axios from 'axios'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as childProcess from 'child_process'
-import * as inquirer from 'inquirer'
+import * as enquirer from 'enquirer'
 import * as jwt from 'jsonwebtoken'
 import * as opn from 'opn'
 import { join } from 'path'
@@ -10,9 +10,10 @@ import { prop } from 'ramda'
 import * as randomstring from 'randomstring'
 
 import * as conf from '../../conf'
-import { publicEndpoint, clusterIdDomainInfix } from '../../env'
+import { clusterIdDomainInfix, publicEndpoint } from '../../env'
 import log from '../../logger'
 import { onAuth } from '../../sse'
+import { promptConfirm } from '../utils'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`
@@ -30,28 +31,21 @@ const startUserAuth = (account: string, workspace: string): Bluebird<string[] | 
 }
 
 const promptUsePrevious = (): Bluebird<boolean> =>
-  inquirer.prompt({
-    message: `Do you want to use the previous login details? (${details})`,
-    name: 'confirm',
-    type: 'confirm',
-  })
-    .then<boolean>(prop('confirm'))
+  promptConfirm(`Do you want to use the previous login details? (${details})`)
 
 const promptAccount = async (promptPreviousAcc) => {
   if (promptPreviousAcc) {
-    const confirm = prop('confirm', await inquirer.prompt({
-      default: true,
-      message: `Use previous account? (${chalk.blue(cachedAccount)})`,
-      name: 'confirm',
-      type: 'confirm',
-    }))
+    const confirm =  await promptConfirm(
+      `Use previous account? (${chalk.blue(cachedAccount)})`
+    )
     if (confirm) {
       return cachedAccount
     }
   }
 
-  const account = prop('account', await inquirer.prompt({
-    filter: (s) => s.trim(),
+  const account = prop('account', await enquirer.prompt({
+    type: 'input',
+    result: (s) => s.trim(),
     message: 'Account:',
     name: 'account',
     validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
