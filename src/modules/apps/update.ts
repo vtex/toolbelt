@@ -1,6 +1,5 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import * as ora from 'ora'
 import { isEmpty, map, pipe, prop, reject } from 'ramda'
 
@@ -9,6 +8,7 @@ import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
 import { diffVersions } from '../infra/utils'
+import { promptConfirm } from '../utils'
 import { prepareInstall } from './install'
 import { appLatestVersion, isLinked } from './utils'
 
@@ -16,12 +16,7 @@ const { listApps } = apps
 
 const promptUpdate = (): Bluebird<boolean> =>
   Promise.resolve(
-    inquirer.prompt({
-      message: 'Apply version updates?',
-      name: 'confirm',
-      type: 'confirm',
-    })
-      .then<boolean>(prop('confirm'))
+    promptConfirm('Apply version updates?')
   )
 
 const sameVersion = ({ version, latest }: Manifest) => version === latest

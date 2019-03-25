@@ -1,8 +1,8 @@
 import axios from 'axios'
 import chalk from 'chalk'
 import * as Table from 'cli-table2'
+import * as enquirer from 'enquirer'
 import { createReadStream } from 'fs-extra'
-import * as inquirer from 'inquirer'
 import { join } from 'path'
 import { __, compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail } from 'ramda'
 import * as semverDiff from 'semver-diff'
@@ -12,6 +12,7 @@ import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { isManifestReadable } from '../../manifest'
+import { promptConfirm } from '../utils'
 
 export const pathToFileObject = (root = process.cwd(), prefix : string = '') => (path: string): BatchStream =>
   ({ path : join(prefix, path), content: createReadStream(join(root, path)) })
@@ -44,17 +45,16 @@ export const parseArgs = (args: string[]): string[] => {
 }
 
 export const promptWorkspaceMaster = async () => {
-  const confirm = prop('confirm', await inquirer.prompt({
-    default: false,
-    name: 'confirm',
-    message: `Are you sure you want to force this operation on the ${chalk.green('master')} workspace?`,
-    type: 'confirm',
-  }))
+  const confirm = await promptConfirm(
+    `Are you sure you want to force this operation on the ${chalk.green('master')} workspace?`,
+    false
+  )
   if (!confirm) {
     throw new UserCancelledError()
   }
   log.warn(`Using ${chalk.green('master')} workspace. I hope you know what you\'re doing. 💥`)
 }
+
 
 export const validateAppAction = async (operation: string, app?) => {
   const account = getAccount()
@@ -180,8 +180,8 @@ export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
   }
 }
 
-const promptConfirm = (msg: string): Promise<string> =>
-  inquirer.prompt({
+const promptConfirmName = (msg: string): Promise<string> =>
+  enquirer.prompt({
     message: msg,
     name: 'appName',
     type: 'input',
@@ -192,7 +192,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
   if(message) {
     if (showPrompt) {
       const confirmMsg = `Are you absolutely sure?\n${message ? message : ''}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
-      const appNameInput = await promptConfirm(confirmMsg)
+      const appNameInput = await promptConfirmName(confirmMsg)
       const AppName = `${manifest.vendor}.${manifest.name}`
       if (appNameInput !== AppName) {
         throw new CommandError(`${appNameInput} doesn't match with the app name.`)

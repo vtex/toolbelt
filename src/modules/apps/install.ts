@@ -1,11 +1,11 @@
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
-import { compose, equals, head, path, prepend, prop, tail } from 'ramda'
+import { compose, equals, head, path, prepend, tail } from 'ramda'
 
 import { apps, billing } from '../../clients'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
+import { promptConfirm } from '../utils'
 import { toAppLocator } from './../../locator'
 import { optionsFormatter, parseArgs, validateAppAction } from './utils'
 
@@ -13,11 +13,9 @@ const { installApp } = billing
 const { installApp: legacyInstallApp } = apps
 
 const promptPolicies = async () => {
-  return prop('confirm', await inquirer.prompt({
-    message: 'Do you accept all the Terms?',
-    name: 'confirm',
-    type: 'confirm',
-  }))
+  return promptConfirm(
+    'Do you accept all the Terms?'
+  )
 }
 
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions) => {

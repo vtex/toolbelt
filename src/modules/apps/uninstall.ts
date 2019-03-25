@@ -1,28 +1,26 @@
-import * as inquirer from 'inquirer'
-import { head, prepend, tail } from 'ramda'
 import chalk from 'chalk'
+import { head, prepend, tail } from 'ramda'
 
 import { apps } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
-import { getAccount, getWorkspace } from '../../conf'
 import { getManifest, validateApp } from '../../manifest'
+import { promptConfirm } from '../utils'
 import { toAppLocator } from './../../locator'
 import { parseArgs, validateAppAction } from './utils'
 
 const { uninstallApp } = apps
 
 const promptAppUninstall = (appsList: string[]): Promise<void> =>
-  inquirer.prompt({
-    message: `Are you sure you want to uninstall ${appsList.join(', ')}?\n  ${chalk.black(`(account ${chalk.blue(getAccount())}, workspace ${chalk.green(getWorkspace())})`)}`,
-    name: 'confirm',
-    type: 'confirm',
-  })
-    .then(({ confirm }) => {
-      if (!confirm) {
+  promptConfirm(
+    `Are you sure you want to uninstall ${appsList.join(', ')}?\n  ${chalk.black(`(account ${chalk.blue(getAccount())}, workspace ${chalk.green(getWorkspace())})`)}`
+  ).then((answer) => {
+      if (!answer) {
         throw new UserCancelledError()
       }
-    })
+  })
+
 
 const uninstallApps = async (appsList: string[]): Promise<void> => {
   if (appsList.length === 0) {

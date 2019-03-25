@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import {execSync} from 'child-process-es6-promise'
+import { execSync } from 'child-process-es6-promise'
 import {
   close,
   existsSync,
@@ -10,11 +10,12 @@ import {
   writeJsonSync,
   writeSync,
 } from 'fs-extra'
-import * as inquirer from 'inquirer'
-import {safeLoad} from 'js-yaml'
-import {find, path, prop}  from 'ramda'
+import { safeLoad } from 'js-yaml'
+import { find, path }  from 'ramda'
 import * as semver from 'semver'
 import log from '../../logger'
+import { promptConfirm } from '../utils'
+
 
 const versionFile = './manifest.json'
 const changelogPath = 'CHANGELOG.md'
@@ -133,11 +134,7 @@ export const preRelease = () => {
 }
 
 export const confirmRelease = async (): Promise<boolean> => {
-  const answer = await inquirer.prompt({
-    message: chalk.green('Are you sure?'),
-    name: 'confirm',
-    type: 'confirm',
-  }).then(prop('confirm'))
+  const answer = await promptConfirm(chalk.green('Are you sure?'))
   if (!answer) {
     log.info('Cancelled by user')
     return false

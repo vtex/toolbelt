@@ -1,11 +1,11 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
+import { promptConfirm } from '../utils'
 import useCmd from './use'
 
 const { promote, get } = workspaces
@@ -26,13 +26,12 @@ const isPromotable = (workspace: string): Bluebird<never | void> =>
       }
     })
 
-const promptConfirm = (workspace: string): Promise<any> =>
-  inquirer.prompt({
-    message: `Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`,
-    name: 'confirm',
-    type: 'confirm',
-  }).then(({ confirm }) => {
-    if (!confirm) {
+const promptPromoteConfirm = (workspace: string): Promise<any> =>
+  promptConfirm(
+    `Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`,
+    true
+  ).then(answer => {
+    if (!answer) {
       throw new UserCancelledError()
     }
   })
@@ -40,7 +39,7 @@ const promptConfirm = (workspace: string): Promise<any> =>
 export default () => {
   log.debug('Promoting workspace', currentWorkspace)
   return isPromotable(currentWorkspace)
-    .then(() => promptConfirm(currentWorkspace))
+    .then(() => promptPromoteConfirm(currentWorkspace))
     .then(() => promote(account, currentWorkspace))
     .tap(() => log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`))
     .then(() => useCmd('master'))

@@ -1,10 +1,8 @@
 import { BuildResult } from '@vtex/api'
 import * as retry from 'async-retry'
-import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import * as ora from 'ora'
-import { isEmpty, map, prop } from 'ramda'
+import { isEmpty, map } from 'ramda'
 import { createClients } from '../../clients'
 import * as conf from '../../conf'
 import { region } from '../../env'
@@ -16,6 +14,7 @@ import { getManifest } from '../../manifest'
 import { logAll } from '../../sse'
 import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
+import { promptConfirm } from '../utils'
 import { listLocalFiles } from './file'
 import { legacyPublisher } from './legacyPublish'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
@@ -32,7 +31,7 @@ const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.
 const switchToPreviousAccount = async (previousConf: any) => {
   const previousAccount = previousConf.account
   if (previousAccount !== conf.getAccount()) {
-    const canSwitchToPrevious = await promptPublishOnVendor(getSwitchAccountMessage(previousAccount))
+    const canSwitchToPrevious = await promptConfirm(getSwitchAccountMessage(previousAccount))
     if (canSwitchToPrevious) {
       conf.saveAll(previousConf)
     }
@@ -41,15 +40,6 @@ const switchToPreviousAccount = async (previousConf: any) => {
 
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'
-
-const promptPublishOnVendor = (msg: string): Bluebird<boolean> =>
-  inquirer.prompt({
-    message: msg,
-    name: 'confirm',
-    type: 'confirm',
-  })
-    .then<boolean>(prop('confirm'))
-
 
 const publisher = (workspace: string = 'master') => {
 
@@ -114,7 +104,7 @@ const publisher = (workspace: string = 'master') => {
 
     if (manifest.vendor !== account) {
       const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(manifest.vendor)}?`
-      const canSwitchToVendor = await promptPublishOnVendor(switchToVendorMsg)
+      const canSwitchToVendor = await promptConfirm(switchToVendorMsg)
       if (!canSwitchToVendor) {
         throw new UserCancelledError()
       }

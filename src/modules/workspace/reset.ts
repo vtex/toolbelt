@@ -1,22 +1,19 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
+import { promptConfirm } from '../utils'
 
 const promptWorkspaceReset = (name: string): Bluebird<void> =>
-  inquirer.prompt({
-    type: 'confirm',
-    name: 'confirm',
-    message: `Are you sure you want to reset workspace ${chalk.green(name)}?`,
+  promptConfirm(
+    `Are you sure you want to reset workspace ${chalk.green(name)}?`
+  ).then(answer => {
+    if (!answer) {
+      throw new UserCancelledError()
+    }
   })
-    .then(({ confirm }) => {
-      if (!confirm) {
-        throw new UserCancelledError()
-      }
-    })
 
 export default async (name: string, options) => {
   const account = getAccount()

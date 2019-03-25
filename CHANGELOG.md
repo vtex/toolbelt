@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.53.0] - 2019-03-25
+### Changed
+- Replaced the `inquirer` dependency with `enquirer`
+
 ## [2.52.2] - 2019-03-21
 ### Fixed
 - Added missing dependency `js-yaml`

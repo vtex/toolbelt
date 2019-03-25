@@ -1,25 +1,20 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import * as ora from 'ora'
-import { curry, path, prop } from 'ramda'
+import { curry, path } from 'ramda'
 import * as semver from 'semver'
 
 import { router } from '../../clients'
 import { Region } from '../../conf'
 import log from '../../logger'
+import { promptConfirm } from '../utils'
 import { diffVersions, getTag } from './utils'
 
 const { getAvailableVersions, listInstalledServices, installService } = router
 
 const promptInstall = (): Bluebird<boolean> =>
   Promise.resolve(
-    inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Continue with the installation?',
-    })
-      .then<boolean>(prop('confirm'))
+    promptConfirm('Continue with the installation?')
   )
 
 const findVersion = (pool: string[], predicate: (version: string) => boolean): string =>

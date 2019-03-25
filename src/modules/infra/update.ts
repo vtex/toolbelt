@@ -1,27 +1,21 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import * as ora from 'ora'
 import * as pad from 'pad'
-import { prop } from 'ramda'
 import * as semver from 'semver'
 
 import { router } from '../../clients'
 import { Region } from '../../conf'
 import log from '../../logger'
+import { promptConfirm } from '../utils'
 import { diffVersions, getTag } from './utils'
 
 const { listAvailableServices, listInstalledServices, installService } = router
 
 const promptUpdate = (): Bluebird<boolean> =>
   Promise.resolve(
-    inquirer.prompt({
-      message: 'Apply version updates?',
-      name: 'confirm',
-      type: 'confirm',
-    })
-      .then<boolean>(prop('confirm'))
+    promptConfirm('Apply version updates?')
   )
 
 const calculateColSize = (names: string[]): number =>
