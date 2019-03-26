@@ -38,10 +38,7 @@ const withTimeout = (promise: Promise<any>, timeout: number) => {
 
 const mapAvailability = (appId: string, builder: Builder, timeout: number) => {
   return map(async (hintIdx: number) => {
-    const getAvailabilityWithTimeout = (_: any, tryCount: number) => {
-      if (tryCount > 1) {
-        log.info(`Retrying to get availability... ${tryCount-1}`)
-      }
+    const getAvailabilityWithTimeout = () => {
       const availabilityP = builder.availability(appId, hintIdx)
       return withTimeout(availabilityP, timeout)
     }
