@@ -14,7 +14,7 @@ import { safeLoad } from 'js-yaml'
 import { find, path }  from 'ramda'
 import * as semver from 'semver'
 import log from '../../logger'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 
 
 const versionFile = './manifest.json'
@@ -134,7 +134,7 @@ export const preRelease = () => {
 }
 
 export const confirmRelease = async (): Promise<boolean> => {
-  const answer = await promptConfirm(chalk.green('Are you sure?'))
+  const answer = await promptConfirm(chalk.green('Are you sure?'), false)
   if (!answer) {
     log.info('Cancelled by user')
     return false

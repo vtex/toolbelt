@@ -4,7 +4,7 @@ import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 
 const promptWorkspaceReset = (name: string): Bluebird<void> =>
   promptConfirm(

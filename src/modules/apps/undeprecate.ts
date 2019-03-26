@@ -8,7 +8,7 @@ import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
 import switchAccount from '../auth/switch'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 import { parseLocator, toAppLocator } from './../../locator'
 import { parseArgs, switchAccountMessage } from './utils'
 

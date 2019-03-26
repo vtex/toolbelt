@@ -174,6 +174,7 @@ const onError = e => {
         log.error('Something went wrong, I don\'t know what to do :(')
         if (isVerbose) {
           log.error(e)
+          throw e
         } else {
           log.error(reject(isFunction, e))
         }

@@ -1,6 +1,3 @@
-import chalk from 'chalk'
-import * as enquirer from 'enquirer'
-import { prop } from 'ramda'
 import { currentContext } from '../conf'
 import { BuildFailError } from '../errors'
 import log from '../logger'
@@ -10,6 +7,7 @@ interface BuildListeningOptions {
   context?: Context,
   timeout?: number,
 }
+
 
 type BuildEvent = 'start' | 'success' | 'fail' | 'timeout' | 'logs'
 type AnyFunction = (...args: any[]) => any
@@ -78,13 +76,3 @@ export const formatNano = (nanoseconds: number): string =>
   `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(
     0
   )}ms`
-
-
-export const promptConfirm = async (message: string, initial=true): Promise<boolean> =>
-  enquirer.prompt<any>({
-    type: 'confirm',
-    name: 'confirm',
-    message,
-    initial,
-    format: (a) => a ? chalk.green('Yes') : chalk.red('No'),
-  }).then(prop('confirm'))

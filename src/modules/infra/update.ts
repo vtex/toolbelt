@@ -8,7 +8,7 @@ import * as semver from 'semver'
 import { router } from '../../clients'
 import { Region } from '../../conf'
 import log from '../../logger'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 import { diffVersions, getTag } from './utils'
 
 const { listAvailableServices, listInstalledServices, installService } = router

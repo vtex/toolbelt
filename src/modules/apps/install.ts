@@ -5,7 +5,7 @@ import { apps, billing } from '../../clients'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 import { toAppLocator } from './../../locator'
 import { optionsFormatter, parseArgs, validateAppAction } from './utils'
 

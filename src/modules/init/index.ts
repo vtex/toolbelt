@@ -9,7 +9,7 @@ import { keys, prop } from 'ramda'
 import { getAccount } from '../../conf'
 import log from '../../logger'
 import { MANIFEST_FILE_NAME } from '../../manifest'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 
 import * as git from './git'
 

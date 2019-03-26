@@ -75,6 +75,7 @@
     "ora": "^3.0.0",
     "pad": "^2.0.3",
     "pipe-streams-to-promise": "^0.2.0",
+    "prompt-confirm": "^2.0.4",
     "ramda": "^0.25.0",
     "ramda-adjunct": "^2.9.0",
     "randomstring": "^1.1.5",
