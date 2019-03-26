@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import 'any-promise/register/bluebird'
+import axios from 'axios'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
@@ -16,11 +17,10 @@ import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
-import axios from 'axios'
 
 axios.interceptors.request.use(config => {
   if (envCookies()) {
-    config.headers['Cookie'] = `${envCookies()}; ${config.headers['Cookie'] || ''}`
+    config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
   }
   return config
 })
