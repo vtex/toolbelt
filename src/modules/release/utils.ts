@@ -134,7 +134,7 @@ export const preRelease = () => {
 }
 
 export const confirmRelease = async (): Promise<boolean> => {
-  const answer = await promptConfirm(chalk.green('Are you sure?'), false)
+  const answer = await promptConfirm(chalk.green('Are you sure?'))
   if (!answer) {
     log.info('Cancelled by user')
     return false
