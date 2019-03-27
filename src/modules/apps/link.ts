@@ -183,7 +183,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   const moduleAndMetadata = toPairs(extraData.linkConfig.metadata)
 
   const mapLocalToBuiderPath = path => {
-    const abs = resolvePath(path)
+    const abs = resolvePath(root, path)
     for (const [module, modulePath] of moduleAndMetadata) {
       if (abs.startsWith(modulePath)) {
         return abs.replace(modulePath, join('.linked_deps', module))
