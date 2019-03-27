@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.53.2] - 2019-03-27
+### Fixed
+- Stop trying to get manifest of apps with specific majors or minors from
+  VTEX Registry, which is forbidden.
+
 ## [2.53.1] - 2019-03-27
 ### Fixed
 - Fix relink behaviour for linked node dependencies
