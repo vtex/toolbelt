@@ -2,19 +2,21 @@ import chalk from 'chalk'
 import * as R from 'ramda'
 import * as semver from 'semver'
 
+const EMPTY_STRING = ''
+
 const stitch = (main: string, prerelease: string): string =>
   prerelease.length > 0 ? `${main}-${prerelease}` : main
 
 //
-// Zips all items from two lists using '' for any missing items.
+// Zips all items from two lists using EMPTY_STRING for any missing items.
 //
 const zipLongest = (xs: string | string[], ys: string | string[]) => {
   let l1 = xs
   let l2 = ys
   if (xs.length < ys.length) {
-    l1 = R.concat(xs, R.repeat('', ys.length - xs.length))
+    l1 = R.concat(xs, R.repeat(EMPTY_STRING, ys.length - xs.length))
   } else if (ys.length < xs.length) {
-    l2 = R.concat(ys, R.repeat('', xs.length - ys.length))
+    l2 = R.concat(ys, R.repeat(EMPTY_STRING, xs.length - ys.length))
   }
   return R.zip(l1, l2)
 }
@@ -31,10 +33,10 @@ const diff = (a: string | string[], b: string | string[]): string[] => {
           fromFormatter = x => chalk.red(x)
           toFormatter = x => chalk.green(x)
         }
-        if (aDigit !== '') {
+        if (aDigit !== EMPTY_STRING) {
           from.push(fromFormatter(aDigit))
         }
-        if (bDigit !== '') {
+        if (bDigit !== EMPTY_STRING) {
           to.push(toFormatter(bDigit))
         }
       }
