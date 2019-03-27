@@ -28,32 +28,12 @@ const updateVersion = (app) => {
   return app
 }
 
-const versionWithWildcards = (version: string, level='major') => {
-  const [major, minor] = version.split('.')
-  if (level === 'minor') {
-    return `${major}.x`
-  } else if (level === 'patch') {
-    return `${major}.${minor}.x`
-  }
-  // Then `level` is 'major'
-  return 'x'
-}
-
-export default async (options: any) => {
+export default async () => {
   const spinner = ora('Getting available updates').start()
   const { data } = await listApps()
   const installedApps = reject<Manifest>(isLinked, map(extractAppLocator, data))
-  let updateLevel: string
-  if (options.major || options.m) {
-    updateLevel = 'major'
-  } else {
-    updateLevel = 'minor'
-  }
   const withLatest = await Bluebird.all(map(async (app) => {
-    app.latest = await appLatestVersion(
-      `${app.vendor}.${app.name}`,
-      versionWithWildcards(app.version, updateLevel)
-    )
+    app.latest = await appLatestVersion(`${app.vendor}.${app.name}`)
     return app
   }, installedApps))
   const updateableApps = reject(sameVersion, withLatest)

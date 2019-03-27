@@ -31,10 +31,10 @@ const diff = (a: string | string[], b: string | string[]): string[] => {
           fromFormatter = x => chalk.red(x)
           toFormatter = x => chalk.green(x)
         }
-        if (aDigit) {
+        if (aDigit !== '') {
           from.push(fromFormatter(aDigit))
         }
-        if (bDigit) {
+        if (bDigit !== '') {
           to.push(toFormatter(bDigit))
         }
       }
