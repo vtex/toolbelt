@@ -315,6 +315,17 @@ export default {
     handler: './auth/whoami',
   },
   workspace: {
+    abtest: {
+      start: {
+        description: 'Start AB testing with current workspace',
+        handler: './workspace/abtest/start',
+        optionalArgs: ['weight', 'probability'],
+      },
+      abort: {
+        description: 'Stop all AB testing in current account',
+        handler: './workspace/abtest/abort',
+      },
+    },
     create: {
       description: 'Create a new workspace with this name',
       handler: './workspace/create',

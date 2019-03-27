@@ -70,7 +70,7 @@
     "js-yaml": "^3.13.0",
     "jsonwebtoken": "^8.2.0",
     "latest-version": "^4.0.0",
-    "moment": "^2.21.0",
+    "moment": "^2.24.0",
     "opn": "^5.2.0",
     "ora": "^3.0.0",
     "pad": "^2.0.3",

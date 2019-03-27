@@ -1,9 +1,10 @@
 import { Apps, Builder, Events, InstanceOptions, IOContext, Logger, Registry, Router, Workspaces } from '@vtex/api'
+import { getAccount, getToken, getWorkspace } from '../conf'
+import * as env from '../env'
+import envTimeout from '../timeout'
+import userAgent from '../user-agent'
+import { ABTester } from './abTester'
 import Billing from './billingClient'
-import { getAccount, getToken, getWorkspace } from './conf'
-import * as env from './env'
-import envTimeout from './timeout'
-import userAgent from './user-agent'
 
 const DEFAULT_TIMEOUT = 15000
 const context = {
@@ -31,6 +32,7 @@ const interceptor = <T>(client): T => new Proxy({}, {
   },
 }) as T
 
+
 const createClients = (customContext: Partial<IOContext> = {}, customOptions: InstanceOptions = {}) => {
   const mergedContext = { ...context, ...customContext }
   const mergedOptions = { ...options, ...customOptions }
@@ -42,8 +44,9 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
   }
 }
 
-const [apps, router, workspaces, logger, events, billing] = getToken()
+const [abtester, apps, router, workspaces, logger, events, billing] = getToken()
   ? [
+    new ABTester(context),
     new Apps(context, options),
     new Router(context, options),
     new Workspaces(context, options),
@@ -52,6 +55,7 @@ const [apps, router, workspaces, logger, events, billing] = getToken()
     new Billing(context, options),
   ]
   : [
+    interceptor<ABTester>('abtester'),
     interceptor<Apps>('apps'),
     interceptor<Router>('router'),
     interceptor<Workspaces>('workspaces'),
@@ -61,6 +65,7 @@ const [apps, router, workspaces, logger, events, billing] = getToken()
   ]
 
 export {
+  abtester,
   apps,
   router,
   workspaces,
