@@ -1,14 +1,12 @@
-import axios from 'axios'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
-import { getAccount, getToken } from '../../conf'
-import { region } from '../../env'
+import { createClients } from '../../clients'
+import { getAccount } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9-]{0,126}[a-z0-9]$/
-const routeMapURL = (workspace) => `http://colossus.${region()}.vtex.io/${getAccount()}/${workspace}/routes`
 
 export default async (name: string, options: any) => {
   if (!VALID_WORKSPACE.test(name)) {
@@ -23,8 +21,8 @@ export default async (name: string, options: any) => {
     await workspaces.create(getAccount(), name, production)
     log.info(`Workspace ${chalk.green(name)} created ${chalk.green('successfully')} with ${chalk.green(`production=${production}`)}`)
     // First request on a brand new workspace takes very long because of route map generation, so we warm it up.
-    const token = getToken()
-    await axios.get(routeMapURL(name), {headers: {Authorization: token}})
+    const { builder } = createClients({ workspace: name })
+    await builder.availability('vtex.builder-hub@0.x', null)
     log.debug('Warmed up route map')
   } catch (err) {
     if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
