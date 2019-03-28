@@ -1,4 +1,5 @@
 import { Builder } from '@vtex/api'
+import * as retry from 'async-retry'
 import { map, reduce } from 'ramda'
 
 import { BuilderHubTimeoutError } from './errors'
@@ -8,6 +9,12 @@ const NOT_AVAILABLE = {
   hostname: undefined,
   score: -1000,
   stickyHint: undefined,
+}
+
+const AVAILABILITY_RETRY_OPTS = {
+  retries: 2,
+  minTimeout: 1000,
+  factor: 2,
 }
 
 const withTimeout = (promise: Promise<any>, timeout: number) => {
@@ -28,14 +35,20 @@ const withTimeout = (promise: Promise<any>, timeout: number) => {
   })
 }
 
+
 const mapAvailability = (appId: string, builder: Builder, timeout: number) => {
   return map(async (hintIdx: number) => {
-    try {
+    const getAvailabilityWithTimeout = () => {
       const availabilityP = builder.availability(appId, hintIdx)
-      const response = await withTimeout(availabilityP, timeout) as AvailabilityResponse
+      return withTimeout(availabilityP, timeout)
+    }
+    try {
+      const response = await retry(
+        getAvailabilityWithTimeout,
+        AVAILABILITY_RETRY_OPTS
+      ) as AvailabilityResponse
       const { host: stickyHint, hostname, score } = response
       log.debug(`Retrieved availability score ${score} from host ${hostname}`)
-
       return { hostname, score, stickyHint }
     } catch (e) {
       e.code === 'builder_hub_timeout'

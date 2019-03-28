@@ -13,7 +13,7 @@ import { concat, equals, filter, has, isEmpty, isNil, map, mapObjIndexed, merge,
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
-import { region, publicEndpoint } from '../../env'
+import { publicEndpoint, region } from '../../env'
 import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
@@ -36,6 +36,16 @@ const builderHubTypingsInfoTimeout = 2000  // 2 seconds
 const typingsPath = 'public/_types'
 const yarnPath = require.resolve('yarn/bin/yarn')
 const typingsURLRegex = /_v\/\w*\/typings/
+const RETRY_OPTS_INITIAL_LINK = {
+  retries: 2,
+  minTimeout: 1000,
+  factor: 2,
+}
+const RETRY_OPTS_DEBUGGER = {
+  retries: 2,
+  minTimeout: 1000,
+  factor: 2,
+}
 
 const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
 
@@ -235,12 +245,6 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
   }
 
-  const retryOpts = {
-    retries: 2,
-    minTimeout: 1000,
-    factor: 2,
-  }
-
   const linkApp = async (bail: any, tryCount: number) => {
     // wrapper for builder.linkApp to be used with the retry function below.
     const [localFiles, linkedFiles] =
@@ -284,7 +288,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       throw err
     }
   }
-  await retry(linkApp, retryOpts)
+  await retry(linkApp, RETRY_OPTS_INITIAL_LINK)
 }
 
 export default async (options) => {
@@ -323,10 +327,19 @@ export default async (options) => {
     if (debuggerStarted) {
       return
     }
-    debuggerStarted = true
-    const debuggerPort = await startDebuggerTunnel(manifest)
-    if (debuggerPort) {
+    const startDebugger = async () => {
+      const port = await startDebuggerTunnel(manifest)
+      if (!port) {
+        throw new Error('Failed to start debugger.')
+      }
+      return port
+    }
+    try {
+      const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
+      debuggerStarted = true
       log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
+    } catch (e) {
+      log.error(e.message)
     }
   }
 
