@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Request vtex.builder-hub's availability for route map warm-up instead of
+  querying Colossus, which not every user is allowed to do
 
 ## [2.53.3] - 2019-03-28
 ### Added
