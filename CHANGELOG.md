@@ -5,11 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Workspace information (whether it is in dev or production mode) in the output
+  of the `vtex whoami` command
 
 ## [2.53.2] - 2019-03-27
 ### Fixed
 - Stop trying to get manifest of apps with specific majors or minors from
-  VTEX Registry, which is forbidden.
+  VTEX Registry, which is forbidden
 
 ## [2.53.1] - 2019-03-27
 ### Fixed
