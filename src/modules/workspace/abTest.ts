@@ -5,7 +5,7 @@ import {workspaces} from '../../clients'
 import {getAccount, getWorkspace} from '../../conf'
 import {CommandError, UserCancelledError} from '../../errors'
 import log from '../../logger'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 import list from './list'
 
 const { get, set } = workspaces

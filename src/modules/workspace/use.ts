@@ -5,7 +5,7 @@ import { workspaces } from '../../clients'
 import { getAccount, saveWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 import createCmd from './create'
 import resetWks from './reset'
 

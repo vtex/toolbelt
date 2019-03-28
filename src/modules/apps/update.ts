@@ -8,7 +8,7 @@ import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
 import { diffVersions } from '../infra/utils'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 import { prepareInstall } from './install'
 import { appLatestVersion, isLinked } from './utils'
 

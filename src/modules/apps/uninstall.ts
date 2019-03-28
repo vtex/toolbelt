@@ -6,7 +6,7 @@ import { getAccount, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 import { toAppLocator } from './../../locator'
 import { parseArgs, validateAppAction } from './utils'
 
@@ -14,7 +14,7 @@ const { uninstallApp } = apps
 
 const promptAppUninstall = (appsList: string[]): Promise<void> =>
   promptConfirm(
-    `Are you sure you want to uninstall ${appsList.join(', ')}?\n  ${chalk.black(`(account ${chalk.blue(getAccount())}, workspace ${chalk.green(getWorkspace())})`)}`
+    `Are you sure you want to uninstall ${appsList.join(', ')} from account ${chalk.blue(getAccount())}, workspace ${chalk.green(getWorkspace())}?`
   ).then((answer) => {
       if (!answer) {
         throw new UserCancelledError()

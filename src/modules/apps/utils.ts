@@ -12,7 +12,7 @@ import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { isManifestReadable } from '../../manifest'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 
 export const pathToFileObject = (root = process.cwd(), prefix : string = '') => (path: string): BatchStream =>
   ({ path : join(prefix, path), content: createReadStream(join(root, path)) })

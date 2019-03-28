@@ -14,7 +14,7 @@ import { safeLoad } from 'js-yaml'
 import { find, path }  from 'ramda'
 import * as semver from 'semver'
 import log from '../../logger'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 
 
 const versionFile = './manifest.json'

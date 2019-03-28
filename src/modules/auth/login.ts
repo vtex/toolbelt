@@ -13,7 +13,7 @@ import * as conf from '../../conf'
 import { clusterIdDomainInfix, publicEndpoint } from '../../env'
 import log from '../../logger'
 import { onAuth } from '../../sse'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`

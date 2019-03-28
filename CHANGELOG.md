@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.53.5] - 2019-03-28
+### Changed
+- Replace `enquirer` with `prompt-confirm` for confirmation prompts
+
 ## [2.53.4] - 2019-03-28
 ### Fixed
 - Request vtex.builder-hub's availability for route map warm-up instead of

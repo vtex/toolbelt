@@ -7,7 +7,7 @@ import { getAccount, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { parseArgs } from '../apps/utils'
-import { promptConfirm } from '../utils'
+import { promptConfirm } from '../prompts'
 import workspaceUse from './use'
 
 const account = getAccount()
