@@ -58,7 +58,7 @@ const hasUpdate = (update: InfraUpdate): boolean =>
   Object.keys(update).length > 0
 
 const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
-  Promise.all(
+  Bluebird.all(
     Object.keys(update).map(name => installService(name, update[name].latest))
   )
 
