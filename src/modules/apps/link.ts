@@ -155,19 +155,19 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
 
 }
 
-const warnAndLinkFromStart = (appId: string, builder: Builder, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
+const warnAndLinkFromStart = (appId: string, builder: Builder, unsafe: boolean, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
   log.warn('Initial link requested by builder')
-  performInitialLink(appId, builder, extraData)
+  performInitialLink(appId, builder, extraData, unsafe)
   return null
 }
 
-const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
     if (data && data.code && data.code === 'initial_link_required') {
-      return warnAndLinkFromStart(appId, builder, extraData)
+      return warnAndLinkFromStart(appId, builder, unsafe, extraData)
     }
     throw e
   }
@@ -182,7 +182,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   }
 
   const sendChanges = debounce(() => {
-    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length))
+    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
       .catch(onInitialLinkRequired)
   }, 300)
 
@@ -232,7 +232,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   })
 }
 
-const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}): Promise<void> => {
+const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<void> => {
   const linkConfig = await createLinkConfig(root)
 
   extraData.linkConfig = linkConfig
@@ -268,7 +268,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
     const linkOptions = { sticky: true, stickyHint }
     try {
-      const { code } = await builder.linkApp(appId, filesWithContent, linkOptions)
+      const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
@@ -293,6 +293,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 
 export default async (options) => {
   await validateAppAction('link')
+  const unsafe = !!(options.unsafe || options.u)
   const manifest = await getManifest()
   const builderHubMessage = await checkBuilderHubMessage('link')
   if (!isEmpty(builderHubMessage)) {
@@ -319,7 +320,7 @@ export default async (options) => {
 
   const onError = {
     build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
-    initial_link_required: () => warnAndLinkFromStart(appId, builder),
+    initial_link_required: () => warnAndLinkFromStart(appId, builder, unsafe),
   }
 
   let debuggerStarted = false
@@ -348,7 +349,7 @@ export default async (options) => {
   let unlistenBuild
   const extraData = { linkConfig: null }
   try {
-    const buildTrigger = performInitialLink.bind(this, appId, builder, extraData)
+    const buildTrigger = performInitialLink.bind(this, appId, builder, extraData, unsafe)
     const [subject] = appId.split('@')
     if (options.watch === false) {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
@@ -379,5 +380,5 @@ export default async (options) => {
       process.exit()
     })
 
-  await watchAndSendChanges(appId, builder, extraData)
+  await watchAndSendChanges(appId, builder, extraData, unsafe)
 }

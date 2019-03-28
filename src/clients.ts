@@ -17,6 +17,8 @@ const context = {
   } ,
   userAgent,
   workspace: getWorkspace() || 'master',
+  requestId: '',
+  operationId: '',
 }
 
 const options = {

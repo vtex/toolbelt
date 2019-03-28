@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.53.6] - 2019-03-28
+### Added
+- `--unsafe` (`-u`) option for the `vtex link` command, which enables apps
+  being linked with typescript errors
+
 ## [2.53.5] - 2019-03-28
 ### Changed
 - Replace `enquirer` with `prompt-confirm` for confirmation prompts

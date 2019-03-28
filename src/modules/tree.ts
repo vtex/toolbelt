@@ -126,6 +126,12 @@ export default {
         long: 'no-watch',
         type: 'boolean',
       },
+      {
+        description: 'Allow links with Typescript errors',
+        long: 'unsafe',
+        short: 'u',
+        type: 'boolean',
+      },
     ],
   },
   list: {
