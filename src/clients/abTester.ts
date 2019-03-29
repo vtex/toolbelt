@@ -16,18 +16,18 @@ export class ABTester {
   }
 
   // Abort AB Test in a workspace.
-  public Abort = async (workspace: string) =>
+  public abort = async (workspace: string) =>
     this.http.get(routes.Abort(workspace))
 
   // Start AB Test in a workspace with a given probability.
-  public Initialize = async (workspace: string, probability: number) =>
+  public initialize = async (workspace: string, probability: number) =>
     this.http.get(routes.Initialize(workspace, probability))
 
   // Get estimated AB Test duration.
-  public Preview = async (probability: number) =>
+  public preview = async (probability: number) =>
     this.http.get(routes.Preview(probability))
 
   // Get data about running AB Tests.
-  public Status = async () => this.http.get(routes.Status())
+  public status = async () => this.http.get(routes.Status())
 
 }

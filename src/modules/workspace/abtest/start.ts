@@ -49,7 +49,7 @@ export default async (
   log.info(`Setting workspace ${chalk.green(currentWorkspace)} to AB test with \
 weight=${weight} and `)
   await set(account, currentWorkspace, { production: true, weight })
-  const response = await abtester.Initialize(currentWorkspace, probability)
+  const response = await abtester.initialize(currentWorkspace, probability)
   console.log(response)
   log.info(
     `Workspace ${chalk.green(currentWorkspace)} in AB Test with weight=${weight}`

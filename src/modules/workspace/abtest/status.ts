@@ -49,7 +49,7 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 }
 
 export default async () => {
-  const abTestInfo = await abtester.Status()
+  const abTestInfo = await abtester.status()
   if (!abTestInfo || abTestInfo.length === 0) {
     return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}`)
   }

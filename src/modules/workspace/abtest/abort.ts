@@ -24,7 +24,7 @@ export default async () => {
   await promptContinue()
   log.info(`Resetting workspace ${chalk.blue('master')} to weight=100%`)
   await set(account, 'master', { production: true, weight: 100 })
-  const response = await abtester.Abort(currentWorkspace)
+  const response = await abtester.abort(currentWorkspace)
   console.log(response)
   list()
 }
