@@ -28,8 +28,10 @@ const releaseTypesToUpdateChangelog = ['major', 'minor', 'patch']
 const tagNamesToUpdateChangelog = ['stable']
 
 const shouldUpdateChangelog = (releaseType, tagName) => {
-  return (releaseTypesToUpdateChangelog.indexOf(releaseType) >= 0) &&
-    (tagNamesToUpdateChangelog.indexOf(tagName) >= 0) || semver.valid(releaseType)
+  return (
+    (releaseTypesToUpdateChangelog.indexOf(releaseType) >= 0) &&
+    (tagNamesToUpdateChangelog.indexOf(tagName) >= 0)
+  ) || semver.valid(releaseType)
 }
 
 const getNewAndOldVersions = (releaseType, tagName) =>  {
