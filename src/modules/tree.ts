@@ -411,7 +411,7 @@ export default {
     },
   },
   release: {
-    description: 'Bump app version, commit and push to remote. Only for git users',
+    description: 'Bump app version, commit and push to remote. Only for git users. The first option can also be a specific valid semver version',
     handler: './release',
     optionalArgs: ['releaseType', 'tagName'],
   },
