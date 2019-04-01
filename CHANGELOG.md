@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.53.7] - 2019-04-01
+### Added
+- The `vtex release` command accept a valid (semver) version as its first argument
+
 ## [2.53.6] - 2019-03-28
 ### Added
 - `--unsafe` (`-u`) option for the `vtex link` command, which enables apps

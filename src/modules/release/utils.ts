@@ -44,7 +44,7 @@ export const readVersion = () => {
   return version
 }
 
-export const getNewVersion = (
+export const incrementVersion = (
   rawOldVersion: string,
   releaseType: string,
   tagName: string
