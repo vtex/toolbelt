@@ -85,6 +85,8 @@ $ vtex
 
     port react       Convert your app from React 0.x to React 2.x
 
+    release [releaseType/Version] [tagName]          Bump app version, commit and push to remote (git only)
+
     settings <app> [fields]                     Get app settings
     settings set <app> <fields> <value>         Set a value
     settings unset <app> <fields>               Unset a value
