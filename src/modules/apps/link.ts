@@ -346,7 +346,6 @@ export default async (options) => {
     }
     try {
       if (shouldStartDebugger(manifest)) {
-        console.log('Starting debugger....')
         const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
         debuggerStarted = true
         log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
