@@ -9,7 +9,7 @@ import { readFileSync } from 'fs'
 import { outputJson, pathExists, readJson } from 'fs-extra'
 import * as moment from 'moment'
 import { join, resolve as resolvePath, sep} from 'path'
-import { concat, equals, filter, has, isEmpty, isNil, map, mapObjIndexed, merge, path as ramdaPath, pipe, prop, reject as ramdaReject, test, toPairs, values } from 'ramda'
+import { compose, concat, equals, filter, has, intersection, isEmpty, isNil, keys, map, mapObjIndexed, merge, not, path as ramdaPath, pipe, prop, reject as ramdaReject, test, toPairs, values } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
@@ -46,6 +46,14 @@ const RETRY_OPTS_DEBUGGER = {
   minTimeout: 1000,
   factor: 2,
 }
+
+const shouldStartDebugger = (manifest: Manifest) => compose<Manifest, any, string[], string[], boolean, boolean>(
+  not,
+  isEmpty,
+  intersection(['service-js', 'node']),
+  keys,
+  prop('builders')
+)(manifest)
 
 const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
 
@@ -336,9 +344,12 @@ export default async (options) => {
       return port
     }
     try {
-      const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
-      debuggerStarted = true
-      log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
+      if (shouldStartDebugger(manifest)) {
+        console.log('Starting debugger....')
+        const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
+        debuggerStarted = true
+        log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
+      }
     } catch (e) {
       log.error(e.message)
     }
