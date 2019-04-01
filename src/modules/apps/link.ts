@@ -36,6 +36,7 @@ const builderHubTypingsInfoTimeout = 2000  // 2 seconds
 const typingsPath = 'public/_types'
 const yarnPath = require.resolve('yarn/bin/yarn')
 const typingsURLRegex = /_v\/\w*\/typings/
+const buildersToStartDebugger = ['node']
 const RETRY_OPTS_INITIAL_LINK = {
   retries: 2,
   minTimeout: 1000,
@@ -50,7 +51,7 @@ const RETRY_OPTS_DEBUGGER = {
 const shouldStartDebugger = (manifest: Manifest) => compose<Manifest, any, string[], string[], boolean, boolean>(
   not,
   isEmpty,
-  intersection(['service-js', 'node']),
+  intersection(buildersToStartDebugger),
   keys,
   prop('builders')
 )(manifest)
