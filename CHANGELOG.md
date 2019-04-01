@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Start debugger tunnel only for node and service-js apps
+- Start debugger tunnel only for node apps
 
 ## [2.53.7] - 2019-04-01
 ### Added
