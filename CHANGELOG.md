@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.53.8] - 2019-04-02
+### Fixed
+- Start debugger tunnel only for node apps
+
 ## [2.53.7] - 2019-04-01
 ### Added
 - The `vtex release` command accept a valid (semver) version as its first argument
