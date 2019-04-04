@@ -17,18 +17,21 @@ const { mapSeries } = Bluebird
 
 const templates = {
   'store-theme': 'store-theme',
+  'service-example': 'service-example',
   'render-guide': 'render-guide',
   'masterdata-graphql-guide': 'masterdata-graphql-guide',
 }
 
 const titles = {
   'store-theme': 'Store Theme',
+  'service-example': 'Node Service Example',
   'render-guide': 'Render Guide',
   'masterdata-graphql-guide': 'MasterData GraphQL Guide',
 }
 
 const descriptions = {
   'store-theme': 'VTEX IO Store Theme',
+  'service-example': `Example of @vtex/api's Service() class`,
   'render-guide': 'VTEX IO Render Guide',
   'masterdata-graphql-guide': 'VTEX IO MasterData GraphQL Guide',
 }
