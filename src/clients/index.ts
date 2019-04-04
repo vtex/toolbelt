@@ -46,7 +46,7 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
 
 const [abtester, apps, router, workspaces, logger, events, billing] = getToken()
   ? [
-    new ABTester(context),
+    new ABTester(context, options),
     new Apps(context, options),
     new Router(context, options),
     new Workspaces(context, options),

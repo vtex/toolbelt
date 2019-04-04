@@ -1,11 +1,13 @@
 import chalk from 'chalk'
 import * as moment from 'moment'
+import * as numeral from 'numeral'
 import * as R from 'ramda'
 
 import { abtester } from '../../../clients'
 import { getAccount } from '../../../conf'
 import log from '../../../logger'
 import { createTable } from '../../../table'
+import { formatDays } from './utils'
 
 interface ABTestStatus {
   ABTestBeginning: string
@@ -20,6 +22,10 @@ interface ABTestStatus {
   KullbackLeibler: number
 }
 
+const formatPercent = (n: number | string) => numeral(n).format('0.000%')
+
+const bold = (stringList: any[]) => R.map(chalk.bold)(stringList)
+
 const printResultsTable = (testInfo: ABTestStatus) => {
   const {
     ABTestBeginning,
@@ -33,23 +39,37 @@ const printResultsTable = (testInfo: ABTestStatus) => {
     ProbabilityAlternativeBeatMaster,
     KullbackLeibler,
   } = testInfo
-  log.info(`VTEX AB Test: ${WorkspaceA} vs ${WorkspaceB}`)
-  console.log(`Winner: ${Winner}`)
-  console.log(`Probability that B beats A: ${ProbabilityAlternativeBeatMaster}`)
-  console.log(`Start Date: ${ABTestBeginning}`)
+  console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
+  const technicalTable = createTable()
+  technicalTable.push(bold([`Kullback-Leibler divergence`, numeral(KullbackLeibler).format('0.000')]))
+
+  const comparisonTable = createTable()
+  comparisonTable.push(bold(['', chalk.blue(WorkspaceA), chalk.blue(WorkspaceB)]))
+  comparisonTable.push(bold(['Conversion', formatPercent(ConversionA), formatPercent(ConversionB)]))
+  comparisonTable.push(bold(['Expected Loss', formatPercent(ExpectedLossChoosingA), formatPercent(ExpectedLossChoosingB)]))
+
+  const resultsTable = createTable()
+  resultsTable.push(bold([`Start Date`, ABTestBeginning]))
   const now = moment()
   const runningTime = now.diff(moment(ABTestBeginning), 'days')
-  console.log(`Running Time: ${runningTime}`)
-  console.log(`Kullback-Leibler divergence: ${KullbackLeibler}`)
-  const table = createTable()
-  table.push(['', chalk.bold(WorkspaceA), chalk.bold(WorkspaceB)])
-  table.push(['Conversion', ConversionA, ConversionB])
-  table.push(['Expected Loss', ExpectedLossChoosingA, ExpectedLossChoosingB])
-  console.log(`${table.toString()}\n`)
+  resultsTable.push(bold([`Running Time`, formatDays(runningTime)]))
+  resultsTable.push(bold([`Probability B beats A`, formatPercent(ProbabilityAlternativeBeatMaster)]))
+  resultsTable.push(bold([chalk.bold.green(`Winner`), chalk.bold.green(Winner)]))
+
+  console.log(`Technical:\n${technicalTable.toString()}\n`)
+  console.log(`Comparative:\n${comparisonTable.toString()}\n`)
+  console.log(`Results:\n${resultsTable.toString()}\n`)
 }
 
 export default async () => {
-  const abTestInfo = await abtester.status()
+
+  let abTestInfo = []
+  try {
+    abTestInfo = await abtester.status()
+  } catch (e) {
+    log.error(e)
+    process.exit()
+  }
   if (!abTestInfo || abTestInfo.length === 0) {
     return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}`)
   }

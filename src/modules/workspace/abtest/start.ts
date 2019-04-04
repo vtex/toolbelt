@@ -1,59 +1,65 @@
 import chalk from 'chalk'
+import * as enquirer from 'enquirer'
+import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 'ramda'
 
-import { abtester, workspaces } from '../../../clients'
-import { CommandError, UserCancelledError } from '../../../errors'
+import { abtester } from '../../../clients'
+import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import list from '../list'
 import {
-  account,
   checkIfInProduction,
   currentWorkspace,
-  DEFAULT_PROBABILITY_VALUE
+  formatDays,
+  SIGNIFICANCE_LEVELS
 } from './utils'
 
-const DEFAULT_WEIGHT_VALUE = 50
+const promptSignificanceLevel = async () => {
+  const significanceTimePreviews = await Promise.all(
+    compose<any, number[], Array<Promise<number>>>(
+      map(value => abtester.preview(value as number)),
+      values
+    )(SIGNIFICANCE_LEVELS)
+  )
+  const significanceTimePreviewMap = fromPairs(zip(keys(SIGNIFICANCE_LEVELS), significanceTimePreviews))
+  return await enquirer.prompt({
+    name: 'level',
+    message: 'Choose the significance level:',
+    type: 'select',
+    choices: values(
+      mapObjIndexed(
+        (value, key) => (
+           {
+             message:`${key} (~ ${formatDays(value as number)})`,
+             value: key,
+        }
+        ))(significanceTimePreviewMap)
+    ),
+  }).then(prop('level'))
+}
 
-const { set } = workspaces
-
-const promptContinue = async (weight, probability) => {
+const promptContinue = async (significanceLevel: string) => {
   const proceed = await promptConfirm(
-      `You are about to start an AB Test between workspaces \
-${chalk.blue('master')} and ${chalk.blue(currentWorkspace)} (weight=${weight}%) \
-and probability ${probability}%`,
-      false
-    )
+    `You are about to start an AB Test between workspaces \
+${chalk.green('master')} and ${chalk.green(currentWorkspace)} with \
+${chalk.red(significanceLevel)} significance level. Proceed?`,
+  false
+  )
   if (!proceed) {
     throw new UserCancelledError()
   }
 }
 
-const parseOptionWeight = (optionWeight: number) => {
-  let weight
-  if (Number.isInteger(optionWeight) && optionWeight > 0 && optionWeight < 100) {
-    weight = optionWeight
-  } else {
-    throw new CommandError(`The weight for workspace AB test must be an integer \
-between 0 and 100`)
-  }
-  return weight
-}
-
-export default async (
-  weight=DEFAULT_WEIGHT_VALUE,
-  probability=DEFAULT_PROBABILITY_VALUE
-) => {
-  await promptContinue(weight, probability)
-  weight = parseOptionWeight(weight)
+export default async () => {
+  const significanceLevel = await promptSignificanceLevel()
+  await promptContinue(significanceLevel)
   await checkIfInProduction()
+  const significanceLevelValue = SIGNIFICANCE_LEVELS[significanceLevel]
   log.info(`Setting workspace ${chalk.green(currentWorkspace)} to AB test with \
-weight=${weight} and `)
-  await set(account, currentWorkspace, { production: true, weight })
-  const response = await abtester.initialize(currentWorkspace, probability)
+${significanceLevel} significance level`)
+  const response = await abtester.initialize(currentWorkspace, significanceLevelValue)
   console.log(response)
-  log.info(
-    `Workspace ${chalk.green(currentWorkspace)} in AB Test with weight=${weight}`
-  )
+  log.info(`Workspace ${chalk.green(currentWorkspace)} in AB Test`)
   log.info(
     `You can stop the test using ${chalk.blue('vtex workspace abtest abort')}`
   )

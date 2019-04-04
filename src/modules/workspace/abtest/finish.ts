@@ -1,18 +1,18 @@
 import chalk from 'chalk'
 
-import { abtester, workspaces } from '../../../clients'
+import { abtester } from '../../../clients'
 import { getAccount, getWorkspace } from '../../../conf'
 import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import list from '../list'
+import { default as abTestStatus } from './status'
 
-const { set } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const promptContinue = async () => {
   const proceed = await promptConfirm(
-      `You are about to abort all AB Testing in this account. Are you sure?`,
+    `You are about to finish all AB testing in account ${chalk.blue(account)}. Are you sure?`,
       false
     )
   if (!proceed) {
@@ -22,9 +22,11 @@ const promptContinue = async () => {
 
 export default async () => {
   await promptContinue()
-  log.info(`Resetting workspace ${chalk.blue('master')} to weight=100%`)
-  await set(account, 'master', { production: true, weight: 100 })
-  const response = await abtester.abort(currentWorkspace)
-  console.log(response)
+  log.info('Finishing AB tests')
+  log.info(`Latest results:`)
+  await abTestStatus()
+  await abtester.abort(currentWorkspace)
+  log.info(`All AB testing is now finished.`)
+  log.info(`100% of traffic is now directed to ${chalk.blue('master')}`)
   list()
 }

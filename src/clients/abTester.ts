@@ -1,4 +1,4 @@
-import { HttpClient, IOContext } from '@vtex/api'
+import { HttpClient, InstanceOptions, IOContext } from '@vtex/api'
 
 const routes = {
   Abort: (workspace: string) => `${routes.ABTester}/finish/${workspace}`,
@@ -11,8 +11,12 @@ const routes = {
 export class ABTester {
   private http: HttpClient
 
-  constructor (ioContext: IOContext) {
-    this.http = HttpClient.forWorkspace('ab-tester.vtex', ioContext, {})
+  constructor (ioContext: IOContext, options: InstanceOptions) {
+    this.http = HttpClient.forWorkspace(
+      'ab-tester.vtex',
+      ioContext,
+      options,
+    )
   }
 
   // Abort AB Test in a workspace.
@@ -24,8 +28,8 @@ export class ABTester {
     this.http.get(routes.Initialize(workspace, probability))
 
   // Get estimated AB Test duration.
-  public preview = async (probability: number) =>
-    this.http.get(routes.Preview(probability))
+  public preview = async (significanceLevel: number): Promise<number> =>
+    this.http.get(routes.Preview(significanceLevel))
 
   // Get data about running AB Tests.
   public status = async () => this.http.get(routes.Status())
