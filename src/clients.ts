@@ -34,6 +34,7 @@ const interceptor = <T>(client): T => new Proxy({}, {
 const createClients = (customContext: Partial<IOContext> = {}, customOptions: InstanceOptions = {}) => {
   const mergedContext = { ...context, ...customContext }
   const mergedOptions = { ...options, ...customOptions }
+  console.log(mergedContext)
   return {
     builder: new Builder(mergedContext, mergedOptions),
     logger: new Logger(mergedContext, mergedOptions),

@@ -17,6 +17,7 @@ const { mapSeries } = Bluebird
 
 const templates = {
   'store-theme': 'store-theme',
+  'delivery-theme': 'delivery-theme',
   'service-example': 'service-example',
   'render-guide': 'render-guide',
   'masterdata-graphql-guide': 'masterdata-graphql-guide',
@@ -24,6 +25,7 @@ const templates = {
 
 const titles = {
   'store-theme': 'Store Theme',
+  'delivery-theme': 'Delivery Store Theme',
   'service-example': 'Node Service Example',
   'render-guide': 'Render Guide',
   'masterdata-graphql-guide': 'MasterData GraphQL Guide',
@@ -31,6 +33,7 @@ const titles = {
 
 const descriptions = {
   'store-theme': 'VTEX IO Store Theme',
+  'delivery-theme': 'VTEX IO Delivery Store Theme',
   'service-example': `Example of @vtex/api's Service class`,
   'render-guide': 'VTEX IO Render Guide',
   'masterdata-graphql-guide': 'VTEX IO MasterData GraphQL Guide',
