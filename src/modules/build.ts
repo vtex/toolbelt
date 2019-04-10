@@ -8,6 +8,7 @@ interface ListeningOptions {
   waitCompletion?: boolean,
   onBuild?: AnyFunction,
   onError?: { [code: string]: AnyFunction },
+  senders?: string[],
 }
 
 type BuildTrigger<T> = () => Promise<T>
@@ -22,8 +23,8 @@ type BuildEvent = 'logs' | 'build.status'
 
 const allEvents: BuildEvent[] = ['logs', 'build.status']
 
-const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
-  const unlistenLogs = logAll(ctx, log.level, appOrKey)
+const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void, senders?: string[]) => {
+  const unlistenLogs = logAll(ctx, log.level, appOrKey, senders)
   const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', appOrKey, ['build.status'], message => callback('build.status', message))
   const unlistenMap: Record<BuildEvent, AnyFunction> = {
     'build.status': unlistenBuild,
@@ -46,8 +47,8 @@ const runErrorAction = (code, message, errorActions) => {
 
 const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlisten> => {
   return new Promise((resolve, reject, onCancel) => {
-    const { waitCompletion, onError = {}, onBuild = false, context = currentContext } = options
-    const unlisten = onBuildEvent(context, appOrKey, (eventType, eventData) => {
+    const { waitCompletion, onError = {}, onBuild = false, context = currentContext, senders = null } = options
+    const callback = (eventType, eventData) => {
       if (eventType === 'build.status') {
         const { body: { code, details, message } } = eventData
         if (code === 'success') {
@@ -68,8 +69,8 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
           }
         }
       }
-    })
-
+    }
+    const unlisten = onBuildEvent(context, appOrKey, callback, senders)
     const unlistenAll = () => unlisten(...allEvents)
     onCancel(unlistenAll)
     if (!waitCompletion) {
