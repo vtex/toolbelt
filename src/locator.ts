@@ -16,3 +16,5 @@ export const parseLocator = (locator: string): Manifest => {
   const [vendor, name] = vendorAndName.split('.')
   return { vendor, name, version }
 }
+
+export const removeVersion = (appId: string): string => appId.split('@')[0]

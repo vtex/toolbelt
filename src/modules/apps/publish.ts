@@ -126,7 +126,8 @@ const publisher = (workspace: string = 'master') => {
       const oraMessage = ora(`Publishing ${appId} ...`)
       const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
       try {
-        const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, builder), { waitCompletion: true, context })
+        const senders = ['vtex.builder-hub', 'apps']
+        const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, builder), { waitCompletion: true, context, senders })
         if (response.code !== 'build.accepted') {
           spinner.warn(`${appId} was published successfully, but you should update your builder hub to the latest version.`)
         } else {
