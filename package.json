@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.53.11",
+  "version": "2.54.0",
   "description": "The platform for e-commerce apps",
   "main": "lib/index.js",
   "bin": "lib/cli.js",
@@ -70,7 +70,8 @@
     "js-yaml": "^3.13.0",
     "jsonwebtoken": "^8.2.0",
     "latest-version": "^4.0.0",
-    "moment": "^2.21.0",
+    "moment": "^2.24.0",
+    "numbro": "2.1.0",
     "opn": "^5.2.0",
     "ora": "^3.0.0",
     "pad": "^2.0.3",

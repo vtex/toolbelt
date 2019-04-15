@@ -315,6 +315,20 @@ export default {
     handler: './auth/whoami',
   },
   workspace: {
+    abtest: {
+      start: {
+        description: 'Start AB testing with current workspace',
+        handler: './workspace/abtest/start',
+      },
+      finish: {
+        description: 'Stop all AB testing in current account',
+        handler: './workspace/abtest/finish',
+      },
+      status: {
+        description: 'Display currently running AB tests results',
+        handler: './workspace/abtest/status',
+      },
+    },
     create: {
       description: 'Create a new workspace with this name',
       handler: './workspace/create',
@@ -384,11 +398,6 @@ export default {
       description: 'Display information about a workspace',
       handler: './workspace/status',
       optionalArgs: 'name',
-    },
-    test: {
-      description: 'Set AB test in current workspace',
-      handler: './workspace/abTest',
-      optionalArgs: 'weight',
     },
     use: {
       description: 'Use a workspace to perform operations',
