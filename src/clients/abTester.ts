@@ -1,4 +1,4 @@
-import { HttpClient, InstanceOptions, IOContext } from '@vtex/api'
+import { forWorkspace, IODataSource } from '@vtex/api'
 
 const routes = {
   Abort: (workspace: string) => `${routes.ABTester}/finish/${workspace}`,
@@ -8,30 +8,23 @@ const routes = {
   Status: () => `${routes.ABTester}/status`,
 }
 
-export class ABTester {
-  private http: HttpClient
-
-  constructor (ioContext: IOContext, options: InstanceOptions) {
-    this.http = HttpClient.forWorkspace(
-      'ab-tester.vtex',
-      ioContext,
-      options,
-    )
-  }
+export class ABTester extends IODataSource {
+  protected httpClientFactory = forWorkspace
+  protected service = 'ab-tester.vtex'
 
   // Abort AB Test in a workspace.
-  public abort = async (workspace: string) =>
-    this.http.get(routes.Abort(workspace))
+  public finish = async (workspace: string) =>
+    this.http.post(routes.Abort(workspace), {}, { metric: 'abtester-finish' })
 
   // Start AB Test in a workspace with a given probability.
-  public initialize = async (workspace: string, probability: number) =>
-    this.http.get(routes.Initialize(workspace, probability))
+  public start = async (workspace: string, probability: number) =>
+    this.http.post(routes.Initialize(workspace, probability), {}, { metric: 'abtester-start' })
 
   // Get estimated AB Test duration.
   public preview = async (significanceLevel: number): Promise<number> =>
-    this.http.get(routes.Preview(significanceLevel))
+    this.http.get(routes.Preview(significanceLevel), { metric: 'abtester-preview' })
 
   // Get data about running AB Tests.
-  public status = async () => this.http.get(routes.Status())
+  public status = async () => this.http.get(routes.Status(), { metric: 'abtester-status' })
 
 }

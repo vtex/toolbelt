@@ -98,7 +98,6 @@ $ vtex
     workspace list                    List workspaces on this account
     workspace promote                 Promote this workspace to master
     workspace reset [name]            Delete and create a workspace
-    workspace test [weight]           Set AB test in current workspace
     workspace use <name>              Use a workspace to perform operations
 
   Options:

@@ -321,18 +321,13 @@ export default {
         handler: './workspace/abtest/start',
         optionalArgs: ['weight', 'probability'],
       },
-      abort: {
+      finish: {
         description: 'Stop all AB testing in current account',
-        handler: './workspace/abtest/abort',
+        handler: './workspace/abtest/finish',
       },
       status: {
         description: 'Display currently running AB tests results',
         handler: './workspace/abtest/status',
-      },
-      preview: {
-        description: 'Estimate AB test duration given a probability',
-        handler: './workspace/abtest/preview',
-        optionalArgs: ['probability'],
       },
     },
     create: {

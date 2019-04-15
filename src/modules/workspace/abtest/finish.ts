@@ -5,14 +5,13 @@ import { getAccount, getWorkspace } from '../../../conf'
 import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
-import list from '../list'
 import { default as abTestStatus } from './status'
 
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const promptContinue = async () => {
   const proceed = await promptConfirm(
-    `You are about to finish all AB testing in account ${chalk.blue(account)}. Are you sure?`,
+    `You are about to finish all A/B testing in account ${chalk.blue(account)}. Are you sure?`,
       false
     )
   if (!proceed) {
@@ -22,11 +21,10 @@ const promptContinue = async () => {
 
 export default async () => {
   await promptContinue()
-  log.info('Finishing AB tests')
+  log.info('Finishing A/B tests')
   log.info(`Latest results:`)
   await abTestStatus()
-  await abtester.abort(currentWorkspace)
-  log.info(`All AB testing is now finished.`)
+  await abtester.finish(currentWorkspace)
+  log.info(`All A/B testing is now finished.`)
   log.info(`100% of traffic is now directed to ${chalk.blue('master')}`)
-  list()
 }
