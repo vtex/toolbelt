@@ -319,7 +319,6 @@ export default {
       start: {
         description: 'Start AB testing with current workspace',
         handler: './workspace/abtest/start',
-        optionalArgs: ['weight', 'probability'],
       },
       finish: {
         description: 'Stop all AB testing in current account',
