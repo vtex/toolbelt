@@ -400,11 +400,6 @@ export default {
       handler: './workspace/status',
       optionalArgs: 'name',
     },
-    test: {
-      description: 'Set AB test in current workspace',
-      handler: './workspace/abTest',
-      optionalArgs: 'weight',
-    },
     use: {
       description: 'Use a workspace to perform operations',
       handler: './workspace/use',
