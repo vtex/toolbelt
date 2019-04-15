@@ -62,9 +62,9 @@ const printResultsTable = (testInfo: ABTestStatus) => {
       formatInteger(WorkspaceASessionsLast24Hours), formatInteger(WorkspaceBSessionsLast24Hours)]))
 
   const resultsTable = createTable()
-  resultsTable.push(bold([`Start Date`, moment(ABTestBeginning).format('DD-MMM-YYYY HH:mm')]))
-  const now = moment()
-  const runningTime = now.diff(moment(ABTestBeginning), 'minutes')
+  resultsTable.push(bold([`Start Date`, `${moment(ABTestBeginning).format('DD-MMM-YYYY HH:mm')} (UTC)`]))
+  const nowUTC = moment.utc()
+  const runningTime = nowUTC.diff(moment.utc(ABTestBeginning), 'minutes')
   resultsTable.push(bold([`Running Time`, formatDuration(runningTime)]))
   resultsTable.push(bold([`Probability B beats A`, formatPercent(ProbabilityAlternativeBeatMaster)]))
   resultsTable.push(bold([chalk.bold.green(`Winner`), chalk.bold.green(Winner)]))
