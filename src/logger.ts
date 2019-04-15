@@ -117,7 +117,7 @@ export class ColossusTransport extends Transport {
     case 'warn':
         colossusLogger.warn(info, pkgId)
     case 'error':
-        colossusLogger.error(info, {}, pkgId)
+        colossusLogger.error(info, pkgId)
     }
     callback()
   }
