@@ -49,7 +49,6 @@ const printResultsTable = (testInfo: ABTestStatus) => {
     ProbabilityAlternativeBeatMaster,
     KullbackLeibler,
   } = testInfo
-  console.log(JSON.stringify(testInfo, null, 2))
   console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
   const technicalTable = createTable()
   technicalTable.push(bold([`Kullback-Leibler divergence`, numbro(KullbackLeibler).format('0.000')]))
