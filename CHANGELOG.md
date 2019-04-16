@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix Changelog and add `.git/` to `.npmignore`
 
 ## [2.54.1] - 2019-04-16
+### Fixed
+- Builder availability requests being cached by updating to `@vtex/api^3.3.1`
 
 ## [2.54.0] - 2019-04-15
 ### Added
