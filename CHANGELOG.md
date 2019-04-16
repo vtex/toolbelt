@@ -5,12 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Fix Changelog and add `.git/` to `.npmignore`
 
 ## [2.54.1] - 2019-04-16
 
 ## [2.54.0] - 2019-04-15
+### Added
+- Implement workspace A/B testing interface
 
 ## [2.53.11] - 2019-04-10
+### Fixed
+- Undesired logs appearing during `vtex publish`
 
 ## [2.53.10] - 2019-04-08
 ### Added
