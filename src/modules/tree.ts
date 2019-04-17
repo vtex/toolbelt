@@ -372,11 +372,6 @@ export default {
       description: 'List workspaces on this account',
       handler: './workspace/list',
     },
-    production: {
-      description: 'Set this workspace\'s production mode to true or false (deprecated)',
-      handler: './workspace/production',
-      optionalArgs: 'production',
-    },
     promote: {
       description: 'Promote this workspace to master',
       handler: './workspace/promote',
