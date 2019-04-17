@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.54.4] - 2019-04-17
+### Changed
+- Completely remove the `vtex production` command
+
 ## [2.54.3] - 2019-04-17
 ### Fixed
 - A/B Test finish message
