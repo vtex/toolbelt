@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.54.3] - 2019-04-17
+### Fixed
+- A/B Test finish message
+
 ## [2.54.2] - 2019-04-16
 ### Fixed
 - Fix Changelog and add `.git/` to `.npmignore`

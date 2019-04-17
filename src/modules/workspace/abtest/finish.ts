@@ -25,6 +25,6 @@ export default async () => {
   log.info(`Latest results:`)
   await abTestStatus()
   await abtester.finish(currentWorkspace)
-  log.info(`All A/B testing is now finished.`)
+  log.info(`A/B testing with workspace ${chalk.blue(currentWorkspace)} is now finished`)
   log.info(`100% of traffic is now directed to ${chalk.blue('master')}`)
 }
