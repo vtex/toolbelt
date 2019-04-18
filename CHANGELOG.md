@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.54.6] - 2019-04-18
+### Changed
+- Upgrade to @vtex/api to version 3.4.0 or higher
+
 ## [2.54.5] - 2019-04-18
 ### Changed
 - Watcher debouncer wait time from 300ms to 1000ms
