@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Watcher debouncer wait time from 300ms to 1000ms
 
 ## [2.54.4] - 2019-04-17
 ### Changed
