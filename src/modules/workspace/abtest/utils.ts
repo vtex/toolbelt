@@ -1,9 +1,11 @@
 import chalk from 'chalk'
 import * as numbro from 'numbro'
 
-import { workspaces } from '../../../clients'
+import { apps, workspaces } from '../../../clients'
 import { getAccount, getWorkspace } from '../../../conf'
 import { CommandError } from '../../../errors'
+
+const { getApp } = apps
 
 
 export const SIGNIFICANCE_LEVELS = {
@@ -41,5 +43,19 @@ used for A/B testing. Please create a production workspace with \
 ${chalk.blue('vtex use <workspace> -r -p')} or reset this one with \
 ${chalk.blue('vtex workspace reset -p')}`
 )
+  }
+}
+
+export const checkIfABTesterIsInstalled = async () => {
+  try {
+    await getApp('vtex.ab-tester@x')
+  } catch (e) {
+    if (e.response.data.code === 'app_not_found') {
+      throw new CommandError(`The app ${chalk.yellow('vtex.ab-tester')} is \
+not installed in account ${chalk.green(account)}, workspace \
+${chalk.blue(currentWorkspace)}. Please install it before attempting to use A/B \
+testing functionality`)
+    }
+    throw e
   }
 }

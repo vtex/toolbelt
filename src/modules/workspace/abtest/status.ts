@@ -7,7 +7,7 @@ import { abtester } from '../../../clients'
 import { getAccount } from '../../../conf'
 import log from '../../../logger'
 import { createTable } from '../../../table'
-import { formatDuration } from './utils'
+import { checkIfABTesterIsInstalled, formatDuration } from './utils'
 
 interface ABTestStatus {
   ABTestBeginning: string
@@ -76,6 +76,7 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 
 export default async () => {
 
+  await checkIfABTesterIsInstalled()
   let abTestInfo = []
   try {
     abTestInfo = await abtester.status()
