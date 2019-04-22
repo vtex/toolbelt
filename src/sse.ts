@@ -1,4 +1,3 @@
-import chalk from 'chalk'
 import { compose, contains, forEach, path, pathOr } from 'ramda'
 
 import { getToken } from './conf'
@@ -90,17 +89,11 @@ export const onEvent = (ctx: Context, sender: string, subject: string, keys: str
 }
 
 export const logAll = (context: Context, logLevel: string, id: string, senders?: string[]) => {
-  let previous = ''
-  const callback = ({ sender, level, body: { message, code } }: Message) => {
-    if (!(message || code)) {
-      return // Ignore logs without message or code.
+  const callback = ({ sender, level, body: { message, code, progress } }: Message) => {
+    if (!(message || code || progress)) {
+      return // Ignore logs without code or progress bar info.
     }
-    const suffix = sender.startsWith(id) ? '' : ' ' + chalk.gray(sender)
-    const formatted = (message || code || '').replace(/\n\s*$/, '') + suffix
-    if (previous !== formatted) {
-      previous = formatted
-      log.log(level, formatted)
-    }
+    log.log({ level, message, code, progress, sender })
   }
 
   return onLog(context, id, logLevel, callback, senders)

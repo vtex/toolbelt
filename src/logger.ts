@@ -13,9 +13,8 @@ import { configDir } from './conf'
 // Setup logging
 const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
-const consoleLoggerLevel = isVerbose ? 'debug' : 'info'
 
-const { combine, timestamp } = format
+const { combine, timestamp, colorize } = format
 const bar = progress({
   width: Math.floor(0.75 * 0.5 * process.stdout.columns) - 4,
   total: 100,
@@ -31,7 +30,24 @@ const getProgressBar = (value) => {
 }
 const pkgId = `${pkgName}@${pkgVersion}`
 
-class ConsoleTransport extends Transport {
+class SimpleConsoleTransport extends Transport {
+  constructor(opts) {
+    super(opts)
+  }
+
+  public log(info, callback) {
+    setImmediate(() => {
+      this.emit('logged', info)
+    })
+    if (info.message) {
+      //console.log(info.message)
+      console.log(info)
+    }
+    callback()
+  }
+}
+
+class FancyConsoleTransport extends Transport {
   private progressBarText: any
   private progressBar: any
   private logText: string
@@ -55,7 +71,7 @@ class ConsoleTransport extends Transport {
       append=true,
       progress: progressBarSpecs,
     } = info
-    const newLogText = message || ''
+    const newLogText = message ? `- ${message}` : ''
     let newProgressBarText = ''
     let newProgressBar = ''
     if (progressBarSpecs) {
@@ -73,7 +89,11 @@ class ConsoleTransport extends Transport {
       this.progressBarText = newProgressBarText || this.progressBarText
       this.progressBar = newProgressBar || this.progressBar
       const indentation = (this.progressBarText || this.progressBar) ? INDENTATION : ''
-      this.logText = newLogText ? `${this.logText}${newLogText}\n${indentation}` : this.logText
+      if (this.logText) {
+        this.logText = newLogText ? `${this.logText}${indentation}${newLogText}\n` : this.logText
+      } else {
+        this.logText = newLogText ? `${indentation}${newLogText}\n` : this.logText
+      }
     } else {
       this.progressBarText = newProgressBarText || this.progressBarText
       this.progressBar = newProgressBar || this.progressBar
@@ -132,31 +152,46 @@ const consoleFormatter = format((info, _) => {
   return info
 })
 
-const fileFormatter = format((info, _) => {
-  // Formatter for file logs
+const messageFormatter = format((info, _) => {
+  // Write all relevant information in info.message
   const { timestamp: timeString='', sender='', message } = info
-  info.message = `${timeString} - ${sender} ${info.level}:  ${message}`
+  info.message = `${chalk.black(timeString)} - ${info.level}:  ${message} ${chalk.black(sender)}`
   return info
 })
+
+//const filterMessage = format((info, _) => {
+  //if (!info.message) { return false }
+  //return info
+//})
 
 interface ExtendedLogger extends Logger {
   progress?(value: number, text?: string): void
   newInfoSection?(): void
 }
 
+const consoleTransport = isVerbose ?
+  new SimpleConsoleTransport({
+    format: combine(
+      //filterMessage(),
+      timestamp({ format: 'HH:mm:ss.SSS' }),
+      colorize(),
+      messageFormatter()
+    ),
+    level: 'debug',
+  }) :
+  new FancyConsoleTransport({
+      format: consoleFormatter(),
+      level: 'info',
+    })
+
 const logger = createLogger({
   transports: [
-    new ConsoleTransport({
-      format: combine(
-        consoleFormatter()
-      ),
-      level: consoleLoggerLevel,
-    }),
+    consoleTransport,
     new transports.File({
       filename: DEBUG_LOG_FILE_PATH,
       format: combine(
         timestamp({ format: 'hh:mm:ss.SSS' }),
-        fileFormatter()
+        messageFormatter()
       ),
       level: 'debug',
       maxsize: 10E6,
