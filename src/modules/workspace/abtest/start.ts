@@ -7,6 +7,7 @@ import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import {
+  checkIfABTesterIsInstalled,
   checkIfInProduction,
   currentWorkspace,
   formatDays,
@@ -55,9 +56,10 @@ ${chalk.red(significanceLevel)} significance level. Proceed?`,
 }
 
 export default async () => {
+  await checkIfABTesterIsInstalled()
+  await checkIfInProduction()
   const significanceLevel = await promptSignificanceLevel()
   await promptContinue(significanceLevel)
-  await checkIfInProduction()
   const significanceLevelValue = SIGNIFICANCE_LEVELS[significanceLevel]
   log.info(`Setting workspace ${chalk.green(currentWorkspace)} to A/B test with \
 ${significanceLevel} significance level`)

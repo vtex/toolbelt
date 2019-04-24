@@ -6,6 +6,7 @@ import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import { default as abTestStatus } from './status'
+import { checkIfABTesterIsInstalled } from './utils'
 
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
@@ -20,6 +21,7 @@ const promptContinue = async () => {
 }
 
 export default async () => {
+  await checkIfABTesterIsInstalled()
   await promptContinue()
   log.info('Finishing A/B tests')
   log.info(`Latest results:`)
