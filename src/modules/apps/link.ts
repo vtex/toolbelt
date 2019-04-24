@@ -15,7 +15,7 @@ import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
 import { publicEndpoint, region } from '../../env'
 import { CommandError } from '../../errors'
-import { getMostAvailableHost } from '../../host'
+import { getSavedOrMostAvaliableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest } from '../../manifest'
@@ -274,7 +274,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       log.info(`Retrying...${tryCount-1}`)
     }
 
-    const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
+    const stickyHint = await getSavedOrMostAvaliableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
     const linkOptions = { sticky: true, stickyHint }
     try {
       const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })

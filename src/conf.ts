@@ -27,6 +27,9 @@ export const saveWorkspace = (workspace = 'master') =>
 export const saveEnvironment = (env: Environment) =>
   conf.set('env', env)
 
+export const saveStickyHost = (appId: string, stickyHost: string) =>
+  conf.set(`${appId}.sticky-host`, {stickyHost, lastUpdated: Date.now()})
+
 export const getAll = (): any => conf.all
 
 export const getAccount = (): string =>
@@ -40,6 +43,12 @@ export const getToken = (): string =>
 
 export const getWorkspace = (): string =>
   conf.get('workspace')
+
+export const getStickyHost = (appId: string): {stickyHost: string; lastUpdated: Date} =>
+  conf.get(`${appId}.sticky-host`)
+
+export const hasStickyHost = (appId: string): boolean =>
+  conf.has(`${appId}.sticky-host`)
 
 const envFromProcessEnv = {
   'beta': Environment.Staging,
