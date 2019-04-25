@@ -107,6 +107,8 @@ export const getSavedOrMostAvailableHost = async (
   }
   log.debug(`Finding a new sticky host`)
   const newStickyHost = await getMostAvailableHost(appId, builder, nHosts, timeout)
-  saveStickyHost(appId, newStickyHost)
+  if (newStickyHost) {
+    saveStickyHost(appId, newStickyHost)
+  }
   return newStickyHost
 }
