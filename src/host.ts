@@ -103,6 +103,7 @@ export const getSavedOrMostAvailableHost = async (
     if (timeElapsed.asHours() <= TTL_SAVED_HOST_HOURS) {
       return stickyHost
     }
+    log.debug(`Saved sticky host has expired`)
   }
   log.debug(`Finding a new sticky host`)
   const newStickyHost = await getMostAvailableHost(appId, builder, nHosts, timeout)
