@@ -12,6 +12,7 @@ import { configDir } from './conf'
 
 // Setup logging
 const VERBOSE = '--verbose'
+const UNINDEXED = '_unindexed'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 
 const { combine, timestamp, colorize } = format
@@ -40,7 +41,7 @@ class SimpleConsoleTransport extends Transport {
       this.emit('logged', info)
     })
     if (info.message) {
-      //console.log(info.message)
+      // console.log(info.message)
       console.log(info)
     }
     callback()
@@ -48,58 +49,90 @@ class SimpleConsoleTransport extends Transport {
 }
 
 class FancyConsoleTransport extends Transport {
-  private progressBarText: any
-  private progressBar: any
-  private logText: string
-  private fullLog: string
+  private logs: any
+  private renderedLogs: string
 
   constructor(opts) {
     super(opts)
-    this.progressBarText = ''
-    this.progressBar = ''
-    this.logText = ''
-    this.fullLog = ''
+    this.logs = {}
+    this.renderedLogs = ''
   }
 
   public log(info, callback) {
     setImmediate(() => {
       this.emit('logged', info)
     })
-    const {
-      message,
-      clear=false,
-      append=true,
-      progress: progressBarSpecs,
-    } = info
+    const { message, clear=false, level, index, progress: progressBarSpecs } = info
+    const { append=(['warn', 'error'].indexOf(level) >= 0 ? true : false) } = info
     const newLogText = message ? `- ${message}` : ''
     let newProgressBarText = ''
-    let newProgressBar = ''
+    let newProgressBarValue = ''
+    let newProgressBarSpecs = {}
     if (progressBarSpecs) {
       const { text, value } = progressBarSpecs
       newProgressBarText = text || ''
-      newProgressBar = value !== undefined ? getProgressBar(value) : ''
+      newProgressBarValue = value !== undefined ? getProgressBar(value) : ''
+      newProgressBarSpecs = { text: newProgressBarText, value: newProgressBarValue }
     }
     if (clear) {
-      singleLineLog()
-      console.log(replace(/\n\s*$/, '', this.fullLog))
-      this.progressBarText = newProgressBarText
-      this.progressBar = newProgressBar
-      this.logText = newLogText
+      this.clear(newLogText, newProgressBarSpecs, index)
     } else if (append) {
-      this.progressBarText = newProgressBarText || this.progressBarText
-      this.progressBar = newProgressBar || this.progressBar
-      const indentation = (this.progressBarText || this.progressBar) ? INDENTATION : ''
-      if (this.logText) {
-        this.logText = newLogText ? `${this.logText}${indentation}${newLogText}\n` : this.logText
-      } else {
-        this.logText = newLogText ? `${indentation}${newLogText}\n` : this.logText
-      }
+      this.append(newLogText, newProgressBarSpecs, index)
     } else {
-      this.progressBarText = newProgressBarText || this.progressBarText
-      this.progressBar = newProgressBar || this.progressBar
-      this.logText = newLogText ? `${newLogText}\n${INDENTATION}` : ''
+      this.overwriteLine(newProgressBarText, newProgressBar, newLogText, index)
     }
+    this.render()
+    callback()
+  }
 
+  private clear(
+    newProgressBarText='',
+    newProgressBarValue='',
+    newLogText='',
+    index=UNINDEXED
+  ) {
+    singleLineLog()
+    console.log(replace(/\n\s*$/, '', this.renderedLogs))
+    this.logs[index] = {} newProgressBarText
+    this.progressBarValues[index] = newProgressBarValue
+    this.logTexts[index] = newLogText
+  }
+
+  private append(
+    newProgressBarText?: string,
+    newProgressBarValue?: string,
+    newLogText?: string,
+    index=UNINDEXED
+  ) {
+    if (newProgressBarText) {
+      this.progressBarTexts[index] = newProgressBarText
+    }
+    if (newProgressBarValue) {
+      this.progressBarValues[index] = newProgressBarValue
+    }
+    const indentation = (this.progressBarTexts[index] || this.progressBarValues[index]) ? INDENTATION : ''
+    if (this.logText) {
+      this.logText = newLogText ? `${this.logText}${indentation}${newLogText}\n` : this.logText
+    } else {
+      this.logText = newLogText ? `${indentation}${newLogText}\n` : this.logText
+    }
+  }
+
+  private overwriteLine(
+    newProgressBarText?: string,
+    newProgressBar?: string,
+    newLogText?: string
+  ) {
+    this.progressBarText = newProgressBarText || this.progressBarText
+    this.progressBar = newProgressBar || this.progressBar
+    if (this.progressBarText || this.progressBar) {
+      this.logText = newLogText ? `${INDENTATION}${newLogText}\n` : ''
+    } else {
+      this.logText = newLogText ? `${newLogText}\n` : ''
+    }
+  }
+
+  private render() {
     let formattedProgressLine
     if (this.progressBarText || this.progressBar) {
       const terminalWidth = process.stdout.columns
@@ -111,12 +144,11 @@ class FancyConsoleTransport extends Transport {
           this.progressBar
         )
       )
-      this.fullLog = `${formattedProgressLine}\n${INDENTATION}${this.logText}`
+      this.fullLog = `${formattedProgressLine}\n${this.logText}`
     } else {
       this.fullLog = this.logText
     }
     singleLineLog(this.fullLog)
-    callback()
   }
 }
 
@@ -159,10 +191,10 @@ const messageFormatter = format((info, _) => {
   return info
 })
 
-//const filterMessage = format((info, _) => {
-  //if (!info.message) { return false }
-  //return info
-//})
+// const filterMessage = format((info, _) => {
+  // if (!info.message) { return false }
+  // return info
+// })
 
 interface ExtendedLogger extends Logger {
   progress?(value: number, text?: string): void
@@ -172,7 +204,7 @@ interface ExtendedLogger extends Logger {
 const consoleTransport = isVerbose ?
   new SimpleConsoleTransport({
     format: combine(
-      //filterMessage(),
+      // filterMessage(),
       timestamp({ format: 'HH:mm:ss.SSS' }),
       colorize(),
       messageFormatter()

@@ -267,7 +267,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
       log.clear()
       log.progress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`)
-      filesWithContent.forEach(_ => log.info({message: 'oi', append: true}))
+      filesWithContent.forEach(p => log.info({message: p.path}))
     }
 
     if (tryCount > 1) {
