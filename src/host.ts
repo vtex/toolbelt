@@ -90,7 +90,7 @@ const getMostAvailableHost = async (
   return stickyHint
 }
 
-export const getSavedOrMostAvaliableHost = async (
+export const getSavedOrMostAvailableHost = async (
   appId: string,
   builder: Builder,
   nHosts: number,
@@ -99,7 +99,7 @@ export const getSavedOrMostAvaliableHost = async (
   if (hasStickyHost(appId)) {
     log.debug(`Found sticky host saved locally`)
     const {stickyHost, lastUpdated} = getStickyHost(appId)
-    const timeElapsed = moment.duration(moment(new Date()).diff(lastUpdated))
+    const timeElapsed = moment.duration(moment().diff(lastUpdated))
     if (timeElapsed.asHours() <= TTL_SAVED_HOST_HOURS) {
       return stickyHost
     }
