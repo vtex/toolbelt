@@ -7,7 +7,7 @@ import { createClients } from '../../clients'
 import * as conf from '../../conf'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
-import { getMostAvailableHost } from '../../host'
+import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getManifest } from '../../manifest'
@@ -59,7 +59,7 @@ const publisher = (workspace: string = 'master') => {
       if (tryCount > 1) {
         log.info(`Retrying...${tryCount-1}`)
       }
-      const stickyHint = await getMostAvailableHost(
+      const stickyHint = await getSavedOrMostAvailableHost(
         appId,
         builder,
         N_HOSTS,

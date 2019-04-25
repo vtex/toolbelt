@@ -2,8 +2,12 @@ import { Builder } from '@vtex/api'
 import * as retry from 'async-retry'
 import { map, reduce } from 'ramda'
 
+import * as moment from 'moment'
+import { getStickyHost, hasStickyHost, saveStickyHost } from './conf'
 import { BuilderHubTimeoutError } from './errors'
 import log from './logger'
+
+const TTL_SAVED_HOST_HOURS = 6
 
 const NOT_AVAILABLE = {
   hostname: undefined,
@@ -66,7 +70,7 @@ const highestAvailability = reduce((acc: any, current: any) => {
   return scoreCurrent > scoreAcc ? current : acc
 }, NOT_AVAILABLE)
 
-export const getMostAvailableHost = async (
+const getMostAvailableHost = async (
   appId: string,
   builder: Builder,
   nHosts: number,
@@ -84,4 +88,28 @@ export const getMostAvailableHost = async (
     : log.debug(`Unable to select host a priori, will use default options`)
 
   return stickyHint
+}
+
+export const getSavedOrMostAvailableHost = async (
+  appId: string,
+  builder: Builder,
+  nHosts: number,
+  timeout: number
+): Promise<string> => {
+  const [appName] = appId.split('@')
+  if (hasStickyHost(appName)) {
+    log.debug(`Found sticky host saved locally`)
+    const {stickyHost, lastUpdated} = getStickyHost(appName)
+    const timeElapsed = moment.duration(moment().diff(lastUpdated))
+    if (timeElapsed.asHours() <= TTL_SAVED_HOST_HOURS) {
+      return stickyHost
+    }
+    log.debug(`Saved sticky host has expired`)
+  }
+  log.debug(`Finding a new sticky host`)
+  const newStickyHost = await getMostAvailableHost(appId, builder, nHosts, timeout)
+  if (newStickyHost) {
+    saveStickyHost(appName, newStickyHost)
+  }
+  return newStickyHost
 }
