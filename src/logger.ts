@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import * as path from 'path'
+import { join } from 'path'
 import * as progress from 'progress-string'
-import { replace } from 'ramda'
+import { filter, keys, path, replace, sort } from 'ramda'
 import { stdout as singleLineLog } from 'single-line-log'
 import { sprintf } from 'sprintf-js'
 import { createLogger, format, Logger, transports } from 'winston'
@@ -24,7 +24,7 @@ const bar = progress({
   },
 })
 
-export const DEBUG_LOG_FILE_PATH = path.join(configDir, 'vtex_debug.txt')
+export const DEBUG_LOG_FILE_PATH = join(configDir, 'vtex_debug.txt')
 const INDENTATION = '    '
 const getProgressBar = (value) => {
   return `  [${bar(value)}] ${value}%`
@@ -63,7 +63,7 @@ class FancyConsoleTransport extends Transport {
       this.emit('logged', info)
     })
     const { message, clear=false, level, index, progress: progressBarSpecs } = info
-    const { append=(['warn', 'error'].indexOf(level) >= 0 ? true : false) } = info
+    const { append=(['warn', 'error'].indexOf(level) >= 0 ? true : true) } = info
     const newLogText = message ? `- ${message}` : ''
     let newProgressBarText = ''
     let newProgressBarValue = ''
@@ -79,77 +79,102 @@ class FancyConsoleTransport extends Transport {
     } else if (append) {
       this.append(newLogText, newProgressBarSpecs, index)
     } else {
-      this.overwriteLine(newProgressBarText, newProgressBar, newLogText, index)
+      this.overwriteLine(newLogText, newProgressBarSpecs, index)
     }
-    this.render()
+    this.renderAll()
     callback()
   }
 
   private clear(
-    newProgressBarText='',
-    newProgressBarValue='',
     newLogText='',
+    newProgressBarSpecs={},
     index=UNINDEXED
   ) {
     singleLineLog()
     console.log(replace(/\n\s*$/, '', this.renderedLogs))
-    this.logs[index] = {} newProgressBarText
-    this.progressBarValues[index] = newProgressBarValue
-    this.logTexts[index] = newLogText
+    this.logs[index] = {}
+    if (newLogText) {
+      this.logs[index].text = newLogText
+    }
+    if (newProgressBarSpecs) {
+      this.logs[index].progress = newProgressBarSpecs
+    }
   }
 
   private append(
-    newProgressBarText?: string,
-    newProgressBarValue?: string,
     newLogText?: string,
+    newProgressBarSpecs?: any,
     index=UNINDEXED
   ) {
-    if (newProgressBarText) {
-      this.progressBarTexts[index] = newProgressBarText
+    if (newProgressBarSpecs) {
+      this.logs[index].progress = newProgressBarSpecs
     }
-    if (newProgressBarValue) {
-      this.progressBarValues[index] = newProgressBarValue
-    }
-    const indentation = (this.progressBarTexts[index] || this.progressBarValues[index]) ? INDENTATION : ''
-    if (this.logText) {
-      this.logText = newLogText ? `${this.logText}${indentation}${newLogText}\n` : this.logText
+    const indentation = path([index, 'progress'], this.logs) ? INDENTATION : ''
+    if (path([index, 'text'], this.logs)) {
+      this.logs[index].text = newLogText ?
+        `${this.logs[index].text}${indentation}${newLogText}\n` :
+        this.logs[index].text
     } else {
-      this.logText = newLogText ? `${indentation}${newLogText}\n` : this.logText
+      this.logs[index].text = newLogText ?
+        `${indentation}${newLogText}\n` :
+        this.logs[index].text
     }
   }
 
   private overwriteLine(
-    newProgressBarText?: string,
-    newProgressBar?: string,
-    newLogText?: string
+    newLogText?: string,
+    newProgressBarSpecs?: any,
+    index=UNINDEXED
   ) {
-    this.progressBarText = newProgressBarText || this.progressBarText
-    this.progressBar = newProgressBar || this.progressBar
-    if (this.progressBarText || this.progressBar) {
-      this.logText = newLogText ? `${INDENTATION}${newLogText}\n` : ''
+    if (newProgressBarSpecs) {
+      this.logs[index].progress = newProgressBarSpecs
+    }
+    if (path([index, 'progress'], this.logs)) {
+      this.logs[index].text = newLogText ? `${INDENTATION}${newLogText}\n` : ''
     } else {
-      this.logText = newLogText ? `${newLogText}\n` : ''
+      this.logs[index].text = newLogText ? `${newLogText}\n` : ''
     }
   }
 
-  private render() {
-    let formattedProgressLine
-    if (this.progressBarText || this.progressBar) {
-      const terminalWidth = process.stdout.columns
-      const progressBarPadding = terminalWidth - this.progressBarText.length - 1
-      formattedProgressLine = chalk.bold(
-        sprintf(
-          `%s %${progressBarPadding}s`,
-          this.progressBarText,
-          this.progressBar
-        )
-      )
-      this.fullLog = `${formattedProgressLine}\n${this.logText}`
-    } else {
-      this.fullLog = this.logText
+  private render(index: string): string {
+    console.log('ok')
+    let logInfo
+    try {
+    logInfo = this.logs[index]
+      console.log('hey')
+    } catch (e) {
+      console.log('error')
+      console.log(e)
     }
-    singleLineLog(this.fullLog)
+    if (logInfo) {
+      let formattedProgressLine
+      if (logInfo.progress) {
+        console.log('this is wrong')
+        const terminalWidth = process.stdout.columns
+        const progressBarPadding = terminalWidth - logInfo.progress.text.length - 1
+        formattedProgressLine = chalk.bold(
+          sprintf(
+            `%s %${progressBarPadding}s`,
+            logInfo.progress.text,
+            logInfo.progress.value
+          )
+        )
+        return `${formattedProgressLine}\n${logInfo.text}`
+      } else {
+        console.log('returning text')
+        return logInfo.text
+      }
+    }
   }
+
+  private renderAll() {
+    const sortedKeys = sort((a,b) => a.localeCompare(b), keys(this.logs))
+    const result = sortedKeys.map((x) => this.render(x))
+    const filteredResult = filter(x => !!x, result)
+    this.renderedLogs = filteredResult.join('\n')
+    singleLineLog(this.renderedLogs)
+  }
+
 }
 
 export class ColossusTransport extends Transport {
@@ -197,8 +222,7 @@ const messageFormatter = format((info, _) => {
 // })
 
 interface ExtendedLogger extends Logger {
-  progress?(value: number, text?: string): void
-  newInfoSection?(): void
+  progress?(value: number, text?: string, index?: string): void
 }
 
 const consoleTransport = isVerbose ?
@@ -236,9 +260,9 @@ const logger = createLogger({
 }) as ExtendedLogger
 
 
-logger.clear = () => logger.log({message: '', level: 'info', clear: true})
-logger.progress = (value: number, text?: string) => {
-  logger.log({message: '', level: 'info', progress: {text, value}})
+logger.clear = (index?: string) => logger.log({message: '', level: 'info', clear: true, index})
+logger.progress = (value: number, text?: string, index?: string) => {
+  logger.log({message: '', level: 'info', progress: {text, value}, index})
 }
 
 logger.on('error', (err) => {

@@ -266,7 +266,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     if (tryCount === 1) {
       const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
       log.clear()
-      log.progress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`)
+      log.progress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`, '1')
       filesWithContent.forEach(p => log.info({message: p.path}))
     }
 
@@ -275,7 +275,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     }
 
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-    log.progress(100)
+    log.progress(100, '', '1')
     log.clear()
     const linkOptions = { sticky: true, stickyHint }
     try {
