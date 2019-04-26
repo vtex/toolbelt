@@ -13,6 +13,7 @@ import { compose, concat, equals, filter, has, intersection, isEmpty, isNil, key
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
+import { BUILDER_HUB_ID } from '../../constants'
 import { publicEndpoint, region } from '../../env'
 import { CommandError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
@@ -70,7 +71,7 @@ const typingsInfo = async (workspace: string, account: string) => {
     const res = await http.get(`/_v/builder/0/typings`)
     return res.data.typingsInfo
   } catch (e) {
-    log.error('Unable to get typings info from vtex.builder-hub.')
+    log.error(`Unable to get typings info from ${BUILDER_HUB_ID}.`)
     return {}
   }
 }
@@ -164,19 +165,19 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
 
 }
 
-const warnAndLinkFromStart = (appId: string, builder: Builder, unsafe: boolean, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
+const warnAndLinkFromStart = (appId: string, builder: Builder, unsafe: boolean, buildWorkspace: string, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
   log.warn('Initial link requested by builder')
-  performInitialLink(appId, builder, extraData, unsafe)
+  performInitialLink(appId, builder, extraData, unsafe, buildWorkspace)
   return null
 }
 
-const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<any> => {
+const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean, buildWorkspace: string): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
     if (data && data.code && data.code === 'initial_link_required') {
-      return warnAndLinkFromStart(appId, builder, unsafe, extraData)
+      return warnAndLinkFromStart(appId, builder, unsafe, buildWorkspace, extraData)
     }
     throw e
   }
@@ -191,7 +192,12 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   }
 
   const sendChanges = debounce(() => {
-    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
+    const linkRequestParams = {
+      tsErrorsAsWarnings: unsafe,
+      targetWorkspace: getWorkspace(),
+    }
+
+    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length), linkRequestParams)
       .catch(onInitialLinkRequired)
   }, 1000)
 
@@ -241,7 +247,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   })
 }
 
-const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<void> => {
+const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean, buildWorkspace: string): Promise<void> => {
   const linkConfig = await createLinkConfig(root)
 
   extraData.linkConfig = linkConfig
@@ -274,10 +280,15 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       log.info(`Retrying...${tryCount-1}`)
     }
 
-    const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
+    const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT, buildWorkspace)
+
     const linkOptions = { sticky: true, stickyHint }
     try {
-      const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })
+      const linkRequestParams = {
+        tsErrorsAsWarnings: unsafe,
+        targetWorkspace: getWorkspace(),
+      }
+      const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, linkRequestParams)
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
@@ -303,6 +314,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 export default async (options) => {
   await validateAppAction('link')
   const unsafe = !!(options.unsafe || options.u)
+  const buildWorkspace = options.workspace || options.w || getWorkspace()
   const manifest = await getManifest()
   const builderHubMessage = await checkBuilderHubMessage('link')
   if (!isEmpty(builderHubMessage)) {
@@ -315,11 +327,11 @@ export default async (options) => {
   }
 
   const appId = toAppLocator(manifest)
-  const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
+  const context = { account: getAccount(), workspace: getWorkspace(), buildWorkspace, environment: getEnvironment() }
   if (options.install || options.i) {
     await getTypings(manifest, context.account, context.workspace)
   }
-  const { builder } = createClients(context, { timeout: 60000 })
+  const { builder } = createClients({ ...context, workspace: buildWorkspace }, { timeout: 60000 })
 
   if (options.c || options.clean) {
     log.info('Requesting to clean cache in builder.')
@@ -329,7 +341,7 @@ export default async (options) => {
 
   const onError = {
     build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
-    initial_link_required: () => warnAndLinkFromStart(appId, builder, unsafe),
+    initial_link_required: () => warnAndLinkFromStart(appId, builder, unsafe, buildWorkspace),
   }
 
   let debuggerStarted = false
@@ -360,18 +372,18 @@ export default async (options) => {
   let unlistenBuild
   const extraData = { linkConfig: null }
   try {
-    const buildTrigger = performInitialLink.bind(this, appId, builder, extraData, unsafe)
+    const buildTrigger = performInitialLink.bind(this, appId, builder, extraData, unsafe, buildWorkspace)
     const [subject] = appId.split('@')
     if (options.watch === false) {
-      await listenBuild(subject, buildTrigger, { waitCompletion: true })
+      await listenBuild(subject, buildTrigger, { waitCompletion: true, context })
       return
     }
-    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
+    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError, context }).then(prop('unlisten'))
   } catch (e) {
     if (e.response) {
       const { data } = e.response
       if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
-        return log.error('Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)')
+        return log.error(`Please install ${BUILDER_HUB_ID} in your account to enable app linking (vtex install ${BUILDER_HUB_ID}).`)
       }
 
       if (data.code === 'link_on_production') {
@@ -391,5 +403,5 @@ export default async (options) => {
       process.exit()
     })
 
-  await watchAndSendChanges(appId, builder, extraData, unsafe)
+  await watchAndSendChanges(appId, builder, extraData, unsafe, buildWorkspace)
 }

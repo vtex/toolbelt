@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import { compose, forEach, contains, path, pathOr } from 'ramda'
 
 import { getToken } from './conf'
+import { BUILDER_HUB_ID } from './constants'
 import { endpoint, publicEndpoint, envCookies } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
@@ -103,7 +104,12 @@ export const logAll = (context: Context, logLevel: string, id: string, senders?:
     }
   }
 
-  return onLog(context, id, logLevel, callback, senders)
+  const unlistenBinds = [onLog(context, id, logLevel, callback, senders)]
+  if (context.buildWorkspace && context.buildWorkspace !== context.workspace) {
+    unlistenBinds.push(onLog({ ...context, workspace: context.buildWorkspace }, id, logLevel, callback, [BUILDER_HUB_ID]))
+  }
+
+  return () => unlistenBinds.forEach(fn => fn())
 }
 
 export const onAuth = (account: string, workspace: string, state: string, returnUrl: string): Promise<[string, string]> => {

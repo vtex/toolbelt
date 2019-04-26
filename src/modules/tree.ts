@@ -132,6 +132,12 @@ export default {
         short: 'u',
         type: 'boolean',
       },
+      {
+        description: 'Specify the workspace whose Builder-hub will be used to build the app',
+        long: 'workspace',
+        short: 'w',
+        type: 'string',
+      },
     ],
   },
   list: {

@@ -1,4 +1,5 @@
 import { currentContext } from '../conf'
+import { BUILDER_HUB_ID } from '../constants'
 import { BuildFailError } from '../errors'
 import log from '../logger'
 import { logAll, onEvent } from '../sse'
@@ -25,7 +26,7 @@ const allEvents: BuildEvent[] = ['logs', 'build.status']
 
 const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void, senders?: string[]) => {
   const unlistenLogs = logAll(ctx, log.level, appOrKey, senders)
-  const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', appOrKey, ['build.status'], message => callback('build.status', message))
+  const unlistenBuild = onEvent({ ...ctx, workspace: ctx.buildWorkspace }, BUILDER_HUB_ID, appOrKey, ['build.status'], message => callback('build.status', message))
   const unlistenMap: Record<BuildEvent, AnyFunction> = {
     'build.status': unlistenBuild,
     logs: unlistenLogs,

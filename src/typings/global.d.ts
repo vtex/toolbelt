@@ -113,6 +113,7 @@ declare global {
   interface Context {
     account: string,
     workspace: string,
+    buildWorkspace?: string,
   }
 
   interface InstallResponse {

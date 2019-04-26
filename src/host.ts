@@ -94,12 +94,13 @@ export const getSavedOrMostAvailableHost = async (
   appId: string,
   builder: Builder,
   nHosts: number,
-  timeout: number
+  timeout: number,
+  buildWorkspace: string,
 ): Promise<string> => {
   const [appName] = appId.split('@')
-  if (hasStickyHost(appName)) {
+  if (hasStickyHost(appName, buildWorkspace)) {
     log.debug(`Found sticky host saved locally`)
-    const {stickyHost, lastUpdated} = getStickyHost(appName)
+    const {stickyHost, lastUpdated} = getStickyHost(appName, buildWorkspace)
     const timeElapsed = moment.duration(moment().diff(lastUpdated))
     if (timeElapsed.asHours() <= TTL_SAVED_HOST_HOURS) {
       return stickyHost
@@ -109,7 +110,7 @@ export const getSavedOrMostAvailableHost = async (
   log.debug(`Finding a new sticky host`)
   const newStickyHost = await getMostAvailableHost(appId, builder, nHosts, timeout)
   if (newStickyHost) {
-    saveStickyHost(appName, newStickyHost)
+    saveStickyHost(appName, buildWorkspace, newStickyHost)
   }
   return newStickyHost
 }

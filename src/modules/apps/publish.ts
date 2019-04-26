@@ -5,6 +5,7 @@ import * as ora from 'ora'
 import { isEmpty, map } from 'ramda'
 import { createClients } from '../../clients'
 import * as conf from '../../conf'
+import { APPS_ID, BUILDER_HUB_ID } from '../../constants'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
@@ -63,7 +64,8 @@ const publisher = (workspace: string = 'master') => {
         appId,
         builder,
         N_HOSTS,
-        AVAILABILITY_TIMEOUT
+        AVAILABILITY_TIMEOUT,
+        workspace
       )
       const publishOptions = {
         sticky: true,
@@ -111,7 +113,7 @@ const publisher = (workspace: string = 'master') => {
       await switchAccount(manifest.vendor, {})
     }
 
-    const context = { account: manifest.vendor, workspace, region: region(), authToken: conf.getToken() }
+    const context = { account: manifest.vendor, workspace, buildWorkspace: workspace, region: region(), authToken: conf.getToken() }
     const { builder } = createClients(context, { timeout: 60000 })
 
     const pubTag = tag || automaticTag(manifest.version)
@@ -126,7 +128,7 @@ const publisher = (workspace: string = 'master') => {
       const oraMessage = ora(`Publishing ${appId} ...`)
       const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
       try {
-        const senders = ['vtex.builder-hub', 'apps']
+        const senders = [BUILDER_HUB_ID, APPS_ID]
         const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, builder), { waitCompletion: true, context, senders })
         if (response.code !== 'build.accepted') {
           spinner.warn(`${appId} was published successfully, but you should update your builder hub to the latest version.`)
