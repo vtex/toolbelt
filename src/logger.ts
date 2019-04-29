@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { join } from 'path'
 import * as progress from 'progress-string'
-import { filter, keys, path, replace, sort } from 'ramda'
+import { filter, isEmpty, keys, path, replace, sort } from 'ramda'
 import { stdout as singleLineLog } from 'single-line-log'
 import { sprintf } from 'sprintf-js'
 import { createLogger, format, Logger, transports } from 'winston'
@@ -12,7 +12,7 @@ import { configDir } from './conf'
 
 // Setup logging
 const VERBOSE = '--verbose'
-const UNINDEXED = '_unindexed'
+const UNINDEXED = '__unindexed'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 
 const { combine, timestamp, colorize } = format
@@ -49,7 +49,7 @@ class SimpleConsoleTransport extends Transport {
 }
 
 class FancyConsoleTransport extends Transport {
-  private logs: any
+  public logs: any
   private renderedLogs: string
 
   constructor(opts) {
@@ -63,15 +63,15 @@ class FancyConsoleTransport extends Transport {
       this.emit('logged', info)
     })
     const { message, clear=false, level, index, progress: progressBarSpecs } = info
-    const { append=(['warn', 'error'].indexOf(level) >= 0 ? true : true) } = info
+    const { append=(['warn', 'error'].indexOf(level) >= 0 ? true : false) } = info
     const newLogText = message ? `- ${message}` : ''
     let newProgressBarText = ''
     let newProgressBarValue = ''
     let newProgressBarSpecs = {}
     if (progressBarSpecs) {
       const { text, value } = progressBarSpecs
-      newProgressBarText = text || ''
-      newProgressBarValue = value !== undefined ? getProgressBar(value) : ''
+      newProgressBarText = text
+      newProgressBarValue = value !== undefined ? getProgressBar(value) : undefined
       newProgressBarSpecs = { text: newProgressBarText, value: newProgressBarValue }
     }
     if (clear) {
@@ -92,7 +92,11 @@ class FancyConsoleTransport extends Transport {
   ) {
     singleLineLog()
     console.log(replace(/\n\s*$/, '', this.renderedLogs))
-    this.logs[index] = {}
+    this.logs = {}
+    if (!this.logs[index]) {
+      this.logs[index] = {}
+      this.setTimestamp(index)
+    }
     if (newLogText) {
       this.logs[index].text = newLogText
     }
@@ -106,10 +110,14 @@ class FancyConsoleTransport extends Transport {
     newProgressBarSpecs?: any,
     index=UNINDEXED
   ) {
-    if (newProgressBarSpecs) {
-      this.logs[index].progress = newProgressBarSpecs
+    if (!this.logs[index]) {
+      this.logs[index] = {}
+      this.setTimestamp(index)
     }
-    const indentation = path([index, 'progress'], this.logs) ? INDENTATION : ''
+    if (newProgressBarSpecs) {
+      this.setProgress(index, newProgressBarSpecs)
+    }
+    const indentation = !isEmpty(path([index, 'progress'], this.logs)) ? INDENTATION : ''
     if (path([index, 'text'], this.logs)) {
       this.logs[index].text = newLogText ?
         `${this.logs[index].text}${indentation}${newLogText}\n` :
@@ -126,10 +134,14 @@ class FancyConsoleTransport extends Transport {
     newProgressBarSpecs?: any,
     index=UNINDEXED
   ) {
-    if (newProgressBarSpecs) {
-      this.logs[index].progress = newProgressBarSpecs
+    if (!this.logs[index]) {
+      this.logs[index] = {}
+      this.setTimestamp(index)
     }
-    if (path([index, 'progress'], this.logs)) {
+    if (newProgressBarSpecs) {
+      this.setProgress(index, newProgressBarSpecs)
+    }
+    if (!isEmpty(path([index, 'progress'], this.logs))) {
       this.logs[index].text = newLogText ? `${INDENTATION}${newLogText}\n` : ''
     } else {
       this.logs[index].text = newLogText ? `${newLogText}\n` : ''
@@ -137,19 +149,11 @@ class FancyConsoleTransport extends Transport {
   }
 
   private render(index: string): string {
-    console.log('ok')
     let logInfo
-    try {
     logInfo = this.logs[index]
-      console.log('hey')
-    } catch (e) {
-      console.log('error')
-      console.log(e)
-    }
-    if (logInfo) {
+    if (!isEmpty(logInfo)) {
       let formattedProgressLine
-      if (logInfo.progress) {
-        console.log('this is wrong')
+      if (!isEmpty(logInfo.progress)) {
         const terminalWidth = process.stdout.columns
         const progressBarPadding = terminalWidth - logInfo.progress.text.length - 1
         formattedProgressLine = chalk.bold(
@@ -161,18 +165,37 @@ class FancyConsoleTransport extends Transport {
         )
         return `${formattedProgressLine}\n${logInfo.text}`
       } else {
-        console.log('returning text')
         return logInfo.text
       }
     }
   }
 
   private renderAll() {
-    const sortedKeys = sort((a,b) => a.localeCompare(b), keys(this.logs))
+    const sortedKeys = sort((a,b) => (this.logs[a].timestamp-this.logs[b].timestamp), keys(this.logs))
     const result = sortedKeys.map((x) => this.render(x))
     const filteredResult = filter(x => !!x, result)
     this.renderedLogs = filteredResult.join('\n')
     singleLineLog(this.renderedLogs)
+  }
+
+  private setProgress(index, newProgressBarSpecs) {
+    if (!this.logs[index].progress) {
+      this.logs[index].progress = {}
+    }
+    const { text, value } = newProgressBarSpecs
+    if (text !== undefined) {
+      this.logs[index].progress.text = text
+    }
+    if (value !== undefined) {
+      this.logs[index].progress.value = value
+    }
+  }
+
+  private setTimestamp(index) {
+    if (!this.logs[index]) {
+      this.logs[index] = {}
+    }
+    this.logs[index].timestamp = Date.now()
   }
 
 }

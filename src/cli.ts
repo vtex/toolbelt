@@ -57,7 +57,6 @@ global.Promise = Bluebird
 Bluebird.config({
   cancellation: true,
 })
-console.log('hey')
 
 const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 

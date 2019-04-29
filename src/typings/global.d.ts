@@ -91,6 +91,7 @@ declare global {
         text: string,
         value: number
       },
+      index?: string
     },
   }
 
