@@ -23,7 +23,6 @@ interface ABTestStatus {
   ConversionA: number
   ConversionB: number
   ProbabilityAlternativeBeatMaster: number
-  KullbackLeibler: number
 }
 
 const formatPercent = (n: number) => numbro(n).format('0.000%')
@@ -47,11 +46,8 @@ const printResultsTable = (testInfo: ABTestStatus) => {
     ConversionA,
     ConversionB,
     ProbabilityAlternativeBeatMaster,
-    KullbackLeibler,
   } = testInfo
   console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
-  const technicalTable = createTable()
-  technicalTable.push(bold([`Kullback-Leibler divergence`, numbro(KullbackLeibler).format('0.000')]))
 
   const comparisonTable = createTable()
   comparisonTable.push(bold(['', chalk.blue(WorkspaceA), chalk.blue(WorkspaceB)]))
