@@ -65,7 +65,6 @@ const printResultsTable = (testInfo: ABTestStatus) => {
   resultsTable.push(bold([`Probability B beats A`, formatPercent(ProbabilityAlternativeBeatMaster)]))
   resultsTable.push(bold([chalk.bold.green(`Winner`), chalk.bold.green(Winner)]))
 
-  console.log(`Technical:\n${technicalTable.toString()}\n`)
   console.log(`Comparative:\n${comparisonTable.toString()}\n`)
   console.log(`Results:\n${resultsTable.toString()}\n`)
 }
