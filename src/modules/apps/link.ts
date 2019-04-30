@@ -103,7 +103,7 @@ const appTypingsURL = async (account: string, workspace: string, appName: string
   const appId = await resolveAppId(appName, appVersion)
   const vendor = getVendor(appId)
   if (isLinked({'version': appId})) {
-  return `https://${workspace}--${account}.${extension}.com/_v/private/typings/linked/v1/${appId}/${typingsPath}/${builder}`
+  return `https://${workspace}--${account}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/${typingsPath}/${builder}`
   }
   return `https://${vendor}.vteximg.com.br/_v/public/typings/v1/${appId}/${typingsPath}/${builder}`
 }
@@ -344,7 +344,7 @@ export default async (options) => {
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
   if (!options['no-install'] && !options.n) {
-    await getTypings(manifest, context.account, context.workspace, context.environment)
+    await getTypings(manifest, context.account, context.workspace)
   }
   const { builder } = createClients(context, { timeout: 60000 })
 
