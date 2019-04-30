@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.55.1] - 2019-04-30
+
 ## [2.55.0] - 2019-04-25
+### Fixed
+- A/B test finish messages (again)
 
 ## [2.54.7] - 2019-04-24
 ### Changed

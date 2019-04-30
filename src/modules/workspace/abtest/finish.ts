@@ -12,7 +12,8 @@ const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
 const promptContinue = async () => {
   const proceed = await promptConfirm(
-    `You are about to finish all A/B testing in account ${chalk.blue(account)}. Are you sure?`,
+    `You are about to finish A/B testing in workspace \
+${chalk.blue(currentWorkspace)}, account ${chalk.green(account)}. Are you sure?`,
       false
     )
   if (!proceed) {
@@ -28,5 +29,5 @@ export default async () => {
   await abTestStatus()
   await abtester.finish(currentWorkspace)
   log.info(`A/B testing with workspace ${chalk.blue(currentWorkspace)} is now finished`)
-  log.info(`100% of traffic is now directed to ${chalk.blue('master')}`)
+  log.info(`No traffic currently directed to ${chalk.blue(currentWorkspace)}`)
 }
