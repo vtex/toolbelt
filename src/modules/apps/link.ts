@@ -249,9 +249,9 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
   const usedDeps = toPairs(linkConfig.metadata)
   if (usedDeps.length) {
     const plural = usedDeps.length > 1
-    log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
-    usedDeps.forEach(([dep, path]) => log.info(`${dep} (from: ${path})`))
-    log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
+    log.scopedInfo(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`, undefined, true)
+    usedDeps.forEach(([dep, path]) => log.scopedInfo(`${dep} (from: ${path})`, undefined, true))
+    log.scopedInfo(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`, undefined, true)
   }
 
   const linkApp = async (bail: any, tryCount: number) => {
@@ -265,8 +265,8 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 
     if (tryCount === 1) {
       const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
-      log.progress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`, 'local_files')
-      filesWithContent.forEach(p => log.info({message: p.path, index: 'local_files'}))
+      log.scopedProgress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`, 'local_files')
+      filesWithContent.forEach(p => log.scopedInfo(p.path, 'local_files'))
     }
 
     if (tryCount > 1) {
@@ -274,7 +274,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     }
 
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-    log.progress(100, undefined, 'local_files')
+    log.scopedProgress(100, undefined, 'local_files')
     const linkOptions = { sticky: true, stickyHint }
     try {
       const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })
@@ -348,7 +348,7 @@ export default async (options) => {
       try {
         const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
         debuggerStarted = true
-        log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
+        log.scopedInfo(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`, 'final_messages', true)
       } catch (e) {
         log.error(e.message)
       }
@@ -386,8 +386,8 @@ export default async (options) => {
       if (unlistenBuild) {
         unlistenBuild()
       }
-      log.info('Your app is still in development mode.')
-      log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
+      log.scopedInfo('Your app is still in development mode.', 'final_messages', true)
+      log.scopedInfo(`You can unlink it with: 'vtex unlink ${appId}'`, 'final_messages', true)
       process.exit()
     })
 

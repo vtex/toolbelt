@@ -41,8 +41,7 @@ class SimpleConsoleTransport extends Transport {
       this.emit('logged', info)
     })
     if (info.message) {
-      // console.log(info.message)
-      console.log(info)
+      console.log(info.message)
     }
     callback()
   }
@@ -62,7 +61,7 @@ class FancyConsoleTransport extends Transport {
     setImmediate(() => {
       this.emit('logged', info)
     })
-    const { message, clear=false, level, index, progress: progressBarSpecs } = info
+    const { message, clear=false, clearAll=false, level, scope, progress: progressBarSpecs } = info
     const { append=(['warn', 'error'].indexOf(level) >= 0 ? true : false) } = info
     const newLogText = message ? `- ${message}` : ''
     let newProgressBarText = ''
@@ -74,12 +73,15 @@ class FancyConsoleTransport extends Transport {
       newProgressBarValue = value !== undefined ? getProgressBar(value) : undefined
       newProgressBarSpecs = { text: newProgressBarText, value: newProgressBarValue }
     }
+    if (clearAll) {
+      this.clearAll()
+    }
     if (clear) {
-      this.clear(newLogText, newProgressBarSpecs, index)
+      this.clear(newLogText, newProgressBarSpecs, scope)
     } else if (append) {
-      this.append(newLogText, newProgressBarSpecs, index)
+      this.append(newLogText, newProgressBarSpecs, scope)
     } else {
-      this.overwriteLine(newLogText, newProgressBarSpecs, index)
+      this.tempAppend(newLogText, newProgressBarSpecs, scope)
     }
     this.renderAll()
     callback()
@@ -88,69 +90,71 @@ class FancyConsoleTransport extends Transport {
   private clear(
     newLogText='',
     newProgressBarSpecs={},
-    index=UNINDEXED
+    scope=UNINDEXED
   ) {
+    this.logs[scope] = {}
+    this.setTimestamp(scope)
+    if (newLogText) {
+      this.logs[scope].text = newLogText
+    }
+    if (newProgressBarSpecs) {
+      this.logs[scope].progress = newProgressBarSpecs
+    }
+  }
+
+  private clearAll() {
     singleLineLog()
     console.log(replace(/\n\s*$/, '', this.renderedLogs))
     this.logs = {}
-    if (!this.logs[index]) {
-      this.logs[index] = {}
-      this.setTimestamp(index)
-    }
-    if (newLogText) {
-      this.logs[index].text = newLogText
-    }
-    if (newProgressBarSpecs) {
-      this.logs[index].progress = newProgressBarSpecs
-    }
   }
 
   private append(
     newLogText?: string,
     newProgressBarSpecs?: any,
-    index=UNINDEXED
+    scope=UNINDEXED
   ) {
-    if (!this.logs[index]) {
-      this.logs[index] = {}
-      this.setTimestamp(index)
+    if (!this.logs[scope]) {
+      this.logs[scope] = {}
+      this.setTimestamp(scope)
     }
     if (newProgressBarSpecs) {
-      this.setProgress(index, newProgressBarSpecs)
+      this.setProgress(scope, newProgressBarSpecs)
     }
-    const indentation = !isEmpty(path([index, 'progress'], this.logs)) ? INDENTATION : ''
-    if (path([index, 'text'], this.logs)) {
-      this.logs[index].text = newLogText ?
-        `${this.logs[index].text}${indentation}${newLogText}\n` :
-        this.logs[index].text
+    const indentation = !isEmpty(path([scope, 'progress'], this.logs)) ? INDENTATION : ''
+    if (path([scope, 'text'], this.logs)) {
+      this.logs[scope].text = newLogText ?
+        `${this.logs[scope].text}${indentation}${newLogText}\n` :
+        this.logs[scope].text
     } else {
-      this.logs[index].text = newLogText ?
+      this.logs[scope].text = newLogText ?
         `${indentation}${newLogText}\n` :
-        this.logs[index].text
+        this.logs[scope].text
     }
   }
 
-  private overwriteLine(
+  private tempAppend(
     newLogText?: string,
     newProgressBarSpecs?: any,
-    index=UNINDEXED
+    scope=UNINDEXED
   ) {
-    if (!this.logs[index]) {
-      this.logs[index] = {}
-      this.setTimestamp(index)
+    if (!this.logs[scope]) {
+      this.logs[scope] = {}
+      this.setTimestamp(scope)
     }
     if (newProgressBarSpecs) {
-      this.setProgress(index, newProgressBarSpecs)
+      this.setProgress(scope, newProgressBarSpecs)
     }
-    if (!isEmpty(path([index, 'progress'], this.logs))) {
-      this.logs[index].text = newLogText ? `${INDENTATION}${newLogText}\n` : ''
+    if (!isEmpty(path([scope, 'progress'], this.logs))) {
+      this.logs[scope].tempText = newLogText ? `${INDENTATION}${newLogText}\n` : ''
     } else {
-      this.logs[index].text = newLogText ? `${newLogText}\n` : ''
+      this.logs[scope].tempText = newLogText ? `${newLogText}\n` : ''
     }
   }
 
-  private render(index: string): string {
+  private render(scope: string): string {
     let logInfo
-    logInfo = this.logs[index]
+    logInfo = this.logs[scope]
+    let renderedLog: string = ''
     if (!isEmpty(logInfo)) {
       let formattedProgressLine
       if (!isEmpty(logInfo.progress)) {
@@ -161,11 +165,18 @@ class FancyConsoleTransport extends Transport {
             `%s %${progressBarPadding}s`,
             logInfo.progress.text,
             logInfo.progress.value
-          )
+          ) + '\n'
         )
-        return `${formattedProgressLine}\n${logInfo.text}`
-      } else {
-        return logInfo.text
+        renderedLog = `${renderedLog}${formattedProgressLine}`
+      }
+      if (logInfo.text) {
+        renderedLog = `${renderedLog}${logInfo.text}`
+      }
+      if (logInfo.tempText) {
+        renderedLog = `${renderedLog}${logInfo.tempText}`
+      }
+      if (renderedLog !== '') {
+      return renderedLog
       }
     }
   }
@@ -178,24 +189,24 @@ class FancyConsoleTransport extends Transport {
     singleLineLog(this.renderedLogs)
   }
 
-  private setProgress(index, newProgressBarSpecs) {
-    if (!this.logs[index].progress) {
-      this.logs[index].progress = {}
+  private setProgress(scope, newProgressBarSpecs) {
+    if (!this.logs[scope].progress) {
+      this.logs[scope].progress = {}
     }
     const { text, value } = newProgressBarSpecs
     if (text !== undefined) {
-      this.logs[index].progress.text = text
+      this.logs[scope].progress.text = text
     }
     if (value !== undefined) {
-      this.logs[index].progress.value = value
+      this.logs[scope].progress.value = value
     }
   }
 
-  private setTimestamp(index) {
-    if (!this.logs[index]) {
-      this.logs[index] = {}
+  private setTimestamp(scope) {
+    if (!this.logs[scope]) {
+      this.logs[scope] = {}
     }
-    this.logs[index].timestamp = Date.now()
+    this.logs[scope].timestamp = Date.now()
   }
 
 }
@@ -235,23 +246,29 @@ const consoleFormatter = format((info, _) => {
 const messageFormatter = format((info, _) => {
   // Write all relevant information in info.message
   const { timestamp: timeString='', sender='', message } = info
-  info.message = `${chalk.black(timeString)} - ${info.level}:  ${message} ${chalk.black(sender)}`
+  info.message = `${chalk.green(timeString)} - ${info.level}:  ${message} ${chalk.black(sender)}`
   return info
 })
 
-// const filterMessage = format((info, _) => {
-  // if (!info.message) { return false }
-  // return info
-// })
+const filterMessage = format((info, _) => {
+  if (!info.message) { return false }
+  return info
+})
 
 interface ExtendedLogger extends Logger {
-  progress?(value: number, text?: string, index?: string): void
+  scopedProgress?(value: number, text?: string, scope?: string): void
+  scopedDebug?(message: string, scope?: string, append?: boolean): void
+  scopedInfo?(message: string, scope?: string, append?: boolean): void
+  scopedWarning?(message: string, scope?: string, append?: boolean): void
+  scopedError?(message: string, scope?: string, append?: boolean): void
+  clearScope?(scope: string): void
+  clearAll?(): void
 }
 
 const consoleTransport = isVerbose ?
   new SimpleConsoleTransport({
     format: combine(
-      // filterMessage(),
+      filterMessage(),
       timestamp({ format: 'HH:mm:ss.SSS' }),
       colorize(),
       messageFormatter()
@@ -283,9 +300,22 @@ const logger = createLogger({
 }) as ExtendedLogger
 
 
-logger.clear = (index?: string) => logger.log({message: '', level: 'info', clear: true, index})
-logger.progress = (value: number, text?: string, index?: string) => {
-  logger.log({message: '', level: 'info', progress: {text, value}, index})
+logger.clearScope = (scope?: string) => logger.log({message: undefined, level: 'info', clear: true, scope})
+logger.clearAll = () => logger.log({message: undefined, clearAll: true, level: 'info'})
+logger.scopedProgress = (value: number, text?: string, scope?: string) => {
+logger.log({message: '', level: 'info', progress: {text, value}, scope})
+}
+logger.scopedDebug = (message: string, scope: string, append=false) => {
+logger.log({message, scope, append, level: 'debug'})
+}
+logger.scopedInfo = (message: string, scope: string, append=false) => {
+logger.log({message, scope, append, level: 'info'})
+}
+logger.scopedWarning = (message: string, scope: string, append=false) => {
+logger.log({message, scope, append, level: 'warning'})
+}
+logger.scopedError = (message: string, scope: string, append=false) => {
+logger.log({message, scope, append, level: 'error'})
 }
 
 logger.on('error', (err) => {
