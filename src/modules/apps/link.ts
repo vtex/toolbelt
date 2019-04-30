@@ -1,30 +1,27 @@
 import { Builder, Change } from '@vtex/api'
 import * as retry from 'async-retry'
-import axios from 'axios'
 import chalk from 'chalk'
-import { execSync } from 'child-process-es6-promise'
 import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
-import { outputJson, pathExists, readJson } from 'fs-extra'
 import * as moment from 'moment'
 import { join, resolve as resolvePath, sep} from 'path'
-import { compose, concat, equals, filter, has, intersection, isEmpty, isNil, keys, map, mapObjIndexed, merge, not, path as ramdaPath, pipe, prop, reject as ramdaReject, test, toPairs, values } from 'ramda'
+import { compose, concat, intersection, isEmpty, keys, map, not, pipe, prop, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
-import { publicEndpoint, region } from '../../env'
+import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest } from '../../manifest'
 import { listenBuild } from '../build'
+import { default as setup } from '../setup'
 import { formatNano } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
-import { checkBuilderHubMessage, isLinked, pathToFileObject, resolveAppId, showBuilderHubMessage, validateAppAction } from './utils'
+import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
 
 const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
@@ -32,10 +29,6 @@ const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
-const builderHubTypingsInfoTimeout = 2000  // 2 seconds
-const typingsPath = 'public/_types'
-const yarnPath = require.resolve('yarn/bin/yarn')
-const typingsURLRegex = /_v\/\w*\/typings/
 const buildersToStartDebugger = ['node']
 const RETRY_OPTS_INITIAL_LINK = {
   retries: 2,
@@ -56,140 +49,6 @@ const shouldStartDebugger = (manifest: Manifest) => compose<Manifest, any, strin
   prop('builders')
 )(manifest)
 
-const getVendor = (appId: string) => appId.split('.')[0]
-
-const resolvePackageJsonPath = (builder: string) => resolvePath(process.cwd(), `${builder}/package.json`)
-
-const typingsInfo = async (workspace: string, account: string) => {
-  const http = axios.create({
-    baseURL: `http://builder-hub.vtex.${region()}.vtex.io/${account}/${workspace}`,
-    timeout: builderHubTypingsInfoTimeout,
-    headers: {
-      'Authorization': getToken(),
-    },
-  })
-
-  const retryOpts = {
-    retries: 2,
-    minTimeout: 1000,
-    factor: 2,
-  }
-
-  const getTypingsInfo = async (_: any, tryCount: number) => {
-    if (tryCount > 1) {
-      log.info(`Retrying...${tryCount-1}`)
-    }
-    try {
-    const res = await http.get(`/_v/builder/0/typings`)
-    return res.data.typingsInfo
-    } catch (err) {
-      const statusMessage = err.response.status ?
-        `: Status ${err.response.status}` : ''
-      log.error(`Error fetching typings info ${statusMessage} (try: ${tryCount})`)
-      throw err
-    }
-  }
-
-  try {
-    return retry(getTypingsInfo, retryOpts)
-  } catch (e) {
-    log.error('Unable to get typings info from vtex.builder-hub.')
-    return {}
-  }
-
-}
-
-const appTypingsURL = async (account: string, workspace: string, appName: string, appVersion: string, builder: string): Promise<string> => {
-  const appId = await resolveAppId(appName, appVersion)
-  const vendor = getVendor(appId)
-  if (isLinked({'version': appId})) {
-  return `https://${workspace}--${account}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/${typingsPath}/${builder}`
-  }
-  return `https://${vendor}.vteximg.com.br/_v/public/typings/v1/${appId}/${typingsPath}/${builder}`
-}
-
-const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, appDependencies: Record<string, any>) => {
-  const result: Record<string, any> = {}
-  for (const [appName, appVersion] of Object.entries(appDependencies)) {
-    try {
-      result[appName] = await appTypingsURL(account, workspace, appName, appVersion, builder)
-    } catch (e) {
-      log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
-    }
-  }
-  return result
-}
-
-const runYarn = (relativePath: string) => {
-  log.info(`Running yarn in ${relativePath}`)
-  execSync(
-    `${yarnPath} --force`,
-    {stdio: 'inherit', cwd: `./${relativePath}`}
-  )
-  log.info('Finished running yarn')
-}
-
-const getTypings = async (manifest: Manifest, account: string, workspace: string) => {
-  const typingsData = await typingsInfo(workspace, account)
-
-  const buildersWithInjectedDeps =
-    pipe(
-      prop('builders'),
-      mapObjIndexed(
-        (version: string, builder: string) => {
-          const builderTypingsData = prop(builder, typingsData)
-          if (builderTypingsData && has(version, builderTypingsData)) {
-            return ramdaPath([version, 'injectedDependencies'], builderTypingsData)
-          }
-          return null
-        }
-      ),
-      ramdaReject(isNil)
-    )(manifest)
-
-  const buildersWithAppDeps =
-    pipe(
-      mapObjIndexed(
-        (injectedDependencies) => merge(manifest.dependencies, injectedDependencies)
-      ),
-      ramdaReject(isEmpty)
-    )(buildersWithInjectedDeps as Record<string, any>)
-
-  await pipe(
-    mapObjIndexed(
-      async (appDeps: Record<string, any>, builder: string) => {
-        const packageJsonPath = resolvePackageJsonPath(builder)
-        if (await pathExists(packageJsonPath)) {
-          const packageJson = await readJson(packageJsonPath)
-          const oldDevDeps = packageJson.devDependencies || {}
-          const oldTypingsEntries = filter(test(typingsURLRegex), oldDevDeps)
-          const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, appDeps)
-          if (!equals(oldTypingsEntries, newTypingsEntries)) {
-            const cleanOldDevDeps = ramdaReject(test(typingsURLRegex), oldDevDeps)
-            await outputJson(
-              packageJsonPath,
-              {
-                ...packageJson,
-                ...{ 'devDependencies': { ...cleanOldDevDeps, ...newTypingsEntries } },
-              },
-              { spaces: '\t' }
-            )
-            try {
-              runYarn(builder)
-            } catch (e) {
-              log.error(`Error running Yarn in ${builder}.`)
-              await outputJson(packageJsonPath, packageJson, { spaces: '\t' })  // Revert package.json to original state.
-            }
-
-          }
-        }
-      }
-    ),
-    values,
-    Promise.all
-  )(buildersWithAppDeps as Record<string, any>)
-
-}
 
 const warnAndLinkFromStart = (appId: string, builder: Builder, unsafe: boolean, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
   log.warn('Initial link requested by builder')
@@ -230,7 +89,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
 
   const mapLocalToBuiderPath = path => {
     const abs = resolvePath(root, path)
-    for (const [module, modulePath] of moduleAndMetadata) {
+    for (const [module, modulePath] of moduleAndMetadata as any) {
       if (abs.startsWith(modulePath)) {
         return abs.replace(modulePath, join('.linked_deps', module))
       }
@@ -343,8 +202,8 @@ export default async (options) => {
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  if (!options['no-install'] && !options.n) {
-    await getTypings(manifest, context.account, context.workspace)
+  if (!options.setup && !options.n) {
+    await setup()
   }
   const { builder } = createClients(context, { timeout: 60000 })
 

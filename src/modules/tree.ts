@@ -104,6 +104,10 @@ export default {
     handler: './apps/install',
     optionalArgs: 'app',
   },
+  setup: {
+    description: 'Download react app typings, lint config and tsconfig',
+    handler: './setup'
+  },
   link: {
     description: 'Start a development session for this app',
     handler: './apps/link',
