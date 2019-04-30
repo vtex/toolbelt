@@ -172,7 +172,7 @@ const tsconfig = async (account: string, workspace: string) => {
   }
   const downloadTSConfig = async (_: any, tryCount: number) => {
     if (tryCount > 1) {
-      log.info(`Retrying...${tryCount-1} ---- tsconfig`)
+      log.info(`Retrying...${tryCount-1}`)
     }
     try {
       const res = await http.get(`/_v/builder/0/tsconfig`)
@@ -234,7 +234,7 @@ export const setupTSLint = async (manifest: Manifest) => {
         try {
           const packageJsonPath = resolvePackageJsonPath(builder)
           const devDependencies = (prop('devDependencies', await readJson(packageJsonPath))) || {}
-          if (difference(intersection(lintSetup, keys(devDependencies)), lintSetup).length !== 0) {
+          if (difference(lintSetup, intersection(lintSetup, keys(devDependencies))).length !== 0) {
             yarnAddTSLints(builder)
             await outputJson(resolveTSLintPath(builder), { 'extends': 'tslint-config-vtex' })
           }
