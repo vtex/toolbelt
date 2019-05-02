@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.55.3] - 2019-05-02
+### Fixed
+- `vtex whoami` shows that the user is not logged in if it fails to read the workspace state
+
 ## [2.55.2] - 2019-05-02
 ### Fixed
 - Do not allow users to create workspace names with hyphens

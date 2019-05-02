@@ -17,16 +17,21 @@ const getWorkspaceState = async (): Promise<string> => {
 
     return workspaceState(meta) + ' '
   } catch (err) {
-    log.error(`Unable to fetch workspace state`)
+    log.debug(`Unable to fetch workspace state`)
     log.debug(err.message)
-    return ''
+    return undefined
   }
 }
 
 export const greeting = async (): Promise<string[]> => {
   if (account && login && workspace) {
-    const state = await getWorkspaceState()
-    return [`Logged into ${chalk.blue(account)} as ${chalk.green(login)} at ${chalk.yellowBright(state)}workspace ${chalk.green(workspace)} in environment ${chalk.red(environment)}`]
+    let loggedMessage = 'Logged into'
+    let state = await getWorkspaceState()
+    if (!state) {
+      loggedMessage = `${chalk.red('Not logged in')}. Previously logged into`
+      state = ''
+    }
+    return [`${loggedMessage} ${chalk.blue(account)} as ${chalk.green(login)} at ${chalk.yellowBright(state)}workspace ${chalk.green(workspace)} in environment ${chalk.red(environment)}`]
   }
 
   return ['Welcome to VTEX I/O', `Login with ${chalk.green('vtex login')} ${chalk.blue('<account>')}`]
