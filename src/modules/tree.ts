@@ -17,7 +17,7 @@ export default {
     },
   },
   browse: {
-    description: 'Open admin in browser window',
+    description: 'Open endpoint in browser window',
     handler: './browse',
     optionalArgs: ['endpoint'],
   },

@@ -67,11 +67,14 @@ $ vtex
     use <name>              Use a workspace to perform operations
     whoami                  See your credentials current status
 
+    browse [endpoint]       Browse an endpoint of the store under development
+
     config get <name>                 Gets the current value for the requested configuration
     config set <name> <value>         Sets the current value for the given configuration
 
-    deps list             List your workspace dependencies
-    deps update [app]     Update all workspace dependencies or a specific app@version
+    deps list                              List your workspace dependencies
+    deps update [app]                      Update all workspace dependencies or a specific app@version
+    deps diff [workspace1] [workspace2]    Show dependencies difference between two workspaces
 
     infra install <name>     Install a service
     infra list [name]        List installed services
