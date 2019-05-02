@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.55.4] - 2019-05-02
+### Fixed
+- Correctly parse and print error message in `vtex deps update` and `vtex unlink` commands
+
 ## [2.55.3] - 2019-05-02
 ### Fixed
 - `vtex whoami` shows that the user is not logged in if it fails to read the workspace state
