@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.55.2] - 2019-05-02
+### Fixed
+- Do not allow users to create workspace names with hyphens
+
 ## [2.55.1] - 2019-04-30
 
 ## [2.55.0] - 2019-04-25

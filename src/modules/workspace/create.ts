@@ -6,11 +6,11 @@ import { getAccount } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
 
-const VALID_WORKSPACE = /^[a-z][a-z0-9-]{0,126}[a-z0-9]$/
+const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 
 export default async (name: string, options: any) => {
   if (!VALID_WORKSPACE.test(name)) {
-    throw new CommandError('Whoops! That\'s not a valid workspace name. Please use only lowercase letters, numbers and hyphens.')
+    throw new CommandError('Whoops! That\'s not a valid workspace name. Please use only lowercase letters and numbers.')
   }
   log.debug('Creating workspace', name)
   let production = false
