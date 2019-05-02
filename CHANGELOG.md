@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Correctly parse and print error message in `vtex deps update` command
+- Correctly parse and print error message in `vtex deps update` and `vtex unlink` commands
 
 ## [2.55.3] - 2019-05-02
 ### Fixed
