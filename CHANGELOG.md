@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Generic `vtex browse` for browsing the store
+- Generic `vtex browse` command for browsing the store
 
 ## [2.55.4] - 2019-05-02
 ### Fixed
