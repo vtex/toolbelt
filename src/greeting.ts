@@ -28,7 +28,7 @@ export const greeting = async (): Promise<string[]> => {
     let loggedMessage = 'Logged into'
     let state = await getWorkspaceState()
     if (!state) {
-      loggedMessage = 'Not logged in. Previously logged into'
+      loggedMessage = `${chalk.red('Not logged in')}. Previously logged into`
       state = ''
     }
     return [`${loggedMessage} ${chalk.blue(account)} as ${chalk.green(login)} at ${chalk.yellowBright(state)}workspace ${chalk.green(workspace)} in environment ${chalk.red(environment)}`]
