@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.55.5] - 2019-05-02
+### Added
+- Generic `vtex browse` command for browsing the store
+
 ## [2.55.4] - 2019-05-02
 ### Fixed
 - Correctly parse and print error message in `vtex deps update` and `vtex unlink` commands

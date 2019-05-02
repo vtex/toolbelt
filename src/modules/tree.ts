@@ -17,10 +17,9 @@ export default {
     },
   },
   browse: {
-    admin: {
-      description: 'Open admin in browser window',
-      handler: './browse/admin',
-    },
+    description: 'Open endpoint in browser window',
+    handler: './browse',
+    optionalArgs: ['endpoint'],
   },
   deprecate: {
     description: 'Deprecate app(s)',
