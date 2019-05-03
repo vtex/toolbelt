@@ -3,7 +3,7 @@ import axios from 'axios'
 import { execSync } from 'child-process-es6-promise'
 import { outputJson, outputJsonSync, pathExists, readJson, readJsonSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
-import { compose, difference, equals, filter, has, intersection, isEmpty, isNil, keys, map, mapObjIndexed, merge, mergeDeepRight, path as ramdaPath, pipe, prop, reject as ramdaReject, test, values } from 'ramda'
+import { compose, difference, equals, filter, has, intersection, isEmpty, isNil, join, keys, map, mapObjIndexed, merge, mergeDeepRight, path as ramdaPath, pipe, prop, reject as ramdaReject, test, values } from 'ramda'
 import { getAccount, getEnvironment, getWorkspace } from '../conf'
 import { getToken } from '../conf'
 import { publicEndpoint, region } from '../env'
@@ -13,8 +13,30 @@ import { isLinked, resolveAppId } from './apps/utils'
 
 const root = getAppRoot()
 const builderHubTypingsInfoTimeout = 2000  // 2 seconds
-const buildersToSetTSLint = ['react', 'node']
-const lintSetup = ['tslint', 'tslint-config-vtex']
+const buildersToAddAdditionalPackages = ['react', 'node']
+const addToPackageJson = {
+  'eslint': '^5.15.1',
+  'eslint-config-vtex': '^10.1.0',
+  'prettier': '^1.16.4',
+}
+const addToEslintrc = {
+  'react': {
+    'extends': 'eslint-config-vtex',
+    'env': {
+      'browser': true,
+      'es6': true,
+      'jest': true,
+    },
+  },
+  'node': {
+    'extends': 'eslint-config-vtex',
+    'env': {
+      'node': true,
+      'es6': true,
+      'jest': true,
+    },
+  },
+}
 const typingsPath = 'public/_types'
 const yarnPath = require.resolve('yarn/bin/yarn')
 const typingsURLRegex = /_v\/\w*\/typings/
@@ -30,7 +52,7 @@ const builderHttp = (account: string, workspace: string) =>
 
 const resolvePackageJsonPath = (builder: string) => resolvePath(root, `${builder}/package.json`)
 const resolveTSConfigPath = (builder: string) => resolvePath(root, `${builder}/tsconfig.json`)
-const resolveTSLintPath = (builder: string) => resolvePath(root, `${builder}/tslint.json`)
+const resolveTSLintPath = (builder: string) => resolvePath(root, `${builder}/.eslintrc`)
 
 const typingsInfo = async (account: string, workspace: string) => {
   const http = builderHttp(account, workspace)
@@ -93,10 +115,10 @@ const runYarn = (relativePath: string) => {
   log.info('Finished running yarn')
 }
 
-const yarnAddTSLints = (relativePath: string) => {
+const yarnAddESLint = (relativePath: string) => {
   log.info(`Adding lint configs in ${relativePath}`)
-  execSync(
-    `${yarnPath} add tslint@^5.8.0 tslint-config-vtex@^2.1.0 --dev`,
+  const lintDeps = join(' ', values(mapObjIndexed((version, name) => `${name}@${version}`, addToPackageJson)))
+  execSync( `${yarnPath} add ${lintDeps} --dev`,
     {stdio: 'inherit', cwd: resolvePath(root, `${relativePath}`)}
   )
 }
@@ -198,8 +220,7 @@ export const getTSConfig = async (manifest: Manifest, account: string, workspace
     compose(
       ramdaReject(isNil),
       mapObjIndexed(
-        (version: string, builder: string) => {
-          const builderTSConfig = prop(builder, tsconfigsFromBuilder)
+        (version: string, builder: string) => { const builderTSConfig = prop(builder, tsconfigsFromBuilder)
           if (builderTSConfig && has(version, builderTSConfig)) {
             return prop(version, builderTSConfig)
           }
@@ -216,7 +237,7 @@ export const getTSConfig = async (manifest: Manifest, account: string, workspace
       const tsconfigPath = resolveTSConfigPath(builder)
       const currentTSConfig = readJsonSync(tsconfigPath)
       const newTSConfig = mergeDeepRight(currentTSConfig, baseTSConfig)
-      outputJsonSync(tsconfigPath, newTSConfig, { spaces: '\t' })  // Revert package.json to original state.
+      outputJsonSync(tsconfigPath, newTSConfig, { spaces: 2 })  // Revert package.json to original state.
       } catch(e) {
         log.error(e)
       }
@@ -226,7 +247,8 @@ export const getTSConfig = async (manifest: Manifest, account: string, workspace
 
 export const setupTSLint = async (manifest: Manifest) => {
   const builders = keys(prop('builders', manifest) || {})
-  const filteredBuilders = intersection(builders, buildersToSetTSLint)
+  const filteredBuilders = intersection(builders, buildersToAddAdditionalPackages)
+  const lintDeps = keys(addToPackageJson)
   compose<any, any, any>(
     Promise.all,
     map(
@@ -234,9 +256,9 @@ export const setupTSLint = async (manifest: Manifest) => {
         try {
           const packageJsonPath = resolvePackageJsonPath(builder)
           const devDependencies = (prop('devDependencies', await readJson(packageJsonPath))) || {}
-          if (difference(lintSetup, intersection(lintSetup, keys(devDependencies))).length !== 0) {
-            yarnAddTSLints(builder)
-            await outputJson(resolveTSLintPath(builder), { 'extends': 'tslint-config-vtex' })
+          if (difference(lintDeps, intersection(lintDeps, keys(devDependencies))).length !== 0) {
+            yarnAddESLint(builder)
+            await outputJson(resolveTSLintPath(builder), addToEslintrc[builder], { spaces: 2 })
           }
         } catch(e) {
           log.error(e)

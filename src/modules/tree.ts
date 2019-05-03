@@ -106,7 +106,7 @@ export default {
   },
   setup: {
     description: 'Download react app typings, lint config and tsconfig',
-    handler: './setup'
+    handler: './setup',
   },
   link: {
     description: 'Start a development session for this app',
