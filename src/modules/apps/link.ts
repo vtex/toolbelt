@@ -29,6 +29,7 @@ import { checkBuilderHubMessage, isLinked, pathToFileObject, resolveAppId, showB
 const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
+const LOCAL_FILES_SCOPE = 'local_files'
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
@@ -185,7 +186,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   const linkedDepsPatterns = map(path => join(path, '**'), getLinkedDepsDirs(extraData.linkConfig))
 
   const queueChange = (path: string, remove?: boolean) => {
-    log.info(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
+    log.scopedInfo(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`, LOCAL_FILES_SCOPE)
     changeQueue.push(pathToChange(path, remove))
     sendChanges()
   }
@@ -265,7 +266,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 
     if (tryCount === 1) {
       const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
-      log.scopedProgress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`, 'local_files')
+      log.scopedProgress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`, LOCAL_FILES_SCOPE)
       filesWithContent.forEach(p => log.scopedInfo(p.path, 'local_files'))
     }
 
@@ -274,7 +275,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     }
 
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-    log.scopedProgress(100, undefined, 'local_files')
+    log.scopedProgress(100, 'Files sent', LOCAL_FILES_SCOPE)
     const linkOptions = { sticky: true, stickyHint }
     try {
       const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })

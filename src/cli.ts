@@ -17,8 +17,6 @@ import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
-//import { sprintf } from 'sprintf-js'
-//import { stdout as singleLineLog } from 'single-line-log'
 
 axios.interceptors.request.use(config => {
   if (envCookies()) {
@@ -26,32 +24,6 @@ axios.interceptors.request.use(config => {
   }
   return config
 })
-
-export function sleep(miliseconds) {
-  let currentTime = new Date().getTime()
-  while (currentTime + miliseconds >= new Date().getTime()) {
-  }
-}
-//sleep(4000)
-//log.log({level: 'info', message: 'tchau', append: false, progress: {value: 20, text: 'Doing something'}})
-//sleep(4000)
-//log.log({level: 'info', message: 'tchauuuu', append: true})
-//sleep(4000)
-//log.log({level: 'info', message: 'tchauuuuuuuuuuuuuuuuuuuuuuu', append: true})
-//sleep(4000)
-//log.clear()
-//sleep(4000)
-//log.info('heyo')
-//sleep(4000)
-//log.info('Testing log.........1')
-//log.info('Testing log.........2')
-//sleep(1000)
-//log.info('Testing log.........3')
-//log.log({message: '', level: 'info', clear: true})
-//log.info(`Testing log.........4`)
-//log.log({message: 'Testing log.........5', level: 'info', append: true})
-//log.end()
-//process.exit()
 
 global.Promise = Bluebird
 Bluebird.config({
@@ -167,13 +139,12 @@ const onError = e => {
         log.error('A temporary failure in name resolution occurred :(')
         break
       default:
-        log.error('Something exploded :(')
+        log.error('Unhandled exception')
+        log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
         if (e.config && e.config.url && e.config.method) {
           log.error(`${e.config.method} ${e.config.url}`)
         }
-        if (isVerbose) {
-          log.error(e)
-        }
+        log.debug(e)
     }
   } else {
     switch (e.name) {
@@ -195,12 +166,10 @@ const onError = e => {
         log.debug('User Cancelled')
         break
       default:
-        log.error('Something went wrong, I don\'t know what to do :(')
-        if (isVerbose) {
-          log.error(e)
-        } else {
-          log.error(reject(isFunction, e))
-        }
+        log.error('Unhandled exception')
+        log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
+        log.error(reject(isFunction, e))
+        log.debug(e)
     }
   }
   process.exit(1)

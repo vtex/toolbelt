@@ -14,6 +14,8 @@ import { configDir } from './conf'
 const VERBOSE = '--verbose'
 const UNINDEXED = '__unindexed'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
+const isLink = process.argv.indexOf('link') >= 0
+const useFancyLogger = isLink && !isVerbose
 
 const { combine, timestamp, colorize } = format
 const bar = progress({
@@ -265,7 +267,11 @@ interface ExtendedLogger extends Logger {
   clearAll?(): void
 }
 
-const consoleTransport = isVerbose ?
+const consoleTransport = useFancyLogger ?
+  new FancyConsoleTransport({
+    format: consoleFormatter(),
+    level: 'info',
+  }) :
   new SimpleConsoleTransport({
     format: combine(
       filterMessage(),
@@ -273,12 +279,8 @@ const consoleTransport = isVerbose ?
       colorize(),
       messageFormatter()
     ),
-    level: 'debug',
-  }) :
-  new FancyConsoleTransport({
-      format: consoleFormatter(),
-      level: 'info',
-    })
+    level: isVerbose ? 'debug' : 'info',
+  })
 
 const logger = createLogger({
   transports: [
