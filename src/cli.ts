@@ -16,7 +16,7 @@ import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
-import notify from './update'
+import { default as notifyAvailableUpdate } from './update'
 
 axios.interceptors.request.use(config => {
   if (envCookies()) {
@@ -47,9 +47,6 @@ if (process.env.NODE_ENV === 'development') {
   }
 }
 
-// Show update notification if newer version is available
-notify()
-
 const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
@@ -74,6 +71,9 @@ const checkLogin = args => {
 }
 
 const main = async () => {
+  // Show update notification if newer version is available
+  await notifyAvailableUpdate()
+
   const args = process.argv.slice(2)
 
   logToolbeltVersion()
