@@ -137,7 +137,6 @@ const getInjectedDeps = (typingsData: any, version: string, builder: string) => 
   return null
 }
 
-
 const injectTypingsInPackageJson = async (account: string, workspace: string, appDeps: Record<string, any>, builder: string) => {
   const packageJsonPath = resolvePackageJsonPath(builder)
   if (await pathExists(packageJsonPath)) {
