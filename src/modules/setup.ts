@@ -153,13 +153,13 @@ const injectTypingsInPackageJson = async (account: string, workspace: string, ap
           ...packageJson,
           ...{ 'devDependencies': { ...cleanOldDevDeps, ...newTypingsEntries } },
         },
-        { spaces: '\t' }
+        { spaces: 2 }
       )
       try {
         runYarn(builder)
       } catch (e) {
         log.error(`Error running Yarn in ${builder}.`)
-        await outputJsonSync(packageJsonPath, packageJson, { spaces: '\t' })  // Revert package.json to original state.
+        await outputJsonSync(packageJsonPath, packageJson, { spaces: 2 })  // Revert package.json to original state.
       }
     }
   }
@@ -234,7 +234,16 @@ const getTSConfig = async (manifest: Manifest, account: string, workspace: strin
     (baseTSConfig: any, builder: any) => {
       try {
         const tsconfigPath = resolveTSConfigPath(builder)
-        const currentTSConfig = readJsonSync(tsconfigPath)
+        let currentTSConfig = {}
+        try {
+          currentTSConfig = readJsonSync(tsconfigPath)
+        } catch(e) {
+          if (e.code === 'ENOENT') {
+            log.error(`No tsconfig.json found in ${tsconfigPath}. Generating one...`)
+          } else {
+            throw e
+          }
+        }
         const newTSConfig = mergeDeepRight(currentTSConfig, baseTSConfig)
         outputJsonSync(tsconfigPath, newTSConfig, { spaces: 2 })  // Revert package.json to original state.
       } catch(e) {
