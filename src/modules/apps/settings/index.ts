@@ -2,7 +2,7 @@ import { path } from 'ramda'
 
 import { apps } from '../../../clients'
 
-const { getAppSettings } = apps
+const getAppSettings = Promise.method(apps.getAppSettings)
 
 const FIELDS_START_INDEX = 2
 
