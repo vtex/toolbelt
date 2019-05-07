@@ -7,15 +7,17 @@ import { compose, curry, difference, equals, filter, has, intersection,
   isEmpty, isNil, join, keys, map, mapObjIndexed, merge, mergeDeepRight,
   path as ramdaPath, pipe, prop, reject as ramdaReject, test, toPairs, values
 } from 'ramda'
-import { getAccount, getEnvironment, getWorkspace } from '../conf'
+import { getAccount, getWorkspace } from '../conf'
 import { getToken } from '../conf'
 import { publicEndpoint, region } from '../env'
 import log from '../logger'
 import { getAppRoot, getManifest } from '../manifest'
 import { isLinked, resolveAppId } from './apps/utils'
 
+const account = getAccount()
+const workspace = getWorkspace()
 const root = getAppRoot()
-const builderHubTypingsInfoTimeout = 2000  // 2 seconds
+const builderHubTimeout = 2000  // 2 seconds
 const buildersToAddAdditionalPackages = ['react', 'node']
 const addToPackageJson = {
   'eslint': '^5.15.1',
@@ -43,10 +45,9 @@ const typingsPath = 'public/_types'
 const yarnPath = require.resolve('yarn/bin/yarn')
 const typingsURLRegex = /_v\/\w*\/typings/
 const getVendor = (appId: string) => appId.split('.')[0]
-const builderHttp = (account: string, workspace: string) =>
-  axios.create({
+const builderHttp = axios.create({
     baseURL: `http://builder-hub.vtex.${region()}.vtex.io/${account}/${workspace}`,
-    timeout: builderHubTypingsInfoTimeout,
+    timeout: builderHubTimeout,
     headers: {
       'Authorization': getToken(),
     },
@@ -60,17 +61,15 @@ const retryOpts = {
 
 const resolvePackageJsonPath = (builder: string) => resolvePath(root, `${builder}/package.json`)
 const resolveTSConfigPath = (builder: string) => resolvePath(root, `${builder}/tsconfig.json`)
-const resolveTSLintPath = (builder: string) => resolvePath(root, `${builder}/.eslintrc`)
+const resolveESLintPath = (builder: string) => resolvePath(root, `${builder}/.eslintrc`)
 
-const typingsInfo = async (account: string, workspace: string) => {
-  const http = builderHttp(account, workspace)
-
+const typingsInfo = async () => {
   const getTypingsInfo = async (_: any, tryCount: number) => {
     if (tryCount > 1) {
       log.info(`Retrying...${tryCount-1} (get typings info from builder-hub)`)
     }
     try {
-      const res = await http.get(`/_v/builder/0/typings`)
+      const res = await builderHttp.get(`/_v/builder/0/typings`)
       return res.data.typingsInfo
     } catch (err) {
       const statusMessage = err.response.status ?
@@ -87,7 +86,7 @@ const typingsInfo = async (account: string, workspace: string) => {
   }
 }
 
-const appTypingsURL = async (account: string, workspace: string, appName: string, appVersion: string, builder: string): Promise<string> => {
+const appTypingsURL = async (appName: string, appVersion: string, builder: string): Promise<string> => {
   const appId = await resolveAppId(appName, appVersion)
   const vendor = getVendor(appId)
   if (isLinked({'version': appId})) {
@@ -96,14 +95,14 @@ const appTypingsURL = async (account: string, workspace: string, appName: string
   return `http://${vendor}.vteximg.com.br/_v/public/typings/v1/${appId}/${typingsPath}/${builder}`
 }
 
-const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, appDependencies: Record<string, any>) => {
+const appsWithTypingsURLs = async (builder: string, appDependencies: Record<string, any>) => {
   const result: Record<string, any> = {}
   const appNamesAndDependencies = toPairs(appDependencies)
   await Promise.map(
     appNamesAndDependencies,
     async ([appName, appVersion]: [string, string]) => {
       try {
-        result[appName] = await appTypingsURL(account, workspace, appName, appVersion, builder)
+        result[appName] = await appTypingsURL(appName, appVersion, builder)
       } catch (e) {
         log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
       }
@@ -137,13 +136,13 @@ const getInjectedDeps = (typingsData: any, version: string, builder: string) => 
   return null
 }
 
-const injectTypingsInPackageJson = async (account: string, workspace: string, appDeps: Record<string, any>, builder: string) => {
+const injectTypingsInPackageJson = async (appDeps: Record<string, any>, builder: string) => {
   const packageJsonPath = resolvePackageJsonPath(builder)
   if (await pathExists(packageJsonPath)) {
     const packageJson = readJsonSync(packageJsonPath)
     const oldDevDeps = packageJson.devDependencies || {}
     const oldTypingsEntries = filter(test(typingsURLRegex), oldDevDeps)
-    const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, appDeps)
+    const newTypingsEntries = await appsWithTypingsURLs(builder, appDeps)
     if (!equals(oldTypingsEntries, newTypingsEntries)) {
       const cleanOldDevDeps = ramdaReject(test(typingsURLRegex), oldDevDeps)
       outputJsonSync(
@@ -164,8 +163,8 @@ const injectTypingsInPackageJson = async (account: string, workspace: string, ap
   }
 }
 
-const getTypings = async (manifest: Manifest, account: string, workspace: string) => {
-  const typingsData = await typingsInfo(account, workspace)
+const getTypings = async (manifest: Manifest) => {
+  const typingsData = await typingsInfo()
   const buildersWithInjectedDeps =
     pipe(
       prop('builders'),
@@ -182,21 +181,20 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
     )(buildersWithInjectedDeps as Record<string, any>)
 
   await pipe(
-    mapObjIndexed(curry(injectTypingsInPackageJson)(account, workspace)),
+    mapObjIndexed(injectTypingsInPackageJson),
     values,
     Promise.all
   )(buildersWithAppDeps as Record<string, any>)
 
 }
 
-const getTSConfigFromBuilderHub = async (account: string, workspace: string) => {
-  const http = builderHttp(account, workspace)
+const getTSConfigFromBuilderHub = async () => {
   const downloadTSConfig = async (_: any, tryCount: number) => {
     if (tryCount > 1) {
       log.info(`Retrying...${tryCount-1} (get tsconfig from builder-hub)`)
     }
     try {
-      const res = await http.get(`/_v/builder/0/tsconfig`)
+      const res = await builderHttp.get(`/_v/builder/0/tsconfig`)
       return res.data
     } catch (err) {
       const statusMessage = err.response.status ?
@@ -220,8 +218,8 @@ const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: str
   return null
 }
 
-const getTSConfig = async (manifest: Manifest, account: string, workspace: string) => {
-  const tsconfigsFromBuilder = await getTSConfigFromBuilderHub(account, workspace)
+const getTSConfig = async (manifest: Manifest) => {
+  const tsconfigsFromBuilder = await getTSConfigFromBuilderHub()
   const buildersWithBaseTSConfig =
     compose(
       ramdaReject(isNil),
@@ -252,33 +250,32 @@ const getTSConfig = async (manifest: Manifest, account: string, workspace: strin
   )(buildersWithBaseTSConfig as Record<string, any>)
 }
 
-const createTSLintSetup = async (lintDeps: string[], builder: string) => {
+const createESLintSetup = async (lintDeps: string[], builder: string) => {
   try {
     const packageJsonPath = resolvePackageJsonPath(builder)
     const devDependencies = (prop('devDependencies', await readJson(packageJsonPath))) || {}
     if (difference(lintDeps, intersection(lintDeps, keys(devDependencies))).length !== 0) {
       yarnAddESLint(builder)
-      await outputJson(resolveTSLintPath(builder), addToEslintrc[builder], { spaces: 2 })
+      await outputJson(resolveESLintPath(builder), addToEslintrc[builder], { spaces: 2 })
     }
   } catch(e) {
     log.error(e)
   }
 }
 
-const setupTSLint = async (manifest: Manifest) => {
+const setupESLint = async (manifest: Manifest) => {
   const builders = keys(prop('builders', manifest) || {})
   const filteredBuilders = intersection(builders, buildersToAddAdditionalPackages)
   const lintDeps = keys(addToPackageJson)
-  compose<any, any, any>(
+  return compose<any, any, any>(
     Promise.all,
-    map(curry(createTSLintSetup)(lintDeps))
+    map(curry(createESLintSetup)(lintDeps))
   )(filteredBuilders)
 }
 
 export default async () => {
   const manifest = await getManifest()
-  const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  await setupTSLint(manifest)
-  await getTSConfig(manifest, context.account, context.workspace)
-  await getTypings(manifest, context.account, context.workspace)
+  await setupESLint(manifest)
+  await getTSConfig(manifest)
+  await getTypings(manifest)
 }
