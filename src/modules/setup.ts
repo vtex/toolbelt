@@ -20,7 +20,6 @@ const buildersToAddAdditionalPackages = ['react', 'node']
 const addToPackageJson = {
   'eslint': '^5.15.1',
   'eslint-config-vtex': '^10.1.0',
-  'prettier': '^1.16.4',
 }
 const addToEslintrc = {
   'react': {
@@ -68,7 +67,7 @@ const typingsInfo = async (account: string, workspace: string) => {
 
   const getTypingsInfo = async (_: any, tryCount: number) => {
     if (tryCount > 1) {
-      log.info(`Retrying...${tryCount-1} typings info`)
+      log.info(`Retrying...${tryCount-1} (get typings info from builder-hub)`)
     }
     try {
       const res = await http.get(`/_v/builder/0/typings`)
@@ -195,7 +194,7 @@ const getTSConfigFromBuilderHub = async (account: string, workspace: string) => 
   const http = builderHttp(account, workspace)
   const downloadTSConfig = async (_: any, tryCount: number) => {
     if (tryCount > 1) {
-      log.info(`Retrying...${tryCount-1}`)
+      log.info(`Retrying...${tryCount-1} (get tsconfig from builder-hub)`)
     }
     try {
       const res = await http.get(`/_v/builder/0/tsconfig`)
