@@ -3,7 +3,10 @@ import axios from 'axios'
 import { execSync } from 'child-process-es6-promise'
 import { outputJson, outputJsonSync, pathExists, readJson, readJsonSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
-import { compose, difference, equals, filter, has, intersection, isEmpty, isNil, join, keys, map, mapObjIndexed, merge, mergeDeepRight, path as ramdaPath, pipe, prop, reject as ramdaReject, test, values } from 'ramda'
+import { compose, curry, difference, equals, filter, has, intersection,
+  isEmpty, isNil, join, keys, map, mapObjIndexed, merge, mergeDeepRight,
+  path as ramdaPath, pipe, prop, reject as ramdaReject, test, toPairs, values
+} from 'ramda'
 import { getAccount, getEnvironment, getWorkspace } from '../conf'
 import { getToken } from '../conf'
 import { publicEndpoint, region } from '../env'
@@ -50,25 +53,26 @@ const builderHttp = (account: string, workspace: string) =>
     },
   })
 
+const retryOpts = {
+  retries: 2,
+  minTimeout: 1000,
+  factor: 2,
+}
+
 const resolvePackageJsonPath = (builder: string) => resolvePath(root, `${builder}/package.json`)
 const resolveTSConfigPath = (builder: string) => resolvePath(root, `${builder}/tsconfig.json`)
 const resolveTSLintPath = (builder: string) => resolvePath(root, `${builder}/.eslintrc`)
 
 const typingsInfo = async (account: string, workspace: string) => {
   const http = builderHttp(account, workspace)
-  const retryOpts = {
-    retries: 2,
-    minTimeout: 1000,
-    factor: 2,
-  }
 
   const getTypingsInfo = async (_: any, tryCount: number) => {
     if (tryCount > 1) {
       log.info(`Retrying...${tryCount-1} typings info`)
     }
     try {
-    const res = await http.get(`/_v/builder/0/typings`)
-    return res.data.typingsInfo
+      const res = await http.get(`/_v/builder/0/typings`)
+      return res.data.typingsInfo
     } catch (err) {
       const statusMessage = err.response.status ?
         `: Status ${err.response.status}` : ''
@@ -82,27 +86,30 @@ const typingsInfo = async (account: string, workspace: string) => {
     log.error('Unable to get typings info from vtex.builder-hub.')
     return {}
   }
-
 }
 
 const appTypingsURL = async (account: string, workspace: string, appName: string, appVersion: string, builder: string): Promise<string> => {
   const appId = await resolveAppId(appName, appVersion)
   const vendor = getVendor(appId)
   if (isLinked({'version': appId})) {
-  return `https://${workspace}--${account}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/${typingsPath}/${builder}`
+    return `https://${workspace}--${account}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/${typingsPath}/${builder}`
   }
   return `http://${vendor}.vteximg.com.br/_v/public/typings/v1/${appId}/${typingsPath}/${builder}`
 }
 
 const appsWithTypingsURLs = async (builder: string, account: string, workspace: string, appDependencies: Record<string, any>) => {
   const result: Record<string, any> = {}
-  for (const [appName, appVersion] of Object.entries(appDependencies)) {
-    try {
-      result[appName] = await appTypingsURL(account, workspace, appName, appVersion, builder)
-    } catch (e) {
-      log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
+  const appNamesAndDependencies = toPairs(appDependencies)
+  await Promise.map(
+    appNamesAndDependencies,
+    async ([appName, appVersion]: [string, string]) => {
+      try {
+        result[appName] = await appTypingsURL(account, workspace, appName, appVersion, builder)
+      } catch (e) {
+        log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
+      }
     }
-  }
+  )
   return result
 }
 
@@ -123,21 +130,48 @@ const yarnAddESLint = (relativePath: string) => {
   )
 }
 
+const getInjectedDeps = (typingsData: any, version: string, builder: string) => {
+  const builderTypingsData = prop(builder, typingsData)
+  if (builderTypingsData && has(version, builderTypingsData)) {
+    return ramdaPath([version, 'injectedDependencies'], builderTypingsData)
+  }
+  return null
+}
+
+
+const injectTypingsInPackageJson = async (account: string, workspace: string, appDeps: Record<string, any>, builder: string) => {
+  const packageJsonPath = resolvePackageJsonPath(builder)
+  if (await pathExists(packageJsonPath)) {
+    const packageJson = readJsonSync(packageJsonPath)
+    const oldDevDeps = packageJson.devDependencies || {}
+    const oldTypingsEntries = filter(test(typingsURLRegex), oldDevDeps)
+    const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, appDeps)
+    if (!equals(oldTypingsEntries, newTypingsEntries)) {
+      const cleanOldDevDeps = ramdaReject(test(typingsURLRegex), oldDevDeps)
+      outputJsonSync(
+        packageJsonPath,
+        {
+          ...packageJson,
+          ...{ 'devDependencies': { ...cleanOldDevDeps, ...newTypingsEntries } },
+        },
+        { spaces: '\t' }
+      )
+      try {
+        runYarn(builder)
+      } catch (e) {
+        log.error(`Error running Yarn in ${builder}.`)
+        await outputJsonSync(packageJsonPath, packageJson, { spaces: '\t' })  // Revert package.json to original state.
+      }
+    }
+  }
+}
+
 const getTypings = async (manifest: Manifest, account: string, workspace: string) => {
   const typingsData = await typingsInfo(account, workspace)
-
   const buildersWithInjectedDeps =
     pipe(
       prop('builders'),
-      mapObjIndexed(
-        (version: string, builder: string) => {
-          const builderTypingsData = prop(builder, typingsData)
-          if (builderTypingsData && has(version, builderTypingsData)) {
-            return ramdaPath([version, 'injectedDependencies'], builderTypingsData)
-          }
-          return null
-        }
-      ),
+      mapObjIndexed(curry(getInjectedDeps)(typingsData)),
       ramdaReject(isNil)
     )(manifest)
 
@@ -150,48 +184,15 @@ const getTypings = async (manifest: Manifest, account: string, workspace: string
     )(buildersWithInjectedDeps as Record<string, any>)
 
   await pipe(
-    mapObjIndexed(
-      async (appDeps: Record<string, any>, builder: string) => {
-        const packageJsonPath = resolvePackageJsonPath(builder)
-        if (await pathExists(packageJsonPath)) {
-          const packageJson = readJsonSync(packageJsonPath)
-          const oldDevDeps = packageJson.devDependencies || {}
-          const oldTypingsEntries = filter(test(typingsURLRegex), oldDevDeps)
-          const newTypingsEntries = await appsWithTypingsURLs(builder, account, workspace, appDeps)
-          if (!equals(oldTypingsEntries, newTypingsEntries)) {
-            const cleanOldDevDeps = ramdaReject(test(typingsURLRegex), oldDevDeps)
-            outputJsonSync(
-              packageJsonPath,
-              {
-                ...packageJson,
-                ...{ 'devDependencies': { ...cleanOldDevDeps, ...newTypingsEntries } },
-              },
-              { spaces: '\t' }
-            )
-            try {
-              runYarn(builder)
-            } catch (e) {
-              log.error(`Error running Yarn in ${builder}.`)
-              await outputJsonSync(packageJsonPath, packageJson, { spaces: '\t' })  // Revert package.json to original state.
-            }
-
-          }
-        }
-      }
-    ),
+    mapObjIndexed(curry(injectTypingsInPackageJson)(account, workspace)),
     values,
     Promise.all
   )(buildersWithAppDeps as Record<string, any>)
 
 }
 
-const tsconfig = async (account: string, workspace: string) => {
+const getTSConfigFromBuilderHub = async (account: string, workspace: string) => {
   const http = builderHttp(account, workspace)
-  const retryOpts = {
-    retries: 2,
-    minTimeout: 1000,
-    factor: 2,
-  }
   const downloadTSConfig = async (_: any, tryCount: number) => {
     if (tryCount > 1) {
       log.info(`Retrying...${tryCount-1}`)
@@ -213,31 +214,30 @@ const tsconfig = async (account: string, workspace: string) => {
     return {}
   }
 }
+const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: string) => {
+  const builderTSConfig = prop(builder, tsconfigsFromBuilder)
+  if (builderTSConfig && has(version, builderTSConfig)) {
+    return prop(version, builderTSConfig)
+  }
+  return null
+}
 
-export const getTSConfig = async (manifest: Manifest, account: string, workspace: string) => {
-  const tsconfigsFromBuilder = await tsconfig(account, workspace)
+const getTSConfig = async (manifest: Manifest, account: string, workspace: string) => {
+  const tsconfigsFromBuilder = await getTSConfigFromBuilderHub(account, workspace)
   const buildersWithBaseTSConfig =
     compose(
       ramdaReject(isNil),
-      mapObjIndexed(
-        (version: string, builder: string) => { const builderTSConfig = prop(builder, tsconfigsFromBuilder)
-          if (builderTSConfig && has(version, builderTSConfig)) {
-            return prop(version, builderTSConfig)
-          }
-          return null
-        }
-      ),
+      mapObjIndexed(curry(selectTSConfig)(tsconfigsFromBuilder)),
       prop('builders')
     )(manifest)
-
 
   return mapObjIndexed(
     (baseTSConfig: any, builder: any) => {
       try {
-      const tsconfigPath = resolveTSConfigPath(builder)
-      const currentTSConfig = readJsonSync(tsconfigPath)
-      const newTSConfig = mergeDeepRight(currentTSConfig, baseTSConfig)
-      outputJsonSync(tsconfigPath, newTSConfig, { spaces: 2 })  // Revert package.json to original state.
+        const tsconfigPath = resolveTSConfigPath(builder)
+        const currentTSConfig = readJsonSync(tsconfigPath)
+        const newTSConfig = mergeDeepRight(currentTSConfig, baseTSConfig)
+        outputJsonSync(tsconfigPath, newTSConfig, { spaces: 2 })  // Revert package.json to original state.
       } catch(e) {
         log.error(e)
       }
@@ -245,26 +245,26 @@ export const getTSConfig = async (manifest: Manifest, account: string, workspace
   )(buildersWithBaseTSConfig as Record<string, any>)
 }
 
-export const setupTSLint = async (manifest: Manifest) => {
+const createTSLintSetup = async (lintDeps: string[], builder: string) => {
+  try {
+    const packageJsonPath = resolvePackageJsonPath(builder)
+    const devDependencies = (prop('devDependencies', await readJson(packageJsonPath))) || {}
+    if (difference(lintDeps, intersection(lintDeps, keys(devDependencies))).length !== 0) {
+      yarnAddESLint(builder)
+      await outputJson(resolveTSLintPath(builder), addToEslintrc[builder], { spaces: 2 })
+    }
+  } catch(e) {
+    log.error(e)
+  }
+}
+
+const setupTSLint = async (manifest: Manifest) => {
   const builders = keys(prop('builders', manifest) || {})
   const filteredBuilders = intersection(builders, buildersToAddAdditionalPackages)
   const lintDeps = keys(addToPackageJson)
   compose<any, any, any>(
     Promise.all,
-    map(
-      async (builder: string) => {
-        try {
-          const packageJsonPath = resolvePackageJsonPath(builder)
-          const devDependencies = (prop('devDependencies', await readJson(packageJsonPath))) || {}
-          if (difference(lintDeps, intersection(lintDeps, keys(devDependencies))).length !== 0) {
-            yarnAddESLint(builder)
-            await outputJson(resolveTSLintPath(builder), addToEslintrc[builder], { spaces: 2 })
-          }
-        } catch(e) {
-          log.error(e)
-        }
-      }
-    )
+    map(curry(createTSLintSetup)(lintDeps))
   )(filteredBuilders)
 }
 
