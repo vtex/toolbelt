@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- Disable saving `StickyHost` locally
+- Temporarily disable saving StickyHost locally until rounting behavior is fixed
 
 ## [2.56.0] - 2019-05-08
 ### Changed
