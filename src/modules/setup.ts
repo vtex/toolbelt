@@ -256,8 +256,8 @@ const createESLintSetup = async (lintDeps: string[], builder: string) => {
     const devDependencies = (prop('devDependencies', await readJson(packageJsonPath))) || {}
     if (difference(lintDeps, intersection(lintDeps, keys(devDependencies))).length !== 0) {
       yarnAddESLint(builder)
-      await outputJson(resolveESLintPath(builder), addToEslintrc[builder], { spaces: 2 })
     }
+    await outputJson(resolveESLintPath(builder), addToEslintrc[builder], { spaces: 2 })
   } catch(e) {
     log.error(e)
   }
