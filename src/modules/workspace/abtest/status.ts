@@ -9,6 +9,7 @@ import log from '../../../logger'
 import { createTable } from '../../../table'
 import { checkIfABTesterIsInstalled, formatDuration } from './utils'
 
+
 interface ABTestStatus {
   ABTestBeginning: string
   WorkspaceA: string
@@ -48,6 +49,10 @@ const printResultsTable = (testInfo: ABTestStatus) => {
     ProbabilityAlternativeBeatMaster,
   } = testInfo
   console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
+  if (R.any(R.isNil)([ExpectedLossChoosingA, ExpectedLossChoosingB, ProbabilityAlternativeBeatMaster])) {
+    log.error('Unexpected value of conversion. Perhaps your user traffic is too small and this creates distortions in the data')
+
+  }
 
   const comparisonTable = createTable()
   comparisonTable.push(bold(['', chalk.blue(WorkspaceA), chalk.blue(WorkspaceB)]))

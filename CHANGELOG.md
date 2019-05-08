@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.55.6] - 2019-05-08
+### Fixed
+- Check and inform if ab-tester `status` route returns null results
+
 ## [2.55.5] - 2019-05-02
 ### Added
 - Generic `vtex browse` command for browsing the store
