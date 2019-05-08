@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.55.7] - 2019-05-08
+### Fixed
+- Wrap `apps` client promises in Bluebird, so we can use `.tap`
+
 ## [2.55.6] - 2019-05-08
 ### Fixed
 - Check and inform if ab-tester `status` route returns null results

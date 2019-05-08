@@ -2,7 +2,8 @@ import { __, merge, zipObj } from 'ramda'
 import { apps } from '../../../clients'
 import { parseArgs } from '../utils'
 
-const { getAppSettings, saveAppSettings } = apps
+const getAppSettings = Promise.method(apps.getAppSettings)
+const saveAppSettings = Promise.method(apps.saveAppSettings)
 
 const castValue = value => {
   let parsedValue
