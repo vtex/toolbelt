@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.56.0] - 2019-05-08
+### Changed
+- Move typings fetching to the `vtex setup` command
+- Make `vtex setup` download tslint configuration (react and node)
+- Make `vtex setup` merge tsconfig entries from builder-hub
+- `vtex link` runs `vtex setup` by default, except when run with option `no-setup`
+
 ## [2.55.7] - 2019-05-08
 ### Fixed
 - Wrap `apps` client promises in Bluebird, so we can use `.tap`

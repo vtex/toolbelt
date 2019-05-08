@@ -104,6 +104,10 @@ export default {
     handler: './apps/install',
     optionalArgs: 'app',
   },
+  setup: {
+    description: 'Download react app typings, lint config and tsconfig',
+    handler: './setup',
+  },
   link: {
     description: 'Start a development session for this app',
     handler: './apps/link',
@@ -115,9 +119,9 @@ export default {
         type: 'boolean',
       },
       {
-        description: 'Add app dependencies to package.json and run Yarn',
-        long: 'install',
-        short: 'i',
+        description: 'Do not add app dependencies to package.json and do not run Yarn',
+        long: 'no-setup',
+        short: 'n',
         type: 'boolean',
       },
       {

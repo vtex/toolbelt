@@ -10,7 +10,7 @@ import { UserCancelledError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
-import { getManifest } from '../../manifest'
+import { getAppRoot, getManifest } from '../../manifest'
 import { logAll } from '../../sse'
 import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
@@ -20,7 +20,7 @@ import { legacyPublisher } from './legacyPublish'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
 
 
-const root = process.cwd()
+const root = getAppRoot()
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 5
 

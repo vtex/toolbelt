@@ -55,6 +55,7 @@ $ vtex
     init                    Create basic files and folders for your VTEX app
     install [app]           Install an app (defaults to the app in the current directory)
     link                    Start a development session for this app
+    setup                   Setup your development environment (configure tsconfig and tslint, run yarn)
     list                    List your installed VTEX apps
     login                   Log into a VTEX account
     logout                  Logout of the current VTEX account
