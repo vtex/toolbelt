@@ -101,6 +101,11 @@ export const runYarnIfPathExists = (relativePath: string) => {
   const root = getAppRoot()
   const pathName = resolvePath(root, `${relativePath}/`)
   if (existsSync(pathName)) {
-    runYarn(relativePath, false)
+    try {
+      runYarn(relativePath, false)
+    } catch (e) {
+      log.error(`Failed to run yarn in ${chalk.green(relativePath)}`)
+      throw e
+    }
   }
 }
