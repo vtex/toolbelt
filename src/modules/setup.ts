@@ -236,7 +236,7 @@ const getTSConfig = async (manifest: Manifest) => {
           currentTSConfig = readJsonSync(tsconfigPath)
         } catch(e) {
           if (e.code === 'ENOENT') {
-            log.error(`No tsconfig.json found in ${tsconfigPath}. Generating one...`)
+            log.warn(`No tsconfig.json found in ${tsconfigPath}. Generating one...`)
           } else {
             throw e
           }
