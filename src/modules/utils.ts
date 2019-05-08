@@ -84,7 +84,6 @@ export const formatNano = (nanoseconds: number): string =>
     0
   )}ms`
 
-
 export const runYarn = (relativePath: string, force: boolean) => {
   log.info(`Running yarn in ${chalk.green(relativePath)}`)
   const root = getAppRoot()
