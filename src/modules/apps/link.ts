@@ -202,7 +202,7 @@ export default async (options) => {
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  if (options.setup === undefined && options.n === false) {
+  if (options.setup || options.s) {
     await setup()
   }
   const { builder } = createClients(context, { timeout: 60000 })

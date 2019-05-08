@@ -6,9 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.56.2] - 2019-05-08
+### Changed
+- Running `vtex setup` on every `vtex link` is temporarily disabled until `vtex setup` becomes less intrusive
+
+### Fixed
+- Minor fix to eslint configuration in `vtex setup`
+
 ## [2.56.1] - 2019-05-08
 ### Changed
-- Temporarily disable saving StickyHost locally until rounting behavior is fixed
+- Temporarily disable saving StickyHost locally until routing behavior is fixed
 
 ## [2.56.0] - 2019-05-08
 ### Changed

@@ -120,8 +120,8 @@ export default {
       },
       {
         description: 'Do not add app dependencies to package.json and do not run Yarn',
-        long: 'no-setup',
-        short: 'n',
+        long: 'setup',
+        short: 's',
         type: 'boolean',
       },
       {

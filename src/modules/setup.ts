@@ -22,10 +22,11 @@ const buildersToAddAdditionalPackages = ['react', 'node']
 const addToPackageJson = {
   'eslint': '^5.15.1',
   'eslint-config-vtex': '^10.1.0',
+  'eslint-config-vtex-react': '^4.1.0',
 }
 const addToEslintrc = {
   'react': {
-    'extends': 'eslint-config-vtex',
+    'extends': 'vtex-react',
     'env': {
       'browser': true,
       'es6': true,
@@ -33,7 +34,7 @@ const addToEslintrc = {
     },
   },
   'node': {
-    'extends': 'eslint-config-vtex',
+    'extends': 'vtex',
     'env': {
       'node': true,
       'es6': true,
