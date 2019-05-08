@@ -13,6 +13,7 @@ import { publicEndpoint, region } from '../env'
 import log from '../logger'
 import { getAppRoot, getManifest } from '../manifest'
 import { isLinked, resolveAppId } from './apps/utils'
+import { runYarn, yarnPath } from './utils'
 
 const account = getAccount()
 const workspace = getWorkspace()
@@ -43,7 +44,6 @@ const addToEslintrc = {
   },
 }
 const typingsPath = 'public/_types'
-const yarnPath = require.resolve('yarn/bin/yarn')
 const typingsURLRegex = /_v\/\w*\/typings/
 const getVendor = (appId: string) => appId.split('.')[0]
 const builderHttp = axios.create({
@@ -112,15 +112,6 @@ const appsWithTypingsURLs = async (builder: string, appDependencies: Record<stri
   return result
 }
 
-const runYarn = (relativePath: string) => {
-  log.info(`Running yarn in ${relativePath}`)
-  execSync(
-    `${yarnPath} --force --non-interactive`,
-    {stdio: 'inherit', cwd: resolvePath(root, `${relativePath}`)}
-  )
-  log.info('Finished running yarn')
-}
-
 const yarnAddESLint = (relativePath: string) => {
   log.info(`Adding lint configs in ${relativePath}`)
   const lintDeps = join(' ', values(mapObjIndexed((version, name) => `${name}@${version}`, addToPackageJson)))
@@ -155,7 +146,7 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, builder:
         { spaces: 2 }
       )
       try {
-        runYarn(builder)
+        runYarn(builder, true)
       } catch (e) {
         log.error(`Error running Yarn in ${builder}.`)
         await outputJsonSync(packageJsonPath, packageJson, { spaces: 2 })  // Revert package.json to original state.

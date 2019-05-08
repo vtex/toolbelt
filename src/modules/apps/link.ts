@@ -18,6 +18,7 @@ import { getAppRoot, getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
 import { formatNano } from '../utils'
+import { runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
@@ -30,6 +31,7 @@ const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 const buildersToStartDebugger = ['node']
+const buildersToRunLocalYarn = ['node', 'react']
 const RETRY_OPTS_INITIAL_LINK = {
   retries: 2,
   minTimeout: 1000,
@@ -205,6 +207,9 @@ export default async (options) => {
   if (options.setup || options.s) {
     await setup()
   }
+  // Always run yarn locally for some builders
+  map(runYarnIfPathExists, buildersToRunLocalYarn)
+
   const { builder } = createClients(context, { timeout: 60000 })
 
   if (options.c || options.clean) {
