@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.56.1] - 2019-05-08
+### Changed
+- Temporarily disable saving StickyHost locally until rounting behavior is fixed
+
 ## [2.56.0] - 2019-05-08
 ### Changed
 - Move typings fetching to the `vtex setup` command
