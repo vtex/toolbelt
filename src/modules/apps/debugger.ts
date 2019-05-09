@@ -8,6 +8,7 @@ import { toMajorRange } from '../../locator'
 import log from '../../logger'
 
 const keepAliveDelayMs = 3 * 60 * 1000
+const THIRTY_SECONDS_MS = 30 * 1000
 
 const wsCloseCodeGoingAway = 1001
 const wsCloseCodeError = 1011
@@ -23,7 +24,7 @@ function getErrorMessage(raw: string): string {
   }
 }
 
-function webSocketTunnelHandler(host, path: string, server: net.Server): (socket: net.Socket) => void {
+function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => void {
   const options = {
     headers: {
       Authorization: getToken(),
@@ -35,13 +36,17 @@ function webSocketTunnelHandler(host, path: string, server: net.Server): (socket
     socket.setKeepAlive(true, keepAliveDelayMs)
     const ws = new WebSocket(`ws://${host}${path}`, options)
 
+    const interval = setInterval(ws.ping, THIRTY_SECONDS_MS)
+
     const end = () => {
+      clearInterval(interval)
       ws.removeAllListeners()
       socket.removeAllListeners()
       socket.destroy()
     }
 
     ws.on('close', end)
+
     ws.on('error', err => {
       end()
       log.error(`Debugger websocket error: ${err.name}: ${err.message}`)
@@ -49,15 +54,8 @@ function webSocketTunnelHandler(host, path: string, server: net.Server): (socket
 
     ws.on('unexpected-response', async (_, res) => {
       end()
-
       const errMsg = getErrorMessage(await streamToString(res))
-      if (errMsg === 'Unable to connect to the remote server') {
-        log.error('Unable to connect to remote debugger. Make sure you are running on colossus-js version >=0.2.0.')
-        server.close()
-        log.error('Local debugger tunnel closed.')
-      } else {
-        log.error(`Unexpected response from debugger hook (${res.statusCode}): ${errMsg}`)
-      }
+      log.warn(`Unexpected response from debugger hook (${res.statusCode}): ${errMsg}`)
     })
 
     ws.on('message', data => {
@@ -102,7 +100,7 @@ export default function startDebuggerTunnel(manifest: Manifest, port: number = D
 
   return new Promise((resolve, reject) => {
     const server = net.createServer()
-    server.on('connection', webSocketTunnelHandler(host, path, server))
+    server.on('connection', webSocketTunnelHandler(host, path))
 
     server.on('error', err => {
       if (port < DEFAULT_DEBUGGER_PORT + MAX_RETRY_COUNT) {
