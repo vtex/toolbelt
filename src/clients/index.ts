@@ -21,7 +21,7 @@ const context = {
   operationId: '',
 }
 
-export const options = {
+const options = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
 }
 
