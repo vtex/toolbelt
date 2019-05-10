@@ -7,11 +7,9 @@ import { getAccount } from '../../../conf'
 import log from '../../../logger'
 import { createTable } from '../../../table'
 import {
+  abtester,
   checkIfABTesterIsInstalled,
   formatDuration,
-  getABTester,
-  promptAndUseMaster,
-  promptAndUsePreviousWorkspace,
 } from './utils'
 
 
@@ -80,25 +78,16 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 }
 
 export default async () => {
-  await promptAndUseMaster()
+  await checkIfABTesterIsInstalled()
+  let abTestInfo = []
   try {
-    await checkIfABTesterIsInstalled()
-    const abtester = getABTester()
-    let abTestInfo = []
-    try {
-      abTestInfo = await abtester.status()
-    } catch (e) {
-      log.error(e)
-      process.exit()
-    }
-    if (!abTestInfo || abTestInfo.length === 0) {
-      return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}`)
-    }
-    R.map(printResultsTable, abTestInfo)
-  } catch (err) {
-    log.error('Unhandled exception')
-    await promptAndUsePreviousWorkspace()
-    throw err
+    abTestInfo = await abtester.status()
+  } catch (e) {
+    log.error(e)
+    process.exit()
   }
-  await promptAndUsePreviousWorkspace()
+  if (!abTestInfo || abTestInfo.length === 0) {
+    return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}\n`)
+  }
+  R.map(printResultsTable, abTestInfo)
 }
