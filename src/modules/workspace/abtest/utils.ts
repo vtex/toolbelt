@@ -1,5 +1,7 @@
 import chalk from 'chalk'
+import * as enquirer from 'enquirer'
 import * as numbro from 'numbro'
+import { compose, filter, map, prop } from 'ramda'
 
 import { apps, workspaces } from '../../../clients'
 import { getAccount, getWorkspace } from '../../../conf'
@@ -58,4 +60,24 @@ testing functionality`)
     }
     throw e
   }
+}
+
+
+export const promptProductionWorkspace = async (
+  promptMessage: string
+) => {
+  const productionWorkspaces = await workspaces.list(account)
+    .then(
+      compose<any, any, any>(
+        map(({name}) => name),
+        filter(({name, production}) => (production === true && name !== 'master'))
+      )
+    )
+  return await enquirer.prompt({
+    name: 'workspace',
+    message: promptMessage,
+    type: 'select',
+    choices: productionWorkspaces,
+  }).then(prop('workspace'))
+
 }

@@ -6,12 +6,13 @@ import { abtester } from '../../../clients'
 import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
+import { default as useWorkspace } from '../use'
 import {
   checkIfABTesterIsInstalled,
-  checkIfInProduction,
   currentWorkspace,
   formatDays,
-  SIGNIFICANCE_LEVELS
+  promptProductionWorkspace,
+  SIGNIFICANCE_LEVELS,
 } from './utils'
 
 const promptSignificanceLevel = async () => {
@@ -55,17 +56,52 @@ ${chalk.red(significanceLevel)} significance level. Proceed?`,
   }
 }
 
+const promptAndUseMaster = async () => {
+  if (currentWorkspace !== 'master') {
+    const proceed = await promptConfirm(
+      `To trigger an A/B test, you must be using the ${chalk.green('master')} \
+workspace. Do you whish to use it?`,
+      true
+    )
+    if (!proceed) {
+      throw new UserCancelledError()
+    }
+    await useWorkspace('master')
+  }
+}
+
+const promptAndUsePreviousWorkspace = async () => {
+  if (currentWorkspace !== 'master') {
+    const proceed = await promptConfirm(
+      `Do you wish to return to using the ${chalk.green(currentWorkspace)} workspace?`,
+      true
+    )
+    if (!proceed) {
+      throw new UserCancelledError()
+    }
+    await useWorkspace(currentWorkspace)
+  }
+}
+
 export default async () => {
-  await checkIfABTesterIsInstalled()
-  await checkIfInProduction()
+  const workspace = await promptProductionWorkspace('Choose production workspace to start A/B test:')
   const significanceLevel = await promptSignificanceLevel()
-  await promptContinue(significanceLevel)
-  const significanceLevelValue = SIGNIFICANCE_LEVELS[significanceLevel]
-  log.info(`Setting workspace ${chalk.green(currentWorkspace)} to A/B test with \
-${significanceLevel} significance level`)
-  await abtester.start(currentWorkspace, significanceLevelValue)
-  log.info(`Workspace ${chalk.green(currentWorkspace)} in A/B test`)
-  log.info(
-    `You can stop the test using ${chalk.blue('vtex workspace abtest abort')}`
-  )
+  await promptAndUseMaster()
+  try {
+    await checkIfABTesterIsInstalled()
+    await promptContinue(significanceLevel)
+    const significanceLevelValue = SIGNIFICANCE_LEVELS[significanceLevel]
+    log.info(`Setting workspace ${chalk.green(currentWorkspace)} to A/B test with \
+      ${significanceLevel} significance level`)
+    await abtester.start(workspace, significanceLevelValue)
+    log.info(`Workspace ${chalk.green(workspace)} in A/B test`)
+    log.info(
+      `You can stop the test using ${chalk.blue('vtex workspace abtest abort')}`
+    )
+    await promptAndUsePreviousWorkspace()
+  } catch (err) {
+    log.error('Unhandled exception')
+    await promptAndUsePreviousWorkspace()
+    throw err
+  }
 }
