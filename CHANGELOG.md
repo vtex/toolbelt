@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.56.3] - 2019-05-10
+### Fixed
+- Improved Node debugger stability
+
 ## [2.56.2] - 2019-05-08
 ### Changed
 - Running `vtex setup` on every `vtex link` is temporarily disabled until `vtex setup` becomes less intrusive
