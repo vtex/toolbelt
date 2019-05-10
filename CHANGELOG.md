@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.56.4] - 2019-05-10
+### Fixed
+- Correctly resolve app root for the `vtex release` command
+
 ## [2.56.3] - 2019-05-10
 ### Fixed
 - Improved Node debugger stability

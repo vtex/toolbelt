@@ -11,14 +11,17 @@ import {
   writeSync,
 } from 'fs-extra'
 import { safeLoad } from 'js-yaml'
+import { resolve } from 'path'
 import { find, path }  from 'ramda'
 import * as semver from 'semver'
 import log from '../../logger'
+import { getAppRoot } from '../../manifest'
 import { promptConfirm } from '../prompts'
 
 
-const versionFile = './manifest.json'
-const changelogPath = 'CHANGELOG.md'
+const root = getAppRoot()
+const versionFile = resolve(root, 'manifest.json')
+const changelogPath = resolve(root, 'CHANGELOG.md')
 const unreleased = '## [Unreleased]'
 
 const readVersionFile = () => {
