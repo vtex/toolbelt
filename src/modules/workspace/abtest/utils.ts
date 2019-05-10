@@ -6,11 +6,13 @@ import { compose, filter, map, prop } from 'ramda'
 
 import { workspaces } from '../../../clients'
 import { ABTester } from '../../../clients/abTester'
-import { getAccount, getToken, getWorkspace } from '../../../conf'
+import { getAccount, getToken } from '../../../conf'
 import * as env from '../../../env'
 import { CommandError } from '../../../errors'
 import envTimeout from '../../../timeout'
 import userAgent from '../../../user-agent'
+
+const account = getAccount()
 
 const DEFAULT_TIMEOUT = 15000
 
@@ -21,7 +23,7 @@ export const SIGNIFICANCE_LEVELS = {
 }
 
 const contextForMaster = {
-  account: getAccount(),
+  account,
   authToken: getToken(),
   production: false,
   region: env.region(),
@@ -39,10 +41,10 @@ const options = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
 }
 
+// Clients for the 'master' workspace
 export const abtester = new ABTester(contextForMaster, { ...options, retries: 3 })
 export const apps = new Apps(contextForMaster, options)
 
-const account = getAccount()
 
 export const formatDays = (days: number) => {
   let suffix = 'days'
@@ -67,7 +69,7 @@ export const checkIfABTesterIsInstalled = async () => {
     if (e.response.data.code === 'app_not_found') {
       throw new CommandError(`The app ${chalk.yellow('vtex.ab-tester')} is \
 not installed in account ${chalk.green(account)}, workspace \
-${chalk.blue(getWorkspace())}. Please install it before attempting to use A/B \
+${chalk.blue('master')}. Please install it before attempting to use A/B \
 testing functionality`)
     }
     throw e
