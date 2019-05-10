@@ -7,7 +7,7 @@ import { getStickyHost, hasStickyHost, saveStickyHost } from './conf'
 import { BuilderHubTimeoutError } from './errors'
 import log from './logger'
 
-const TTL_SAVED_HOST_HOURS = 0
+const TTL_SAVED_HOST_HOURS = 6
 
 const NOT_AVAILABLE = {
   hostname: undefined,
