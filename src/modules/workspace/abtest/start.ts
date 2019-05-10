@@ -2,20 +2,22 @@ import chalk from 'chalk'
 import * as enquirer from 'enquirer'
 import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 'ramda'
 
-import { abtester } from '../../../clients'
 import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
-import { default as useWorkspace } from '../use'
 import {
   checkIfABTesterIsInstalled,
   currentWorkspace,
   formatDays,
+  getABTester,
+  promptAndUseMaster,
+  promptAndUsePreviousWorkspace,
   promptProductionWorkspace,
   SIGNIFICANCE_LEVELS,
 } from './utils'
 
 const promptSignificanceLevel = async () => {
+  const abtester = getABTester()
   const significanceTimePreviews = await Promise.all(
     compose<any, number[], Array<Promise<number>>>(
       map(value => abtester.preview(value as number)),
@@ -56,32 +58,6 @@ ${chalk.red(significanceLevel)} significance level. Proceed?`,
   }
 }
 
-const promptAndUseMaster = async () => {
-  if (currentWorkspace !== 'master') {
-    const proceed = await promptConfirm(
-      `To trigger an A/B test, you must be using the ${chalk.green('master')} \
-workspace. Do you whish to use it?`,
-      true
-    )
-    if (!proceed) {
-      throw new UserCancelledError()
-    }
-    await useWorkspace('master')
-  }
-}
-
-const promptAndUsePreviousWorkspace = async () => {
-  if (currentWorkspace !== 'master') {
-    const proceed = await promptConfirm(
-      `Do you wish to return to using the ${chalk.green(currentWorkspace)} workspace?`,
-      true
-    )
-    if (!proceed) {
-      throw new UserCancelledError()
-    }
-    await useWorkspace(currentWorkspace)
-  }
-}
 
 export default async () => {
   const workspace = await promptProductionWorkspace('Choose production workspace to start A/B test:')
@@ -90,6 +66,7 @@ export default async () => {
   try {
     await checkIfABTesterIsInstalled()
     await promptContinue(significanceLevel)
+    const abtester = getABTester()
     const significanceLevelValue = SIGNIFICANCE_LEVELS[significanceLevel]
     log.info(`Setting workspace ${chalk.green(currentWorkspace)} to A/B test with \
       ${significanceLevel} significance level`)
@@ -98,10 +75,10 @@ export default async () => {
     log.info(
       `You can stop the test using ${chalk.blue('vtex workspace abtest abort')}`
     )
-    await promptAndUsePreviousWorkspace()
   } catch (err) {
     log.error('Unhandled exception')
     await promptAndUsePreviousWorkspace()
     throw err
   }
+  await promptAndUsePreviousWorkspace()
 }

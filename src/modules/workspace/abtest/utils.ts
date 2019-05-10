@@ -4,8 +4,13 @@ import * as numbro from 'numbro'
 import { compose, filter, map, prop } from 'ramda'
 
 import { apps, workspaces } from '../../../clients'
-import { getAccount, getWorkspace } from '../../../conf'
-import { CommandError } from '../../../errors'
+import { ABTester } from '../../../clients/abTester'
+import { getAccount, getToken, getWorkspace } from '../../../conf'
+import * as env from '../../../env'
+import { CommandError, UserCancelledError } from '../../../errors'
+import userAgent from '../../../user-agent'
+import { promptConfirm } from '../../prompts'
+import { default as useWorkspace } from '../use'
 
 const { getApp } = apps
 
@@ -15,6 +20,23 @@ export const SIGNIFICANCE_LEVELS = {
   mid: 0.7,
   high: 0.9,
 }
+
+const contextForABTester = () => ({
+  account: getAccount(),
+  authToken: getToken(),
+  production: false,
+  region: env.region(),
+  route: {
+    id: '',
+    params: {},
+  } ,
+  userAgent,
+  workspace: 'master',
+  requestId: '',
+  operationId: '',
+})
+
+export const getABTester = () => new ABTester(contextForABTester(), { retries: 3 })
 
 export const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
@@ -62,7 +84,6 @@ testing functionality`)
   }
 }
 
-
 export const promptProductionWorkspace = async (
   promptMessage: string
 ) => {
@@ -80,4 +101,31 @@ export const promptProductionWorkspace = async (
     choices: productionWorkspaces,
   }).then(prop('workspace'))
 
+}
+
+export const promptAndUseMaster = async () => {
+  if (currentWorkspace !== 'master') {
+    const proceed = await promptConfirm(
+      `To operate A/B tests, you must be using the ${chalk.green('master')} \
+workspace. Do you whish to use it?`,
+      true
+    )
+    if (!proceed) {
+      throw new UserCancelledError()
+    }
+    await useWorkspace('master')
+  }
+}
+
+export const promptAndUsePreviousWorkspace = async () => {
+  if (currentWorkspace !== 'master') {
+    const proceed = await promptConfirm(
+      `Do you wish to return to using the ${chalk.green(currentWorkspace)} workspace?`,
+      true
+    )
+    if (!proceed) {
+      throw new UserCancelledError()
+    }
+    await useWorkspace(currentWorkspace)
+  }
 }

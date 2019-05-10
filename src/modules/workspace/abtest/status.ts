@@ -3,11 +3,16 @@ import * as moment from 'moment'
 import * as numbro from 'numbro'
 import * as R from 'ramda'
 
-import { abtester } from '../../../clients'
 import { getAccount } from '../../../conf'
 import log from '../../../logger'
 import { createTable } from '../../../table'
-import { checkIfABTesterIsInstalled, formatDuration } from './utils'
+import {
+  checkIfABTesterIsInstalled,
+  formatDuration,
+  getABTester,
+  promptAndUseMaster,
+  promptAndUsePreviousWorkspace,
+} from './utils'
 
 
 interface ABTestStatus {
@@ -75,17 +80,25 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 }
 
 export default async () => {
-
-  await checkIfABTesterIsInstalled()
-  let abTestInfo = []
+  await promptAndUseMaster()
   try {
-    abTestInfo = await abtester.status()
-  } catch (e) {
-    log.error(e)
-    process.exit()
+    await checkIfABTesterIsInstalled()
+    const abtester = getABTester()
+    let abTestInfo = []
+    try {
+      abTestInfo = await abtester.status()
+    } catch (e) {
+      log.error(e)
+      process.exit()
+    }
+    if (!abTestInfo || abTestInfo.length === 0) {
+      return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}`)
+    }
+    R.map(printResultsTable, abTestInfo)
+  } catch (err) {
+    log.error('Unhandled exception')
+    await promptAndUsePreviousWorkspace()
+    throw err
   }
-  if (!abTestInfo || abTestInfo.length === 0) {
-    return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}`)
-  }
-  R.map(printResultsTable, abTestInfo)
+  await promptAndUsePreviousWorkspace()
 }
