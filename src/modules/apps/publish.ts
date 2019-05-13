@@ -15,6 +15,7 @@ import { logAll } from '../../sse'
 import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { promptConfirm } from '../prompts'
+import { runYarnIfPathExists } from '../utils'
 import { listLocalFiles } from './file'
 import { legacyPublisher } from './legacyPublish'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
@@ -23,6 +24,7 @@ import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from 
 const root = getAppRoot()
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 5
+const buildersToRunLocalYarn = ['node', 'react']
 
 const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()) :string => {
   return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
@@ -154,6 +156,10 @@ export default (path: string, options) => {
 
   path = path || root
   const workspace = options.w || options.workspace
+
+  // Always run yarn locally for some builders
+  map(runYarnIfPathExists, buildersToRunLocalYarn)
+
   const { publishApps } = publisher(workspace)
   return publishApps(path, options.tag)
 }

@@ -1,6 +1,11 @@
+import chalk from 'chalk'
+import { execSync } from 'child-process-es6-promise'
+import { existsSync } from 'fs'
+import { resolve as resolvePath } from 'path'
 import { currentContext } from '../conf'
 import { BuildFailError } from '../errors'
 import log from '../logger'
+import { getAppRoot } from '../manifest'
 import { logAll, onEvent } from '../sse'
 
 interface BuildListeningOptions {
@@ -15,6 +20,8 @@ type AnyFunction = (...args: any[]) => any
 const allEvents: BuildEvent[] = ['start', 'success', 'fail', 'timeout', 'logs']
 
 const flowEvents: BuildEvent[] = ['start', 'success', 'fail']
+
+export const yarnPath = require.resolve('yarn/bin/yarn')
 
 const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
   const [subject] = appOrKey.split('@')
@@ -76,3 +83,29 @@ export const formatNano = (nanoseconds: number): string =>
   `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(
     0
   )}ms`
+
+export const runYarn = (relativePath: string, force: boolean) => {
+  log.info(`Running yarn in ${chalk.green(relativePath)}`)
+  const root = getAppRoot()
+  const command = force ?
+    `${yarnPath} --force --non-interactive` :
+    `${yarnPath} --non-interactive`
+  execSync(
+    command,
+    {stdio: 'inherit', cwd: resolvePath(root, relativePath)}
+  )
+  log.info('Finished running yarn')
+}
+
+export const runYarnIfPathExists = (relativePath: string) => {
+  const root = getAppRoot()
+  const pathName = resolvePath(root, relativePath)
+  if (existsSync(pathName)) {
+    try {
+      runYarn(relativePath, false)
+    } catch (e) {
+      log.error(`Failed to run yarn in ${chalk.green(relativePath)}`)
+      throw e
+    }
+  }
+}
