@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.56.6] - 2019-05-13
+
 ## [2.56.5] - 2019-05-13
 ### Added
 - Always run `yarn` locally as an initial step of `vtex link` and `vtex publish` for `./node` and `./react` folders
