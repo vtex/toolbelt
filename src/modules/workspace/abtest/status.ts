@@ -3,11 +3,14 @@ import * as moment from 'moment'
 import * as numbro from 'numbro'
 import * as R from 'ramda'
 
-import { abtester } from '../../../clients'
 import { getAccount } from '../../../conf'
 import log from '../../../logger'
 import { createTable } from '../../../table'
-import { checkIfABTesterIsInstalled, formatDuration } from './utils'
+import {
+  abtester,
+  checkIfABTesterIsInstalled,
+  formatDuration,
+} from './utils'
 
 
 interface ABTestStatus {
@@ -75,7 +78,6 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 }
 
 export default async () => {
-
   await checkIfABTesterIsInstalled()
   let abTestInfo = []
   try {
@@ -85,7 +87,7 @@ export default async () => {
     process.exit()
   }
   if (!abTestInfo || abTestInfo.length === 0) {
-    return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}`)
+    return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}\n`)
   }
   R.map(printResultsTable, abTestInfo)
 }

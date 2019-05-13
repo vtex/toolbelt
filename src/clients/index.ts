@@ -3,7 +3,6 @@ import { getAccount, getToken, getWorkspace } from '../conf'
 import * as env from '../env'
 import envTimeout from '../timeout'
 import userAgent from '../user-agent'
-import { ABTester } from './abTester'
 import Billing from './billingClient'
 
 const DEFAULT_TIMEOUT = 15000
@@ -44,9 +43,8 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
   }
 }
 
-const [abtester, apps, router, workspaces, logger, events, billing] = getToken()
+const [apps, router, workspaces, logger, events, billing] = getToken()
   ? [
-    new ABTester(context, { ...options, retries: 3 }),
     new Apps(context, options),
     new Router(context, options),
     new Workspaces(context, options),
@@ -55,7 +53,6 @@ const [abtester, apps, router, workspaces, logger, events, billing] = getToken()
     new Billing(context, options),
   ]
   : [
-    interceptor<ABTester>('abtester'),
     interceptor<Apps>('apps'),
     interceptor<Router>('router'),
     interceptor<Workspaces>('workspaces'),
@@ -65,7 +62,6 @@ const [abtester, apps, router, workspaces, logger, events, billing] = getToken()
   ]
 
 export {
-  abtester,
   apps,
   router,
   workspaces,

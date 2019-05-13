@@ -1,12 +1,20 @@
+import { Apps } from '@vtex/api'
 import chalk from 'chalk'
+import * as enquirer from 'enquirer'
 import * as numbro from 'numbro'
+import { compose, filter, map, prop } from 'ramda'
 
-import { apps, workspaces } from '../../../clients'
-import { getAccount, getWorkspace } from '../../../conf'
+import { workspaces } from '../../../clients'
+import { ABTester } from '../../../clients/abTester'
+import { getAccount, getToken } from '../../../conf'
+import * as env from '../../../env'
 import { CommandError } from '../../../errors'
+import envTimeout from '../../../timeout'
+import userAgent from '../../../user-agent'
 
-const { getApp } = apps
+const account = getAccount()
 
+const DEFAULT_TIMEOUT = 15000
 
 export const SIGNIFICANCE_LEVELS = {
   low: 0.5,
@@ -14,9 +22,29 @@ export const SIGNIFICANCE_LEVELS = {
   high: 0.9,
 }
 
-export const [account, currentWorkspace] = [getAccount(), getWorkspace()]
+const contextForMaster = {
+  account,
+  authToken: getToken(),
+  production: false,
+  region: env.region(),
+  route: {
+    id: '',
+    params: {},
+  } ,
+  userAgent,
+  workspace: 'master',
+  requestId: '',
+  operationId: '',
+}
 
-const { get } = workspaces
+const options = {
+  timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
+}
+
+// Clients for the 'master' workspace
+export const abtester = new ABTester(contextForMaster, { ...options, retries: 3 })
+export const apps = new Apps(contextForMaster, options)
+
 
 export const formatDays = (days: number) => {
   let suffix = 'days'
@@ -34,28 +62,35 @@ export const formatDuration = (durationInMinutes: number) => {
   return `${days} days, ${hours} hours and ${minutes} minutes`
 }
 
-export const checkIfInProduction = async (): Promise<void> => {
-  const workspaceData = await get(account, currentWorkspace)
-  if (!workspaceData.production) {
-    throw new CommandError(
-    `Only ${chalk.green('production')} workspaces can be \
-used for A/B testing. Please create a production workspace with \
-${chalk.blue('vtex use <workspace> -r -p')} or reset this one with \
-${chalk.blue('vtex workspace reset -p')}`
-)
-  }
-}
-
 export const checkIfABTesterIsInstalled = async () => {
   try {
-    await getApp('vtex.ab-tester@x')
+    await apps.getApp('vtex.ab-tester@x')
   } catch (e) {
     if (e.response.data.code === 'app_not_found') {
       throw new CommandError(`The app ${chalk.yellow('vtex.ab-tester')} is \
 not installed in account ${chalk.green(account)}, workspace \
-${chalk.blue(currentWorkspace)}. Please install it before attempting to use A/B \
+${chalk.blue('master')}. Please install it before attempting to use A/B \
 testing functionality`)
     }
     throw e
   }
+}
+
+export const promptProductionWorkspace = async (
+  promptMessage: string
+) => {
+  const productionWorkspaces = await workspaces.list(account)
+    .then(
+      compose<any, any, any>(
+        map(({name}) => name),
+        filter(({name, production}) => (production === true && name !== 'master'))
+      )
+    )
+  return await enquirer.prompt({
+    name: 'workspace',
+    message: promptMessage,
+    type: 'select',
+    choices: productionWorkspaces,
+  }).then(prop('workspace'))
+
 }
