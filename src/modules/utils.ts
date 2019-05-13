@@ -92,14 +92,14 @@ export const runYarn = (relativePath: string, force: boolean) => {
     `${yarnPath} --non-interactive`
   execSync(
     command,
-    {stdio: 'inherit', cwd: resolvePath(root, `${relativePath}`)}
+    {stdio: 'inherit', cwd: resolvePath(root, relativePath)}
   )
   log.info('Finished running yarn')
 }
 
 export const runYarnIfPathExists = (relativePath: string) => {
   const root = getAppRoot()
-  const pathName = resolvePath(root, `${relativePath}/`)
+  const pathName = resolvePath(root, relativePath)
   if (existsSync(pathName)) {
     try {
       runYarn(relativePath, false)
