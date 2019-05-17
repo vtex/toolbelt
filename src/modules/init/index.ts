@@ -127,6 +127,7 @@ const createManifest = (name: string, vendor: string, title = '', description = 
     description,
     mustUpdateAt: `${Number(year) + 1}-${monthAndDay.join('-')}`,
     registries: ['smartcheckout'],
+    builders: {},
   }
 }
 

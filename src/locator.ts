@@ -14,7 +14,7 @@ export const toAppLocator = ({ vendor, name, version }: Manifest): string => {
 export const parseLocator = (locator: string): Manifest => {
   const [vendorAndName, version] = locator.split('@')
   const [vendor, name] = vendorAndName.split('.')
-  return { vendor, name, version }
+  return { vendor, name, version, builders: {} }
 }
 
 export const removeVersion = (appId: string): string => appId.split('@')[0]
