@@ -9,8 +9,7 @@ const readFileUtf = async (file: string): Promise<string> => {
   return await readFile(file, 'utf8')
 }
 
-// Change to master version after merge
-const MANIFEST_SCHEMA = 'https://raw.githubusercontent.com/vtex/node-vtex-api/feature/generate-json-schema/gen/manifest.schema'
+const MANIFEST_SCHEMA = 'https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema'
 
 export const MANIFEST_FILE_NAME = 'manifest.json'
 
