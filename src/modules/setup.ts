@@ -90,7 +90,7 @@ const typingsInfo = async () => {
 const appTypingsURL = async (appName: string, appVersion: string, builder: string): Promise<string> => {
   const appId = await resolveAppId(appName, appVersion)
   const vendor = getVendor(appId)
-  if (isLinked({'version': appId})) {
+  if (isLinked({'version': appId, vendor, name: '', builders: {}})) {
     return `https://${workspace}--${account}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/${typingsPath}/${builder}`
   }
   return `http://${vendor}.vteximg.com.br/_v/public/typings/v1/${appId}/${typingsPath}/${builder}`

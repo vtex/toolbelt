@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.57.0] - 2019-05-21
+### Changed
+- Add JSON schema to Manifest
+
 ## [2.56.7] - 2019-05-15
 ### Changed
 - Enable saving StickyHost locally

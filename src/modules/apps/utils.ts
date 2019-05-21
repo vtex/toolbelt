@@ -207,6 +207,6 @@ export const switchAccountMessage = (previousAccount: string, currentAccount: st
   return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
 }
 
-export const resolveAppId = async (appName: string, appVersion: string) =>  await apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
+export const resolveAppId = async (appName: string, appVersion: string) : Promise<string> =>  await apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
 
 export const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')

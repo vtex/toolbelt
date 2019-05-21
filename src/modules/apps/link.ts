@@ -14,7 +14,7 @@ import { CommandError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
-import { getAppRoot, getManifest } from '../../manifest'
+import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
 import { formatNano } from '../utils'
@@ -192,6 +192,11 @@ export default async (options) => {
   await validateAppAction('link')
   const unsafe = !!(options.unsafe || options.u)
   const manifest = await getManifest()
+  try {
+    await writeManifestSchema()
+  } catch(e) {
+    log.debug('Failed to write schema on manifest.')
+  }
   const builderHubMessage = await checkBuilderHubMessage('link')
   if (!isEmpty(builderHubMessage)) {
     await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)

@@ -1,5 +1,5 @@
 import { accessSync } from 'fs'
-import { readFile } from 'fs-extra'
+import { readFile, writeFile } from 'fs-extra'
 import * as path from 'path'
 import { memoize } from 'ramda'
 
@@ -8,6 +8,8 @@ import { CommandError } from './errors'
 const readFileUtf = async (file: string): Promise<string> => {
   return await readFile(file, 'utf8')
 }
+
+const MANIFEST_SCHEMA = 'https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema'
 
 export const MANIFEST_FILE_NAME = 'manifest.json'
 
@@ -96,3 +98,12 @@ export const getManifest = memoize(async (): Promise<Manifest> => {
   validateAppManifest(manifest)
   return manifest
 })
+
+export const writeManifestSchema = async () => {
+  const content = await readFileUtf(getManifestPath())
+  const json = JSON.parse(content)
+  if (!json.$schema || json.$schema !== MANIFEST_SCHEMA) {
+    json.$schema = MANIFEST_SCHEMA
+    writeFile(getManifestPath(), JSON.stringify(json, null, 2))
+  }
+}
