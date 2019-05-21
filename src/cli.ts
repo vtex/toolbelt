@@ -64,9 +64,7 @@ const hasValidToken = (): boolean => {
   if (!token) { return false }
 
   const decoded = decode(token)
-  if (!decoded || !decoded.exp || Number(decoded.exp) < (Date.now() / 1000)) { return false }
-
-  return true
+  return decoded && typeof decoded !== 'string' && decoded.exp && Number(decoded.exp) >= Date.now() / 1000
 }
 
 const checkLogin = args => {
