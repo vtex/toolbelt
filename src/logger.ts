@@ -95,6 +95,7 @@ class FancyConsoleTransport extends Transport {
     scope=UNINDEXED
   ) {
     this.logs[scope] = {}
+    console.log(`Received a clear in ${scope}`)
     this.setTimestamp(scope)
     if (newLogText) {
       this.logs[scope].text = newLogText
@@ -261,7 +262,7 @@ interface ExtendedLogger extends Logger {
   scopedProgress?(value: number, text?: string, scope?: string): void
   scopedDebug?(message: string, scope?: string, append?: boolean): void
   scopedInfo?(message: string, scope?: string, append?: boolean): void
-  scopedWarning?(message: string, scope?: string, append?: boolean): void
+  scopedWarn?(message: string, scope?: string, append?: boolean): void
   scopedError?(message: string, scope?: string, append?: boolean): void
   clearScope?(scope: string): void
   clearAll?(): void
@@ -313,7 +314,7 @@ logger.log({message, scope, append, level: 'debug'})
 logger.scopedInfo = (message: string, scope: string, append=false) => {
 logger.log({message, scope, append, level: 'info'})
 }
-logger.scopedWarning = (message: string, scope: string, append=false) => {
+logger.scopedWarn = (message: string, scope: string, append=false) => {
 logger.log({message, scope, append, level: 'warning'})
 }
 logger.scopedError = (message: string, scope: string, append=false) => {

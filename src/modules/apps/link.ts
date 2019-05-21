@@ -18,6 +18,7 @@ import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
+import { FINAL_MESSAGES, LOCAL_FILES } from '../../logger-scopes'
 import { getAppRoot, getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
@@ -29,7 +30,6 @@ import { checkBuilderHubMessage, isLinked, pathToFileObject, resolveAppId, showB
 const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
-const LOCAL_FILES_SCOPE = 'local_files'
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
@@ -186,7 +186,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   const linkedDepsPatterns = map(path => join(path, '**'), getLinkedDepsDirs(extraData.linkConfig))
 
   const queueChange = (path: string, remove?: boolean) => {
-    log.scopedInfo(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`, LOCAL_FILES_SCOPE)
+    log.scopedInfo(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`, LOCAL_FILES)
     changeQueue.push(pathToChange(path, remove))
     sendChanges()
   }
@@ -266,8 +266,8 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 
     if (tryCount === 1) {
       const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
-      log.scopedProgress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`, LOCAL_FILES_SCOPE)
-      filesWithContent.forEach(p => log.scopedInfo(p.path, 'local_files'))
+      log.scopedProgress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`, LOCAL_FILES)
+      filesWithContent.forEach(p => log.scopedInfo(p.path, LOCAL_FILES))
     }
 
     if (tryCount > 1) {
@@ -275,7 +275,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     }
 
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-    log.scopedProgress(100, 'Files sent', LOCAL_FILES_SCOPE)
+    log.scopedProgress(100, 'Files sent', LOCAL_FILES)
     const linkOptions = { sticky: true, stickyHint }
     try {
       const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })
@@ -349,7 +349,7 @@ export default async (options) => {
       try {
         const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
         debuggerStarted = true
-        log.scopedInfo(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`, 'final_messages', true)
+        log.scopedInfo(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`, FINAL_MESSAGES, true)
       } catch (e) {
         log.error(e.message)
       }

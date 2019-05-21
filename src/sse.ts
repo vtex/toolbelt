@@ -89,11 +89,11 @@ export const onEvent = (ctx: Context, sender: string, subject: string, keys: str
 }
 
 export const logAll = (context: Context, logLevel: string, id: string, senders?: string[]) => {
-  const callback = ({ sender, level, body: { message, code, progress, scope } }: Message) => {
+  const callback = ({ sender, level, body: { message, code, progress, scope, clear } }: Message) => {
     if (!(message || code || progress)) {
       return // Ignore logs without code or progress bar info.
     }
-    log.log({ level, message, code, progress, sender, scope })
+    log.log({ level, message, code, progress, sender, scope, clear })
   }
 
   return onLog(context, id, logLevel, callback, senders)
