@@ -4,7 +4,7 @@ import * as ora from 'ora'
 import { isEmpty, map, pipe, prop, reject } from 'ramda'
 
 import { apps } from '../../clients'
-import { parseLocator, toAppLocator } from '../../locator'
+import { parseLocator, toAppLocator, toMajorRange } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
 import { diffVersions } from '../infra/utils'
@@ -33,7 +33,7 @@ export default async () => {
   const { data } = await listApps()
   const installedApps = reject<Manifest>(isLinked, map(extractAppLocator, data))
   const withLatest = await Bluebird.all(map(async (app) => {
-    app.latest = await appLatestVersion(`${app.vendor}.${app.name}`)
+    app.latest = await appLatestVersion(`${app.vendor}.${app.name}`, toMajorRange(app.version))
     return app
   }, installedApps))
   const updateableApps = reject(sameVersion, withLatest)
