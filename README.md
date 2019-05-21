@@ -95,6 +95,8 @@ $ vtex
     settings set <app> <fields> <value>         Set a value
     settings unset <app> <fields>               Unset a value
 
+    url                               Prints base URL for current account, workspace and account
+
     workspace                         Alias for vtex workspace info
     workspace create <name>           Create a new workspace with this name
     workspace delete <name>           Delete a single or various workspaces

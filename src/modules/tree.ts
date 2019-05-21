@@ -422,4 +422,8 @@ export default {
     handler: './release',
     optionalArgs: ['releaseType', 'tagName'],
   },
+  url: {
+    description: 'Prints base URL for current account, workspace and environment',
+    handler: './url',
+  },
 }
