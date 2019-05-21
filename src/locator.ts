@@ -1,5 +1,5 @@
 export const toMajorRange = (version: string): string => {
-  return `${version.split('.')[0]}.x`
+  return `${version.split('.', 2)[0]}.x`
 }
 
 export const toMajorLocator = ({ vendor, name, version }: Manifest): string => {
@@ -17,4 +17,4 @@ export const parseLocator = (locator: string): Manifest => {
   return { vendor, name, version, builders: {} }
 }
 
-export const removeVersion = (appId: string): string => appId.split('@')[0]
+export const removeVersion = (appId: string): string => appId.split('@', 2)[0]
