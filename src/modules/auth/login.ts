@@ -51,7 +51,6 @@ const getLoginUrl = async (account: string, workspace: string, state: string): P
 const startUserAuth = async (account: string, workspace: string): Promise<string[] | never> => {
   const state = randomstring.generate()
   const [url, fullReturnUrl] = await getLoginUrl(account, workspace, state)
-  console.log(url, fullReturnUrl)
   opn(url, { wait: false })
   return onAuth(account, workspace, state, fullReturnUrl)
 }
