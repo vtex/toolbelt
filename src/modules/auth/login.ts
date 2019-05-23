@@ -26,7 +26,7 @@ const oldLoginUrls = (workspace: string, state: string): [string, string] => {
 
 const newLoginUrls = (workspace: string, state: string): [string, string] => {
   const returnUrl = `/_v/private/auth-server/v1/callback?workspace=${workspace}&state=${state}`
-  const url = `/_v/segment/admin-login/v1/login/?workspace=${workspace}`
+  const url = `/_v/segment/admin-login/v1/login?workspace=${workspace}`
   return [url, returnUrl]
 }
 
@@ -34,12 +34,8 @@ const getLoginUrl = async (account: string, workspace: string, state: string): P
   const baseUrl = `https://${account}${clusterIdDomainInfix()}.${publicEndpoint()}`
   let [url, returnUrl] = newLoginUrls(workspace, state)
   try {
-    const response = await axios.get(`${baseUrl}${url}`)
-    console.log('it worked')
-    console.log(response)
+    await axios.get(`${baseUrl}${url}`)
   } catch (e) {
-    console.log('got an error')
-    console.log(e)
     const oldUrls = oldLoginUrls(workspace, state)
     url = oldUrls[0]
     returnUrl = oldUrls[1]
@@ -55,6 +51,7 @@ const getLoginUrl = async (account: string, workspace: string, state: string): P
 const startUserAuth = async (account: string, workspace: string): Promise<string[] | never> => {
   const state = randomstring.generate()
   const [url, fullReturnUrl] = await getLoginUrl(account, workspace, state)
+  console.log(url, fullReturnUrl)
   opn(url, { wait: false })
   return onAuth(account, workspace, state, fullReturnUrl)
 }
