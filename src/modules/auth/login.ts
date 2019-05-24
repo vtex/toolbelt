@@ -18,14 +18,39 @@ import { promptConfirm } from '../prompts'
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`
 
-const startUserAuth = (account: string, workspace: string): Bluebird<string[] | never> => {
-  const state = randomstring.generate()
-  const baseUrl = `https://${account}${clusterIdDomainInfix()}.${publicEndpoint()}`
+const oldLoginUrls = (workspace: string, state: string): [string, string] => {
   const returnUrl = `/_v/private/auth-server/v1/callback?workspace=${workspace}&state=${state}`
-  const returnUrlEncoded = encodeURIComponent(returnUrl)
-  const fullReturnUrl = baseUrl + returnUrl
-  const url = `${baseUrl}/_v/private/auth-server/v1/login/?workspace=${workspace}&ReturnUrl=${returnUrlEncoded}`
+  const url = `/_v/private/auth-server/v1/login/?workspace=${workspace}`
+  return [url, returnUrl]
+}
 
+const newLoginUrls = (workspace: string, state: string): [string, string] => {
+  const returnUrl = `/_v/private/auth-server/v1/callback?workspace=${workspace}&state=${state}`
+  const url = `/_v/segment/admin-login/v1/login?workspace=${workspace}`
+  return [url, returnUrl]
+}
+
+const getLoginUrl = async (account: string, workspace: string, state: string): Promise<[string, string]> => {
+  const baseUrl = `https://${account}${clusterIdDomainInfix()}.${publicEndpoint()}`
+  let [url, returnUrl] = newLoginUrls(workspace, state)
+  try {
+    await axios.get(`${baseUrl}${url}`)
+  } catch (e) {
+    const oldUrls = oldLoginUrls(workspace, state)
+    url = oldUrls[0]
+    returnUrl = oldUrls[1]
+  }
+  const fullReturnUrl = baseUrl + returnUrl
+  const returnUrlEncoded = encodeURIComponent(returnUrl)
+  return [
+    `${baseUrl}${url}&returnUrl=${returnUrlEncoded}`,
+    fullReturnUrl,
+  ]
+}
+
+const startUserAuth = async (account: string, workspace: string): Promise<string[] | never> => {
+  const state = randomstring.generate()
+  const [url, fullReturnUrl] = await getLoginUrl(account, workspace, state)
   opn(url, { wait: false })
   return onAuth(account, workspace, state, fullReturnUrl)
 }
