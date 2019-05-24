@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.59.0] - 2019-05-24
+
 ## [2.58.0] - 2019-05-24
 ### Changed
 - Use new login route whenever it is available in the current workspace
