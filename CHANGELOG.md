@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.60.0] - 2019-05-25
+### Added
+- Add `--qr` flag to the `browse` command, that outputs a QR code; intended for mobile devices.
+
 ## [2.59.0] - 2019-05-24
 
 ## [2.58.0] - 2019-05-24
