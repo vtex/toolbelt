@@ -20,6 +20,14 @@ export default {
     description: 'Open endpoint in browser window',
     handler: './browse',
     optionalArgs: ['endpoint'],
+    options: [
+      {
+        description: 'Outputs a QR Code on the terminal',
+        long: 'qr',
+        short: 'q',
+        type: 'boolean',
+      }
+    ]
   },
   deprecate: {
     description: 'Deprecate app(s)',
