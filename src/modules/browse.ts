@@ -1,7 +1,8 @@
 import * as opn from 'opn'
 import * as conf from '../conf'
 import { clusterIdDomainInfix, publicEndpoint } from '../env'
-const QRCode = require('qrcode-terminal')
+// Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯
+const QRCode = require('qrcode-terminal') // tslint:disable-line no-var-requires
 
 export default (endpoint='', {q, qr}) => {
   const { account, workspace } = conf.currentContext
