@@ -1,24 +1,20 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import * as ora from 'ora'
-import { curry, path, prop } from 'ramda'
+import { curry, path } from 'ramda'
 import * as semver from 'semver'
 
 import { router } from '../../clients'
+import { Region } from '../../conf'
 import log from '../../logger'
+import { promptConfirm } from '../prompts'
 import { diffVersions, getTag } from './utils'
 
 const { getAvailableVersions, listInstalledServices, installService } = router
 
 const promptInstall = (): Bluebird<boolean> =>
   Promise.resolve(
-    inquirer.prompt({
-      type: 'confirm',
-      name: 'confirm',
-      message: 'Continue with the installation?',
-    })
-      .then<boolean>(prop('confirm'))
+    promptConfirm('Continue with the installation?')
   )
 
 const findVersion = (pool: string[], predicate: (version: string) => boolean): string =>
@@ -79,13 +75,13 @@ const getInstalledVersion = (service: string): Bluebird<string> =>
 export default (name: string) => {
   const [service, suffix] = name.split('@')
   const spinner = ora('Getting versions').start()
-  // We force getting versions from the aws-us-east-1 region as currently all
+  // We force getting versions from the Production region as currently all
   // regions use the same ECR on us-east-1 region. This API is old and weird,
   // as it shouldn't return the regions in the response if I'm already querying
   // a single region. Only change to use `env.region()` when router fixed.
   return Promise.all([
     getInstalledVersion(service),
-    getAvailableVersions(service).then(path(['versions', 'aws-us-east-1'])),
+    getAvailableVersions(service).then(path(['versions', Region.Production])),
   ])
     .tap(() => spinner.stop())
     .spread(getNewVersion(suffix))

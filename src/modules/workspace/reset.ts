@@ -1,27 +1,25 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
+import { promptConfirm } from '../prompts'
 
 const promptWorkspaceReset = (name: string): Bluebird<void> =>
-  inquirer.prompt({
-    type: 'confirm',
-    name: 'confirm',
-    message: `Are you sure you want to reset workspace ${chalk.green(name)}?`,
+  promptConfirm(
+    `Are you sure you want to reset workspace ${chalk.green(name)}?`
+  ).then(answer => {
+    if (!answer) {
+      throw new UserCancelledError()
+    }
   })
-    .then(({ confirm }) => {
-      if (!confirm) {
-        throw new UserCancelledError()
-      }
-    })
 
 export default async (name: string, options) => {
   const account = getAccount()
   const workspace = name || getWorkspace()
   const preConfirm = options.y || options.yes
+  const production = !!(options.p || options.production)
 
   log.debug('Resetting workspace', workspace)
 
@@ -30,9 +28,9 @@ export default async (name: string, options) => {
   }
 
   try {
-    log.debug('Starting to reset workspace', workspace)
-    await (workspaces as any).reset(account, workspace)
-    log.info(`Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')}`)
+    log.debug('Starting to reset workspace', workspace, 'with production =', production)
+    await (workspaces as any).reset(account, workspace, { production })
+    log.info(`Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')} using ${chalk.green(`production=${production}`)}`)
   } catch (err) {
     log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
     if (err.response) {

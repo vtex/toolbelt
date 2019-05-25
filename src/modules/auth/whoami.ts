@@ -1,7 +1,7 @@
 import { greeting } from '../../greeting'
 import log from '../../logger'
 
-export default () => {
-  greeting.forEach((msg: string) => log.info(msg))
-  return Promise.resolve()
+export default async (): Promise<void> => {
+  const lines = await greeting()
+  lines.forEach((msg: string) => log.info(msg))
 }

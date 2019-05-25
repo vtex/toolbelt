@@ -1,5 +1,5 @@
 import { HttpClient, InstanceOptions, IOContext } from '@vtex/api'
-import { GraphQlError } from './errors'
+import { GraphQlError } from '../errors'
 
 export default class Billing {
   private http: HttpClient

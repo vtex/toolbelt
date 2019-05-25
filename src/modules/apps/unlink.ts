@@ -1,4 +1,4 @@
-import { prepend } from 'ramda'
+import { path, prepend } from 'ramda'
 
 import { apps } from '../../clients'
 import log from '../../logger'
@@ -16,7 +16,15 @@ const unlinkApp = async (app: string) => {
     await unlink(app)
     log.info('Successfully unlinked', app)
   } catch (e) {
-    log.error(`Error unlinking ${app}.`, e.message)
+    if (e.response.status === 404) {
+      log.error(`${app} is not linked in the current workspace. \
+Make sure you typed the right app vendor, name and version.`)
+    } else {
+      log.error(`Error unlinking ${app}.`, e.message)
+      if (path(['response', 'data', 'message'], e)) {
+        log.error(e.response.data.message)
+      }
+    }
   }
 }
 
@@ -32,6 +40,9 @@ const unlinkAllApps = async (): Promise<void> => {
     log.info('Successfully unlinked all apps')
   } catch (e) {
     log.error('Error unlinking all apps.', e.message)
+    if (path(['response', 'data', 'message'], e)) {
+      log.error(e.response.data.message)
+    }
   }
 }
 

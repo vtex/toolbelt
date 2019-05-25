@@ -1,68 +1,98 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
+import * as enquirer from 'enquirer'
 import { outputJson, readJson } from 'fs-extra'
-import * as inquirer from 'inquirer'
 import * as moment from 'moment'
+import { join } from 'path'
 import { keys, prop } from 'ramda'
+
+import { getAccount } from '../../conf'
 import log from '../../logger'
-import { manifestPath } from '../../manifest'
+import { MANIFEST_FILE_NAME } from '../../manifest'
+import { promptConfirm } from '../prompts'
+
 import * as git from './git'
 
 const { mapSeries } = Bluebird
 
-const currentFolderName = process.cwd().replace(/.*\//, '')
-
 const templates = {
-  'react getting-started': 'render-getting-started',
-  'graphql getting-started': 'product-review-graphql-example',
-  'react+graphql': 'render-guide',
+
+  'store-theme': 'store-theme',
+  'delivery-theme': 'delivery-theme',
+  'service-example': 'service-example',
+  'render-guide': 'render-guide',
+  'masterdata-graphql-guide': 'masterdata-graphql-guide',
   'support app': 'hello-support',
 }
 
-const promptName = async () => {
+const titles = {
+  'store-theme': 'Store Theme',
+  'delivery-theme': 'Delivery Store Theme',
+  'service-example': 'Node Service Example',
+  'render-guide': 'Render Guide',
+  'masterdata-graphql-guide': 'MasterData GraphQL Guide',
+  'support app': 'Support App Example',
+}
+
+const descriptions = {
+  'store-theme': 'VTEX IO Store Theme',
+  'delivery-theme': 'VTEX IO Delivery Store Theme',
+  'service-example': `Example of @vtex/api's Service class`,
+  'render-guide': 'VTEX IO Render Guide',
+  'masterdata-graphql-guide': 'VTEX IO MasterData GraphQL Guide',
+  'support app': 'Example of a support app',
+}
+
+const promptName = async (repo: string) => {
   const message = 'The app name should only contain numbers, lowercase letters, underscores and hyphens.'
-  return prop('name', await inquirer.prompt({
+  return prop('name', await enquirer.prompt({
     name: 'name',
     message: 'What\'s your VTEX app name?',
     validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
     filter: s => s.trim(),
-    default: currentFolderName,
+    type: 'input',
+    initial: repo,
   }))
 }
 
 const promptVendor = async () => {
   const message = 'The vendor should only contain numbers, lowercase letters, underscores and hyphens.'
-  return prop('vendor', await inquirer.prompt({
+  return prop('vendor', await enquirer.prompt({
     name: 'vendor',
     message: 'What\'s your VTEX app vendor?',
     validate: s => /^[a-z0-9\-_]+$/.test(s) || message,
     filter: s => s.trim(),
-    default: null,
+    type: 'input',
+    initial: getAccount(),
   }))
 }
 
-const promptTitle = async () => {
-  return prop('title', await inquirer.prompt({
+const promptTitle = async (repo: string) => {
+  return prop('title', await enquirer.prompt({
     name: 'title',
     message: 'What\'s your VTEX app title?',
     filter: s => s.trim(),
+    type: 'input',
+    initial: titles[repo],
   }))
 }
 
-const promptDescription = async () => {
-  return prop('description', await inquirer.prompt({
+const promptDescription = async (repo: string) => {
+  return prop('description', await enquirer.prompt({
     name: 'description',
     message: 'What\'s your VTEX app description?',
     filter: s => s.trim(),
+    type: 'input',
+    initial: descriptions[repo],
   }))
 }
 
 const promptTemplates = async (): Promise<string> => {
   const cancel = 'Cancel'
-  const chosen = prop<string>('service', await inquirer.prompt({
+  const chosen = prop<string>('service', await enquirer.prompt({
     name: 'service',
     message: 'Choose where do you want to start from',
-    type: 'list',
+    type: 'select',
     choices: [...keys(templates), cancel],
   }))
   if (chosen === cancel) {
@@ -72,25 +102,23 @@ const promptTemplates = async (): Promise<string> => {
   return chosen
 }
 
-const promptContinue = async () => {
-  const proceed = prop('proceed', await inquirer.prompt({
-    name: 'proceed',
-    message: `You are about to remove all files in ${process.cwd()}. Do you want to continue?`,
-    type: 'confirm',
-  }))
+const promptContinue = async (repoName: string) => {
+  const proceed = await promptConfirm(
+    `You are about to create the new folder ${process.cwd()}/${repoName}. Do you want to continue?`
+  )
   if (!proceed) {
     log.info('Bye o/')
     process.exit()
   }
 }
 
-const manifestFromPrompt = async () => {
-  return mapSeries([
+const manifestFromPrompt = async (repo: string) => {
+  return mapSeries<any, string>([
     promptName,
     promptVendor,
     promptTitle,
     promptDescription,
-  ], f => f())
+  ], f => f(repo))
 }
 
 const createManifest = (name: string, vendor: string, title = '', description = ''): Manifest => {
@@ -103,6 +131,7 @@ const createManifest = (name: string, vendor: string, title = '', description = 
     description,
     mustUpdateAt: `${Number(year) + 1}-${monthAndDay.join('-')}`,
     registries: ['smartcheckout'],
+    builders: {},
   }
 }
 
@@ -111,16 +140,17 @@ export default async () => {
   log.info('Hello! I will help you generate basic files and folders for your app.')
   try {
     const repo = templates[await promptTemplates()]
-    await promptContinue()
+    const manifestPath = join(process.cwd(), repo, MANIFEST_FILE_NAME)
+    await promptContinue(repo)
     log.info(`Cloning https://vtex-apps/${repo}.git`)
     const [, [name, vendor, title, description]]: any = await Bluebird.all([
       git.clone(repo),
-      manifestFromPrompt(),
+      manifestFromPrompt(repo),
     ])
     const synthetic = createManifest(name, vendor, title, description)
     const manifest: any = Object.assign(await readJson(manifestPath) || {}, synthetic)
     await outputJson(manifestPath, manifest, { spaces: 2 })
-    log.info(`Run ${chalk.bold.green('vtex link')} to start developing!`)
+    log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
   } catch (err) {
     log.error(err.message)
     err.printStackTrace()

@@ -55,10 +55,10 @@ $ vtex
     init                    Create basic files and folders for your VTEX app
     install [app]           Install an app (defaults to the app in the current directory)
     link                    Start a development session for this app
+    setup                   Setup your development environment (configure tsconfig and tslint, run yarn)
     list                    List your installed VTEX apps
     login                   Log into a VTEX account
     logout                  Logout of the current VTEX account
-    production [production] Set this workspace's production mode to true or false
     promote                 Promote this workspace to master
     publish [path]          Publish the current app or a path containing an app
     switch <account>        Switch to another VTEX account
@@ -68,11 +68,14 @@ $ vtex
     use <name>              Use a workspace to perform operations
     whoami                  See your credentials current status
 
+    browse [endpoint]       Browse an endpoint of the store under development
+
     config get <name>                 Gets the current value for the requested configuration
     config set <name> <value>         Sets the current value for the given configuration
 
-    deps list             List your workspace dependencies
-    deps update [app]     Update all workspace dependencies or a specific app@version
+    deps list                              List your workspace dependencies
+    deps update [app]                      Update all workspace dependencies or a specific app@version
+    deps diff [workspace1] [workspace2]    Show dependencies difference between two workspaces
 
     infra install <name>     Install a service
     infra list [name]        List installed services
@@ -86,19 +89,21 @@ $ vtex
 
     port react       Convert your app from React 0.x to React 2.x
 
+    release [releaseType/Version] [tagName]          Bump app version, commit and push to remote (git only)
+
     settings <app> [fields]                     Get app settings
     settings set <app> <fields> <value>         Set a value
     settings unset <app> <fields>               Unset a value
+
+    url                               Prints base URL for current account, workspace and account
 
     workspace                         Alias for vtex workspace info
     workspace create <name>           Create a new workspace with this name
     workspace delete <name>           Delete a single or various workspaces
     workspace info                    Display information about the current workspace
     workspace list                    List workspaces on this account
-    workspace production [production] Set this workspace's production mode to true or false
     workspace promote                 Promote this workspace to master
     workspace reset [name]            Delete and create a workspace
-    workspace test [weight]           Set AB test in current workspace
     workspace use <name>              Use a workspace to perform operations
 
   Options:
@@ -119,7 +124,7 @@ VTEX Toolbelt will now monitor your files for changes and sync them automaticall
 
 ## Customizing your prompt
 
-You can configure your **terminal prompt** to display relevant information about your current context, like what **environment** you are using (`prod` or `staging`), which **account** you're logged into and which **workspace** you are currently using. 
+You can configure your **terminal prompt** to display relevant information about your current context, like what **environment** you are using (`prod` or `staging`), which **account** you're logged into and which **workspace** you are currently using.
 
 Just like knowing which `git` branch you're currently in, having this info in your prompt you help you avoid mistakes and be faster when using VTEX IO.
 

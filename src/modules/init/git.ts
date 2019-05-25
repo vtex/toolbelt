@@ -1,4 +1,4 @@
-import { copy, emptyDir, remove } from 'fs-extra'
+import { copy, emptyDir, ensureDir, remove } from 'fs-extra'
 import * as pipeStreams from 'pipe-streams-to-promise'
 import * as request from 'request'
 import * as unzip from 'unzip-stream'
@@ -13,10 +13,12 @@ const fetchAndUnzip = async (url: string, path: string) => pipeStreams([
 export const clone = async (repo: string) => {
   const cwd = process.cwd()
   const url = urlForRepo(repo)
-  const cloned = `${cwd}/${repo}-master`
+  const destPath = `${cwd}/${repo}`
+  const cloned = `${destPath}/${repo}-master`
 
-  await emptyDir(cwd)
-  await fetchAndUnzip(url, cwd)
-  await copy(cloned, cwd)
+  await ensureDir(destPath)
+  await emptyDir(destPath)
+  await fetchAndUnzip(url, destPath)
+  await copy(cloned, destPath)
   await remove(cloned)
 }

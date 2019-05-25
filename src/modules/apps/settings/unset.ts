@@ -2,7 +2,8 @@ import { dissocPath } from 'ramda'
 
 import { apps } from '../../../clients'
 
-const { getAppSettings, saveAppSettings } = apps
+const getAppSettings = Promise.method(apps.getAppSettings)
+const saveAppSettings = Promise.method(apps.saveAppSettings)
 
 const FIELDS_START_INDEX = 3
 

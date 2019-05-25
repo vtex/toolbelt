@@ -1,3 +1,4 @@
+import { AppManifest } from '@vtex/api'
 import { Readable } from 'stream'
 
 declare global {
@@ -16,22 +17,7 @@ declare global {
     content: NodeJS.ReadableStream,
   }
 
-  interface Manifest {
-    name?: string,
-    title?: string,
-    vendor?: string,
-    version: string,
-    dependencies?: {},
-    builders?: {
-      [builder: string]: string
-    },
-    settingsSchema?: {},
-    description?: string,
-    categories?: string[],
-    registries?: string[],
-    mustUpdateAt?: string,
-    latest?: string,
-  }
+  type Manifest = AppManifest
 
   interface InstalledApp {
     app: string,

@@ -1,26 +1,21 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
 import * as ora from 'ora'
 import * as pad from 'pad'
-import { prop } from 'ramda'
 import * as semver from 'semver'
 
 import { router } from '../../clients'
+import { Region } from '../../conf'
 import log from '../../logger'
+import { promptConfirm } from '../prompts'
 import { diffVersions, getTag } from './utils'
 
 const { listAvailableServices, listInstalledServices, installService } = router
 
 const promptUpdate = (): Bluebird<boolean> =>
   Promise.resolve(
-    inquirer.prompt({
-      message: 'Apply version updates?',
-      name: 'confirm',
-      type: 'confirm',
-    })
-      .then<boolean>(prop('confirm'))
+    promptConfirm('Apply version updates?')
   )
 
 const calculateColSize = (names: string[]): number =>
@@ -45,7 +40,7 @@ const logVersionMap = ({ latest, update }: InfraVersionMap): void => {
 const createVersionMap = (availableRes: AvailableServices, installedRes: InstalledService[]): InfraVersionMap =>
   installedRes.reduce((acc, { name, version: currentVersion }) => {
     const tag = getTag(currentVersion)
-    const latestVersion = availableRes[name].versions['aws-us-east-1'] // See comment in src/modules/infra/install.ts:82
+    const latestVersion = availableRes[name].versions[Region.Production] // See comment in src/modules/infra/install.ts:82
       .filter(v => getTag(v) === tag)
       .sort(semver.rcompare)[0]
     if (currentVersion !== latestVersion) {
@@ -63,7 +58,7 @@ const hasUpdate = (update: InfraUpdate): boolean =>
   Object.keys(update).length > 0
 
 const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
-  Promise.all(
+  Bluebird.all(
     Object.keys(update).map(name => installService(name, update[name].latest))
   )
 

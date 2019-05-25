@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { diffJson } from 'diff'
-import { compose, keys, map, prepend } from 'ramda'
+import { compose, keys, map, path, prepend } from 'ramda'
 
 import { apps } from '../../clients'
 import { parseLocator } from '../../locator'
@@ -33,6 +33,9 @@ export default async (optionalApp: string, options) => {
             await updateDependency(`${vendor}.${name}`, version, vendor)
           } catch (e) {
             log.error(e.message)
+            if (path(['response', 'data', 'message'], e)) {
+              log.error(e.response.data.message)
+            }
           }
         }
       })
@@ -62,5 +65,8 @@ export default async (optionalApp: string, options) => {
     }
   } catch (e) {
     log.error(e.message)
+    if (path(['response', 'data', 'message'], e)) {
+      log.error(e.response.data.message)
+    }
   }
 }

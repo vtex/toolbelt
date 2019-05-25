@@ -1,10 +1,9 @@
-import { Apps, Builder, Colossus, InstanceOptions, IOContext, Registry, Router, Workspaces } from '@vtex/api'
+import { Apps, Builder, Events, InstanceOptions, IOContext, Logger, Registry, Router, Workspaces } from '@vtex/api'
+import { getAccount, getToken, getWorkspace } from '../conf'
+import * as env from '../env'
+import envTimeout from '../timeout'
+import userAgent from '../user-agent'
 import Billing from './billingClient'
-
-import { getAccount, getToken, getWorkspace } from './conf'
-import * as env from './env'
-import envTimeout from './timeout'
-import userAgent from './user-agent'
 
 const DEFAULT_TIMEOUT = 15000
 const context = {
@@ -12,8 +11,14 @@ const context = {
   authToken: getToken(),
   production: false,
   region: env.region(),
+  route: {
+    id: '',
+    params: {},
+  } ,
   userAgent,
   workspace: getWorkspace() || 'master',
+  requestId: '',
+  operationId: '',
 }
 
 const options = {
@@ -26,29 +31,33 @@ const interceptor = <T>(client): T => new Proxy({}, {
   },
 }) as T
 
+
 const createClients = (customContext: Partial<IOContext> = {}, customOptions: InstanceOptions = {}) => {
   const mergedContext = { ...context, ...customContext }
   const mergedOptions = { ...options, ...customOptions }
   return {
     builder: new Builder(mergedContext, mergedOptions),
-    colossus: new Colossus(mergedContext, mergedOptions),
-    registry: new Registry(mergedContext, { ...mergedOptions, endpoint: env.endpoint('registry') }),
+    logger: new Logger(mergedContext, mergedOptions),
+    registry: new Registry(mergedContext, mergedOptions),
+    events: new Events(mergedContext, mergedOptions),
   }
 }
 
-const [apps, router, workspaces, colossus, billing] = getToken()
+const [apps, router, workspaces, logger, events, billing] = getToken()
   ? [
-    new Apps(context, { ...options, endpoint: env.endpoint('apps') }),
-    new Router(context, { ...options, endpoint: env.endpoint('router') }),
-    new Workspaces(context, { ...options, endpoint: env.endpoint('workspaces') }),
-    new Colossus(context),
+    new Apps(context, options),
+    new Router(context, options),
+    new Workspaces(context, options),
+    new Logger(context),
+    new Events(context),
     new Billing(context, options),
   ]
   : [
     interceptor<Apps>('apps'),
     interceptor<Router>('router'),
     interceptor<Workspaces>('workspaces'),
-    interceptor<Colossus>('colossus'),
+    interceptor<Logger>('logger'),
+    interceptor<Events>('events'),
     interceptor<Billing>('billing'),
   ]
 
@@ -56,7 +65,8 @@ export {
   apps,
   router,
   workspaces,
-  colossus,
+  logger,
+  events,
   createClients,
   billing,
 }

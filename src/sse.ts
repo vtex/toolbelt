@@ -1,10 +1,11 @@
 import chalk from 'chalk'
-import { compose, forEach, path, pathOr } from 'ramda'
+import { compose, forEach, contains, path, pathOr } from 'ramda'
 
 import { getToken } from './conf'
-import { endpoint, publicEndpoint } from './env'
+import { endpoint, publicEndpoint, envCookies } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
+import { removeVersion } from './locator'
 import log from './logger'
 import userAgent from './user-agent'
 
@@ -35,6 +36,7 @@ const createEventSource = (source: string) =>
   new EventSource(source, {
     headers: {
       authorization: `bearer ${getToken()}`,
+      'cookie': envCookies(),
       'user-agent': userAgent,
     },
   })
@@ -57,8 +59,10 @@ const hasNoSubject = (msg: Message) => {
   return msg.subject.startsWith('-') && !path(['body', 'subject'], msg)
 }
 
-const filterSubject = (subject: string, logAny: boolean = false) => (msg: Message) => {
-  return (matchSubject(msg, subject) || logAny && hasNoSubject(msg)) && msg
+const filterMessage = (subject: string, logAny: boolean = false, senders?: string[]) => (msg: Message) => {
+  return (matchSubject(msg, subject) || logAny && hasNoSubject(msg))
+    && (!senders || contains(removeVersion(msg.sender), senders))
+    && msg
 }
 
 const maybeCall = (callback: (message: Message) => void) => (msg: Message) => {
@@ -67,11 +71,11 @@ const maybeCall = (callback: (message: Message) => void) => (msg: Message) => {
   }
 }
 
-const onLog = (ctx: Context, subject: string, logLevel: string, callback: (message: Message) => void): Unlisten => {
+const onLog = (ctx: Context, subject: string, logLevel: string, callback: (message: Message) => void, senders?: string[]): Unlisten => {
   const source = `${endpoint('colossus')}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)
-  es.onmessage = compose(maybeCall(callback), filterSubject(subject, true), parseMessage)
+  es.onmessage = compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage)
   es.onerror = onError(`${logLevel} log`)
   return es.close.bind(es)
 }
@@ -80,14 +84,14 @@ export const onEvent = (ctx: Context, sender: string, subject: string, keys: str
   const source = `${endpoint('colossus')}/${ctx.account}/${ctx.workspace}/events?sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
-  es.onmessage = compose(maybeCall(callback), filterSubject(subject), parseMessage)
+  es.onmessage = compose(maybeCall(callback), filterMessage(subject), parseMessage)
   es.onerror = onError('event')
   return es.close.bind(es)
 }
 
-export const logAll = (context: Context, logLevel: string, id: string) => {
+export const logAll = (context: Context, logLevel: string, id: string, senders?: string[]) => {
   let previous = ''
-  return onLog(context, id, logLevel, ({ sender, level, body: { message, code } }: Message) => {
+  const callback = ({ sender, level, body: { message, code } }: Message) => {
     if (!(message || code)) {
       return // Ignore logs without message or code.
     }
@@ -97,17 +101,19 @@ export const logAll = (context: Context, logLevel: string, id: string) => {
       previous = formatted
       log.log(level, formatted)
     }
-  })
+  }
+
+  return onLog(context, id, logLevel, callback, senders)
 }
 
-export const onAuth = (account: string, workspace: string, state: string): Promise<string> => {
-  const source = `https://${workspace}--${account}.${publicEndpoint()}/_v/auth-server/v1/sse/${state}`
+export const onAuth = (account: string, workspace: string, state: string, returnUrl: string): Promise<[string, string]> => {
+  const source = `https://${workspace}--${account}.${publicEndpoint()}/_v//private/auth-server/v1/sse/${state}`
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
     es.onmessage = (msg: MessageJSON) => {
       const { body: token } = JSON.parse(msg.data) as { body: string }
       es.close()
-      resolve(token)
+      resolve([token, returnUrl])
     }
 
     es.onerror = (event) => {

@@ -1,17 +1,18 @@
 import axios from 'axios'
 import chalk from 'chalk'
 import * as Table from 'cli-table2'
+import * as enquirer from 'enquirer'
 import { createReadStream } from 'fs-extra'
-import * as inquirer from 'inquirer'
 import { join } from 'path'
-import { __, compose, concat, contains, curry, drop, head, last, prop, reduce, split, tail } from 'ramda'
+import { __, compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail } from 'ramda'
 import * as semverDiff from 'semver-diff'
 
-import { createClients } from '../../clients'
-import { getWorkspace } from '../../conf'
+import { apps, createClients, workspaces } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { isManifestReadable } from '../../manifest'
+import { promptConfirm } from '../prompts'
 
 export const pathToFileObject = (root = process.cwd(), prefix : string = '') => (path: string): BatchStream =>
   ({ path : join(prefix, path), content: createReadStream(join(root, path)) })
@@ -23,6 +24,12 @@ const workspaceMasterAllowedOperations = [
   'uninstall',
 ]
 
+// It is not allowed to link apps in a production workspace.
+const workspaceProductionAllowedOperatios = [
+  'install',
+  'uninstall',
+]
+
 const builderHubMessagesLinkTimeout = 2000  // 2 seconds
 const builderHubMessagesPublishTimeout = 10000  // 10 seconds
 
@@ -30,30 +37,40 @@ export const workspaceMasterMessage =
   `This action is ${chalk.red('not allowed')} in workspace ${chalk.green('master')}, please use another workspace.
 You can run "${chalk.blue(`vtex use ${workspaceExampleName} -r`)}" to use a workspace named "${chalk.green(workspaceExampleName)}"`
 
+export const workspaceProductionMessage =
+  (workspace) => `This action is ${chalk.red('not allowed')} in workspace ${chalk.green(workspace)} because it is a production workspace. You can create a ${chalk.yellowBright('dev')} workspace called ${chalk.green(workspaceExampleName)} by running ${chalk.blue(`vtex use ${workspaceExampleName} -r`)}`
+
 export const parseArgs = (args: string[]): string[] => {
   return drop(1, args)
 }
 
 export const promptWorkspaceMaster = async () => {
-  const confirm = prop('confirm', await inquirer.prompt({
-    default: false,
-    name: 'confirm',
-    message: `Are you sure you want to force this operation on the ${chalk.green('master')} workspace?`,
-    type: 'confirm',
-  }))
+  const confirm = await promptConfirm(
+    `Are you sure you want to force this operation on the ${chalk.green('master')} workspace?`,
+    false
+  )
   if (!confirm) {
     throw new UserCancelledError()
   }
   log.warn(`Using ${chalk.green('master')} workspace. I hope you know what you\'re doing. 💥`)
 }
 
+
 export const validateAppAction = async (operation: string, app?) => {
-  if (getWorkspace() === 'master') {
+  const account = getAccount()
+  const workspace = getWorkspace()
+
+  if (workspace === 'master') {
     if (!contains(operation, workspaceMasterAllowedOperations)) {
       throw new CommandError(workspaceMasterMessage)
     } else {
       await promptWorkspaceMaster()
     }
+  }
+
+  const workspaceMeta = await workspaces.get(account, workspace)
+  if (workspaceMeta.production && !contains(operation, workspaceProductionAllowedOperatios)) {
+    throw new CommandError(workspaceProductionMessage(workspace))
   }
 
   // No app arguments and no manifest file.
@@ -87,9 +104,9 @@ export const appLatestMajor = (app: string): Promise<string | never> => {
     .then<string>(wildVersionByMajor)
 }
 
-export const appLatestVersion = (app: string): Promise<string | never> => {
+export const appLatestVersion = (app: string, version='x'): Promise<string | never> => {
   return createClients().registry
-    .getAppManifest(app, 'x')
+    .getAppManifest(app, version)
     .then<string>(prop('id'))
     .then<string>(extractVersionFromId)
     .catch(handleError(app))
@@ -100,6 +117,7 @@ export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
 }
 
 export function optionsFormatter(billingOptions: BillingOptions) {
+  /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({ head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }], chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' } })
 
   if (billingOptions.free) {
@@ -162,8 +180,8 @@ export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
   }
 }
 
-const promptConfirm = (msg: string): Promise<string> =>
-  inquirer.prompt({
+const promptConfirmName = (msg: string): Promise<string> =>
+  enquirer.prompt({
     message: msg,
     name: 'appName',
     type: 'input',
@@ -174,7 +192,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
   if(message) {
     if (showPrompt) {
       const confirmMsg = `Are you absolutely sure?\n${message ? message : ''}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
-      const appNameInput = await promptConfirm(confirmMsg)
+      const appNameInput = await promptConfirmName(confirmMsg)
       const AppName = `${manifest.vendor}.${manifest.name}`
       if (appNameInput !== AppName) {
         throw new CommandError(`${appNameInput} doesn't match with the app name.`)
@@ -184,3 +202,11 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
     }
   }
 }
+
+export const switchAccountMessage = (previousAccount: string, currentAccount: string): string => {
+  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
+}
+
+export const resolveAppId = async (appName: string, appVersion: string) : Promise<string> =>  await apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
+
+export const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')

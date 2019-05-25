@@ -16,9 +16,19 @@ export default {
       requiredArgs: ['name', 'value'],
     },
   },
+  browse: {
+    description: 'Open endpoint in browser window',
+    handler: './browse',
+    optionalArgs: ['endpoint'],
+  },
   deprecate: {
     description: 'Deprecate app(s)',
     handler: './apps/deprecate',
+    optionalArgs: 'app',
+  },
+  undeprecate: {
+    description: 'Undeprecate app(s)',
+    handler: './apps/undeprecate',
     optionalArgs: 'app',
   },
   deps: {
@@ -45,6 +55,11 @@ export default {
       description: 'Update all workspace dependencies or a specific app@version',
       handler: './deps/update',
       optionalArgs: ['app'],
+    },
+    diff: {
+      description: 'Diff between workspace dependencies',
+      handler: './deps/diff',
+      optionalArgs: ['workspace1', 'workspace2'],
     },
   },
   handler: './',
@@ -89,6 +104,10 @@ export default {
     handler: './apps/install',
     optionalArgs: 'app',
   },
+  setup: {
+    description: 'Download react app typings, lint config and tsconfig',
+    handler: './setup',
+  },
   link: {
     description: 'Start a development session for this app',
     handler: './apps/link',
@@ -97,6 +116,23 @@ export default {
         description: 'Clean builder cache',
         long: 'clean',
         short: 'c',
+        type: 'boolean',
+      },
+      {
+        description: 'Do not add app dependencies to package.json and do not run Yarn',
+        long: 'setup',
+        short: 's',
+        type: 'boolean',
+      },
+      {
+        description: `Don't watch for file changes after initial link`,
+        long: 'no-watch',
+        type: 'boolean',
+      },
+      {
+        description: 'Allow links with Typescript errors',
+        long: 'unsafe',
+        short: 'u',
         type: 'boolean',
       },
     ],
@@ -165,7 +201,7 @@ export default {
     },
   },
   production: {
-    description: 'Set this workspace\'s production mode to true or false',
+    description: 'Set this workspace\'s production mode to true or false (deprecated)',
     handler: './workspace/production',
     optionalArgs: 'production',
   },
@@ -255,21 +291,59 @@ export default {
   update: {
     description: 'Update all installed apps to the latest version',
     handler: './apps/update',
+    options: [
+      {
+        description: 'Update to newest majors',
+        long: 'major',
+        short: 'm',
+        type: 'boolean',
+      },
+    ],
   },
   use: {
     description: 'Use a workspace to perform operations',
     handler: './workspace/use',
     requiredArgs: 'name',
+    options: [
+      {
+        description: 'If workspace does not exist, whether to create it as a production workspace',
+        long: 'production',
+        short: 'p',
+        type: 'boolean',
+      },
+    ],
   },
   whoami: {
     description: 'See your credentials current status',
     handler: './auth/whoami',
   },
   workspace: {
+    abtest: {
+      start: {
+        description: 'Start AB testing with current workspace',
+        handler: './workspace/abtest/start',
+      },
+      finish: {
+        description: 'Stop all AB testing in current account',
+        handler: './workspace/abtest/finish',
+      },
+      status: {
+        description: 'Display currently running AB tests results',
+        handler: './workspace/abtest/status',
+      },
+    },
     create: {
       description: 'Create a new workspace with this name',
       handler: './workspace/create',
       requiredArgs: 'name',
+      options: [
+        {
+          description: 'Create a production workspace',
+          long: 'production',
+          short: 'p',
+          type: 'boolean',
+        },
+      ],
     },
     delete: {
       description: 'Delete a single or various workspaces',
@@ -301,11 +375,6 @@ export default {
       description: 'List workspaces on this account',
       handler: './workspace/list',
     },
-    production: {
-      description: 'Set this workspace\'s production mode to true or false',
-      handler: './workspace/production',
-      optionalArgs: 'production',
-    },
     promote: {
       description: 'Promote this workspace to master',
       handler: './workspace/promote',
@@ -314,11 +383,19 @@ export default {
       description: 'Delete and create a workspace',
       handler: './workspace/reset',
       optionalArgs: 'name',
+      options: [
+        {
+          description: 'Whether to re-create the workspace as a production one',
+          long: 'production',
+          short: 'p',
+          type: 'boolean',
+        },
+      ],
     },
-    test: {
-      description: 'Set AB test in current workspace',
-      handler: './workspace/abTest',
-      optionalArgs: 'weight',
+    status: {
+      description: 'Display information about a workspace',
+      handler: './workspace/status',
+      optionalArgs: 'name',
     },
     use: {
       description: 'Use a workspace to perform operations',
@@ -330,8 +407,23 @@ export default {
           short: 'r',
           type: 'boolean',
         },
+        {
+          description: 'Whether to create the workspace as production if it does not exist or is reset',
+          long: 'production',
+          short: 'p',
+          type: 'boolean',
+        },
       ],
       requiredArgs: 'name',
     },
+  },
+  release: {
+    description: 'Bump app version, commit and push to remote. Only for git users. The first option can also be a specific valid semver version',
+    handler: './release',
+    optionalArgs: ['releaseType', 'tagName'],
+  },
+  url: {
+    description: 'Prints base URL for current account, workspace and environment',
+    handler: './url',
   },
 }

@@ -1,33 +1,27 @@
 import * as Bluebird from 'bluebird'
-import * as Table from 'cli-table'
-import * as inquirer from 'inquirer'
+import chalk from 'chalk'
 import * as ora from 'ora'
-import { contains, isEmpty, map, pipe, prop, propSatisfies, reject } from 'ramda'
+import { isEmpty, map, pipe, prop, reject } from 'ramda'
 
 import { apps } from '../../clients'
-import { parseLocator, toAppLocator } from '../../locator'
+import { parseLocator, toAppLocator, toMajorRange } from '../../locator'
 import log from '../../logger'
+import { createTable } from '../../table'
 import { diffVersions } from '../infra/utils'
+import { promptConfirm } from '../prompts'
 import { prepareInstall } from './install'
-import { appLatestVersion } from './utils'
+import { appLatestVersion, isLinked } from './utils'
 
 const { listApps } = apps
 
 const promptUpdate = (): Bluebird<boolean> =>
   Promise.resolve(
-    inquirer.prompt({
-      message: 'Apply version updates?',
-      name: 'confirm',
-      type: 'confirm',
-    })
-      .then<boolean>(prop('confirm'))
+    promptConfirm('Apply version updates?')
   )
 
 const sameVersion = ({ version, latest }: Manifest) => version === latest
 
 const extractAppLocator = pipe(prop('app'), parseLocator)
-
-const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')
 
 const updateVersion = (app) => {
   app.version = app.latest
@@ -39,19 +33,21 @@ export default async () => {
   const { data } = await listApps()
   const installedApps = reject<Manifest>(isLinked, map(extractAppLocator, data))
   const withLatest = await Bluebird.all(map(async (app) => {
-    app.latest = await appLatestVersion(`${app.vendor}.${app.name}`)
+    app.latest = await appLatestVersion(`${app.vendor}.${app.name}`, toMajorRange(app.version))
     return app
   }, installedApps))
   const updateableApps = reject(sameVersion, withLatest)
 
-  const table = new Table({ head: ['Vendor', 'Name', 'Current', 'Latest'] })
+  const table = createTable({ head: ['App', 'Current', 'Latest'] })
   updateableApps.forEach(({ vendor, name, version, latest }) => {
     if (!latest) {
       log.debug(`Couldn't find latest version of ${vendor}.${name}`)
       return
     }
     const [fromVersion, toVersion] = diffVersions(version, latest)
-    table.push([vendor, name, fromVersion, toVersion])
+
+    const formattedName = `${chalk.blue(vendor)}${chalk.gray.bold('.')}${name}`
+    table.push([formattedName, fromVersion, toVersion])
   })
   spinner.stop()
 

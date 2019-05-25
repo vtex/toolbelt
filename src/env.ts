@@ -25,3 +25,11 @@ export function region(): string {
 export function publicEndpoint(): string {
   return getEnvironment() === Environment.Staging ? 'myvtexdev.com' : 'myvtex.com'
 }
+
+export function clusterIdDomainInfix(): string {
+  return process.env.VTEX_REGION ? `.${process.env.VTEX_REGION}` : ''
+}
+
+export function envCookies(): string {
+  return process.env.VTEX_REGION ? `VtexIoClusterId=${process.env.VTEX_REGION}` : ''
+}
