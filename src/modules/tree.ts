@@ -26,8 +26,8 @@ export default {
         long: 'qr',
         short: 'q',
         type: 'boolean',
-      }
-    ]
+      },
+    ],
   },
   deprecate: {
     description: 'Deprecate app(s)',
