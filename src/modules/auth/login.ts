@@ -34,7 +34,10 @@ const getLoginUrl = async (account: string, workspace: string, state: string): P
   const baseUrl = `https://${account}${clusterIdDomainInfix()}.${publicEndpoint()}`
   let [url, returnUrl] = newLoginUrls(workspace, state)
   try {
-    await axios.get(`${baseUrl}${url}`)
+    const response = await axios.get(`${baseUrl}${url}`)
+    if (!response.data.match(/vtex\.admin-login/)) {
+      throw new Error('Unexpected response from admin-login')
+    }
   } catch (e) {
     const oldUrls = oldLoginUrls(workspace, state)
     url = oldUrls[0]

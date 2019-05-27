@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.61.1] - 2019-05-27
+### Fixed
+- Check if the returned data is really from the `vtex.admin-login` app when testing if it is installed in the current account/workspace
+
 ## [2.61.0] - 2019-05-27
 ### Added
 - Add `support` command, which allows logging into another account that has your support app installed.
