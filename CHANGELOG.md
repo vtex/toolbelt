@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Check if the returned data is really from the `vtex.admin-login` app when testing if it is installed in the current account/workspace
 
 ## [2.61.0] - 2019-05-27
 ### Added
