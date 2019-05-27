@@ -16,11 +16,13 @@ import * as git from './git'
 const { mapSeries } = Bluebird
 
 const templates = {
+
   'store-theme': 'store-theme',
   'delivery-theme': 'delivery-theme',
   'service-example': 'service-example',
   'render-guide': 'render-guide',
   'masterdata-graphql-guide': 'masterdata-graphql-guide',
+  'support app': 'hello-support',
 }
 
 const titles = {
@@ -29,6 +31,7 @@ const titles = {
   'service-example': 'Node Service Example',
   'render-guide': 'Render Guide',
   'masterdata-graphql-guide': 'MasterData GraphQL Guide',
+  'support app': 'Support App Example',
 }
 
 const descriptions = {
@@ -37,6 +40,7 @@ const descriptions = {
   'service-example': `Example of @vtex/api's Service class`,
   'render-guide': 'VTEX IO Render Guide',
   'masterdata-graphql-guide': 'VTEX IO MasterData GraphQL Guide',
+  'support app': 'Example of a support app',
 }
 
 const promptName = async (repo: string) => {
