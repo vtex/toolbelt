@@ -190,6 +190,11 @@ export default {
       },
     ],
   },
+  support: {
+    description: 'Login as support into another VTEX account',
+    handler: './support/login',
+    requiredArgs: ['account'],
+  },
   logout: {
     description: 'Logout of the current VTEX account',
     handler: './auth/logout',
