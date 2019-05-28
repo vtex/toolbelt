@@ -1,4 +1,4 @@
-import { forWorkspace, IODataSource } from '@vtex/api'
+import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 
 const routes = {
   Abort: (workspace: string) => `${routes.ABTester}/finish/${workspace}`,
@@ -8,9 +8,10 @@ const routes = {
   Status: () => `${routes.ABTester}/status`,
 }
 
-export class ABTester extends IODataSource {
-  protected httpClientFactory = forWorkspace
-  protected service = 'ab-tester.vtex'
+export class ABTester extends AppClient {
+  constructor(context: IOContext, options: InstanceOptions) {
+    super('ab-tester.vtex', context, options)
+  }
 
   // Abort AB Test in a workspace.
   public finish = async (workspace: string) =>
