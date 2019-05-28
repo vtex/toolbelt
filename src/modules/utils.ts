@@ -21,7 +21,7 @@ const allEvents: BuildEvent[] = ['start', 'success', 'fail', 'timeout', 'logs']
 
 const flowEvents: BuildEvent[] = ['start', 'success', 'fail']
 
-export const yarnPath = `'${require.resolve('yarn/bin/yarn')}'`
+export const yarnPath = `"${require.resolve('yarn/bin/yarn')}"`
 
 const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
   const [subject] = appOrKey.split('@')
