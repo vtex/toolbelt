@@ -439,4 +439,13 @@ export default {
     description: 'Prints base URL for current account, workspace and environment',
     handler: './url',
   },
+  'edition': {
+    description: 'Get edition of the current account',
+    handler: './sponsor/getEdition',
+    'set': {
+      description: 'Set edition of the current account',
+      handler: './sponsor/setEdition',
+      requiredArgs: 'edition',
+    },
+  },
 }

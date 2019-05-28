@@ -3,10 +3,12 @@ import { execSync } from 'child-process-es6-promise'
 import { existsSync } from 'fs'
 import { resolve as resolvePath } from 'path'
 import { currentContext } from '../conf'
+import * as conf from '../conf'
 import { BuildFailError } from '../errors'
 import log from '../logger'
 import { getAppRoot } from '../manifest'
 import { logAll, onEvent } from '../sse'
+import { promptConfirm } from './prompts'
 
 interface BuildListeningOptions {
   context?: Context,
@@ -106,6 +108,20 @@ export const runYarnIfPathExists = (relativePath: string) => {
     } catch (e) {
       log.error(`Failed to run yarn in ${chalk.green(relativePath)}`)
       throw e
+    }
+  }
+}
+
+const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()) :string => {
+  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
+}
+
+export const switchToPreviousAccount = async (previousConf: any) => {
+  const previousAccount = previousConf.account
+  if (previousAccount !== conf.getAccount()) {
+    const canSwitchToPrevious = await promptConfirm(getSwitchAccountMessage(previousAccount))
+    if (canSwitchToPrevious) {
+      conf.saveAll(previousConf)
     }
   }
 }

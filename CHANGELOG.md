@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.62.0] - 2019-05-28
+
+## [2.61.0] - 2019-05-28
+### Added
+- `vtex edition` and `vtex edition set` commands to manipulate account's editions
+
 ## [2.60.2] - 2019-05-28
 ### Fixed
 - Use double quotes around the resolved `yarn` path so `vtex link` works correctly on Windows platforms.

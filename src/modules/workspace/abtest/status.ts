@@ -80,12 +80,7 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 export default async () => {
   await checkIfABTesterIsInstalled()
   let abTestInfo = []
-  try {
-    abTestInfo = await abtester.status()
-  } catch (e) {
-    log.error(e)
-    process.exit()
-  }
+  abTestInfo = await abtester.status()
   if (!abTestInfo || abTestInfo.length === 0) {
     return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}\n`)
   }
