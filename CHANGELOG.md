@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.60.2] - 2019-05-28
+### Fixed
+- Use double quotes around the resolved `yarn` path so `vtex link` works correctly on Windows platforms.
+
 ## [2.61.1] - 2019-05-27
 ### Fixed
 - Check if the returned data is really from the `vtex.admin-login` app when testing if it is installed in the current account/workspace
