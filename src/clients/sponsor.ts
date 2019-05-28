@@ -27,14 +27,14 @@ export class Sponsor extends IOClient {
     this.http.get(this.routes.getEdition, { metric: 'get-edition' })
 
   public setEdition = async (account: string, edition: string) =>
-    this.http.post(this.routes.setEdition(account), { edition }, { metric: 'set-edition' })
+    this.http.put(this.routes.setEdition(account), { edition }, { metric: 'set-edition' })
 
   public runHouseKeeper = async () =>
     this.http.post(this.routes.runHouseKeeper, {}, { metric: 'run-house-keeper' })
 
   private get routes() {
     return {
-      getSponsorAccount: `http://kube-router.${this.region}.vtex.io/_accounts/${this.account}`,
+      getSponsorAccount: `http://kube-router.${this.region}.vtex.io/_account/${this.account}`,
       getEdition: `http://apps.${this.region}.vtex.io/${this.account}/${this.workspace}/edition`,
       setEdition: (account: string) =>
       `http://apps.${this.region}.vtex.io/${this.account}/master/childAccount/${account}/edition`,

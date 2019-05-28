@@ -1,3 +1,5 @@
+import chalk from 'chalk'
+import * as R from 'ramda'
 import { Sponsor } from '../../clients/sponsor'
 import * as conf from '../../conf'
 import { UserCancelledError } from '../../errors'
@@ -21,19 +23,16 @@ export default async (edition: string) => {
   const previousConf = conf.getAll()
   const previousAccount = conf.getAccount()
   const sponsorClient = new Sponsor(getIOContext(), options)
-  let sponsorAccount = ''
-  try {
-  sponsorAccount = await sponsorClient.getSponsorAccount()
-  console.log(sponsorAccount)
-  } catch (e) {
-    console.log(e.response)
-    throw e
+  const data = await sponsorClient.getSponsorAccount()
+  const sponsorAccount = R.prop('sponsorAccount', data)
+  if (!sponsorAccount) {
+    throw new Error(`No sponsor account found for account ${chalk.blue(previousAccount)}`)
   }
   if (previousAccount !== sponsorAccount) {
     await promptChangeToSponsorAccount(sponsorAccount)
   }
   const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), options)
   await sponsorClientForSponsorAccount.setEdition(previousAccount, edition)
-  log.info(`Successfully set new edition in account ${previousAccount}. You stil need to wait for the house keeper to update this account.`)
+  log.info(`Successfully set new edition in account ${chalk.blue(previousAccount)}. You stil need to wait for the house keeper to update this account.`)
   await switchToPreviousAccount(previousConf)
 }

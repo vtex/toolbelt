@@ -141,7 +141,7 @@ const onError = e => {
         log.error('A temporary failure in name resolution occurred :(')
         break
       default:
-        log.error('Something exploded :(')
+        log.error('Unexpected error occurred')
         if (e.config && e.config.url && e.config.method) {
           log.error(`${e.config.method} ${e.config.url}`)
         }
@@ -169,7 +169,10 @@ const onError = e => {
         log.debug('User Cancelled')
         break
       default:
-        log.error('Something went wrong, I don\'t know what to do :(')
+        log.error('Unexpected error occurred')
+        if (e.message) {
+          log.error(`${e.message}`)
+        }
         if (isVerbose) {
           log.error(e)
         } else {
