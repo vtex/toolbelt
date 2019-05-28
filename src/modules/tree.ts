@@ -443,7 +443,7 @@ export default {
     description: 'Get edition of the current account',
     handler: './sponsor/getEdition',
     'set': {
-      description: 'set edition of the current account',
+      description: 'Set edition of the current account',
       handler: './sponsor/setEdition',
       requiredArgs: 'edition',
     },
