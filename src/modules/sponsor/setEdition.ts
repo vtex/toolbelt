@@ -21,7 +21,7 @@ const promptChangeToSponsorAccount = async (sponsorAccount: string) => {
 
 export default async (edition: string) => {
   const previousConf = conf.getAll()
-  const previousAccount = conf.getAccount()
+  const previousAccount = previousConf.account
   const sponsorClient = new Sponsor(getIOContext(), options)
   const data = await sponsorClient.getSponsorAccount()
   const sponsorAccount = R.prop('sponsorAccount', data)
