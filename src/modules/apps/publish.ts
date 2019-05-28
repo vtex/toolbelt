@@ -16,6 +16,7 @@ import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { promptConfirm } from '../prompts'
 import { runYarnIfPathExists } from '../utils'
+import { switchToPreviousAccount } from '../utils'
 import { listLocalFiles } from './file'
 import { legacyPublisher } from './legacyPublish'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
@@ -25,20 +26,6 @@ const root = getAppRoot()
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 5
 const buildersToRunLocalYarn = ['node', 'react']
-
-const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()) :string => {
-  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
-}
-
-const switchToPreviousAccount = async (previousConf: any) => {
-  const previousAccount = previousConf.account
-  if (previousAccount !== conf.getAccount()) {
-    const canSwitchToPrevious = await promptConfirm(getSwitchAccountMessage(previousAccount))
-    if (canSwitchToPrevious) {
-      conf.saveAll(previousConf)
-    }
-  }
-}
 
 const automaticTag = (version: string): string =>
   version.indexOf('-') > 0 ? null : 'latest'

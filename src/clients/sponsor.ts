@@ -34,11 +34,11 @@ export class Sponsor extends IOClient {
 
   private get routes() {
     return {
-      getSponsorAccount: `kube-router.${this.region}.vtex.io/_accounts/${this.account}`,
-      getEdition: `apps.${this.region}.vtex.io/${this.account}/${this.workspace}/edition`,
+      getSponsorAccount: `http://kube-router.${this.region}.vtex.io/_accounts/${this.account}`,
+      getEdition: `http://apps.${this.region}.vtex.io/${this.account}/${this.workspace}/edition`,
       setEdition: (account: string) =>
-      `apps.${this.region}.vtex.io/${this.account}/master/childAccount/${account}/edition`,
-      runHouseKeeper: `housekeeper.${this.region}.vtex.io/${this.account}/master/_housekeeping/perform`,
+      `http://apps.${this.region}.vtex.io/${this.account}/master/childAccount/${account}/edition`,
+      runHouseKeeper: `http://housekeeper.${this.region}.vtex.io/${this.account}/master/_housekeeping/perform`,
     }
   }
 
