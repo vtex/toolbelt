@@ -57,7 +57,7 @@ const publisher = (workspace: string = 'master') => {
         log.debug('Sending files:', '\n' + paths.join('\n'))
       }
       if (tryCount > 1) {
-        log.info(`Retrying...${tryCount-1}`)
+        log.debug(`Retrying...${tryCount-1}`)
       }
       const stickyHint = await getMostAvailableHost(
         appId,

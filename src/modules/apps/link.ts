@@ -194,6 +194,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   const sendChanges = debounce(() => {
     builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
       .catch(onInitialLinkRequired)
+    log.clearScope(FINAL_MESSAGES)
   }, 300)
 
   const pathToChange = (path: string, remove?: boolean): Change => ({
@@ -271,7 +272,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     }
 
     if (tryCount > 1) {
-      log.info(`Retrying...${tryCount-1}`)
+      log.debug(`Retrying...${tryCount-1}`)
     }
 
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
@@ -349,7 +350,7 @@ export default async (options) => {
       try {
         const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
         debuggerStarted = true
-        log.scopedInfo(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`, FINAL_MESSAGES, true)
+        log.scopedInfo(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`, undefined, true)
       } catch (e) {
         log.error(e.message)
       }

@@ -1,20 +1,24 @@
 import chalk from 'chalk'
 import { join } from 'path'
 import * as progress from 'progress-string'
-import { filter, isEmpty, keys, path, replace, sort } from 'ramda'
+import { any as ramdaAny, compose, filter, isEmpty, keys, map, path, replace, sort } from 'ramda'
 import { stdout as singleLineLog } from 'single-line-log'
 import { sprintf } from 'sprintf-js'
 import { createLogger, format, Logger, transports } from 'winston'
 import  * as Transport from 'winston-transport'
+
 import { name as pkgName, version as pkgVersion } from '../package.json'
 import { logger as colossusLogger } from './clients'
 import { configDir } from './conf'
+import { FINAL_MESSAGES } from './logger-scopes'
 
 // Setup logging
 const VERBOSE = '--verbose'
 const UNINDEXED = '__unindexed'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 const isLink = process.argv.indexOf('link') >= 0
+const SPECIAL_SENDERS: RegExp[] = []
+const SPECIAL_MESSAGES: RegExp[] = [/^Available routes/, /^Available service/, /^You can try out/]
 const useFancyLogger = isLink && !isVerbose
 
 const { combine, timestamp, colorize } = format
@@ -63,9 +67,13 @@ class FancyConsoleTransport extends Transport {
     setImmediate(() => {
       this.emit('logged', info)
     })
-    const { message, clear=false, clearAll=false, level, scope, progress: progressBarSpecs } = info
-    const { append=(['warn', 'error'].indexOf(level) >= 0 ? true : false) } = info
-    const newLogText = message ? `- ${message}` : ''
+    const { message, clear=false, clearAll=false, level, progress: progressBarSpecs, sender } = info
+    const { append=this.shouldAppend(sender, level, message) } = info
+    let { scope } = info
+    if (this.isSpecial(sender, message)) {
+      scope = FINAL_MESSAGES
+    }
+    const newLogText = this.formatMessage(message, level)
     let newProgressBarText = ''
     let newProgressBarValue = ''
     let newProgressBarSpecs = {}
@@ -89,13 +97,54 @@ class FancyConsoleTransport extends Transport {
     callback()
   }
 
+  private formatMessage(message: string, level: string) {
+    if (!message) {
+      return ''
+    }
+    if (this.isWarning(level)) {
+      return `- ${chalk.yellow('warning')}: ${message}`
+    }
+    if (this.isError(level)) {
+      return `- ${chalk.red('error')}: ${message}`
+    }
+    return `- ${message}`
+  }
+
+  private isWarning(level) {
+    return ['warn'].indexOf(level) >= 0
+  }
+
+  private isError(level) {
+    return ['error'].indexOf(level) >= 0
+  }
+
+  private isSpecial(sender: string | undefined, message: string) {
+    if (!sender) {
+      return false
+    }
+    const hasSpecialSender = compose<RegExp[], boolean[], boolean>(
+      ramdaAny(x => !!x),
+      map((x: RegExp) => x.test(sender))
+    )(SPECIAL_SENDERS)
+
+    const hasSpecialMessage = compose<RegExp[], boolean[], boolean>(
+        ramdaAny(x => !!x),
+        map((x: RegExp) => x.test(message))
+      )(SPECIAL_MESSAGES)
+
+    return hasSpecialSender || hasSpecialMessage
+  }
+
+  private shouldAppend(sender: string, level: string, message: string) {
+    return this.isError(level) || this.isWarning(level) || this.isSpecial(sender, message)
+  }
+
   private clear(
     newLogText='',
     newProgressBarSpecs={},
     scope=UNINDEXED
   ) {
     this.logs[scope] = {}
-    console.log(`Received a clear in ${scope}`)
     this.setTimestamp(scope)
     if (newLogText) {
       this.logs[scope].text = newLogText
@@ -249,7 +298,7 @@ const consoleFormatter = format((info, _) => {
 const messageFormatter = format((info, _) => {
   // Write all relevant information in info.message
   const { timestamp: timeString='', sender='', message } = info
-  info.message = `${chalk.green(timeString)} - ${info.level}:  ${message} ${chalk.black(sender)}`
+  info.message = `${chalk.gray(timeString)} - ${info.level}:  ${message} ${chalk.gray(sender)}`
   return info
 })
 
