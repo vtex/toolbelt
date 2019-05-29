@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { compose, filter, flip, gt, head, length, map, not, prop, split } from 'ramda'
+import { compose, equals, filter, head, prop, split } from 'ramda'
 
 import { apps } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
@@ -9,16 +9,8 @@ import { createTable } from '../../table'
 
 const { listApps } = apps
 
-const flippedGt = flip(gt)
-
-const parseLocatorFromList =
-  map(compose<any, string, Manifest>(parseLocator, prop('app')))
-
 const cleanVersion =
   compose<string, string[], string>(head, split('+build'))
-
-const isLinked =
-  compose<string, string[], number, boolean>(flippedGt(1), length, split('+build'))
 
 const renderTable = (
   ({ title, emptyMessage, appArray }: {
@@ -34,7 +26,9 @@ const renderTable = (
 
     const table = createTable()
 
-    appArray.forEach(({ vendor, name, version }) => {
+    appArray.forEach(({ app }) => {
+
+      const { vendor, name, version } = parseLocator(app)
 
       const cleanedVersion = cleanVersion(version)
 
@@ -53,15 +47,19 @@ export default async () => {
   log.debug('Starting to list apps')
   const appArray = await listApps()
     .then(prop('data'))
-    .then(parseLocatorFromList)
   renderTable({  // Installed apps
     title: `${chalk.yellow('Installed Apps')} in ${chalk.blue(account)} at workspace ${chalk.yellow(workspace)}`,
     emptyMessage: 'You have no installed apps',
-    appArray: filter(compose<any, string, boolean, boolean>(not, isLinked, prop('version')))(appArray),
+    appArray: filter(compose<any, string, boolean>(equals('installation'), prop('_source')))(appArray),
   })
   renderTable({  // Linked apps
     title: `${chalk.yellow('Linked Apps')} in ${chalk.blue(account)} at workspace ${chalk.yellow(workspace)}`,
     emptyMessage: 'You have no linked apps',
-    appArray: filter(compose<any, string, boolean>(isLinked, prop('version')))(appArray),
+    appArray: filter(compose<any, string, boolean>(equals('link'), prop('_source')))(appArray),
+  })
+  renderTable({  // Apps inherited by account's edition
+    title: `${chalk.yellow('Edition Apps')} in ${chalk.blue(account)} at workspace ${chalk.yellow(workspace)}`,
+    emptyMessage: 'You have no edition apps',
+    appArray: filter(compose<any, string, boolean>(equals('edition'), prop('_source')))(appArray),
   })
 }
