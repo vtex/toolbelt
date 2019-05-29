@@ -13,7 +13,6 @@ const cleanVersion =
   compose<string, string[], string>(head, split('+build'))
 
 const filterBySource = (source: string) =>
-  // More recent Apps versions return app list with a `_source` field.
   filter(compose<any, string, boolean>(equals(source), prop('_source')))
 
 const renderTable = (
