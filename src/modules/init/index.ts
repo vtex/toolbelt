@@ -16,7 +16,7 @@ import * as git from './git'
 const { mapSeries } = Bluebird
 
 const templates = {
-
+  'admin-example': 'admin-example',
   'store-theme': 'store-theme',
   'delivery-theme': 'delivery-theme',
   'service-example': 'service-example',
@@ -26,6 +26,7 @@ const templates = {
 }
 
 const titles = {
+  'admin-example': 'Admin Example',
   'store-theme': 'Store Theme',
   'delivery-theme': 'Delivery Store Theme',
   'service-example': 'Node Service Example',
@@ -35,6 +36,7 @@ const titles = {
 }
 
 const descriptions = {
+  'admin-example': 'Example for building apps in Admin',
   'store-theme': 'VTEX IO Store Theme',
   'delivery-theme': 'VTEX IO Delivery Store Theme',
   'service-example': `Example of @vtex/api's Service class`,
