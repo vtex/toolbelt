@@ -16,6 +16,7 @@ import * as git from './git'
 const { mapSeries } = Bluebird
 
 const templates = {
+  'graphql-example': 'graphql-example',
   'admin-example': 'admin-example',
   'store-theme': 'store-theme',
   'delivery-theme': 'delivery-theme',
@@ -26,6 +27,7 @@ const templates = {
 }
 
 const titles = {
+  'graphql-example': 'GraphQL Example',
   'admin-example': 'Admin Example',
   'store-theme': 'Store Theme',
   'delivery-theme': 'Delivery Store Theme',
@@ -36,6 +38,7 @@ const titles = {
 }
 
 const descriptions = {
+  'graphql-example': 'Example for building GraphQL Backend apps',
   'admin-example': 'Example for building apps in Admin',
   'store-theme': 'VTEX IO Store Theme',
   'delivery-theme': 'VTEX IO Delivery Store Theme',
