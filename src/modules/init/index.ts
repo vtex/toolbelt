@@ -4,7 +4,7 @@ import * as enquirer from 'enquirer'
 import { outputJson, readJson } from 'fs-extra'
 import * as moment from 'moment'
 import { join } from 'path'
-import { keys, prop } from 'ramda'
+import { keys, merge, prop } from 'ramda'
 
 import { getAccount } from '../../conf'
 import log from '../../logger'
@@ -126,7 +126,7 @@ const manifestFromPrompt = async (repo: string) => {
   ], f => f(repo))
 }
 
-const createManifest = (name: string, vendor: string, title = '', description = ''): Manifest => {
+const createManifest = (name: string, vendor: string, title = '', description = ''): Partial<Manifest> => {
   const [year, ...monthAndDay] = moment().format('YYYY-MM-DD').split('-')
   return {
     name,
@@ -136,7 +136,6 @@ const createManifest = (name: string, vendor: string, title = '', description = 
     description,
     mustUpdateAt: `${Number(year) + 1}-${monthAndDay.join('-')}`,
     registries: ['smartcheckout'],
-    builders: {},
   }
 }
 
@@ -153,7 +152,7 @@ export default async () => {
       manifestFromPrompt(repo),
     ])
     const synthetic = createManifest(name, vendor, title, description)
-    const manifest: any = Object.assign(await readJson(manifestPath) || {}, synthetic)
+    const manifest: any = merge(await readJson(manifestPath) || {}, synthetic)
     await outputJson(manifestPath, manifest, { spaces: 2 })
     log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
   } catch (err) {
