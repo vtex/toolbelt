@@ -21,6 +21,11 @@ const promptUpdate = (): Bluebird<boolean> =>
 
 const sameVersion = ({ version, latest }: Manifest) => version === latest
 
+const tableHeaders = map(
+      str => chalk.bold.yellow(str),
+      ['App', 'Current', 'Latest']
+    )
+
 const extractAppLocator = pipe(prop('app'), parseLocator)
 
 const updateVersion = (app) => {
@@ -39,10 +44,7 @@ export default async () => {
   const updateableApps = reject(sameVersion, withLatest)
 
   const table = createTable(
-    { head: map(
-      str => chalk.bold.yellow(str),
-      ['App', 'Current', 'Latest']
-    ) }
+    { head: tableHeaders }
   )
   updateableApps.forEach(({ vendor, name, version, latest }) => {
     if (!latest) {
