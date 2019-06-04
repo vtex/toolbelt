@@ -38,7 +38,12 @@ export default async () => {
   }, installedApps))
   const updateableApps = reject(sameVersion, withLatest)
 
-  const table = createTable({ head: ['App', 'Current', 'Latest'] })
+  const table = createTable(
+    { head: map(
+      str => chalk.bold.yellow(str),
+      ['App', 'Current', 'Latest']
+    ) }
+  )
   updateableApps.forEach(({ vendor, name, version, latest }) => {
     if (!latest) {
       log.debug(`Couldn't find latest version of ${vendor}.${name}`)
