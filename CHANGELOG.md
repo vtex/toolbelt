@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.63.4] - 2019-06-04
+
 ## [2.63.3] - 2019-05-31
 ### Fixed
 - Fix `vtex init`
