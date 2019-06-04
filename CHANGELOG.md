@@ -6,15 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.63.5] - 2019-06-04
+### Fixed
+- Use app's root as `cwd` when running scripts during `vtex release`.
+
 ## [2.63.4] - 2019-06-04
+### Changed
+- Bump `axios` version.
 
 ## [2.63.3] - 2019-05-31
 ### Fixed
-- Fix `vtex init`
+- Fix `vtex init`.
 
 ## [2.63.2] - 2019-05-30
+### Added
+- Add graphql example.
 
 ## [2.63.1] - 2019-05-30
+### Added
+- Add admin example.
 
 ## [2.63.0] - 2019-05-29
 ### Added

@@ -72,7 +72,7 @@ const runCommand = (
 ) => {
   let output
   try {
-    output = execSync(cmd, {stdio: hideOutput ? 'pipe' : 'inherit'})
+    output = execSync(cmd, {stdio: hideOutput ? 'pipe' : 'inherit', cwd: root})
     if (!hideSuccessMessage) {
       log.info(successMessage + chalk.blue(` >  ${cmd}`))
     }
