@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Use app's root as `cwd` when running scripts during `vtex release`
+- Use app's root as `cwd` when running scripts during `vtex release`.
 
 ## [2.63.4] - 2019-06-04
 
