@@ -5,12 +5,15 @@ import { existsSync, pathExists, readFile} from 'fs-extra'
 import { writeFile } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import * as R from 'ramda'
-import { currentContext } from '../conf'
+import { currentContext, getAccount, getToken, getWorkspace } from '../conf'
 import * as conf from '../conf'
+import * as env from '../env'
 import { BuildFailError } from '../errors'
 import log from '../logger'
 import { getAppRoot } from '../manifest'
 import { logAll, onEvent } from '../sse'
+import envTimeout from '../timeout'
+import userAgent from '../user-agent'
 import { promptConfirm } from './prompts'
 
 interface BuildListeningOptions {
@@ -27,6 +30,28 @@ const allEvents: BuildEvent[] = ['start', 'success', 'fail', 'timeout', 'logs']
 const flowEvents: BuildEvent[] = ['start', 'success', 'fail']
 
 export const yarnPath = `"${require.resolve('yarn/bin/yarn')}"`
+
+const DEFAULT_TIMEOUT = 10000
+
+export const IOClientOptions = {
+  timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
+  retries: 3,
+}
+
+export const getIOContext = () => ({
+  account: getAccount(),
+  authToken: getToken(),
+  production: false,
+  region: env.region(),
+  route: {
+    id: '',
+    params: {},
+  } ,
+  userAgent,
+  workspace: getWorkspace(),
+  requestId: '',
+  operationId: '',
+})
 
 const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
   const [subject] = appOrKey.split('@')

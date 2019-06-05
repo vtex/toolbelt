@@ -3,12 +3,14 @@ import chalk from 'chalk'
 import * as ora from 'ora'
 import { isEmpty, map, pipe, prop, reject } from 'ramda'
 
+import { Housekeeper } from '@vtex/api'
 import { apps } from '../../clients'
 import { parseLocator, toAppLocator, toMajorRange } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
 import { diffVersions } from '../infra/utils'
 import { promptConfirm } from '../prompts'
+import { getIOContext, IOClientOptions } from '../utils'
 import { prepareInstall } from './install'
 import { appLatestVersion, isLinked } from './utils'
 
@@ -34,7 +36,12 @@ const updateVersion = (app) => {
 }
 
 export default async () => {
+  const housekeeper = new Housekeeper(getIOContext(), IOClientOptions)
   const spinner = ora('Getting available updates').start()
+  const resolvedUpdates = await housekeeper.resolve()
+  console.log(resolvedUpdates)
+  console.log(JSON.stringify(resolvedUpdates, null, 2))
+
   const { data } = await listApps()
   const installedApps = reject<Manifest>(isLinked, map(extractAppLocator, data))
   const withLatest = await Bluebird.all(map(async (app) => {
