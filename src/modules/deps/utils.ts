@@ -60,7 +60,7 @@ export const matchedDepsDiffTable = (
       R.map(k => R.head(R.split('@', k))),
       R.flatten,
       R.pluck('value'),
-      R.filter((k: any) => !!k.removed || !!k.added)
+      R.filter( (k: any) => !!k.removed || !!k.added )
     )(depsDiff)
   )].sort()
   const produceStartValues = () => (R.map((_) => ([]))(depNames) as any)

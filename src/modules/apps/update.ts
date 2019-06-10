@@ -1,79 +1,65 @@
-import * as Bluebird from 'bluebird'
-import chalk from 'chalk'
-import * as ora from 'ora'
-import { isEmpty, map, pipe, prop, reject } from 'ramda'
-
 import { Housekeeper } from '@vtex/api'
-import { apps } from '../../clients'
-import { parseLocator, toAppLocator, toMajorRange } from '../../locator'
+import * as ora from 'ora'
+import { compose, filter, map, path, pluck, prop } from 'ramda'
+
+import { toMajorRange } from '../../locator'
 import log from '../../logger'
-import { createTable } from '../../table'
-import { diffVersions } from '../infra/utils'
+import { matchedDepsDiffTable } from '../deps/utils'
 import { promptConfirm } from '../prompts'
 import { getIOContext, IOClientOptions } from '../utils'
-import { prepareInstall } from './install'
-import { appLatestVersion, isLinked } from './utils'
 
-const { listApps } = apps
 
-const promptUpdate = (): Bluebird<boolean> =>
+const promptUpdate = (): Promise<boolean> =>
   Promise.resolve(
     promptConfirm('Apply version updates?')
   )
 
-const sameVersion = ({ version, latest }: Manifest) => version === latest
+const toAppName = (appId: string) => appId.split('@')[0]
 
-const tableHeaders = map(
-      str => chalk.bold.yellow(str),
-      ['App', 'Current', 'Latest']
-    )
+const includes = (k: string, list: string[]) => list.indexOf(k) >= 0
 
-const extractAppLocator = pipe(prop('app'), parseLocator)
-
-const updateVersion = (app) => {
-  app.version = app.latest
-  return app
+const printAppsDiff = (source: string, resolvedUpdates: any, message: string) => {
+  const appsToBeUpdated = compose<any, any, any, any>(
+    pluck('id'),
+    filter((obj: { source: string }) => includes(prop('source', obj), [source])),
+    path(['updates', 'apps'])
+  )(resolvedUpdates) as string[]
+  const appMajorsToBeUpdated = map(toAppName, appsToBeUpdated)
+  const currentApps = compose<any, any, any, any>(
+    filter((appId: string) => includes(toMajorRange(appId), appMajorsToBeUpdated)),
+    pluck('id'),
+    path(['state', 'apps'])
+  )(resolvedUpdates) as string[]
+  const diffTable = matchedDepsDiffTable('', '', currentApps, appsToBeUpdated)
+  if (diffTable.length === 1) {
+    return false
+  }
+  log.info(message)
+  console.log(diffTable.toString())
+  return true
 }
 
 export default async () => {
   const housekeeper = new Housekeeper(getIOContext(), IOClientOptions)
-  const spinner = ora('Getting available updates').start()
+  const getSpinner = ora('Getting available updates').start()
   const resolvedUpdates = await housekeeper.resolve()
-  console.log(resolvedUpdates)
   console.log(JSON.stringify(resolvedUpdates, null, 2))
-
-  const { data } = await listApps()
-  const installedApps = reject<Manifest>(isLinked, map(extractAppLocator, data))
-  const withLatest = await Bluebird.all(map(async (app) => {
-    app.latest = await appLatestVersion(`${app.vendor}.${app.name}`, toMajorRange(app.version))
-    return app
-  }, installedApps))
-  const updateableApps = reject(sameVersion, withLatest)
-
-  const table = createTable({ head: tableHeaders })
-  updateableApps.forEach(({ vendor, name, version, latest }) => {
-    if (!latest) {
-      log.debug(`Couldn't find latest version of ${vendor}.${name}`)
-      return
-    }
-    const [fromVersion, toVersion] = diffVersions(version, latest)
-
-    const formattedName = `${chalk.blue(vendor)}${chalk.gray.bold('.')}${name}`
-    table.push([formattedName, fromVersion, toVersion])
-  })
-  spinner.stop()
-
-  if (isEmpty(updateableApps)) {
-    return log.info('No updates available for installed apps.')
+  getSpinner.stop()
+  const anything = printAppsDiff('installation', resolvedUpdates,
+  `The following installed apps will be updated:`) ||
+  printAppsDiff('dependency', resolvedUpdates,
+  `The following dependencies will be updated:`) ||
+  printAppsDiff('edition', resolvedUpdates,
+  `The following infra apps will be updated`)
+  if (!anything) {
+    log.info('No updates available')
   }
-
-  console.log(`${table.toString()}\n`)
 
   const confirm = await promptUpdate()
   if (!confirm) {
     return
   }
-
-  const appsList = map(pipe(updateVersion, toAppLocator), updateableApps)
-  await prepareInstall(appsList)
+  const applySpinner = ora('Applying updates').start()
+  await housekeeper.apply(resolvedUpdates)
+  applySpinner.stop()
 }
