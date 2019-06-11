@@ -68,7 +68,6 @@ export default async () => {
   const housekeeper = new Housekeeper(getIOContext(), IOClientOptions)
   const getSpinner = ora('Getting available updates').start()
   const resolvedUpdates = await housekeeper.resolve()
-  console.log(JSON.stringify(resolvedUpdates, null, 2))
   getSpinner.stop()
   const hasAvailableUpdates =
     printAppsDiff(resolvedUpdates, `The following infra apps will be updated`, ['infra']) ||
