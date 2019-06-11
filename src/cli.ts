@@ -89,6 +89,7 @@ const main = async () => {
     }
   }
 
+  log.clearAll()
   await run(command)
 }
 

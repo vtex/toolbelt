@@ -6,6 +6,7 @@ import { getAccount, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
+import { FINAL_MESSAGES } from '../../logger-scopes'
 
 const keepAliveDelayMs = 3 * 60 * 1000
 
@@ -44,7 +45,7 @@ function webSocketTunnelHandler(host, path: string, server: net.Server): (socket
     ws.on('close', end)
     ws.on('error', err => {
       end()
-      log.error(`Debugger websocket error: ${err.name}: ${err.message}`)
+      log.scopedError(`Debugger websocket error: ${err.name}: ${err.message}`, FINAL_MESSAGES)
     })
 
     ws.on('unexpected-response', async (_, res) => {
@@ -52,11 +53,11 @@ function webSocketTunnelHandler(host, path: string, server: net.Server): (socket
 
       const errMsg = getErrorMessage(await streamToString(res))
       if (errMsg === 'Unable to connect to the remote server') {
-        log.error('Unable to connect to remote debugger. Make sure you are running on colossus-js version >=0.2.0.')
+        log.scopedError('Unable to connect to remote debugger. Make sure you are running on colossus-js version >=0.2.0.', FINAL_MESSAGES)
         server.close()
-        log.error('Local debugger tunnel closed.')
+        log.scopedError('Local debugger tunnel closed.', FINAL_MESSAGES)
       } else {
-        log.error(`Unexpected response from debugger hook (${res.statusCode}): ${errMsg}`)
+        log.scopedError(`Unexpected response from debugger hook (${res.statusCode}): ${errMsg}`, FINAL_MESSAGES)
       }
     })
 
@@ -77,7 +78,7 @@ function webSocketTunnelHandler(host, path: string, server: net.Server): (socket
         }
         ws.send(data, err => {
           if (err) {
-            log.error(`Error writing to debugger websocket: ${err.name}: ${err.message}`)
+            log.scopedError(`Error writing to debugger websocket: ${err.name}: ${err.message}`, FINAL_MESSAGES)
           }
         })
       })
@@ -106,7 +107,7 @@ export default function startDebuggerTunnel(manifest: Manifest, port: number = D
 
     server.on('error', err => {
       if (port < DEFAULT_DEBUGGER_PORT + MAX_RETRY_COUNT) {
-        log.warn(`Port ${port} in use, will try to open tunnel on port ${port + 1}`)
+        log.scopedWarn(`Port ${port} in use, will try to open tunnel on port ${port + 1}`, FINAL_MESSAGES)
         resolve(startDebuggerTunnel(manifest, port + 1))
       } else {
         reject(err)

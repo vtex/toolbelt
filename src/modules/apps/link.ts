@@ -18,6 +18,7 @@ import { CommandError } from '../../errors'
 import { getMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
+import { FINAL_MESSAGES, LOCAL_FILES } from '../../logger-scopes'
 import { getAppRoot, getManifest } from '../../manifest'
 import { listenBuild } from '../build'
 import { formatNano } from '../utils'
@@ -185,7 +186,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   const linkedDepsPatterns = map(path => join(path, '**'), getLinkedDepsDirs(extraData.linkConfig))
 
   const queueChange = (path: string, remove?: boolean) => {
-    console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
+    log.scopedInfo(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`, LOCAL_FILES)
     changeQueue.push(pathToChange(path, remove))
     sendChanges()
   }
@@ -193,6 +194,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   const sendChanges = debounce(() => {
     builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
       .catch(onInitialLinkRequired)
+    log.clearScope(FINAL_MESSAGES)
   }, 300)
 
   const pathToChange = (path: string, remove?: boolean): Change => ({
@@ -249,9 +251,9 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
   const usedDeps = toPairs(linkConfig.metadata)
   if (usedDeps.length) {
     const plural = usedDeps.length > 1
-    log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
-    usedDeps.forEach(([dep, path]) => log.info(`${dep} (from: ${path})`))
-    log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
+    log.scopedInfo(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`, undefined, true)
+    usedDeps.forEach(([dep, path]) => log.scopedInfo(`${dep} (from: ${path})`, undefined, true))
+    log.scopedInfo(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`, undefined, true)
   }
 
   const linkApp = async (bail: any, tryCount: number) => {
@@ -265,16 +267,16 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 
     if (tryCount === 1) {
       const linkedFilesInfo = linkedFiles.length ? `(${linkedFiles.length} from linked node modules)` : ''
-      log.info(`Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`)
-      log.debug('Sending files')
-      filesWithContent.forEach(p => log.debug(p.path))
+      log.scopedProgress(0, `Sending ${filesWithContent.length} file${filesWithContent.length > 1 ? 's' : ''} ${linkedFilesInfo}`, LOCAL_FILES)
+      filesWithContent.forEach(p => log.scopedInfo(p.path, LOCAL_FILES))
     }
 
     if (tryCount > 1) {
-      log.info(`Retrying...${tryCount-1}`)
+      log.debug(`Retrying...${tryCount-1}`)
     }
 
     const stickyHint = await getMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
+    log.scopedProgress(100, 'Files sent', LOCAL_FILES)
     const linkOptions = { sticky: true, stickyHint }
     try {
       const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })
@@ -348,7 +350,7 @@ export default async (options) => {
       try {
         const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
         debuggerStarted = true
-        log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
+        log.scopedInfo(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`, undefined, true)
       } catch (e) {
         log.error(e.message)
       }
@@ -386,8 +388,8 @@ export default async (options) => {
       if (unlistenBuild) {
         unlistenBuild()
       }
-      log.info('Your app is still in development mode.')
-      log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
+      log.scopedInfo('Your app is still in development mode.', 'final_messages', true)
+      log.scopedInfo(`You can unlink it with: 'vtex unlink ${appId}'`, 'final_messages', true)
       process.exit()
     })
 
