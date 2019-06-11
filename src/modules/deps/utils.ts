@@ -25,6 +25,9 @@ const formatAppId = (appId: string) => {
   if (!appName) {
     // Then the app is an 'infra' app.
     const [infraAppVendor, infraAppName] = R.split(':', appId)
+    if (!infraAppName) {
+      return appId
+    }
     return `${chalk.blue(infraAppVendor)}:${infraAppName}`
   }
   return `${chalk.blue(appVendor)}.${appName}`
