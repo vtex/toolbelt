@@ -4,8 +4,8 @@ import { compose, concat, difference, filter, identity, map, path as ramdaPath, 
 
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
-import { matchedDepsDiffTable } from '../deps/utils'
 import { promptConfirm } from '../prompts'
+import { matchedDepsDiffTable } from '../utils'
 import { getIOContext, IOClientOptions } from '../utils'
 
 

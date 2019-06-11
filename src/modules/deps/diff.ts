@@ -2,7 +2,8 @@ import chalk from 'chalk'
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import * as env from '../../env'
 import userAgent from '../../user-agent'
-import { getCleanDependencies, matchedDepsDiffTable } from './utils'
+import { matchedDepsDiffTable } from '../utils'
+import { getCleanDependencies } from './utils'
 
 const context = (workspace: string) => {
   // Returns default context with variable workspace name.
