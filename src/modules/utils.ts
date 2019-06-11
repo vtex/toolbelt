@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
-import { existsSync } from 'fs'
+import { existsSync, readFile} from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import { currentContext } from '../conf'
 import * as conf from '../conf'
@@ -110,6 +110,15 @@ export const runYarnIfPathExists = (relativePath: string) => {
       throw e
     }
   }
+}
+
+interface PackageDependencies {
+  dependencies: [string] : string
+}
+
+export const checkPinnedDependencies = async (relativePath: string, pinnedDeps: [Record<string, string>]) => {
+  const content : any = await readFile(`${relativePath}/package.json`).toJSON()
+  map(content.dependencies,
 }
 
 const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()) :string => {
