@@ -131,16 +131,16 @@ export const fixPinnedDependencies = R.curry(async (pinnedDeps: Map<string, stri
     return
   }
   const packageJSON = JSON.parse((await readFile(jsonPath)).toString())
-  const dependencies = new Map(Object.entries(packageJSON.dependencies))
-  const devDependencies = new Map(Object.entries(packageJSON.devDependencies))
+  const dependencies = new Map<string, string>(packageJSON.hasOwnProperty('dependencies') ? Object.entries(packageJSON.dependencies) : [])
+  const devDependencies = new Map<string, string>(packageJSON.hasOwnProperty('devDependencies') ? Object.entries(packageJSON.devDependencies) : [])
   const outdatedDeps = R.filter(dep => pinnedDeps.has(dep) && pinnedDeps.get(dep) !== dependencies.get(dep), [...dependencies.keys()])
   const outdatedDevDeps = R.filter(dep => pinnedDeps.has(dep) && pinnedDeps.get(dep) !== devDependencies.get(dep), [...devDependencies.keys()])
   const newPackageJSON = R.reduce((obj, dep) => {
     log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}...`)
-    if (obj.dependencies[dep]) {
+    if (obj.hasOwnProperty('dependencies') && obj.dependencies[dep]) {
       obj.dependencies[dep] = pinnedDeps.get(dep)
     }
-    if (obj.devDependencies[dep]) {
+    if (obj.hasOwnProperty('devDependencies') && obj.devDependencies[dep]) {
       obj.devDependencies[dep] = pinnedDeps.get(dep)
     }
     return obj
