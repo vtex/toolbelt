@@ -136,7 +136,7 @@ export const fixPinnedDependencies = R.curry(async (pinnedDeps: Map<string, stri
   const outdatedDeps = R.filter(dep => pinnedDeps.has(dep) && pinnedDeps.get(dep) !== dependencies.get(dep), [...dependencies.keys()])
   const outdatedDevDeps = R.filter(dep => pinnedDeps.has(dep) && pinnedDeps.get(dep) !== devDependencies.get(dep), [...devDependencies.keys()])
   const newPackageJSON = R.reduce((obj, dep) => {
-    log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}...`)
+    log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}`)
     if (obj.hasOwnProperty('dependencies') && obj.dependencies[dep]) {
       obj.dependencies[dep] = pinnedDeps.get(dep)
     }
