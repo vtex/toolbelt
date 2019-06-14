@@ -1,7 +1,10 @@
+import { AxiosInstance } from 'axios'
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
-import { existsSync } from 'fs'
+import { existsSync, pathExists, readFile} from 'fs-extra'
+import { writeFile } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
+import * as R from 'ramda'
 import { currentContext } from '../conf'
 import * as conf from '../conf'
 import { BuildFailError } from '../errors'
@@ -111,6 +114,53 @@ export const runYarnIfPathExists = (relativePath: string) => {
     }
   }
 }
+
+export const getPinnedDependencies = async (builderHttp: AxiosInstance) => {
+  try {
+    const result = await builderHttp.get('/_v/builder/0/pinneddeps')
+    return result.data
+  } catch (e) {
+    log.debug('Failed to connect to builder-hub to get pinned deps')
+    throw e
+  }
+}
+
+const getEntryMapFromObject = (obj: object, field: string) => {
+  if (obj.hasOwnProperty(field)) {
+    return new Map<string, string>(Object.entries(obj[field]))
+  }
+  else {
+    return new Map<string, string>()
+  }
+}
+
+// For each entry in 'left', get all keys that exist but differ in 'right'
+const leftMapDifference = (left: Map<string, string>, right: Map<string, string>) => {
+  return R.filter(x => right.has(x) && left.get(x) !== right.get(x), [...left.keys()])
+}
+
+export const fixPinnedDependencies = R.curry(async (pinnedDeps: Map<string, string>, relativePath: string) => {
+  const jsonPath = resolvePath(getAppRoot(), `${relativePath}/package.json`)
+  if (!await pathExists(jsonPath)) {
+    return
+  }
+  const packageJSON = JSON.parse((await readFile(jsonPath)).toString())
+  const dependencies = getEntryMapFromObject(packageJSON, 'dependencies')
+  const devDependencies = getEntryMapFromObject(packageJSON, 'devDependencies')
+  const outdatedDeps = leftMapDifference(dependencies, pinnedDeps)
+  const outdatedDevDeps = leftMapDifference(devDependencies, pinnedDeps)
+  const newPackageJSON = R.reduce((obj, dep) => {
+    log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}`)
+    if (obj.hasOwnProperty('dependencies') && obj.dependencies[dep]) {
+      obj.dependencies[dep] = pinnedDeps.get(dep)
+    }
+    if (obj.hasOwnProperty('devDependencies') && obj.devDependencies[dep]) {
+      obj.devDependencies[dep] = pinnedDeps.get(dep)
+    }
+    return obj
+  }, packageJSON, [...outdatedDeps, ...outdatedDevDeps])
+  await writeFile(jsonPath, JSON.stringify(newPackageJSON, null, 2) + '\n')
+})
 
 const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()) :string => {
   return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`

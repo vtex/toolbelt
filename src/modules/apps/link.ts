@@ -1,5 +1,7 @@
 import { Builder, Change } from '@vtex/api'
 import * as retry from 'async-retry'
+import axios from 'axios'
+import * as bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
@@ -9,7 +11,8 @@ import { join, resolve as resolvePath, sep} from 'path'
 import { compose, concat, intersection, isEmpty, keys, map, not, pipe, prop, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getWorkspace } from '../../conf'
+import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
+import { region } from '../../env'
 import { CommandError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
@@ -17,7 +20,7 @@ import log from '../../logger'
 import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
-import { formatNano } from '../utils'
+import { fixPinnedDependencies, formatNano, getPinnedDependencies } from '../utils'
 import { runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
@@ -31,7 +34,7 @@ const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 const buildersToStartDebugger = ['node']
-const buildersToRunLocalYarn = ['node', 'react']
+const buildersToRunLocalYarn = ['react', 'node']
 const RETRY_OPTS_INITIAL_LINK = {
   retries: 2,
   minTimeout: 1000,
@@ -42,6 +45,15 @@ const RETRY_OPTS_DEBUGGER = {
   minTimeout: 1000,
   factor: 2,
 }
+const account = getAccount()
+const workspace = getWorkspace()
+const builderHttp = axios.create({
+  baseURL: `http://builder-hub.vtex.${region()}.vtex.io/${account}/${workspace}`,
+  timeout: 2000,
+  headers: {
+    'Authorization': getToken(),
+  },
+})
 
 const shouldStartDebugger = (manifest: Manifest) => compose<Manifest, any, string[], string[], boolean, boolean>(
   not,
@@ -211,6 +223,13 @@ export default async (options) => {
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
   if (options.setup || options.s) {
     await setup()
+  }
+  try {
+    const aux = await getPinnedDependencies(builderHttp)
+    const pinnedDeps : Map<string, string> = new Map(Object.entries(aux))
+    await bluebird.map(buildersToRunLocalYarn, fixPinnedDependencies(pinnedDeps), { concurrency: 1 })
+  } catch(e) {
+    log.info('Failed to check for pinned dependencies')
   }
   // Always run yarn locally for some builders
   map(runYarnIfPathExists, buildersToRunLocalYarn)
