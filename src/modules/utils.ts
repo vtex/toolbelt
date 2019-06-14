@@ -125,16 +125,30 @@ export const getPinnedDependencies = async (builderHttp: AxiosInstance) => {
   }
 }
 
+const getEntryMapFromObject = (obj: object, field: string) => {
+  if (obj.hasOwnProperty(field)) {
+    return new Map<string, string>(Object.entries(obj[field]))
+  }
+  else {
+    return new Map<string, string>()
+  }
+}
+
+// For each entry in 'left', get all keys that exist but differ in 'right'
+const leftMapDifference = (left: Map<string, string>, right: Map<string, string>) => {
+  return R.filter(x => right.has(x) && left.get(x) !== right.get(x), [...left.keys()])
+}
+
 export const fixPinnedDependencies = R.curry(async (pinnedDeps: Map<string, string>, relativePath: string) => {
   const jsonPath = resolvePath(getAppRoot(), `${relativePath}/package.json`)
   if (!await pathExists(jsonPath)) {
     return
   }
   const packageJSON = JSON.parse((await readFile(jsonPath)).toString())
-  const dependencies = new Map<string, string>(packageJSON.hasOwnProperty('dependencies') ? Object.entries(packageJSON.dependencies) : [])
-  const devDependencies = new Map<string, string>(packageJSON.hasOwnProperty('devDependencies') ? Object.entries(packageJSON.devDependencies) : [])
-  const outdatedDeps = R.filter(dep => pinnedDeps.has(dep) && pinnedDeps.get(dep) !== dependencies.get(dep), [...dependencies.keys()])
-  const outdatedDevDeps = R.filter(dep => pinnedDeps.has(dep) && pinnedDeps.get(dep) !== devDependencies.get(dep), [...devDependencies.keys()])
+  const dependencies = getEntryMapFromObject(packageJSON, 'dependencies')
+  const devDependencies = getEntryMapFromObject(packageJSON, 'devDependencies')
+  const outdatedDeps = leftMapDifference(dependencies, pinnedDeps)
+  const outdatedDevDeps = leftMapDifference(devDependencies, pinnedDeps)
   const newPackageJSON = R.reduce((obj, dep) => {
     log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}`)
     if (obj.hasOwnProperty('dependencies') && obj.dependencies[dep]) {
