@@ -93,7 +93,6 @@ const authAndSave = async (account, workspace, optionWorkspace): Promise<{ login
   const decodedToken = jwt.decode(token)
   const login: string = decodedToken.sub
   saveCredentials(login, account, token, workspace)
-  conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
   return { login, token, returnUrl }
 }

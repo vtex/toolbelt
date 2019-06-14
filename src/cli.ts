@@ -17,6 +17,7 @@ import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
+import * as conf from './conf'
 
 axios.interceptors.request.use(config => {
   if (envCookies()) {
@@ -78,6 +79,7 @@ const checkLogin = args => {
 
 const main = async () => {
   const args = process.argv.slice(2)
+  conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
   logToolbeltVersion()
 
