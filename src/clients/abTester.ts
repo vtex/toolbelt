@@ -3,7 +3,8 @@ import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 const routes = {
   Abort: (workspace: string) => `${routes.ABTester}/finish/${workspace}`,
   ABTester: '/_v/private/abtesting',
-  Initialize: (workspace: string, probability: number) => `${routes.ABTester}/initialize/${workspace}/${probability}`,
+  Initialize: (workspace: string) => `${routes.ABTester}/initialize/${workspace}`,
+  InitializeLegacy: (workspace: string, probability: number) => `${routes.ABTester}/initialize/${workspace}/${probability}`,
   Preview: (probability: number) => `${routes.ABTester}/time/${probability}`,
   Status: () => `${routes.ABTester}/status`,
 }
@@ -18,8 +19,12 @@ export class ABTester extends AppClient {
     this.http.post(routes.Abort(workspace), {}, { metric: 'abtester-finish' })
 
   // Start AB Test in a workspace with a given probability.
-  public start = async (workspace: string, probability: number) =>
-    this.http.post(routes.Initialize(workspace, probability), {}, { metric: 'abtester-start' })
+  public startLegacy = async (workspace: string, probability: number) =>
+    this.http.post(routes.InitializeLegacy(workspace, probability), {}, { metric: 'abtester-start' })
+
+  // Start AB Test in a workspace.
+  public start = async (workspace: string) =>
+    this.http.post(routes.Initialize(workspace), {}, { metric: 'abtester-start' })
 
   // Get estimated AB Test duration.
   public preview = async (significanceLevel: number): Promise<number> =>
