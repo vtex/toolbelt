@@ -9,7 +9,7 @@ import { promptConfirm } from '../../prompts'
 import { default as abTestStatus } from './status'
 import {
   abtester,
-  checkIfABTesterIsInstalled,
+  installedABTester,
 } from './utils'
 
 const [account] = [getAccount()]
@@ -39,7 +39,7 @@ const promptWorkspaceToFinishABTest = async () =>
     .then(prop('workspace'))
 
 export default async () => {
-  await checkIfABTesterIsInstalled()
+  await installedABTester()
   const workspace = await promptWorkspaceToFinishABTest()
   await promptContinue(workspace)
   log.info('Finishing A/B tests')

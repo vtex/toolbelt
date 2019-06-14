@@ -8,7 +8,7 @@ import log from '../../../logger'
 import { createTable } from '../../../table'
 import {
   abtester,
-  checkIfABTesterIsInstalled,
+  installedABTester,
   formatDuration,
 } from './utils'
 
@@ -78,7 +78,7 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 }
 
 export default async () => {
-  await checkIfABTesterIsInstalled()
+  await installedABTester()
   let abTestInfo = []
   abTestInfo = await abtester.status()
   if (!abTestInfo || abTestInfo.length === 0) {
