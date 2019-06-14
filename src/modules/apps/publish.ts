@@ -135,10 +135,6 @@ const publisher = (workspace: string = 'master') => {
 }
 
 export default (path: string, options) => {
-  if (!options.staging) {
-    conf.forceEnvironment(conf.Environment.Production)
-  }
-
   log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
 
   path = path || root

@@ -124,7 +124,7 @@ VTEX Toolbelt will now monitor your files for changes and sync them automaticall
 
 ## Customizing your prompt
 
-You can configure your **terminal prompt** to display relevant information about your current context, like what **environment** you are using (`prod` or `staging`), which **account** you're logged into and which **workspace** you are currently using.
+You can configure your **terminal prompt** to display relevant information about your current context, like  which **account** you're logged into and which **workspace** you are currently using.
 
 Just like knowing which `git` branch you're currently in, having this info in your prompt you help you avoid mistakes and be faster when using VTEX IO.
 

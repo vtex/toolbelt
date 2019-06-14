@@ -93,24 +93,9 @@ const authAndSave = async (account, workspace, optionWorkspace): Promise<{ login
   const decodedToken = jwt.decode(token)
   const login: string = decodedToken.sub
   saveCredentials(login, account, token, workspace)
-  if (login.endsWith('@vtex.com.br') && await isStagingRegionEnabled()) {
-    log.info(`Using staging (beta) IO environment due to VTEX domain. Switch back with ${chalk.gray('vtex config set env prod')}`)
-    conf.saveEnvironment(conf.Environment.Staging)
-  } else {
-    conf.saveEnvironment(conf.Environment.Production)
-  }
+  conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
   return { login, token, returnUrl }
-}
-
-
-const isStagingRegionEnabled = async (): Promise<boolean> => {
-  try {
-    const resp = await axios.get(`http://router.${conf.Region.Staging}.vtex.io/_production`)
-    return resp.data
-  } catch {
-    return false
-  }
 }
 
 const closeChromeTabIfMac = (returnUrl: string) => {

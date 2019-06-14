@@ -6,7 +6,6 @@ const conf = new Configstore(pkgName)
 
 export enum Environment {
   Production = 'prod',
-  Staging = 'staging',
 }
 
 export const saveAll = (config: any): void => {
@@ -51,9 +50,7 @@ export const hasStickyHost = (appName: string): boolean =>
   conf.has(`apps.${appName}.sticky-host`)
 
 const envFromProcessEnv = {
-  'beta': Environment.Staging,
   'prod': Environment.Production,
-  'staging': Environment.Staging,
 }
 let forcedEnv = null
 
@@ -76,6 +73,5 @@ export const currentContext: Context = {
 }
 
 export enum Region {
-  Production = 'aws-us-east-1',
-  Staging = 'aws-us-east-2',
+  Production = 'aws-us-east-1'
 }

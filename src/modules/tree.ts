@@ -239,11 +239,6 @@ export default {
         short: 'w',
         type: 'string',
       },
-      {
-        description: 'Use the staging environment',
-        long: 'staging',
-        type: 'boolean',
-      },
     ],
   },
   settings: {
