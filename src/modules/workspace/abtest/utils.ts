@@ -1,4 +1,4 @@
-import { Apps } from '@vtex/api'
+import { AppManifest, Apps } from '@vtex/api'
 import chalk from 'chalk'
 import * as enquirer from 'enquirer'
 import * as numbro from 'numbro'
@@ -62,9 +62,9 @@ export const formatDuration = (durationInMinutes: number) => {
   return `${days} days, ${hours} hours and ${minutes} minutes`
 }
 
-export const checkIfABTesterIsInstalled = async () => {
+export const installedABTester = async (): Promise<AppManifest> => {
   try {
-    await apps.getApp('vtex.ab-tester@x')
+    return await apps.getApp('vtex.ab-tester@x')
   } catch (e) {
     if (e.response.data.code === 'app_not_found') {
       throw new CommandError(`The app ${chalk.yellow('vtex.ab-tester')} is \
