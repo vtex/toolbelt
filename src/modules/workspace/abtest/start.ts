@@ -60,22 +60,28 @@ export default async () => {
   const abTesterManifest = await installedABTester()
   const workspace = await promptProductionWorkspace('Choose production workspace to start A/B test:')
 
-  if (semver.satisfies(abTesterManifest.version, '>=0.10.0')) {
-    log.info(`Setting workspace ${chalk.green(workspace)} to A/B test`)
-    await abtester.start(workspace)
-    log.info(`Workspace ${chalk.green(workspace)} in A/B test`)
-    log.info(`You can stop the test using ${chalk.blue('vtex workspace abtest finish')}`)
-    return
-  }
+  try {
+    if (semver.satisfies(abTesterManifest.version, '>=0.10.0')) {
+      log.info(`Setting workspace ${chalk.green(workspace)} to A/B test`)
+      await abtester.start(workspace)
+      log.info(`Workspace ${chalk.green(workspace)} in A/B test`)
+      log.info(`You can stop the test using ${chalk.blue('vtex workspace abtest finish')}`)
+      return
+    }
 
-  const significanceLevel = await promptSignificanceLevel()
-  await promptContinue(workspace, significanceLevel)
-  const significanceLevelValue = SIGNIFICANCE_LEVELS[significanceLevel]
-  log.info(`Setting workspace ${chalk.green(workspace)} to A/B test with \
-      ${significanceLevel} significance level`)
-  await abtester.startLegacy(workspace, significanceLevelValue)
-  log.info(`Workspace ${chalk.green(workspace)} in A/B test`)
-  log.info(
-    `You can stop the test using ${chalk.blue('vtex workspace abtest finish')}`
-  )
+    const significanceLevel = await promptSignificanceLevel()
+    await promptContinue(workspace, significanceLevel)
+    const significanceLevelValue = SIGNIFICANCE_LEVELS[significanceLevel]
+    log.info(`Setting workspace ${chalk.green(workspace)} to A/B test with \
+        ${significanceLevel} significance level`)
+    await abtester.startLegacy(workspace, significanceLevelValue)
+    log.info(`Workspace ${chalk.green(workspace)} in A/B test`)
+    log.info(
+      `You can stop the test using ${chalk.blue('vtex workspace abtest finish')}`
+    )
+  } catch(err) {
+    if (err.message === 'Workspace not found') {
+      console.log(`Test not initialized due to workspace ${workspace} not found by ab-tester.`)
+    }
+  }
 }
