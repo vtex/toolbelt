@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.63.7] - 2019-06-14
+
 ## [2.63.6] - 2019-06-05
 ### Changed
 - Use yellow instead of red for `vtex update` table headers color
