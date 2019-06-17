@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.63.8] - 2019-06-17
+
 ### Changed
 - Removes deprecated staging environment support
 
