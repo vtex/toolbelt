@@ -1,4 +1,4 @@
-import { Environment, getEnvironment, Region } from './conf'
+import { Region } from './conf'
 
 export function endpoint(api: string): string {
   switch (api.toLowerCase()) {
@@ -18,12 +18,11 @@ export function endpoint(api: string): string {
 }
 
 export function region(): string {
-  return process.env.VTEX_REGION ||
-    (getEnvironment() === Environment.Staging ? Region.Staging : Region.Production)
+  return process.env.VTEX_REGION || Region.Production
 }
 
 export function publicEndpoint(): string {
-  return getEnvironment() === Environment.Staging ? 'myvtexdev.com' : 'myvtex.com'
+  return process.env.VTEX_REGION ? 'myvtexdev.com' : 'myvtex.com'
 }
 
 export function clusterIdDomainInfix(): string {
