@@ -6,9 +6,9 @@ import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 
-const promptWorkspaceReset = (name: string): Bluebird<void> =>
+const promptWorkspaceReset = (name: string, account: string): Bluebird<void> =>
   promptConfirm(
-    `Are you sure you want to reset workspace ${chalk.green(name)}?`
+    `Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`
   ).then(answer => {
     if (!answer) {
       throw new UserCancelledError()
@@ -24,7 +24,7 @@ export default async (name: string, options) => {
   log.debug('Resetting workspace', workspace)
 
   if (!preConfirm) {
-    await promptWorkspaceReset(workspace)
+    await promptWorkspaceReset(workspace, account)
   }
 
   try {
