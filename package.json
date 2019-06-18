@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.63.8",
+  "version": "2.63.9",
   "description": "The platform for e-commerce apps",
   "main": "lib/index.js",
   "bin": "lib/cli.js",
