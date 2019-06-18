@@ -27,6 +27,7 @@ interface ABTestStatus {
   ConversionA: number
   ConversionB: number
   ProbabilityAlternativeBeatMaster: number
+  PValue: number
 }
 
 const formatPercent = (n: number) => numbro(n).format('0.000%')
