@@ -25,7 +25,9 @@ interface ABTestStatus {
   ExpectedLossChoosingA: number
   ExpectedLossChoosingB: number
   ConversionA: number
+  ConversionALast24Hours: number
   ConversionB: number
+  ConversionBLast24Hours: number
   ProbabilityAlternativeBeatMaster: number
   PValue: number
 }
@@ -49,8 +51,11 @@ const printResultsTable = (testInfo: ABTestStatus) => {
     ExpectedLossChoosingA,
     ExpectedLossChoosingB,
     ConversionA,
+    ConversionALast24Hours,
     ConversionB,
+    ConversionBLast24Hours,
     ProbabilityAlternativeBeatMaster,
+    PValue,
   } = testInfo
   console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
   if (R.any(R.isNil)([ExpectedLossChoosingA, ExpectedLossChoosingB, ProbabilityAlternativeBeatMaster])) {
@@ -58,23 +63,34 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 
   }
 
+  const rawDataTable = createTable()
+  rawDataTable.push(bold(['', chalk.blue(WorkspaceA), chalk.blue(WorkspaceB)]))
+  rawDataTable.push(bold(['Conversion', formatPercent(ConversionA), formatPercent(ConversionB)]))
+  rawDataTable.push(bold(['Conversion (last 24h)',
+      formatPercent(ConversionALast24Hours), formatPercent(ConversionBLast24Hours)]))
+  rawDataTable.push(bold(['N. of Sessions', formatInteger(WorkspaceASessions), formatInteger(WorkspaceBSessions)]))
+  rawDataTable.push(bold(['N. of Sessions (last 24h)',
+      formatInteger(WorkspaceASessionsLast24Hours), formatInteger(WorkspaceBSessionsLast24Hours)]))
+
   const comparisonTable = createTable()
   comparisonTable.push(bold(['', chalk.blue(WorkspaceA), chalk.blue(WorkspaceB)]))
-  comparisonTable.push(bold(['Conversion', formatPercent(ConversionA), formatPercent(ConversionB)]))
   comparisonTable.push(bold(['Expected Loss', formatPercent(ExpectedLossChoosingA), formatPercent(ExpectedLossChoosingB)]))
-  comparisonTable.push(bold(['N. of Sessions', formatInteger(WorkspaceASessions), formatInteger(WorkspaceBSessions)]))
-  comparisonTable.push(bold(['N. of Sessions (last 24h)',
-      formatInteger(WorkspaceASessionsLast24Hours), formatInteger(WorkspaceBSessionsLast24Hours)]))
+
+  const probabilitiesTable = createTable()
+  probabilitiesTable.push(bold(['Event', 'Condition', 'Probability']))
+  probabilitiesTable.push(bold(['B beats A', 'None', formatPercent(ProbabilityAlternativeBeatMaster)]))
+  probabilitiesTable.push(bold(['Data as extreme as the observed', `Workspaces being equal (both to ${chalk.blue(WorkspaceA)}).`, formatPercent(PValue)]))
 
   const resultsTable = createTable()
   resultsTable.push(bold([`Start Date`, `${moment(ABTestBeginning).format('DD-MMM-YYYY HH:mm')} (UTC)`]))
   const nowUTC = moment.utc()
   const runningTime = nowUTC.diff(moment.utc(ABTestBeginning), 'minutes')
   resultsTable.push(bold([`Running Time`, formatDuration(runningTime)]))
-  resultsTable.push(bold([`Probability B beats A`, formatPercent(ProbabilityAlternativeBeatMaster)]))
   resultsTable.push(bold([chalk.bold.green(`Winner`), chalk.bold.green(Winner)]))
 
-  console.log(`Comparative:\n${comparisonTable.toString()}\n`)
+  console.log(`Raw Data:\n${rawDataTable.toString()}\n`)
+  console.log(`Comparison of losses in case of chosing wrong workspace:\n${rawDataTable.toString()}\n`)
+  console.log(`Probabilities:\n${probabilitiesTable.toString()}\n`)
   console.log(`Results:\n${resultsTable.toString()}\n`)
 }
 
