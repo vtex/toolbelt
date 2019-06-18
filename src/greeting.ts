@@ -1,13 +1,12 @@
 import chalk from 'chalk'
 
 import { workspaces } from './clients'
-import { getAccount, getEnvironment, getLogin, getWorkspace } from './conf'
+import { getAccount, getLogin, getWorkspace } from './conf'
 import log from './logger'
 
 const login = getLogin()
 const account = getAccount()
 const workspace = getWorkspace()
-const environment = getEnvironment()
 
 const workspaceState = (meta: WorkspaceResponse) => meta.production ? 'production' : 'dev'
 
@@ -31,7 +30,7 @@ export const greeting = async (): Promise<string[]> => {
       loggedMessage = `${chalk.red('Not logged in')}. Previously logged into`
       state = ''
     }
-    return [`${loggedMessage} ${chalk.blue(account)} as ${chalk.green(login)} at ${chalk.yellowBright(state)}workspace ${chalk.green(workspace)} in environment ${chalk.red(environment)}`]
+    return [`${loggedMessage} ${chalk.blue(account)} as ${chalk.green(login)} at ${chalk.yellowBright(state)}workspace ${chalk.green(workspace)}`]
   }
 
   return ['Welcome to VTEX I/O', `Login with ${chalk.green('vtex login')} ${chalk.blue('<account>')}`]
