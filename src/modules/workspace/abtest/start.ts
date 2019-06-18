@@ -43,18 +43,22 @@ const promptSignificanceLevel = async () => {
   }).then(prop('level'))
 }
 
-const promptContinue = async (workspace: string, significanceLevel: string) => {
-  const proceed = await promptConfirm(
+const promptContinue = async (workspace: string, significanceLevel?: string) => {
+  const proceed = significanceLevel ? await promptConfirm(
     `You are about to start an A/B test between workspaces \
 ${chalk.green('master')} and ${chalk.green(workspace)} with \
 ${chalk.red(significanceLevel)} significance level. Proceed?`,
+    false
+  ) :
+  await promptConfirm(
+    `You are about to start an A/B test between workspaces \
+${chalk.green('master')} and ${chalk.green(workspace)}. Proceed?`,
     false
   )
   if (!proceed) {
     throw new UserCancelledError()
   }
 }
-
 
 export default async () => {
   const abTesterManifest = await installedABTester()
@@ -64,6 +68,7 @@ export default async () => {
     if (semver.satisfies(abTesterManifest.version, '>=0.10.0')) {
       log.info(`Setting workspace ${chalk.green(workspace)} to A/B test`)
       await abtester.start(workspace)
+      await promptContinue(workspace)
       log.info(`Workspace ${chalk.green(workspace)} in A/B test`)
       log.info(`You can stop the test using ${chalk.blue('vtex workspace abtest finish')}`)
       return
