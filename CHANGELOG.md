@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Display account name on workspace reset prompt
+- Remove environment on greetings prompt
 
 ## [2.63.8] - 2019-06-17
 
