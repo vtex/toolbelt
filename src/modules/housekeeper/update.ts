@@ -80,7 +80,7 @@ const printEditionAppsDiff = (resolvedUpdates: any) => {
   if (diffTable.length === 1) {
     return
   }
-  console.log(`The following apps will be uninstalled/installed due to changes to current edition`)
+  console.log(`The following apps will be uninstalled/installed due to changes to current edition:`)
   console.log(diffTable.toString() + '\n')
 }
 
