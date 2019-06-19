@@ -1,5 +1,5 @@
 import { Apps } from '@vtex/api'
-import * as R from 'ramda'
+import { compose, keys } from 'ramda'
 
 const isNpm = dep => dep.startsWith('npm:')
 
@@ -15,7 +15,7 @@ export const removeNpm = (deps, inValues?) => {
   return deps
 }
 
-const cleanDeps = R.compose(R.keys, removeNpm)
+const cleanDeps = compose(keys, removeNpm)
 
 export const getCleanDependencies = async (context) => {
   return await new Apps(context)
