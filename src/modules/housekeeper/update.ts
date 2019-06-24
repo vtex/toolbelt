@@ -1,5 +1,4 @@
 import { Housekeeper, HousekeeperStatesAndUpdates } from '@vtex/api'
-import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as ora from 'ora'
 import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, prop, props, union  } from 'ramda'
@@ -11,7 +10,7 @@ import { matchedDepsDiffTable } from '../utils'
 import { getIOContext, IOClientOptions } from '../utils'
 
 
-const promptUpdate = (): Bluebird<boolean> =>
+const promptUpdate = (): Promise<boolean> =>
   Promise.resolve(
     promptConfirm('Apply version updates?')
   )
@@ -112,6 +111,30 @@ export default async () => {
   const housekeeper = new Housekeeper(getIOContext(), IOClientOptions)
   const getSpinner = ora('Getting available updates').start()
   const resolvedUpdates = await housekeeper.resolve()
+  resolvedUpdates.state.edition = ['vtex.teste2@1.3.0']
+  resolvedUpdates.updates = {
+    infra: ['apps@0.200.2'],
+    apps: [
+      {
+        id: 'vtex.render-runtime@8.12123.2',
+        source: 'dependency',
+      },
+      {
+        id: 'vtex.store@2.100.2',
+        source: 'installation',
+      },
+      {
+        id: 'vtex.store-theme@3.100.2',
+        source: 'installation',
+      },
+    ],
+    edition: [],
+    runtimes: [],
+    editionApps: {
+      install: ['vtex.teste@1.2.0'],
+      uninstall: ['vtex.teste2@1.3.0'],
+    },
+  }
   getSpinner.stop()
   if (!hasAvailableUpdates(resolvedUpdates)) {
     log.info('No updates available')

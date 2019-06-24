@@ -297,7 +297,7 @@ export default {
     ],
   },
   update: {
-    description: 'Update all installed apps to the latest version',
+    description: 'Update all installed apps to the latest (minor or patch) version',
     handler: './housekeeper/update',
     options: [
       {
