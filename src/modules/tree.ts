@@ -297,16 +297,8 @@ export default {
     ],
   },
   update: {
-    description: 'Update all installed apps to the latest version',
-    handler: './apps/update',
-    options: [
-      {
-        description: 'Update to newest majors',
-        long: 'major',
-        short: 'm',
-        type: 'boolean',
-      },
-    ],
+    description: 'Update all installed apps to the latest (minor or patch) version',
+    handler: './housekeeper/update',
   },
   use: {
     description: 'Use a workspace to perform operations',

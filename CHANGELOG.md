@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.64.0] - 2019-06-24
+### Changed
+- `vtex update` calls the housekeeper API to check available updates.
+
 ## [2.63.9] - 2019-06-18
 ### Added
 - Display account name on workspace reset prompt
