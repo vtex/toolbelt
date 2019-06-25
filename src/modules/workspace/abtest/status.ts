@@ -89,7 +89,7 @@ const printResultsTable = (testInfo: ABTestStatus) => {
   resultsTable.push(bold([chalk.bold.green(`Winner`), chalk.bold.green(Winner)]))
 
   console.log(`Raw Data:\n${rawDataTable.toString()}\n`)
-  console.log(`Comparison of losses in case of chosing wrong workspace:\n${rawDataTable.toString()}\n`)
+  console.log(`Comparison of losses in case of chosing wrong workspace:\n${comparisonTable.toString()}\n`)
   console.log(`Probabilities:\n${probabilitiesTable.toString()}\n`)
   console.log(`Results:\n${resultsTable.toString()}\n`)
 }
