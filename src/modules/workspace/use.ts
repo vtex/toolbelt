@@ -25,8 +25,9 @@ export default async (name: string, options?) => {
   const reset = options ? (options.r || options.reset) : null
   let production = options ? (options.p || options.production) : null
   let confirm
+  const accountName = getAccount()
   try {
-    await workspaces.get(getAccount(), name)
+    await workspaces.get(accountName, name)
   } catch (err) {
     if (err.response && err.response.status === 404) {
       confirm = await promptWorkspaceCreation(name)
@@ -45,5 +46,5 @@ export default async (name: string, options?) => {
   if (reset && !confirm) {
     await resetWks(name, {production})
   }
-  log.info(`You're now using the workspace ${chalk.green(name)}!`)
+  log.info(`You're now using the workspace ${chalk.green(name)} on account ${chalk.blue(accountName)}!`)
 }
