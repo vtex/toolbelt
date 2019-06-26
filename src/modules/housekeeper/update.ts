@@ -86,12 +86,12 @@ const printEditionAppsDiff = (resolvedUpdates: any) => {
 const hasAvailableUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {
   const updates = prop('updates', resolvedUpdates)
   const anyAppsUpdates = compose<any, any, any, any>(
-    any,
+    any(x => !!x),
     map(x => !isEmpty(x)),
     props(['apps', 'infra'])
   )(updates)
   const anyEditionUpdates = compose<any, any, any, any, any>(
-    any,
+    any(x => !!x),
     map(x => !isEmpty(x)),
     props(['install', 'uninstall']),
     prop('editionApps')

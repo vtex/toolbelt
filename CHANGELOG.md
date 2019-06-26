@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.64.3] - 2019-06-26
+### Fixed
+- On `vtex update`, correctly show when there are no updates available.
+
 ## [2.64.2] - 2019-06-25
 ### Fixed
 - A/B testing status tables.
