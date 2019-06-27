@@ -2,7 +2,7 @@ import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
-import { getAccount, saveWorkspace } from '../../conf'
+import { getAccount, saveWorkspace, getLastUsedWorkspace} from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
@@ -26,6 +26,11 @@ export default async (name: string, options?) => {
   let production = options ? (options.p || options.production) : null
   let confirm
   const accountName = getAccount()
+
+  if(name === '-') {
+    name = getLastUsedWorkspace() || name
+  }
+
   try {
     await workspaces.get(accountName, name)
   } catch (err) {
@@ -43,6 +48,7 @@ export default async (name: string, options?) => {
     }
   }
   await saveWorkspace(name)
+
   if (reset && !confirm) {
     await resetWks(name, {production})
   }

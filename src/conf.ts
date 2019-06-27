@@ -11,8 +11,14 @@ export enum Environment {
 export const saveAll = (config: any): void => {
   conf.all = config
 }
-export const saveAccount = (account: string): void =>
+export const saveAccount = (account: string): void => {
+  const lastUsedAccount = getAccount()
+  if(lastUsedAccount !== account) {
+    conf.set('lastUsedAccount', lastUsedAccount)
+    conf.delete('lastUsedWorkspace')
+  }
   conf.set('account', account)
+}
 
 export const saveLogin = (login: string): void =>
   conf.set('login', login)
@@ -20,8 +26,13 @@ export const saveLogin = (login: string): void =>
 export const saveToken = (token: string): void =>
   conf.set('token', token)
 
-export const saveWorkspace = (workspace = 'master') =>
+export const saveWorkspace = (workspace = 'master') => {
+  const lastUsedWorkspace = getWorkspace()
+  if(lastUsedWorkspace !== workspace) {
+    conf.set('lastUsedWorkspace', lastUsedWorkspace)
+  }
   conf.set('workspace', workspace)
+}
 
 export const saveEnvironment = (env: Environment) =>
   conf.set('env', env)
@@ -48,6 +59,12 @@ export const getStickyHost = (appName: string): {stickyHost: string; lastUpdated
 
 export const hasStickyHost = (appName: string): boolean =>
   conf.has(`apps.${appName}.sticky-host`)
+
+export const getLastUsedAccount = (): string =>
+  conf.get('lastUsedAccount')
+
+export const getLastUsedWorkspace = (): string =>
+  conf.get('lastUsedWorkspace')
 
 const envFromProcessEnv = {
   'prod': Environment.Production,
