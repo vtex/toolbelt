@@ -3,7 +3,7 @@ import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
 import { getAccount, saveWorkspace, getLastUsedWorkspace} from '../../conf'
-import { UserCancelledError } from '../../errors'
+import { UserCancelledError, CommandError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import createCmd from './create'
@@ -27,8 +27,11 @@ export default async (name: string, options?) => {
   let confirm
   const accountName = getAccount()
 
-  if(name === '-') {
-    name = getLastUsedWorkspace() || name
+  if (name === '-') {
+    name = getLastUsedWorkspace()
+    if (name == null) {
+      throw new CommandError('No last used workspace was found')
+    }
   }
 
   try {

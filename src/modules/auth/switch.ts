@@ -27,8 +27,11 @@ const hasAccountSwitched = (account: string) => {
 }
 
 export default async (account: string, options) => {
-  if(account === '-') {
-    account = getLastUsedAccount() || account
+  if (account === '-') {
+    account = getLastUsedAccount()
+    if (account == null) {
+      throw new CommandError('No last used account was found')
+    }
   }
 
   const previousAccount = getAccount()
