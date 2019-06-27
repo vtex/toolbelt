@@ -13,9 +13,9 @@ export const saveAll = (config: any): void => {
 }
 export const saveAccount = (account: string): void => {
   const lastUsedAccount = getAccount()
-  if(lastUsedAccount !== account) {
-    conf.set('lastUsedAccount', lastUsedAccount)
-    conf.delete('lastUsedWorkspace')
+  if (lastUsedAccount !== account) {
+    conf.set('_lastUsedAccount', lastUsedAccount)
+    conf.delete('_lastUsedWorkspace')
   }
   conf.set('account', account)
 }
@@ -28,8 +28,8 @@ export const saveToken = (token: string): void =>
 
 export const saveWorkspace = (workspace = 'master') => {
   const lastUsedWorkspace = getWorkspace()
-  if(lastUsedWorkspace !== workspace) {
-    conf.set('lastUsedWorkspace', lastUsedWorkspace)
+  if (lastUsedWorkspace !== workspace) {
+    conf.set('_lastUsedWorkspace', lastUsedWorkspace)
   }
   conf.set('workspace', workspace)
 }
@@ -61,10 +61,10 @@ export const hasStickyHost = (appName: string): boolean =>
   conf.has(`apps.${appName}.sticky-host`)
 
 export const getLastUsedAccount = (): string =>
-  conf.get('lastUsedAccount')
+  conf.get('_lastUsedAccount')
 
 export const getLastUsedWorkspace = (): string =>
-  conf.get('lastUsedWorkspace')
+  conf.get('_lastUsedWorkspace')
 
 const envFromProcessEnv = {
   'prod': Environment.Production,
