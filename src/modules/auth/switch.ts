@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 
 import { split } from 'ramda'
-import { getAccount } from '../../conf'
+import { getAccount, getLastUsedAccount } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
 import loginCmd from './login'
@@ -27,6 +27,13 @@ const hasAccountSwitched = (account: string) => {
 }
 
 export default async (account: string, options) => {
+  if (account === '-') {
+    account = getLastUsedAccount()
+    if (account == null) {
+      throw new CommandError('No last used account was found')
+    }
+  }
+
   const previousAccount = getAccount()
   // Enable users to type `vtex switch {account}/{workspace}` and switch
   // directly to a workspace without typing the `-w` option.
