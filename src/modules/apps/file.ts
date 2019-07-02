@@ -125,9 +125,7 @@ export const getIgnoredPatterns = async (root: string) => {
       return []
     }
   }, ignoreFiles))
-  const arrays = reduce((x, y) => [...x, ...y], [], ignoredPatterns)
-  console.log(arrays)
-  return ignore().add(arrays)
+  return ignore().add(reduce((x, y) => [...x, ...y], [], ignoredPatterns))
 }
 
 export const listLocalFiles = async (root: string): Promise<string[]> => {
@@ -142,7 +140,7 @@ export const listLocalFiles = async (root: string): Promise<string[]> => {
     nodir: true,
   })
   const files = await Promise.all(
-    fileNames.filter(ignoredPatterns.createFilter)
+    fileNames.filter(ignoredPatterns.createFilter())
       .map(name => lstat(join(root, name)).then(stats => ({name, stats} as File))))
   return files.filter(file => file.stats.size > 0).map(file => file.name)
 }
