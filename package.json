@@ -19,8 +19,7 @@
     "test-watch": "run-p ts-watch ava",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "prepublish": "run-s clean test",
-    "prereleasy": "npm run prepublish",
-    "postreleasy": "npm publish"
+    "prereleasy": "npm run prepublish"
   },
   "engineStrict": true,
   "engines": {
