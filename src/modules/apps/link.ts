@@ -122,6 +122,7 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
       stabilityThreshold,
     },
     cwd: root,
+    ignoreInitial: true,
     persistent: true,
     usePolling: process.platform === 'win32',
   })
