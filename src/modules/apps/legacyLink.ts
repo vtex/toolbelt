@@ -80,8 +80,7 @@ export default async (options) => {
 
   log.info('Linking legacy app', `${toAppLocator(manifest)}`)
   const majorLocator = toMajorLocator(manifest)
-  const folder = options.o || options.only
-  const paths = await listLocalFiles(root, folder)
+  const paths = await listLocalFiles(root)
   const changes = mapFilesToChanges(paths)
   const batch = addChangeContent(changes)
 
@@ -100,7 +99,7 @@ export default async (options) => {
     await checkAppStatus(manifest)
   }
 
-  await watch(root, sendChanges, folder)
+  await watch(root, sendChanges)
 
   createInterface({ input: process.stdin, output: process.stdout })
     .on('SIGINT', () => {

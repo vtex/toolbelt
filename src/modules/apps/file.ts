@@ -1,35 +1,16 @@
-import * as Bluebird from 'bluebird'
 import * as chokidar from 'chokidar'
-import { createReadStream, lstat, readdir, readFileSync, realpath, Stats } from 'fs-extra'
-import * as glob from 'globby'
+import { createReadStream, lstat, readdir,readFile, realpath, Stats } from 'fs-extra'
+import * as glob from 'glob'
+import ignore from 'ignore'
 import { dirname, join, resolve as resolvePath, sep } from 'path'
-import { filter, map, partition, toPairs, unnest, values } from 'ramda'
-
+import { filter, map, partition, reduce, toPairs, unnest, values } from 'ramda'
 import { Readable } from 'stream'
+import { promisify } from 'util'
 import log from '../../logger'
 import { pathToFileObject } from './utils'
 
 type AnyFunction = (...args: any[]) => any
-
-const defaultIgnored = [
-  '.DS_Store',
-  'README.md',
-  '.eslintrc',
-  '.gitignore',
-  'CHANGELOG.md',
-  'package.json',
-  'node_modules/**',
-  '**/node_modules/**',
-]
-
-const services = ['react', 'render', 'masterdata', 'service']
-
-const safeFolder = folder => {
-  if (folder && services.indexOf(folder) === -1) {
-    log.warn('Using unknown service', folder)
-  }
-  return folder ? './' + folder + '/**' : '*/**'
-}
+const globP = promisify(glob)
 
 const mapAsync = <I, O>(f : (datum : I) => Promise<O>) => (data : I[]) => Promise.map(data, f) as Promise<O[]>
 
@@ -65,8 +46,8 @@ export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
   const graph: Record<string, string[]> = {}
   const metadata: Record<string, string> = {}
 
-  const app = await glob([join('*', 'package.json')], { cwd: appSrc })
-    .then(map(dirname))
+  const app = await globP(join('*', 'package.json'), { cwd: appSrc })
+    .then(files => map(dirname, files))
 
   function checkLinks(deps: string[]) {
     for (const dep of deps) {
@@ -110,17 +91,9 @@ export async function createLinkConfig(appSrc: string) : Promise<LinkConfig> {
 }
 
 export async function getLinkedFiles(linkConfig: LinkConfig): Promise<BatchStream[]> {
-  const ignore = [
-    '.DS_Store',
-    'README.md',
-    '.eslintrc',
-    '.gitignore',
-    'CHANGELOG.md',
-    'node_modules/**',
-    '**/node_modules/**',
-  ]
   const getFiles = async ([module, path]) => {
-    return await glob(['**'], { cwd: path, ignore, nodir: true, })
+    console.log('CHAMEI')
+    return await globP('**', { cwd: path, nodir: true, })
       .then(map(pathToFileObject(path, join('.linked_deps', module)))) as BatchStream[]
   }
 
@@ -142,44 +115,37 @@ export function getLinkedDepsDirs(linkConfig : LinkConfig): string[] {
   return values(linkConfig.metadata)
 }
 
-export const getIgnoredPaths = (root: string): string[] => {
-  try {
-    return readFileSync(join(root, '.vtexignore'))
-      .toString()
-      .split('\n')
-      .map(p => p.trim())
-      .filter(p => p !== '')
-      .map(p => p.replace(/\/$/, '/**')).concat(defaultIgnored)
-  } catch (e) {
-    return defaultIgnored
-  }
+export const getIgnoredPatterns = async (root: string) => {
+  const ignoreFiles = ['.vtexignore', '.gitignore']
+  const ignoredPatterns = await Promise.all(map(async file => {
+    try {
+      const content = await readFile(join(root, file))
+      return content.toString().split('\n')
+    } catch (e) {
+      return []
+    }
+  }, ignoreFiles))
+  const arrays = reduce((x, y) => [...x, ...y], [], ignoredPatterns)
+  console.log(arrays)
+  return ignore().add(arrays)
 }
 
-export const listLocalFiles = (root: string, folder?: string): Promise<string[]> =>
-  Promise.resolve(
-    glob(['manifest.json', 'policies.json', `${safeFolder(folder)}`], {
-      cwd: root,
-      follow: true,
-      ignore: getIgnoredPaths(root),
-      nodir: true,
-    })
-  )
-    .then((files: string[]) =>
-      Promise.all(
-        files.map(file =>
-          lstat(join(root, file)).then(stats => ({ file, stats }))
-        )
-      )
-  )
-    .then(filesStats =>
-      filesStats.reduce((acc, { file, stats }) => {
-        if (stats.size > 0) {
-          acc.push(file)
-        }
-        return acc
-      }, [])
-  )
-
+export const listLocalFiles = async (root: string): Promise<string[]> => {
+  interface File {
+    name: string,
+    stats: Stats,
+  }
+  const ignoredPatterns = await getIgnoredPatterns(root)
+  const fileNames: string[] = await globP('**/*', {
+    cwd: root,
+    follow: true,
+    nodir: true,
+  })
+  const files = await Promise.all(
+    fileNames.filter(ignoredPatterns.createFilter)
+      .map(name => lstat(join(root, name)).then(stats => ({name, stats} as File))))
+  return files.filter(file => file.stats.size > 0).map(file => file.name)
+}
 export const addChangeContent = (changes: Change[]): Batch[] =>
   changes.map(({ path: filePath, action }) => {
     return {
@@ -196,25 +162,27 @@ const sendSaveChanges = (file: string, sendChanges: AnyFunction): void =>
 const sendRemoveChanges = (file: string, sendChanges: AnyFunction): void =>
   sendChanges(addChangeContent([{ path: file, action: 'remove' }]))
 
-export const watch = (root: string, sendChanges: AnyFunction, folder?: string): Bluebird<string | void> => {
-  const watcher = chokidar.watch([`${safeFolder(folder)}`, '*.json'], {
+export const watch = async (root: string, sendChanges: AnyFunction) => {
+  const watcher = chokidar.watch('**/*', {
     atomic: true,
     awaitWriteFinish: {
       stabilityThreshold: 500,
     },
     cwd: root,
     ignoreInitial: true,
-    ignored: getIgnoredPaths(root),
     persistent: true,
     usePolling: true,
   })
+  const ignoredPatterns = await getIgnoredPatterns(root)
   return new Promise((resolve, reject) => {
     watcher
-      .on('add', (file, { size }) => size > 0 ? sendSaveChanges(file, sendChanges) : null)
+      .on('add', (file, { size }) => size > 0 && !ignoredPatterns.ignores(join(root, file)) ? sendSaveChanges(file, sendChanges) : null)
       .on('change', (file, { size }) => {
-        return size > 0
-          ? sendSaveChanges(file, sendChanges)
-          : sendRemoveChanges(file, sendChanges)
+        if (!ignoredPatterns.ignores(join(root, file))) {
+          return size > 0
+            ? sendSaveChanges(file, sendChanges)
+            : sendRemoveChanges(file, sendChanges)
+        }
       })
       .on('unlink', file => sendRemoveChanges(file, sendChanges))
       .on('error', reject)

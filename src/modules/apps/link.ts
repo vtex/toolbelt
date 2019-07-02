@@ -23,7 +23,7 @@ import { default as setup } from '../setup'
 import { fixPinnedDependencies, formatNano, getPinnedDependencies } from '../utils'
 import { runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
-import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
+import { createLinkConfig, getLinkedDepsDirs, getLinkedFiles, listLocalFiles, getIgnoredPatterns } from './file'
 import legacyLink from './legacyLink'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
 
@@ -115,27 +115,22 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
     mapLocalToBuiderPath,
     path => path.split(sep).join('/'))
 
-  const addIgnoreNodeModulesRule =
-    (paths: Array<string | ((path: string) => boolean)>) =>
-      paths.concat((path: string) => path.includes('node_modules'))
-
+  const ignoredPatterns = await getIgnoredPatterns(root)
   const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
     atomic: stabilityThreshold,
     awaitWriteFinish: {
       stabilityThreshold,
     },
     cwd: root,
-    ignoreInitial: true,
-    ignored: addIgnoreNodeModulesRule(getIgnoredPaths(root)),
     persistent: true,
     usePolling: process.platform === 'win32',
   })
 
   return new Promise((resolve, reject) => {
     watcher
-      .on('add', file => queueChange(file))
-      .on('change', file => queueChange(file))
-      .on('unlink', file => queueChange(file, true))
+      .on('add', file => ignoredPatterns.ignores(file) ? null : queueChange(file))
+      .on('change', file => ignoredPatterns.ignores(file) ? null : queueChange(file))
+      .on('unlink', file => ignoredPatterns.ignores(file) ? null : queueChange(file, true))
       .on('error', reject)
       .on('ready', resolve)
   })
