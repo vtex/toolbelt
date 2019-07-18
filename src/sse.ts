@@ -96,7 +96,7 @@ export const logAll = (context: Context, logLevel: string, id: string, senders?:
       return // Ignore logs without message or code.
     }
     const suffix = sender.startsWith(id) ? '' : ' ' + chalk.gray(sender)
-    const formatted = (message || code || '').replace(/\n\s*$/, '') + suffix
+    const formatted = String(message || code || '').replace(/\n\s*$/, '') + suffix
     if (previous !== formatted) {
       previous = formatted
       log.log(level, formatted)
