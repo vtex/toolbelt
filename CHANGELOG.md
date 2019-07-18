@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.65.0] - 2019-06-28
+## [2.65.1] - 2019-07-18
+### Changed
+- Stop saving sticky-host locally until issue with Builder-hub's `fork-ts-checker-webpack-plugin` issue is resolved.
 
+## [2.65.0] - 2019-06-28
 ### Added
 
 - Support `-` to switch back to previous account or workspace.
