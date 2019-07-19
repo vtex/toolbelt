@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.65.2] - 2019-07-19
+### Fixed
+- Add `ignore-engines` flag when running `yarn`.
+
 ## [2.65.1] - 2019-07-18
 ### Changed
 - Stop saving sticky-host locally until issue with Builder-hub's `fork-ts-checker-webpack-plugin` issue is resolved.

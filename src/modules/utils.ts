@@ -121,8 +121,8 @@ export const runYarn = (relativePath: string, force: boolean) => {
   log.info(`Running yarn in ${chalk.green(relativePath)}`)
   const root = getAppRoot()
   const command = force ?
-    `${yarnPath} --force --non-interactive` :
-    `${yarnPath} --non-interactive`
+    `${yarnPath} --force --non-interactive --ignore-engines` :
+    `${yarnPath} --non-interactive --ignore-engines`
   execSync(
     command,
     {stdio: 'inherit', cwd: resolvePath(root, relativePath)}
