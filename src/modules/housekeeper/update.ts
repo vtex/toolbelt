@@ -5,6 +5,7 @@ import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, 
 
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
+import { isVerbose } from '../../utils'
 import { promptConfirm } from '../prompts'
 import { matchedDepsDiffTable } from '../utils'
 import { getIOContext, IOClientOptions } from '../utils'
@@ -27,8 +28,9 @@ const includes = (k: string, list: string[]) => list.indexOf(k) >= 0
 const printAppsDiff = (
   resolvedUpdates: HousekeeperStatesAndUpdates,
   message: string,
-  type: 'apps' | 'infra',
-  source?: 'installation' | 'dependency' | 'edition'
+  type: 'apps' | 'infra' | 'runtimes',
+  source?: 'installation' | 'dependency' | 'edition',
+  onlyShowTableIfVerbose?: boolean
 ) => {
   let filterFunction: (obj: any) => boolean
   let pluckFunction: (obj: any) => any
@@ -39,7 +41,7 @@ const printAppsDiff = (
     filterFunction = sourceFilter(source)
     pluckFunction = pluck('id')
   }
-  else if (type === 'infra') {
+  else if (includes(type, ['infra', 'runtimes'])) {
     filterFunction = identity
     pluckFunction = identity
   }
@@ -65,7 +67,11 @@ const printAppsDiff = (
   if (diffTable.length === 1) {
     return
   }
-  console.log(message)
+  if (onlyShowTableIfVerbose && !isVerbose) {
+    console.log(message)
+    return
+  }
+  console.log(`The following ${message}`)
   console.log(diffTable.toString() + `\n`)
 }
 
@@ -88,7 +94,7 @@ const hasAvailableUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {
   const anyAppsUpdates = compose<any, any, any, any>(
     any(x => !!x),
     map(x => !isEmpty(x)),
-    props(['apps', 'infra'])
+    props(['apps', 'infra', 'runtimes'])
   )(updates)
   const anyEditionUpdates = compose<any, any, any, any, any>(
     any(x => !!x),
@@ -100,10 +106,11 @@ const hasAvailableUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {
 }
 
 const printUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {
-  printAppsDiff(resolvedUpdates, `The following ${chalk.blue.bold('infra')} apps will be updated`, 'infra')
-  printAppsDiff(resolvedUpdates, `The following ${chalk.blue.bold('installed')} apps will be updated:`, 'apps', 'installation')
-  printAppsDiff(resolvedUpdates, `The following ${chalk.blue.bold('dependencies')} will be updated:`, 'apps', 'dependency')
-  printAppsDiff(resolvedUpdates, `The following ${chalk.blue.bold('edition')} apps will be updated`, 'apps', 'edition')
+  printAppsDiff(resolvedUpdates, `${chalk.blue.bold('Infra')} apps will be updated`, 'infra', undefined, true)
+  printAppsDiff(resolvedUpdates, `${chalk.blue.bold('Runtimes')} will be updated`, 'runtimes', undefined, true)
+  printAppsDiff(resolvedUpdates, `${chalk.blue.bold('Installed')} apps will be updated:`, 'apps', 'installation')
+  printAppsDiff(resolvedUpdates, `${chalk.blue.bold('Dependencies')} will be updated:`, 'apps', 'dependency')
+  printAppsDiff(resolvedUpdates, `${chalk.blue.bold('Edition')} apps will be updated`, 'apps', 'edition')
   printEditionAppsDiff(resolvedUpdates)
 }
 

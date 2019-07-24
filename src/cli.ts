@@ -12,12 +12,13 @@ import { reject, without } from 'ramda'
 import { isFunction } from 'ramda-adjunct'
 import * as pkg from '../package.json'
 import { getToken } from './conf'
+import * as conf from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
-import * as conf from './conf'
+import { isVerbose, VERBOSE } from './utils'
 
 axios.interceptors.request.use(config => {
   if (envCookies()) {
@@ -37,8 +38,6 @@ const loginCmd = tree.login
 let loginPending = false
 
 // Setup logging
-const VERBOSE = '--verbose'
-const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 if (isVerbose) {
   log.level = 'debug'
   ;(log.default.transports.console as any).timestamp = () =>
