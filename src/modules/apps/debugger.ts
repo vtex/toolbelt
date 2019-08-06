@@ -29,6 +29,7 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
     headers: {
       Authorization: getToken(),
       Host: host,
+      'X-Vtex-Runtime-Api': 'true',
     },
   }
 
