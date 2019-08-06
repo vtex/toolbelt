@@ -434,6 +434,11 @@ export default {
     description: 'Prints base URL for current account, workspace and environment',
     handler: './url',
   },
+  rewriterimport: {
+    description: 'Import',
+    handler: './rewriter/import',
+    requiredArgs: 'csvPath',
+  },
   'edition': {
     description: 'Get edition of the current account',
     handler: './sponsor/getEdition',
