@@ -4,9 +4,9 @@ import * as enquirer from 'enquirer'
 import { outputJson, readJson } from 'fs-extra'
 import * as moment from 'moment'
 import { join } from 'path'
-import { keys, merge, prop } from 'ramda'
+import { keys, merge, prop, reject, test } from 'ramda'
 
-import { getAccount } from '../../conf'
+import { getAccount, getLogin } from '../../conf'
 import log from '../../logger'
 import { MANIFEST_FILE_NAME } from '../../manifest'
 import { promptConfirm } from '../prompts'
@@ -14,6 +14,13 @@ import { promptConfirm } from '../prompts'
 import * as git from './git'
 
 const { mapSeries } = Bluebird
+
+const VTEXInternalTemplates = [
+  // Only show these templates for VTEX e-mail users.
+  'graphql-example',
+  'service-example',
+  'react-guide',
+]
 
 const templates = {
   'graphql-example': 'graphql-example',
@@ -24,6 +31,7 @@ const templates = {
   'render-guide': 'render-guide',
   'masterdata-graphql-guide': 'masterdata-graphql-guide',
   'support app': 'hello-support',
+  'react-guide': 'react-repo-template',
 }
 
 const titles = {
@@ -35,6 +43,7 @@ const titles = {
   'render-guide': 'Render Guide',
   'masterdata-graphql-guide': 'MasterData GraphQL Guide',
   'support app': 'Support App Example',
+  'react-guide': 'React App Template',
 }
 
 const descriptions = {
@@ -46,7 +55,16 @@ const descriptions = {
   'render-guide': 'VTEX IO Render Guide',
   'masterdata-graphql-guide': 'VTEX IO MasterData GraphQL Guide',
   'support app': 'Example of a support app',
+  'react-guide': 'Guide for react apps structure',
 }
+
+const getTemplates = () =>
+  // Return all templates if user's e-mail is `...@vtex...`.
+  // Otherwise filter the VTEX internal templates.
+  test(/\@vtex\./, getLogin()) ?
+    keys(templates) :
+    reject(x => (VTEXInternalTemplates.indexOf(x) >= 0), keys(templates))
+
 
 const promptName = async (repo: string) => {
   const message = 'The app name should only contain numbers, lowercase letters, underscores and hyphens.'
@@ -98,7 +116,7 @@ const promptTemplates = async (): Promise<string> => {
     name: 'service',
     message: 'Choose where do you want to start from',
     type: 'select',
-    choices: [...keys(templates), cancel],
+    choices: [...getTemplates(), cancel],
   }))
   if (chosen === cancel) {
     log.info('Bye o/')

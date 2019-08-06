@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.65.4] - 2019-08-06
+### Added
+- `vtex init` does not show unnecessary templates for users outside VTEX.
+
 ## [2.65.3] - 2019-07-25
 ### Fixed
 - `vtex update` correctly shows available updates for runtimes.
