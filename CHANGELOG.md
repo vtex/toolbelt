@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.65.5] - 2019-08-06
+### Changed
+- Do not show `masterdata-graphql-guide` in `vtex init` for users outside VTEX.
+
+
 ## [2.65.4] - 2019-08-06
 ### Added
 - `vtex init` does not show unnecessary templates for users outside VTEX.

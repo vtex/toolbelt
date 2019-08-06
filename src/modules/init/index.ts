@@ -20,6 +20,7 @@ const VTEXInternalTemplates = [
   'graphql-example',
   'service-example',
   'react-guide',
+  'masterdata-graphql-guide',
 ]
 
 const templates = {
