@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.65.5] - 2019-08-06
 ### Changed
 - Do not show `masterdata-graphql-guide` in `vtex init` for users outside VTEX.
 
