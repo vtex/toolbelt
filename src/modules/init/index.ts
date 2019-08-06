@@ -19,6 +19,7 @@ const VTEXInternalTemplates = [
   // Only show these templates for VTEX e-mail users.
   'graphql-example',
   'service-example',
+  'react-guide',
 ]
 
 const templates = {
@@ -30,6 +31,7 @@ const templates = {
   'render-guide': 'render-guide',
   'masterdata-graphql-guide': 'masterdata-graphql-guide',
   'support app': 'hello-support',
+  'react-guide': 'react-repo-template',
 }
 
 const titles = {
@@ -41,6 +43,7 @@ const titles = {
   'render-guide': 'Render Guide',
   'masterdata-graphql-guide': 'MasterData GraphQL Guide',
   'support app': 'Support App Example',
+  'react-guide': 'React App Template',
 }
 
 const descriptions = {
@@ -52,6 +55,7 @@ const descriptions = {
   'render-guide': 'VTEX IO Render Guide',
   'masterdata-graphql-guide': 'VTEX IO MasterData GraphQL Guide',
   'support app': 'Example of a support app',
+  'react-guide': 'Guide for react apps structure',
 }
 
 const getTemplates = () =>
