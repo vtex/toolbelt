@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.66.0] - 2019-08-07
+### Changed
+- Filter out artificial JSON logs that are meant to be logged to splunk, except in verbose mode
+
 ## [2.65.6] - 2019-08-07
 ### Changed
 - Add a header to send debug requests to the runtime instead of the app.

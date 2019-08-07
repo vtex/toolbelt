@@ -8,6 +8,7 @@ import EventSource from './eventsource'
 import { removeVersion } from './locator'
 import log from './logger'
 import userAgent from './user-agent'
+import { isVerbose } from './utils'
 
 const levelAdapter = { warning: 'warn' }
 
@@ -89,12 +90,44 @@ export const onEvent = (ctx: Context, sender: string, subject: string, keys: str
   return es.close.bind(es)
 }
 
+const filterAndMaybeLogVTEXLogs = (message: string) => {
+  // Because stdout is buffered, __VTEX_IO_LOG objects might be interpolated with regular stdout messages.
+  return message.split('\n').map((m: string) => {
+    try {
+      const obj = JSON.parse(m)
+      if (obj.__VTEX_IO_LOG) {
+        if (isVerbose) {
+          delete obj.__VTEX_IO_LOG
+          console.log(chalk.dim('// The following object was logged to Splunk:'))
+          console.log(obj)
+        }
+        return ''
+      } else {
+        // Not a log object, just return original string
+        return m
+      }
+    } catch (e) {
+      // Not an object, just return original string
+      return m
+    }
+  })
+  .filter(s => s !== '')
+  // Undo split
+  .join('\n')
+}
+
 export const logAll = (context: Context, logLevel: string, id: string, senders?: string[]) => {
   let previous = ''
-  const callback = ({ sender, level, body: { message, code } }: Message) => {
-    if (!(message || code)) {
+  const callback = ({ sender, level, body: { message: rawMessage, code } }: Message) => {
+    if (!(rawMessage || code)) {
       return // Ignore logs without message or code.
     }
+
+    const message = filterAndMaybeLogVTEXLogs(rawMessage)
+    if (!message) {
+      return
+    }
+
     const suffix = sender.startsWith(id) ? '' : ' ' + chalk.gray(sender)
     const formatted = (message || code || '').replace(/\n\s*$/, '') + suffix
     if (previous !== formatted) {
