@@ -4,7 +4,7 @@ import { concat, keys, length, map, range, reduce } from 'ramda'
 import { rewriter } from '../../clients'
 
 const MAX_ENTRIES_PER_REQUEST = 100  // To be decided
-const FIELDS = ['idj', 'from', 'to', 'endDate']
+const FIELDS = ['id', 'from', 'to', 'endDate']
 
 
 const generateListOfRanges = (indexLength: number) =>
