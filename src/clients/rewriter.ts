@@ -17,6 +17,7 @@ export enum RedirectTypes {
 const routes = {
   importRoutes: `/importroutes`,
   exportRoutes: '/exportroutes',
+  routesIndex: '/routesindex',
 }
 
 export class Rewriter extends AppClient {
@@ -24,11 +25,12 @@ export class Rewriter extends AppClient {
     super('vtex.rewriter', context, options)
   }
 
-  // Abort AB Test in a workspace.
-  public importRedirects = async (redirects: RedirectInput[]) =>
+  public importRedirects = (redirects: RedirectInput[]) =>
     this.http.post(routes.importRoutes, { data: redirects }, { metric: 'rewriter-import-redirects' })
 
-  // Start AB Test in a workspace with a given probability.
-  public exportRedirects = async () =>
-    this.http.get(routes.exportRoutes, { metric: 'rewriter-export-redirects' })
+  public exportRedirects = (from: number, to: number) =>
+    this.http.post(routes.exportRoutes, { data: { from, to } }, { metric: 'rewriter-export-redirects' })
+
+  public routesIndex = () =>
+    this.http.get(routes.routesIndex, { metric: 'rewriter-routes-index' })
 }
