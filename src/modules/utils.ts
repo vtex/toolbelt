@@ -20,6 +20,7 @@ import envTimeout from '../timeout'
 import userAgent from '../user-agent'
 import { promptConfirm } from './prompts'
 
+import { IOContext } from '@vtex/api'
 interface BuildListeningOptions {
   context?: Context
   timeout?: number
@@ -56,7 +57,7 @@ export const getIOContext = () => ({
   requestId: '',
   operationId: '',
   logger: dummyLogger,
-})
+}) as IOContext
 
 const onBuildEvent = (
   ctx: Context,

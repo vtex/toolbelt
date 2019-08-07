@@ -1,4 +1,4 @@
-import { AppManifest, Apps } from '@vtex/api'
+import { AppManifest, Apps, IOContext } from '@vtex/api'
 import chalk from 'chalk'
 import * as enquirer from 'enquirer'
 import * as numbro from 'numbro'
@@ -38,7 +38,7 @@ const contextForMaster = {
   requestId: '',
   operationId: '',
   logger: dummyLogger,
-}
+} as IOContext
 
 const options = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
