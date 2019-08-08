@@ -4,7 +4,8 @@
       "node",
       "axios",
       "bluebird",
-      "bluebird-global"
+      "bluebird-global",
+      "jest"
     ],
     "lib": [
       "es2015",
