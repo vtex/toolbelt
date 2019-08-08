@@ -26,10 +26,10 @@ export class Rewriter extends AppClient {
   }
 
   public importRedirects = (redirects: RedirectInput[]) =>
-    this.http.post(routes.importRoutes, { data: redirects }, { metric: 'rewriter-import-redirects' })
+    this.http.post(routes.importRoutes, redirects, { metric: 'rewriter-import-redirects' })
 
   public exportRedirects = (from: number, to: number) =>
-    this.http.post(routes.exportRoutes, { data: { from, to } }, { metric: 'rewriter-export-redirects' })
+    this.http.post(routes.exportRoutes, { from, to }, { metric: 'rewriter-export-redirects' })
 
   public routesIndex = () =>
     this.http.get(routes.routesIndex, { metric: 'rewriter-routes-index' })

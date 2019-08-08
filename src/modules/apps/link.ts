@@ -156,9 +156,15 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
 
   const linkApp = async (bail: any, tryCount: number) => {
     // wrapper for builder.linkApp to be used with the retry function below.
+    const localFilesTest = await listLocalFiles(root)
+    console.log(localFilesTest)
     const [localFiles, linkedFiles] =
       await Promise.all([
-        listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
+        listLocalFiles(root)
+        .then(paths => {
+          map(console.log)
+          return paths
+        }).then(paths => map(pathToFileObject(root), paths)),
         getLinkedFiles(linkConfig),
       ])
     const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
