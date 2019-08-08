@@ -293,6 +293,10 @@ export default {
     ],
     requiredArgs: 'account',
   },
+  test: {
+    description: 'Run unit tests',
+    handler: './apps/test'
+  },
   uninstall: {
     description: 'Uninstall an app (defaults to the app in the current directory)',
     handler: './apps/uninstall',
