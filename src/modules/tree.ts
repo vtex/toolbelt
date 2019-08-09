@@ -295,7 +295,7 @@ export default {
   },
   test: {
     description: 'Run unit tests',
-    handler: './apps/test'
+    handler: './apps/test',
   },
   uninstall: {
     description: 'Uninstall an app (defaults to the app in the current directory)',

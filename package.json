@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "bin": "lib/cli.js",
   "scripts": {
-    "ts": "tsc --skipLibCheck",
+    "ts": "tsc",
     "ts-watch": "tsc --watch",
     "clean": "rimraf lib/",
     "exe": "node scripts/make-executable.js",
