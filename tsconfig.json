@@ -4,7 +4,8 @@
       "node",
       "axios",
       "bluebird",
-      "bluebird-global"
+      "bluebird-global",
+      "jest"
     ],
     "lib": [
       "es2015",
@@ -27,6 +28,6 @@
     "./src/**/*"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules", "src/__tests__"
   ]
 }

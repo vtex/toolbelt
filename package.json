@@ -7,17 +7,15 @@
   "scripts": {
     "ts": "tsc",
     "ts-watch": "tsc --watch",
-    "nyc": "nyc ava lib/*.test.js lib/**/*.test.js",
-    "ava": "ava lib/*.test.js lib/**/*.test.js --watch",
     "clean": "rimraf lib/",
     "exe": "node scripts/make-executable.js",
     "mkdir": "mkdirp lib/",
     "build": "run-s clean ts exe",
     "watch": "run-s clean mkdir exe ts-watch",
     "lint": "tsc --noEmit && tslint src/**/*.ts",
-    "test": "run-s lint build nyc",
-    "test-watch": "run-p ts-watch ava",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls",
+    "test-jest": "jest --coverage",
+    "test": "run-s lint build test-jest",
+    "test-watch": "run-p ts-watch test-jest",
     "prepublish": "run-s clean test",
     "prereleasy": "npm run prepublish",
     "postreleasy": "npm publish"
@@ -98,23 +96,20 @@
     "@types/chokidar": "^1.7.5",
     "@types/configstore": "^2.1.0",
     "@types/fs-extra": "^5.0.1",
+    "@types/jest": "^24.0.17",
     "@types/jsonwebtoken": "^8.3.0",
     "@types/node": "^10.1.1",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/semver-diff": "^2.1.0",
-    "ava": "^0.25.0",
-    "coveralls": "^3.0.0",
+    "jest": "^24.8.0",
     "longjohn": "^0.2.12",
     "mkdirp": "^0.5.1",
     "npm-run-all": "^4.1.3",
-    "nyc": "^13.0.2",
     "rimraf": "^2.6.1",
+    "ts-jest": "^24.0.2",
     "tslint": "^5.8.0",
     "tslint-config-vtex": "^2.0.0",
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.0.3"
-  },
-  "ava": {
-    "failFast": true
   }
 }
