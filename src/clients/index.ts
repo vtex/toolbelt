@@ -4,12 +4,14 @@ import * as env from '../env'
 import envTimeout from '../timeout'
 import userAgent from '../user-agent'
 import Billing from './billingClient'
+import { dummyLogger } from './dummyLogger'
 
 const DEFAULT_TIMEOUT = 15000
 const context = {
   account: getAccount(),
   authToken: getToken(),
   production: false,
+  product: '',
   region: env.region(),
   route: {
     id: '',
@@ -19,7 +21,8 @@ const context = {
   workspace: getWorkspace() || 'master',
   requestId: '',
   operationId: '',
-}
+  logger: dummyLogger,
+} as IOContext
 
 const options = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
