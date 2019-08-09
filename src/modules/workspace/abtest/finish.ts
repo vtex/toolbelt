@@ -27,7 +27,7 @@ ${chalk.blue(workspace)}, account ${chalk.green(account)}. Are you sure?`,
 
 const promptWorkspaceToFinishABTest = async () =>
   await abtester.status()
-    .then(map(({WorkspaceB}) => WorkspaceB))
+    .then((ret) => map(({WorkspaceB}) => WorkspaceB, ret))
     .then(workspaces =>
       enquirer.prompt({
         name: 'workspace',

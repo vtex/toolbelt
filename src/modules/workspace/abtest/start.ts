@@ -35,6 +35,7 @@ const promptSignificanceLevel = async () => {
       mapObjIndexed(
         (value, key) => (
           {
+            name: key,
             message: `${key} (~ ${formatDays(value as number)})`,
             value: key,
           }
