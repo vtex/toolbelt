@@ -7,6 +7,7 @@ import { writeFile } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import * as R from 'ramda'
 
+import { dummyLogger } from '../clients/dummyLogger'
 import { currentContext, getAccount, getToken, getWorkspace } from '../conf'
 import * as conf from '../conf'
 import * as env from '../env'
@@ -45,6 +46,7 @@ export const getIOContext = () => ({
   account: getAccount(),
   authToken: getToken(),
   production: false,
+  product: '',
   region: env.region(),
   route: {
     id: '',
@@ -54,6 +56,7 @@ export const getIOContext = () => ({
   workspace: getWorkspace(),
   requestId: '',
   operationId: '',
+  logger: dummyLogger,
 })
 
 const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
@@ -217,7 +220,7 @@ const formatAppId = (appId: string) => {
   return `${chalk.blue(appVendor)}.${appName}`
 }
 
-const cleanVersion = (appId: string) => {
+export const cleanVersion = (appId: string) => {
   return R.compose<string, string[], string, string>(
     (version: string) => {
       const [pureVersion, build] = R.split('+build', version)
@@ -234,7 +237,7 @@ export const matchedDepsDiffTable = (
   deps1: string[],
   deps2: string[]
 ) => {
-  const depsDiff = diffArrays(deps1, deps2)
+  const depsDiff: any = diffArrays(deps1, deps2)
   // Get deduplicated names (no version) of the changed deps.
   const depNames = [...new Set(
     R.compose<string[], any[], string[], string[], string[]>(
@@ -244,6 +247,7 @@ export const matchedDepsDiffTable = (
       R.filter( (k: any) => !!k.removed || !!k.added )
     )(depsDiff)
   )].sort()
+
   const produceStartValues = () => (R.map((_) => ([]))(depNames) as any)
   // Each of the following objects will start as a { `depName`: [] }, ... }-like.
   const addedDeps = R.zipObj(depNames, produceStartValues())
