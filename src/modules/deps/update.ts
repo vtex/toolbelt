@@ -1,16 +1,13 @@
 import chalk from 'chalk'
 import { diffJson } from 'diff'
-import { compose, keys, map, path, prepend } from 'ramda'
+import { keys, map, path, prepend } from 'ramda'
 
 import { apps } from '../../clients'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { parseArgs } from '../apps/utils'
-import { removeNpm } from './utils'
 
 const { getDependencies, updateDependencies, updateDependency } = apps
-
-const cleanDeps = compose(keys, removeNpm)
 
 export default async (optionalApp: string, options) => {
 
@@ -41,7 +38,7 @@ export default async (optionalApp: string, options) => {
       })
       currentDeps = await getDependencies()
     }
-    const [cleanPrevDeps, cleanCurrDeps] = map(cleanDeps, [previousDeps, currentDeps])
+    const [cleanPrevDeps, cleanCurrDeps] = map(keys, [previousDeps, currentDeps])
     const diff = diffJson(cleanPrevDeps, cleanCurrDeps)
     let nAdded = 0
     let nRemoved = 0

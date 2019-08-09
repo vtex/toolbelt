@@ -46,12 +46,6 @@ export default {
       handler: './deps/list',
       options: [
         {
-          description: 'Include deps from npm registry',
-          long: 'npm',
-          short: 'n',
-          type: 'boolean',
-        },
-        {
           description: 'Show only keys',
           long: 'keys',
           short: 'k',
