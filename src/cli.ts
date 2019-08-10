@@ -40,7 +40,7 @@ let loginPending = false
 // Setup logging
 if (isVerbose) {
   log.level = 'debug'
-  ;(log.default.transports.console as any).timestamp = () =>
+  ;(log as any).default.transports.console.timestamp = () =>
     chalk.grey(moment().format('HH:mm:ss.SSS'))
 }
 
