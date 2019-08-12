@@ -296,6 +296,14 @@ export default {
   test: {
     description: 'Run unit tests',
     handler: './apps/test',
+    options: [
+      {
+        description: 'Allow tests with Typescript errors',
+        long: 'unsafe',
+        short: 'u',
+        type: 'boolean',
+      },
+    ],
   },
   uninstall: {
     description: 'Uninstall an app (defaults to the app in the current directory)',

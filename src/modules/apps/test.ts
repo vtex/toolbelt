@@ -14,8 +14,7 @@ import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
-import { default as setup } from '../setup'
-import { fixPinnedDependencies, formatNano, getPinnedDependencies } from '../utils'
+import { fixPinnedDependencies, getPinnedDependencies } from '../utils'
 import { runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getLinkedFiles, listLocalFiles } from './file'
@@ -75,8 +74,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
   }
 
-  const linkApp = async (bail: any, tryCount: number) => {
-    // wrapper for builder.linkApp to be used with the retry function below.
+  const testApp = async (bail: any, tryCount: number) => {
     const [localFiles, linkedFiles] =
       await Promise.all([
         listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
@@ -118,7 +116,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       throw err
     }
   }
-  await retry(linkApp, RETRY_OPTS_INITIAL_LINK)
+  await retry(testApp, RETRY_OPTS_INITIAL_LINK)
 }
 
 export default async (options) => {
@@ -142,9 +140,7 @@ export default async (options) => {
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  if (options.setup || options.s) {
-    await setup()
-  }
+
   try {
     const aux = await getPinnedDependencies(builderHttp)
     const pinnedDeps : Map<string, string> = new Map(Object.entries(aux))
@@ -156,12 +152,6 @@ export default async (options) => {
   map(runYarnIfPathExists, buildersToRunLocalYarn)
 
   const { builder } = createClients(context, { timeout: 60000 })
-
-  if (options.c || options.clean) {
-    log.info('Requesting to clean cache in builder.')
-    const { timeNano } = await builder.clean(appId)
-    log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
-  }
 
   const onError = {
     build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
@@ -198,10 +188,6 @@ export default async (options) => {
   try {
     const buildTrigger = performInitialLink.bind(this, appId, builder, extraData, unsafe)
     const [subject] = appId.split('@')
-    if (options.watch === false) {
-      await listenBuild(subject, buildTrigger, { waitCompletion: true })
-      return
-    }
     unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
   } catch (e) {
     if (e.response) {
