@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.66.1] - 2019-08-15
 - Use jest as testing framework
+- Stop ignoring eslint configuration files.
 
 ## [2.66.0] - 2019-08-07
 ### Changed
