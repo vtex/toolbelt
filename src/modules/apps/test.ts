@@ -75,9 +75,10 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
   }
 
   const testApp = async (bail: any, tryCount: number) => {
+    const test = true
     const [localFiles, linkedFiles] =
       await Promise.all([
-        listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
+        listLocalFiles(root, test).then(paths => map(pathToFileObject(root), paths)),
         getLinkedFiles(linkConfig),
       ])
     const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]

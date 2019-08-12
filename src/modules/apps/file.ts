@@ -135,26 +135,31 @@ export function getLinkedDepsDirs(linkConfig: LinkConfig): string[] {
   return values(linkConfig.metadata)
 }
 
-export const getIgnoredPaths = (root: string): string[] => {
+export const getIgnoredPaths = (root: string, test: boolean = false): string[] => {
   try {
-    return readFileSync(join(root, '.vtexignore'))
-      .toString()
-      .split('\n')
-      .map(p => p.trim())
-      .filter(p => p !== '')
-      .map(p => p.replace(/\/$/, '/**'))
-      .concat(defaultIgnored)
+    let filesToIgnore = readFileSync(join(root, '.vtexignore')).toString().split('\n')
+      .map(p => p.trim()).filter(p => p !== '')
+      .map(p => p.replace(/\/$/, '/**')).concat(defaultIgnored)
+    if (test) {
+      for(let i = 0; i < filesToIgnore.length; i++) {
+        if (/.*(test|mock).*/.test(filesToIgnore[i].toLowerCase())) {
+          filesToIgnore.splice(i,1)
+          i--
+        }
+      }
+    }    
+    return filesToIgnore
   } catch (e) {
     return defaultIgnored
   }
 }
 
-export const listLocalFiles = (root: string, folder?: string): Promise<string[]> =>
+export const listLocalFiles = (root: string, test: boolean = false, folder?: string): Promise<string[]> =>
   Promise.resolve(
     glob(['manifest.json', 'policies.json', 'node/.*', 'react/.*', `${safeFolder(folder)}`], {
       cwd: root,
       follow: true,
-      ignore: getIgnoredPaths(root),
+      ignore: getIgnoredPaths(root, test),
       nodir: true,
     })
   )
