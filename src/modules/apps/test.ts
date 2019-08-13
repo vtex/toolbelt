@@ -3,7 +3,7 @@ import * as retry from 'async-retry'
 import axios from 'axios'
 import * as bluebird from 'bluebird'
 import chalk from 'chalk'
-import { compose, concat, intersection, isEmpty, keys, map, not, prop, toPairs } from 'ramda'
+import { concat, isEmpty, map, prop, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
@@ -16,7 +16,6 @@ import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
 import { fixPinnedDependencies, getPinnedDependencies } from '../utils'
 import { runYarnIfPathExists } from '../utils'
-import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getLinkedFiles, listLocalFiles } from './file'
 import legacyLink from './legacyLink'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
@@ -24,14 +23,8 @@ import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, valida
 const root = getAppRoot()
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
-const buildersToStartDebugger = ['node']
 const buildersToRunLocalYarn = ['react', 'node']
 const RETRY_OPTS_INITIAL_LINK = {
-  retries: 2,
-  minTimeout: 1000,
-  factor: 2,
-}
-const RETRY_OPTS_DEBUGGER = {
   retries: 2,
   minTimeout: 1000,
   factor: 2,
@@ -45,14 +38,6 @@ const builderHttp = axios.create({
     'Authorization': getToken(),
   },
 })
-
-const shouldStartDebugger = (manifest: Manifest) => compose<Manifest, any, string[], string[], boolean, boolean>(
-  not,
-  isEmpty,
-  intersection(buildersToStartDebugger),
-  keys,
-  prop('builders')
-)(manifest)
 
 
 const warnAndLinkFromStart = (appId: string, builder: Builder, unsafe: boolean, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
@@ -159,30 +144,11 @@ export default async (options) => {
     initial_link_required: () => warnAndLinkFromStart(appId, builder, unsafe),
   }
 
-  let debuggerStarted = false
   const onBuild = async () => {
-    if (debuggerStarted) {
-      return
-    }
-    const startDebugger = async () => {
-      const port = await startDebuggerTunnel(manifest)
-      if (!port) {
-        throw new Error('Failed to start debugger.')
-      }
-      return port
-    }
-    if (shouldStartDebugger(manifest)) {
-      try {
-        const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
-        debuggerStarted = true
-        log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
-      } catch (e) {
-        log.error(e.message)
-      }
-    }
+    process.exit()
   }
 
-  log.info(`Linking app ${appId}`)
+  log.info(`Testing app ${appId}`)
 
   let unlistenBuild
   const extraData = { linkConfig: null }
