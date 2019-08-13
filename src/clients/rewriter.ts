@@ -18,13 +18,9 @@ export interface Redirect {
   bindings: string[] | null
 }
 
-interface RoutesIndex {
-  [route: string]: string
-}
-
 export enum RedirectTypes {
-  PERMANENT = 'permanent',
-  TEMPORARY = 'temporary',
+  PERMANENT = 'PERMANENT',
+  TEMPORARY = 'TEMPORARY',
 }
 
 export class Rewriter extends AppGraphQLClient {
@@ -32,44 +28,51 @@ export class Rewriter extends AppGraphQLClient {
     super('vtex.rewriter', context, options)
   }
 
-  public routesIndex = (): Promise<RoutesIndex> =>
-    this.graphql.query<RoutesIndex, {}>({
+  public routesIndex = (): Promise<string[]> =>
+    this.graphql.query<string[], {}>({
       query: `
-      query RoutesIndex() {
-        routesIndex()
+      query RoutesIndex {
+        redirect {
+          index
+          }
       }
       `,
       variables: {},
     }, {
       metric: 'rewriter-get-redirects-index',
-    }).then(path(['data', 'routesIndex'])) as Promise<RoutesIndex>
+    }).then(path(['data', 'redirect', 'index'])) as Promise<string[]>
 
   public exportRedirects = (from: number, to: number): Promise<Redirect[]> =>
-    this.graphql.query<Redirect[], {from: string, to: string}>({
+    this.graphql.query<Redirect[], {from: number, to: number}>({
       query: `
-      query ListRedirects($from: String, $to: String) {
-        redirects {
-          list(from: $from, to: $to)
+      query ListRedirects($from: Int!, $to: Int!) {
+        redirect {
+          list(from: $from, to: $to) {
+            from
+            to
+            type
+            endDate
+          }
         }
       }
       `,
-      variables: {from: from.toString(), to: to.toString()},
+      variables: {from, to},
     }, {
       metric: 'rewriter-get-redirects',
-    }).then(path(['data', 'redirects', 'list'])) as Promise<Redirect[]>
+    }).then(path(['data', 'redirect', 'list'])) as Promise<Redirect[]>
 
-  public importRedirects = (args: RedirectInput[]): Promise<boolean> =>
-    this.graphql.mutate<boolean, {args: RedirectInput[]}>({
+  public importRedirects = (routes: RedirectInput[]): Promise<boolean> =>
+    this.graphql.mutate<boolean, {routes: RedirectInput[]}>({
       mutate: `
-      mutation SaveMany($args: RedirectInput[]) {
-        redirects {
-          saveMany(args: $args)
+      mutation SaveMany($routes: [RedirectInput!]!) {
+        redirect {
+          saveMany(routes: $routes)
         }
       }
       `,
-      variables: { args },
+      variables: { routes },
     }, {
       metric: 'rewriter-import-redirects',
-    }).then(path(['data', 'redirects', 'saveMany'])) as Promise<boolean>
+    }).then(path(['data', 'redirect', 'saveMany'])) as Promise<boolean>
 
 }
