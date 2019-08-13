@@ -43,7 +43,7 @@ const handleExport = async (csvPath: string) => {
   let listOfRoutes = exportMetainfo[indexHash] || []
   //console.log('This is the list of ranges...' + JSON.stringify(listOfRanges))
 
-  const bar = new ProgressBar('Exporting routes [:bar] :percent', {
+  const bar = new ProgressBar('Exporting routes... [:bar] :percent', {
     complete: '=',
     curr: counter,
     incomplete: ' ',
@@ -79,6 +79,7 @@ const handleExport = async (csvPath: string) => {
   //console.log('This is the final CSV: \n' + csv)
   //console.log('Will be written to ' + csvPath)
   await writeFile(`./${csvPath}`, csv)
+  console.log('Finished!')
   process.exit()
 }
 
@@ -95,5 +96,4 @@ export default async (csvPath: string, retryCount=0) => {
     await sleep(10000)
     await module.exports.default(csvPath, retryCount++)
   }
-  console.log('Finished!')
 }

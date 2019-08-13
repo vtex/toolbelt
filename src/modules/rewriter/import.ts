@@ -81,7 +81,7 @@ const handleImport = async (csvPath: string) => {
   // console.log(`Import list has been divided into ${length(routesList)} batches`)
   let counter = startBatchIndex
 
-  const bar = new ProgressBar('Importing routes [:bar] :percent', {
+  const bar = new ProgressBar('Importing routes... [:bar] :percent', {
     complete: '=',
     curr: counter,
     incomplete: ' ',
@@ -111,6 +111,7 @@ const handleImport = async (csvPath: string) => {
       // console.log('Done')
     }
   )
+  console.log('Finished!')
   process.exit()
 }
 
@@ -127,5 +128,4 @@ export default async (csvPath: string, retryCount=0) => {
     await sleep(10000)
     await module.exports.default(csvPath, retryCount++)
   }
-  console.log('Finished!')
 }
