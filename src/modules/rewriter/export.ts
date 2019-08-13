@@ -7,12 +7,16 @@ import { concat, length, map, range } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
 import { sleep } from './utils'
 
 const MAX_ENTRIES_PER_REQUEST = 10
 const MAX_AUTOMATIC_RETRIES = 10
 const EXPORT_METAINFO_FILE = '.vtex_export_info.json'
 const FIELDS =  ['from', 'to', 'type', 'endDate']
+
+const account = getAccount()
+const workspace = getWorkspace()
 
 const saveCurrentExportState = (exportMetainfo: any, exportData: any, indexHash: string, counter: number) => {
   exportMetainfo[indexHash] = { counter, data: exportData }
@@ -27,39 +31,35 @@ const generateListOfRanges = (indexLength: number) =>
 
 const handleExport = async (csvPath: string) => {
   const routesIndex = await rewriter.routesIndex()
-  //console.log('These are the routes index: ' + JSON.stringify(routesIndex, null, 2))
   const indexLength = length(routesIndex)
   if (indexLength <= 0) {
     console.log('Index is empty')
     return
   }
-  const indexHash = await createHash('md5').update(routesIndex.join(';')).digest('hex')
+  const indexHash = await createHash('md5').update(`${account}_${workspace}_${JSON.stringify(routesIndex)}`).digest('hex')
   const exportMetainfo = await readJson(EXPORT_METAINFO_FILE).catch(() => ({}))
   const listOfRanges = generateListOfRanges(indexLength)
-  //console.log(`index Length ${indexLength}`)
-  const startBatchIndex = exportMetainfo[indexHash] ? exportMetainfo[indexHash].counter : 0
-  let counter = startBatchIndex
+  let counter = exportMetainfo[indexHash] ? exportMetainfo[indexHash].counter : 0
   let listOfRoutes = exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
-  //console.log('This is the list of ranges...' + JSON.stringify(listOfRanges))
 
-  const bar = new ProgressBar('Exporting routes... [:bar] :percent', {
+  const bar = new ProgressBar('Exporting routes... [:bar] :current/:total :percent', {
     complete: '=',
     curr: counter,
     incomplete: ' ',
-    width: '20',
+    width: '50',
     total: length(listOfRanges),
     })
 
   const listener = createInterface({ input: process.stdin, output: process.stdout })
     .on('SIGINT', () => {
       saveCurrentExportState(exportMetainfo, listOfRoutes, indexHash, counter)
+      console.log('\n')
       process.exit()
     })
 
   await Promise.each(
-    listOfRanges,
+    listOfRanges.splice(counter),
     async ([from, to]) => {
-      //console.log(`Exporting batch ${counter}`)
       let result: any
       try {
         result = await rewriter.exportRedirects(from, to)
@@ -75,10 +75,8 @@ const handleExport = async (csvPath: string) => {
   )
   const json2csvParser = new Parser({fields: FIELDS, delimiter: ';', quote: ''})
   const csv = json2csvParser.parse(listOfRoutes)
-  //console.log('This is the final CSV: \n' + csv)
-  //console.log('Will be written to ' + csvPath)
   await writeFile(`./${csvPath}`, csv)
-  console.log('Finished!')
+  console.log('\nFinished!\n')
   process.exit()
 }
 
@@ -87,7 +85,7 @@ export default async (csvPath: string) => {
   try {
     await handleExport(csvPath)
   } catch (e) {
-    console.error('Error handling export')
+    console.error('\nError handling export\n')
     if (retryCount >= MAX_AUTOMATIC_RETRIES) {
       throw e
     }

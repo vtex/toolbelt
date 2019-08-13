@@ -1,6 +1,11 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
 import { path } from 'ramda'
 
+export interface RouteIndexEntry {
+  id: string
+  lastChangeDate: string
+}
+
 export interface RedirectInput {
   id: string
   from: string
@@ -28,19 +33,22 @@ export class Rewriter extends AppGraphQLClient {
     super('vtex.rewriter', context, options)
   }
 
-  public routesIndex = (): Promise<string[]> =>
+  public routesIndex = (): Promise<RouteIndexEntry[]> =>
     this.graphql.query<string[], {}>({
       query: `
       query RoutesIndex {
         redirect {
-          index
+          index {
+            id
+            lastChangeDate
           }
+        }
       }
       `,
       variables: {},
     }, {
       metric: 'rewriter-get-redirects-index',
-    }).then(path(['data', 'redirect', 'index'])) as Promise<string[]>
+    }).then(path(['data', 'redirect', 'index'])) as Promise<RouteIndexEntry[]>
 
   public exportRedirects = (from: number, to: number): Promise<Redirect[]> =>
     this.graphql.query<Redirect[], {from: number, to: number}>({
