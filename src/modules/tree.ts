@@ -439,6 +439,11 @@ export default {
     handler: './rewriter/import',
     requiredArgs: 'csvPath',
   },
+  rewriterexport: {
+    description: 'Export',
+    handler: './rewriter/export',
+    requiredArgs: 'csvPath',
+  },
   'edition': {
     description: 'Get edition of the current account',
     handler: './sponsor/getEdition',

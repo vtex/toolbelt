@@ -1,4 +1,5 @@
-import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
+import { path } from 'ramda'
 
 export interface RedirectInput {
   id: string
@@ -9,28 +10,66 @@ export interface RedirectInput {
   bindings: string[] | null
 }
 
+export interface Redirect {
+  from: string
+  to: string
+  endDate: string
+  type: RedirectTypes
+  bindings: string[] | null
+}
+
+interface RoutesIndex {
+  [route: string]: string
+}
+
 export enum RedirectTypes {
   PERMANENT = 'permanent',
   TEMPORARY = 'temporary',
 }
 
-const routes = {
-  importRoutes: `/importroutes`,
-  exportRoutes: '/exportroutes',
-  routesIndex: '/routesindex',
-}
-
-export class Rewriter extends AppClient {
+export class Rewriter extends AppGraphQLClient {
   constructor(context: IOContext, options: InstanceOptions) {
     super('vtex.rewriter', context, options)
   }
 
-  public importRedirects = (redirects: RedirectInput[]) =>
-    this.http.post(routes.importRoutes, redirects, { metric: 'rewriter-import-redirects' })
+  public routesIndex = (): Promise<RoutesIndex> =>
+    this.graphql.query<RoutesIndex, {}>({
+      query: `
+      query RoutesIndex() {
+        routesIndex()
+      }
+      `,
+      variables: {},
+    }, {
+      metric: 'rewriter-get-redirects-index',
+    }).then(path(['data', 'routesIndex'])) as Promise<RoutesIndex>
 
-  public exportRedirects = (from: number, to: number) =>
-    this.http.post(routes.exportRoutes, { from, to }, { metric: 'rewriter-export-redirects' })
+  public exportRedirects = (from: number, to: number): Promise<Redirect[]> =>
+    this.graphql.query<Redirect[], {from: string, to: string}>({
+      query: `
+      query ListRedirects($from: String, $to: String) {
+        redirects {
+          list(from: $from, to: $to)
+        }
+      }
+      `,
+      variables: {from: from.toString(), to: to.toString()},
+    }, {
+      metric: 'rewriter-get-redirects',
+    }).then(path(['data', 'redirects', 'list'])) as Promise<Redirect[]>
 
-  public routesIndex = () =>
-    this.http.get(routes.routesIndex, { metric: 'rewriter-routes-index' })
+  public importRedirects = (args: RedirectInput[]): Promise<boolean> =>
+    this.graphql.mutate<boolean, {args: RedirectInput[]}>({
+      mutate: `
+      mutation SaveMany($args: RedirectInput[]) {
+        redirects {
+          saveMany(args: $args)
+        }
+      }
+      `,
+      variables: { args },
+    }, {
+      metric: 'rewriter-import-redirects',
+    }).then(path(['data', 'redirects', 'saveMany'])) as Promise<boolean>
+
 }
