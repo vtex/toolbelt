@@ -15,8 +15,7 @@ const EXPORT_METAINFO_FILE = '.vtex_export_info.json'
 const FIELDS =  ['from', 'to', 'type', 'endDate']
 
 const saveCurrentExportState = (exportMetainfo: any, exportData: any, indexHash: string, counter: number) => {
-  exportMetainfo[indexHash].counter = counter
-  exportMetainfo[indexHash].data = exportData
+  exportMetainfo[indexHash] = { counter, data: exportData }
   writeJsonSync(EXPORT_METAINFO_FILE, exportMetainfo, {spaces: 2})
 }
 
@@ -38,9 +37,9 @@ const handleExport = async (csvPath: string) => {
   const exportMetainfo = await readJson(EXPORT_METAINFO_FILE).catch(() => ({}))
   const listOfRanges = generateListOfRanges(indexLength)
   //console.log(`index Length ${indexLength}`)
-  const startBatchIndex = exportMetainfo[indexHash] || 0
+  const startBatchIndex = exportMetainfo[indexHash] ? exportMetainfo[indexHash].counter : 0
   let counter = startBatchIndex
-  let listOfRoutes = exportMetainfo[indexHash] || []
+  let listOfRoutes = exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
   //console.log('This is the list of ranges...' + JSON.stringify(listOfRanges))
 
   const bar = new ProgressBar('Exporting routes... [:bar] :percent', {
@@ -83,7 +82,8 @@ const handleExport = async (csvPath: string) => {
   process.exit()
 }
 
-export default async (csvPath: string, retryCount=0) => {
+let retryCount = 0
+export default async (csvPath: string) => {
   try {
     await handleExport(csvPath)
   } catch (e) {

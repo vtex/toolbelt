@@ -115,7 +115,8 @@ const handleImport = async (csvPath: string) => {
   process.exit()
 }
 
-export default async (csvPath: string, retryCount=0) => {
+let retryCount = 0
+export default async (csvPath: string) => {
   try {
     await handleImport(csvPath)
   } catch (e) {
