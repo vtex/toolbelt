@@ -91,6 +91,7 @@
   },
   "preferGlobal": true,
   "devDependencies": {
+    "@types/async-retry": "^1.4.1",
     "@types/bluebird": "^3.0.37",
     "@types/bluebird-global": "^3.0.1",
     "@types/configstore": "^2.1.0",
