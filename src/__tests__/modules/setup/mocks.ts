@@ -76,7 +76,7 @@ export const mockSetupUtils = () => {
 
   const { tsconfigEditor, packageJsonEditor, esLintrcEditor } = jest.requireMock(
     '../../../modules/setup/utils'
-  ) as Record<string, { read: jest.Mock; write: jest.Mock }>
+  ) as Record<string, { read: jest.Mock; write: jest.Mock; path: jest.Mock }>
 
   const mockEditor = (editor: any, editorName: string) => {
     let dataByBuilder = {
