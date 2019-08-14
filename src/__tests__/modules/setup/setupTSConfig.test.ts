@@ -12,12 +12,12 @@ beforeEach(() => {
 })
 
 describe('TSConfig result is correct', () => {
-  const checkTSConfigOutput = ({ react, node }: any) => {
+  const checkTSConfigOutput = ({ react: reactExpectedTSConfig, node: nodeExpectedTSConfig }: any) => {
     const getCall = (which: string) => tsconfigEditorMock.write.mock.calls.find(arr => arr[0] === which)
     const reactCallArgs = getCall('react')
-    expect(reactCallArgs[1]).toEqual(react)
+    expect(reactCallArgs[1]).toEqual(reactExpectedTSConfig)
     const nodeCallArgs = getCall('node')
-    expect(nodeCallArgs[1]).toEqual(node)
+    expect(nodeCallArgs[1]).toEqual(nodeExpectedTSConfig)
   }
 
   test(`If local tsconfig doesn't exist`, async () => {
