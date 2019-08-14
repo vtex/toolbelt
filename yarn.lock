@@ -405,6 +405,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/async-retry@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@types/async-retry/-/async-retry-1.4.1.tgz#3b136a707b7a850f4947a727eb0f7b473b601992"
+  integrity sha512-hDI5Ttk9SUmDLcD/Yl2VuWQRGYZjJ7aaJFeRlomUOz/iTKSE7yA55SwY87QwjiZgwhMlVAKoT1rl08UyQoheag==
+  dependencies:
+    "@types/retry" "*"
+
 "@types/babel__core@^7.1.0":
   version "7.1.2"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.2.tgz#608c74f55928033fce18b99b213c16be4b3d114f"
@@ -618,6 +625,11 @@
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
   integrity sha512-ewFXqrQHlFsgc09MK5jP5iR7vumV/BYayNC6PgJO2LPe8vrnNFyjQjSppfEngITi0qvfKtzFvgKymGheFM9UOA==
+
+"@types/retry@*":
+  version "0.12.0"
+  resolved "https://registry.yarnpkg.com/@types/retry/-/retry-0.12.0.tgz#2b35eccfcee7d38cd72ad99232fbd58bffb3c84d"
+  integrity sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==
 
 "@types/semver-diff@^2.1.0":
   version "2.1.1"
