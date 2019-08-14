@@ -21,7 +21,7 @@ describe('React type dependencies are correctly inserted', () => {
     react: { '3.x': { injectedDependencies: { 'vtex.render-runtime': '8.x' } } },
   })
 
-  test('Generated package json has BuilderHub injected typings, app deps typings and old dev deps', async () => {
+  test('Generated package.json has BuilderHub injected typings, app deps typings and old dev deps', async () => {
     setAvailableAppIDs({
       'vtex.admin': { '1.x': 'vtex.admin@1.18.0' },
       'vtex.render-runtime': { '8.x': 'vtex.render-runtime@8.1.0' },

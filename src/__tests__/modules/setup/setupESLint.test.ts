@@ -37,7 +37,7 @@ describe('Yarn is called correctly and .eslintrc is created', () => {
     expect(esLintrcEditorMock.write).toBeCalledWith(builder, expect.anything())
   }
 
-  test('If package.json doesnt have any eslint deps', async () => {
+  test(`If package.json doesn't have any eslint deps`, async () => {
     const pkg = { devDependencies: { '@types/node': '12.0.0' } }
     setPackageJsonByBuilder({ node: pkg, react: pkg })
 
