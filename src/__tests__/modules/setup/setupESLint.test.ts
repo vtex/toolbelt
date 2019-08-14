@@ -10,7 +10,7 @@ jest.mock('child-process-es6-promise', () => {
   }
 })
 
-// execSync changes the cwd to getAppRoot, so this is mocked to check this
+// execSync changes the cwd to getAppRoot(), so this is mocked to check this
 jest.mock('../../../manifest', () => {
   return {
     getAppRoot: jest.fn().mockReturnValue('app-root'),
