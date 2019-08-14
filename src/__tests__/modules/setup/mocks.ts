@@ -20,18 +20,6 @@ export const mockBuilderHubDatasource = () => {
   return { setBuilderHubTypings, setBuilderHubTsConfig }
 }
 
-export const mockFsExtra = () => {
-  jest.doMock('fs-extra', () => {
-    return {
-      ...jest.requireActual('fs-extra'),
-      readJson: jest.fn(),
-      outputJson: jest.fn(),
-      outputJsonSync: jest.fn(),
-      readJsonSync: jest.fn(),
-    }
-  })
-}
-
 export const mockConf = () => {
   jest.doMock('../../../conf', () => {
     return {
