@@ -55,7 +55,7 @@ const printResultsTable = (testInfo: ABTestStatus) => {
     ConversionB,
     ConversionBLast24Hours,
     ProbabilityAlternativeBeatMaster,
-    PValue,
+    // PValue,
   } = testInfo
   console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
   if (R.any(R.isNil)([ExpectedLossChoosingA, ExpectedLossChoosingB, ProbabilityAlternativeBeatMaster])) {
@@ -79,7 +79,9 @@ const printResultsTable = (testInfo: ABTestStatus) => {
   const probabilitiesTable = createTable()
   probabilitiesTable.push(bold(['Event', 'Condition', 'Probability']))
   probabilitiesTable.push(bold(['B beats A', 'None', formatPercent(ProbabilityAlternativeBeatMaster)]))
-  probabilitiesTable.push(bold(['Data as extreme as the observed', `Workspaces being equal (both to ${chalk.blue(WorkspaceA)}).`, formatPercent(PValue)]))
+
+  // While we're not confident in this calculation, we shouldn't show it to our users
+  // probabilitiesTable.push(bold(['Data as extreme as the observed', `Workspaces being equal (both to ${chalk.blue(WorkspaceA)}).`, formatPercent(PValue)]))
 
   const resultsTable = createTable()
   resultsTable.push(bold([`Start Date`, `${moment(ABTestBeginning).format('DD-MMM-YYYY HH:mm')} (UTC)`]))
