@@ -55,7 +55,7 @@ const printResultsTable = (testInfo: ABTestStatus) => {
     ConversionB,
     ConversionBLast24Hours,
     ProbabilityAlternativeBeatMaster,
-    PValue,
+    // PValue,
   } = testInfo
   console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
   if (R.any(R.isNil)([ExpectedLossChoosingA, ExpectedLossChoosingB, ProbabilityAlternativeBeatMaster])) {
