@@ -46,23 +46,30 @@ const getDepsInjectedByBuilderHub = (typingsData: any, version: string, builder:
 }
 
 const injectTypingsInPackageJson = async (appDeps: Record<string, any>, builder: string) => {
-  const packageJson = packageJsonEditor.read(builder)
-  if (packageJson) {
-    const oldDevDeps = packageJson.devDependencies || {}
-    const oldTypingsEntries = R.filter(R.test(typingsURLRegex), oldDevDeps)
-    const newTypingsEntries = await appsWithTypingsURLs(builder, appDeps)
-    if (!R.equals(oldTypingsEntries, newTypingsEntries)) {
-      const cleanOldDevDeps = R.reject(R.test(typingsURLRegex), oldDevDeps)
-      packageJsonEditor.write(builder, {
-        ...packageJson,
-        ...{ devDependencies: { ...cleanOldDevDeps, ...newTypingsEntries } },
-      })
-      try {
-        runYarn(builder, true)
-      } catch (e) {
-        log.error(`Error running Yarn in ${builder}.`)
-        packageJsonEditor.write(builder, packageJson) // Revert package.json to original state.
-      }
+  let packageJson
+  try {
+    packageJson = packageJsonEditor.read(builder)
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      log.warn(`No package.json found in ${packageJsonEditor.path(builder)}.`)
+    } else log.error(e)
+    return
+  }
+
+  const oldDevDeps = packageJson.devDependencies || {}
+  const oldTypingsEntries = R.filter(R.test(typingsURLRegex), oldDevDeps)
+  const newTypingsEntries = await appsWithTypingsURLs(builder, appDeps)
+  if (!R.equals(oldTypingsEntries, newTypingsEntries)) {
+    const cleanOldDevDeps = R.reject(R.test(typingsURLRegex), oldDevDeps)
+    packageJsonEditor.write(builder, {
+      ...packageJson,
+      ...{ devDependencies: { ...cleanOldDevDeps, ...newTypingsEntries } },
+    })
+    try {
+      runYarn(builder, true)
+    } catch (e) {
+      log.error(`Error running Yarn in ${builder}.`)
+      packageJsonEditor.write(builder, packageJson) // Revert package.json to original state.
     }
   }
 }
