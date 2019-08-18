@@ -92,6 +92,10 @@ export const onEvent = (ctx: Context, sender: string, subject: string, keys: str
 
 const filterAndMaybeLogVTEXLogs = (message: string) => {
   // Because stdout is buffered, __VTEX_IO_LOG objects might be interpolated with regular stdout messages.
+  if (!message) {
+    return ''
+  }
+
   return message.split('\n').map((m: string) => {
     try {
       const obj = JSON.parse(m)
