@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.66.3] - 2019-08-19
+
+### Changed
+- Stop ignoring eslint configuration files.
+
 ## [2.66.2] - 2019-08-15
 
 ## [2.66.1] - 2019-08-15

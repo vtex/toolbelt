@@ -14,7 +14,6 @@ type AnyFunction = (...args: any[]) => any
 const defaultIgnored = [
   '.DS_Store',
   'README.md',
-  '.eslintrc',
   '.gitignore',
   'CHANGELOG.md',
   'package.json',
@@ -113,7 +112,6 @@ export async function getLinkedFiles(linkConfig: LinkConfig): Promise<BatchStrea
   const ignore = [
     '.DS_Store',
     'README.md',
-    '.eslintrc',
     '.gitignore',
     'CHANGELOG.md',
     'node_modules/**',
@@ -157,7 +155,7 @@ export const getIgnoredPaths = (root: string): string[] => {
 
 export const listLocalFiles = (root: string, folder?: string): Promise<string[]> =>
   Promise.resolve(
-    glob(['manifest.json', 'policies.json', `${safeFolder(folder)}`], {
+    glob(['manifest.json', 'policies.json', 'node/.*', 'react/.*', `${safeFolder(folder)}`], {
       cwd: root,
       follow: true,
       ignore: getIgnoredPaths(root),
