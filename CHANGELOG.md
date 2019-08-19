@@ -5,9 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Do not throw error when log is an empty string.
 
 ## [2.66.3] - 2019-08-19
-
 ### Changed
 - Stop ignoring eslint configuration files.
 
