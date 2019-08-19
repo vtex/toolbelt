@@ -96,6 +96,7 @@ const handleImport = async (csvPath: string) => {
     routesList.splice(counter),
     async (redirects: RedirectInput[]) => {
       try {
+        console.log('importing these redirects' + JSON.stringify(redirects))
         await rewriter.importRedirects(redirects)
       } catch (e) {
         await saveCurrentImportState(importMetainfo, fileHash, counter)
@@ -110,8 +111,19 @@ const handleImport = async (csvPath: string) => {
   process.exit()
 }
 
+const ensureIndexCreation = async () => {
+  const index = await rewriter.routesIndex(true)
+  if (index === null) {
+    await rewriter.createRoutesIndex()
+    console.error('Error getting redirects index. Please try again in some seconds..')
+    process.exit()
+  }
+}
+
 let retryCount = 0
 export default async (csvPath: string) => {
+  // First check if the redirects index exists
+  await ensureIndexCreation()
   try {
     await handleImport(csvPath)
   } catch (e) {
@@ -122,6 +134,7 @@ export default async (csvPath: string) => {
     console.error('Retrying in 10 seconds...')
     console.log('Press CTRL+C to abort')
     await sleep(10000)
-    await module.exports.default(csvPath, retryCount++)
+    retryCount++
+    await module.exports.default(csvPath)
   }
 }

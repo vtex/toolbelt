@@ -33,6 +33,20 @@ export class Rewriter extends AppGraphQLClient {
     super('vtex.rewriter', context, options)
   }
 
+  public createRoutesIndex = (): Promise<boolean> =>
+    this.graphql.mutate<boolean, {}>({
+      mutate: `
+      mutation CreateRoutesIndex {
+        redirect {
+          createIndex
+        }
+      }
+      `,
+      variables: {},
+    }, {
+      metric: 'rewriter-create-redirects-index',
+    }).then(path(['data', 'redirect', 'createIndex'])) as Promise<boolean>
+
   public routesIndex = (): Promise<RouteIndexEntry[]> =>
     this.graphql.query<string[], {}>({
       query: `
