@@ -110,6 +110,14 @@ export default {
     alias: 'i',
     description: 'Install an app (defaults to the app in the current directory)',
     handler: './apps/install',
+    options: [
+      {
+        description: 'Install app without checking for route conflicts',
+        long: 'force',
+        short: 'f',
+        type: 'boolean',
+      },
+    ],
     optionalArgs: 'app',
   },
   setup: {
