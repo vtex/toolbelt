@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.67.0] - 2019-08-21
+### Added
+- Parameter `-f` or `--force` in `vtex install` to skip check for route conflicts.
+
 ## [2.66.4] - 2019-08-19
 ### Fixed
 - Do not throw error when log is an empty string.
@@ -18,10 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.66.1] - 2019-08-15
 - Use jest as testing framework
-
-## [2.67.0] - 2019-08-21
-### Added
-- Parameter `-f` or `--force` in `vtex install` to skip check for route conflicts.
 
 ## [2.66.0] - 2019-08-07
 ### Changed
