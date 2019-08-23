@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Upgrade `chokidar` to major 3
+
 ## [2.67.0] - 2019-08-21
 ### Added
 - Parameter `-f` or `--force` in `vtex install` to skip check for route conflicts.
