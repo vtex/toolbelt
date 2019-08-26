@@ -444,6 +444,11 @@ export default {
     handler: './rewriter/export',
     requiredArgs: 'csvPath',
   },
+  rewriterdelete: {
+    description: 'Export',
+    handler: './rewriter/delete',
+    requiredArgs: 'csvPath',
+  },
   'edition': {
     description: 'Get edition of the current account',
     handler: './sponsor/getEdition',

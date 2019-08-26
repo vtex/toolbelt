@@ -96,7 +96,6 @@ const handleImport = async (csvPath: string) => {
     routesList.splice(counter),
     async (redirects: RedirectInput[]) => {
       try {
-        console.log('importing these redirects' + JSON.stringify(redirects))
         await rewriter.importRedirects(redirects)
       } catch (e) {
         await saveCurrentImportState(importMetainfo, fileHash, counter)
@@ -112,7 +111,7 @@ const handleImport = async (csvPath: string) => {
 }
 
 const ensureIndexCreation = async () => {
-  const index = await rewriter.routesIndex(true)
+  const index = await rewriter.routesIndex()
   if (index === null) {
     await rewriter.createRoutesIndex()
     console.error('Error getting redirects index. Please try again in some seconds..')

@@ -97,4 +97,17 @@ export class Rewriter extends AppGraphQLClient {
       metric: 'rewriter-import-redirects',
     }).then(path(['data', 'redirect', 'saveMany'])) as Promise<boolean>
 
+  public deleteRedirects = (paths: string[]): Promise<boolean> =>
+    this.graphql.mutate<boolean, {paths: string[]}>({
+      mutate: `
+      mutation DeleteMany($paths: [String!]!) {
+        redirect {
+          deleteMany(paths: $paths)
+        }
+      }
+      `,
+      variables: { paths },
+    }, {
+      metric: 'rewriter-delete-redirects',
+    }).then(path(['data', 'redirect', 'deleteMany'])) as Promise<boolean>
 }
