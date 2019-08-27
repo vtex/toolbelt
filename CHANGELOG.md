@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add revenue and last 24h revenue to AB test status.
+
 ## [2.67.1] - 2019-08-23
 
 - Upgrade `chokidar` to major 3
