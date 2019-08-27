@@ -248,6 +248,12 @@ export default {
         short: 'w',
         type: 'string',
       },
+      {
+        description: 'Publish app without checking if the sem ver is being respected',
+        long: 'force',
+        short: 'f',
+        type: 'boolean',
+      },
     ],
   },
   settings: {
