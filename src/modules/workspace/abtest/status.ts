@@ -30,6 +30,10 @@ interface ABTestStatus {
   ConversionBLast24Hours: number
   ProbabilityAlternativeBeatMaster: number
   PValue: number
+  OrdersValueA: number
+  OrdersValueB: number
+  OrdersValueALast24Hours: number
+  OrdersValueBLast24Hours: number
 }
 
 const formatPercent = (n: number) => numbro(n).format('0.000%')
@@ -56,6 +60,10 @@ const printResultsTable = (testInfo: ABTestStatus) => {
     ConversionBLast24Hours,
     ProbabilityAlternativeBeatMaster,
     // PValue,
+    OrdersValueA,
+    OrdersValueB,
+    OrdersValueALast24Hours,
+    OrdersValueBLast24Hours,
   } = testInfo
   console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
   if (R.any(R.isNil)([ExpectedLossChoosingA, ExpectedLossChoosingB, ProbabilityAlternativeBeatMaster])) {
@@ -71,6 +79,8 @@ const printResultsTable = (testInfo: ABTestStatus) => {
   rawDataTable.push(bold(['N. of Sessions', formatInteger(WorkspaceASessions), formatInteger(WorkspaceBSessions)]))
   rawDataTable.push(bold(['N. of Sessions (last 24h)',
       formatInteger(WorkspaceASessionsLast24Hours), formatInteger(WorkspaceBSessionsLast24Hours)]))
+  rawDataTable.push(bold(['Revenue', formatInteger(OrdersValueA), formatInteger(OrdersValueB)]))
+  rawDataTable.push(bold(['Revenue (last 24h)', formatInteger(OrdersValueALast24Hours), formatInteger(OrdersValueBLast24Hours)]))
 
   const comparisonTable = createTable()
   comparisonTable.push(bold(['', chalk.blue(WorkspaceA), chalk.blue(WorkspaceB)]))
