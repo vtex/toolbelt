@@ -642,10 +642,10 @@
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-12.0.12.tgz#45dd1d0638e8c8f153e87d296907659296873916"
   integrity sha512-SOhuU4wNBxhhTHxYaiG5NY4HBhDIDnJF60GU+2LqHAdKKer86//e4yg69aENCtQ04n0ovz+tq2YPME5t5yp4pw==
 
-"@vtex/api@^3.26.0":
-  version "3.26.0"
-  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.26.0.tgz#3bf74948d249cc4b54d68a21d7b8edd7a66d40fb"
-  integrity sha512-9Jn6LoSbd5IroNm0kUhFssCvo1PYO9MpM07itQGEOhcOgNPC8yRcFkLgY5nn5PDr3mIcscMOiM/pCfXLb+qSfQ==
+"@vtex/api@^3.46.0":
+  version "3.46.0"
+  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.46.0.tgz#f43a58ce15e08dfa366daf44a4c2ec4928527236"
+  integrity sha512-Dqlu/LE6mn1oUIb744bjj+RgNbb+xMSB0C6H6RcUvVGOQPJgY4OfqNY11jae6qjInWXIVVyBkRKFwnFpUNqfxA==
   dependencies:
     "@types/koa" "^2.0.48"
     "@types/koa-compose" "^3.2.3"
@@ -656,6 +656,7 @@
     axios "^0.18.0"
     axios-retry "^3.1.2"
     bluebird "^3.5.4"
+    chalk "^2.4.2"
     co-body "^6.0.0"
     cookie "^0.3.1"
     dataloader "^1.4.0"
@@ -6008,7 +6009,7 @@ static-extend@^0.1.1, static-extend@^0.1.2:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-stats-lite@vtex/node-stats-lite#dist:
+"stats-lite@github:vtex/node-stats-lite#dist":
   version "2.2.0"
   resolved "https://codeload.github.com/vtex/node-stats-lite/tar.gz/1b0d39cc41ef7aaecfd541191f877887a2044797"
   dependencies:

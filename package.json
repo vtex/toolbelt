@@ -44,7 +44,7 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "@vtex/api": "^3.26.0",
+    "@vtex/api": "^3.46.0",
     "any-promise": "^1.3.0",
     "async-retry": "^1.2.3",
     "bluebird": "^3.5.0",
