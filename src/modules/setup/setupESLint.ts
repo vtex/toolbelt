@@ -46,6 +46,7 @@ const createESLintSetup = async (lintDeps: string[], builder: string) => {
     if (R.difference(lintDeps, R.intersection(lintDeps, R.keys(devDependencies))).length !== 0) {
       yarnAddESLint(builder)
     }
+    log.info(`Configuring ${builder} .eslint`)
     esLintrcEditor.write(builder, addToEslintrc[builder])
   } catch (e) {
     log.error(e)

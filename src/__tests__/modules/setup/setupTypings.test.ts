@@ -1,11 +1,11 @@
 import { manifestSamples } from '../../fixtures/manifests'
-import { mockAppsUtils, mockBuilderHubDatasource, mockConf, mockEnv, mockRunYarn, mockSetupUtils } from './mocks'
+import { mockAppsUtils, mockCreateClients, mockConf, mockEnv, mockRunYarn, mockSetupUtils } from './mocks'
 
 mockConf()
 mockEnv()
 mockRunYarn()
 const { setAvailableAppIDs } = mockAppsUtils()
-const { setBuilderHubTypings } = mockBuilderHubDatasource()
+const { setBuilderHubTypings } = mockCreateClients()
 const { setPackageJsonByBuilder, packageJsonEditorMock } = mockSetupUtils()
 
 const { runYarn } = jest.requireMock('../../../modules/utils')

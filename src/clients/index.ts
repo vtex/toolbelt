@@ -1,9 +1,10 @@
-import { Apps, Builder, Events, InstanceOptions, IOContext, Logger, Registry, Router, Workspaces } from '@vtex/api'
+import { Apps, Events, InstanceOptions, IOContext, Logger, Registry, Router, Workspaces } from '@vtex/api'
 import { getAccount, getToken, getWorkspace } from '../conf'
 import * as env from '../env'
 import envTimeout from '../timeout'
 import userAgent from '../user-agent'
 import Billing from './billingClient'
+import Builder from './Builder'
 import { dummyLogger } from './dummyLogger'
 
 const DEFAULT_TIMEOUT = 15000
@@ -64,12 +65,15 @@ const [apps, router, workspaces, logger, events, billing] = getToken()
     interceptor<Billing>('billing'),
   ]
 
-export {
-  apps,
-  router,
-  workspaces,
+export { 
+  apps, 
+  router, 
+  workspaces, 
   logger,
-  events,
-  createClients,
+  events, 
+  createClients, 
   billing,
 }
+
+
+

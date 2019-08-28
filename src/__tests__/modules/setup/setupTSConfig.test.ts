@@ -1,8 +1,8 @@
 import { manifestSamples } from '../../fixtures/manifests'
 import { builderHubTsConfigMock } from './fixtures/builderHubTSConfig'
-import { mockBuilderHubDatasource, mockSetupUtils } from './mocks'
+import { mockCreateClients, mockSetupUtils } from './mocks'
 
-const { setBuilderHubTsConfig } = mockBuilderHubDatasource()
+const { setBuilderHubTsConfig } = mockCreateClients()
 const { setTSConfigByBuilder, tsconfigEditorMock } = mockSetupUtils()
 
 const { setupTSConfig } = require('../../../modules/setup/setupTSConfig')

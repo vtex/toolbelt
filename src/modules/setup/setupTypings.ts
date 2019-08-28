@@ -1,10 +1,10 @@
 import * as R from 'ramda'
+import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { publicEndpoint } from '../../env'
 import log from '../../logger'
 import { isLinked, resolveAppId } from '../apps/utils'
 import { runYarn } from '../utils'
-import { BuilderHubDatasource } from './BuilderHubDatasource'
 import { packageJsonEditor } from './utils'
 
 const getVendor = (appId: string) => appId.split('.')[0]
@@ -56,6 +56,7 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, builder:
     return
   }
 
+  log.info(`Injecting typings on ${builder}'s package.json`)
   const oldDevDeps = packageJson.devDependencies || {}
   const oldTypingsEntries = R.filter(R.test(typingsURLRegex), oldDevDeps)
   const newTypingsEntries = await appsWithTypingsURLs(builder, appDeps)
@@ -75,7 +76,10 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, builder:
 }
 
 export const setupTypings = async (manifest: Manifest) => {
-  const typingsData = await BuilderHubDatasource.typingsInfo()
+  const { builder: builderClient } = createClients({}, { retries: 2 })
+
+  log.info('Fetching names of dependencies injected by BuilderHub')
+  const typingsData = await builderClient.typingsInfo()
   const buildersWithInjectedDeps = R.pipe(
     R.prop('builders'),
     R.mapObjIndexed(R.curry(getDepsInjectedByBuilderHub)(typingsData)),
