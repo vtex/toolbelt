@@ -1,6 +1,6 @@
 import { createHash } from 'crypto'
 import { writeFile } from 'fs-extra'
-import { readJson, writeJsonSync } from 'fs-extra'
+import { readJson } from 'fs-extra'
 import { Parser } from 'json2csv'
 import * as ProgressBar from 'progress'
 import { concat, length, map, range } from 'ramda'
@@ -8,20 +8,12 @@ import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
-import { sleep } from './utils'
+import { MAX_ENTRIES_PER_REQUEST, MAX_RETRIES, METAINFO_FILE, saveMetainfo, sleep, validateInput, readCSV, PROGRESS_DEFAULT_CONFIG, progressString } from './utils'
 
-const MAX_ENTRIES_PER_REQUEST = 10
-const MAX_AUTOMATIC_RETRIES = 10
-const EXPORT_METAINFO_FILE = '.vtex_export_info.json'
 const FIELDS =  ['from', 'to', 'type', 'endDate']
 
 const account = getAccount()
 const workspace = getWorkspace()
-
-const saveCurrentExportState = (exportMetainfo: any, exportData: any, indexHash: string, counter: number) => {
-  exportMetainfo[indexHash] = { counter, data: exportData }
-  writeJsonSync(EXPORT_METAINFO_FILE, exportMetainfo, {spaces: 2})
-}
 
 const generateListOfRanges = (indexLength: number) =>
   map(
@@ -37,22 +29,21 @@ const handleExport = async (csvPath: string) => {
     return
   }
   const indexHash = await createHash('md5').update(`${account}_${workspace}_${JSON.stringify(routesIndex)}`).digest('hex')
-  const exportMetainfo = await readJson(EXPORT_METAINFO_FILE).catch(() => ({}))
+  const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
+  const exportMetainfo = metainfo.export || {}
   const listOfRanges = generateListOfRanges(indexLength)
   let counter = exportMetainfo[indexHash] ? exportMetainfo[indexHash].counter : 0
   let listOfRoutes = exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
 
-  const bar = new ProgressBar('Exporting routes... [:bar] :current/:total :percent', {
-    complete: '=',
+  const bar = new ProgressBar(progressString('Exporting routes...'), {
+    ...PROGRESS_DEFAULT_CONFIG,
     curr: counter,
-    incomplete: ' ',
-    width: '50',
     total: length(listOfRanges),
     })
 
   const listener = createInterface({ input: process.stdin, output: process.stdout })
     .on('SIGINT', () => {
-      saveCurrentExportState(exportMetainfo, listOfRoutes, indexHash, counter)
+      saveMetainfo(exportMetainfo,'exports', indexHash, counter, listOfRoutes)
       console.log('\n')
       process.exit()
     })
@@ -64,7 +55,7 @@ const handleExport = async (csvPath: string) => {
       try {
         result = await rewriter.exportRedirects(from, to)
       } catch (e) {
-        await saveCurrentExportState(exportMetainfo, listOfRoutes, indexHash, counter)
+        await saveMetainfo(exportMetainfo, 'exports', indexHash, counter, listOfRoutes)
         listener.close()
         throw e
       }
@@ -86,7 +77,7 @@ export default async (csvPath: string) => {
     await handleExport(csvPath)
   } catch (e) {
     console.error('\nError handling export\n')
-    if (retryCount >= MAX_AUTOMATIC_RETRIES) {
+    if (retryCount >= MAX_RETRIES) {
       throw e
     }
     console.error('Retrying in 10 seconds...')
