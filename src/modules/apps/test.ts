@@ -1,24 +1,20 @@
 import { Builder } from '@vtex/api'
 import * as retry from 'async-retry'
-import axios from 'axios'
 import * as bluebird from 'bluebird'
 import chalk from 'chalk'
-import { concat, isEmpty, map, prop, toPairs } from 'ramda'
-import { createInterface } from 'readline'
+import { concat, map, prop, toPairs } from 'ramda'
 import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
-import { region } from '../../env'
+import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
-import { fixPinnedDependencies, getPinnedDependencies } from '../utils'
+import { fixPinnedDependencies } from '../utils'
 import { runYarnIfPathExists } from '../utils'
 import { createLinkConfig, getLinkedFiles, listLocalFiles } from './file'
-import legacyLink from './legacyLink'
-import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
+import { pathToFileObject, validateAppAction } from './utils'
 
 const root = getAppRoot()
 const AVAILABILITY_TIMEOUT = 1000
@@ -28,22 +24,6 @@ const RETRY_OPTS_INITIAL_LINK = {
   retries: 2,
   minTimeout: 1000,
   factor: 2,
-}
-const account = getAccount()
-const workspace = getWorkspace()
-const builderHttp = axios.create({
-  baseURL: `http://builder-hub.vtex.${region()}.vtex.io/${account}/${workspace}`,
-  timeout: 2000,
-  headers: {
-    'Authorization': getToken(),
-  },
-})
-
-
-const warnAndLinkFromStart = (appId: string, builder: Builder, unsafe: boolean, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
-  log.warn('Initial link requested by builder')
-  performInitialLink(appId, builder, extraData, unsafe)
-  return null
 }
 
 const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<void> => {
@@ -80,9 +60,9 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     }
 
     const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-    const linkOptions = { sticky: true, stickyHint }
+    const testOptions = { sticky: true, stickyHint }
     try {
-      const { code } = await builder.testApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })
+      const { code } = await builder.testApp(appId, filesWithContent, testOptions, { tsErrorsAsWarnings: unsafe })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
@@ -92,7 +72,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       const data = response && response.data
       const message = data.message
       const statusMessage = status ? `: Status ${status}` : ''
-      log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
+      log.error(`Error testing app${statusMessage} (try: ${tryCount})`)
       if (message) {
         log.error(`Message: ${message}`)
       }
@@ -114,21 +94,13 @@ export default async (options) => {
   } catch(e) {
     log.debug('Failed to write schema on manifest.')
   }
-  const builderHubMessage = await checkBuilderHubMessage('link')
-  if (!isEmpty(builderHubMessage)) {
-    await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
-  }
-
-  if (manifest.builders.render
-    || manifest.builders['functions-ts']) {
-    return legacyLink(options)
-  }
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
+  const { builder } = createClients(context, { timeout: 60000 })
 
   try {
-    const aux = await getPinnedDependencies(builderHttp)
+    const aux = await builder.getPinnedDependencies()
     const pinnedDeps : Map<string, string> = new Map(Object.entries(aux))
     await bluebird.map(buildersToRunLocalYarn, fixPinnedDependencies(pinnedDeps), { concurrency: 1 })
   } catch(e) {
@@ -137,11 +109,8 @@ export default async (options) => {
   // Always run yarn locally for some builders
   map(runYarnIfPathExists, buildersToRunLocalYarn)
 
-  const { builder } = createClients(context, { timeout: 60000 })
-
   const onError = {
     build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
-    initial_link_required: () => warnAndLinkFromStart(appId, builder, unsafe),
   }
 
   const onBuild = async () => {
@@ -150,33 +119,22 @@ export default async (options) => {
 
   log.info(`Testing app ${appId}`)
 
-  let unlistenBuild
   const extraData = { linkConfig: null }
   try {
     const buildTrigger = performInitialLink.bind(this, appId, builder, extraData, unsafe)
     const [subject] = appId.split('@')
-    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
+    await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
   } catch (e) {
     if (e.response) {
       const { data } = e.response
       if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
-        return log.error('Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)')
+        return log.error('Please install vtex.builder-hub in your account to enable app testing (vtex install vtex.builder-hub)')
       }
 
       if (data.code === 'link_on_production') {
-        throw new CommandError(`Please use a dev workspace to link apps. Create one with (${chalk.blue('vtex use <workspace> -rp')}) to be able to link apps`)
+        throw new CommandError(`Please use a dev workspace to test apps. Create one with (${chalk.blue('vtex use <workspace> -rp')}) to be able to test apps`)
       }
     }
     throw e
   }
-
-  createInterface({ input: process.stdin, output: process.stdout })
-    .on('SIGINT', () => {
-      if (unlistenBuild) {
-        unlistenBuild()
-      }
-      log.info('Your app is still in development mode.')
-      log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
-      process.exit()
-    })
 }

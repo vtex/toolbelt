@@ -1,4 +1,3 @@
-import { AxiosInstance } from 'axios'
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
 import { diffArrays } from 'diff'
@@ -151,16 +150,6 @@ export const runYarnIfPathExists = (relativePath: string) => {
       log.error(`Failed to run yarn in ${chalk.green(relativePath)}`)
       throw e
     }
-  }
-}
-
-export const getPinnedDependencies = async (builderHttp: AxiosInstance) => {
-  try {
-    const result = await builderHttp.get('/_v/builder/0/pinneddeps')
-    return result.data
-  } catch (e) {
-    log.debug('Failed to connect to builder-hub to get pinned deps')
-    throw e
   }
 }
 
