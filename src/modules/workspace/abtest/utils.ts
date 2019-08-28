@@ -11,6 +11,7 @@ import * as env from '../../../env'
 import { CommandError } from '../../../errors'
 import envTimeout from '../../../timeout'
 import userAgent from '../../../user-agent'
+import { dummyLogger } from '../../../clients/dummyLogger';
 
 const account = getAccount()
 
@@ -26,6 +27,7 @@ const contextForMaster = {
   account,
   authToken: getToken(),
   production: false,
+  product: '',
   region: env.region(),
   route: {
     id: '',
@@ -35,6 +37,7 @@ const contextForMaster = {
   workspace: 'master',
   requestId: '',
   operationId: '',
+  logger: dummyLogger
 }
 
 const options = {

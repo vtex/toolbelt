@@ -4,6 +4,8 @@ import * as env from '../../env'
 import userAgent from '../../user-agent'
 import { matchedDepsDiffTable } from '../utils'
 import { getCleanDependencies } from './utils'
+import { dummyLogger } from '../../clients/dummyLogger'
+
 
 const context = (workspace: string) => {
   // Returns default context with variable workspace name.
@@ -11,6 +13,7 @@ const context = (workspace: string) => {
     account: getAccount(),
     authToken: getToken(),
     production: false,
+    product: '',
     region: env.region(),
     route: {
       id: '',
@@ -18,6 +21,9 @@ const context = (workspace: string) => {
     },
     userAgent,
     workspace,
+    requestId: '',
+    operationId: '',
+    logger: dummyLogger
   }
 }
 

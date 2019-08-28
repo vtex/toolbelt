@@ -7,6 +7,7 @@ import { writeFile } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import * as R from 'ramda'
 
+import { dummyLogger } from '../clients/dummyLogger'
 import { currentContext, getAccount, getToken, getWorkspace } from '../conf'
 import * as conf from '../conf'
 import * as env from '../env'
@@ -45,6 +46,7 @@ export const getIOContext = () => ({
   account: getAccount(),
   authToken: getToken(),
   production: false,
+  product: '',
   region: env.region(),
   route: {
     id: '',
@@ -54,6 +56,7 @@ export const getIOContext = () => ({
   workspace: getWorkspace(),
   requestId: '',
   operationId: '',
+  logger: dummyLogger,
 })
 
 const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
