@@ -1,6 +1,6 @@
 import * as R from 'ramda'
+import { createClients } from '../../clients'
 import log from '../../logger'
-import { BuilderHubDatasource } from './BuilderHubDatasource'
 import { tsconfigEditor } from './utils'
 
 const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: string) => {
@@ -12,7 +12,9 @@ const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: str
 }
 
 export const setupTSConfig = async (manifest: Manifest) => {
-  const tsconfigsFromBuilder = await BuilderHubDatasource.builderHubTsConfig()
+  const { builder: builderClient } = createClients({}, { retries: 2 })
+  log.info(`Fetching BuilderHub tsconfig`)
+  const tsconfigsFromBuilder = await builderClient.builderHubTsConfig()
   const buildersWithBaseTSConfig = R.compose(
     R.reject(R.isNil),
     R.mapObjIndexed(R.curry(selectTSConfig)(tsconfigsFromBuilder)),
@@ -32,6 +34,7 @@ export const setupTSConfig = async (manifest: Manifest) => {
         }
       }
       const newTSConfig = R.mergeDeepRight(currentTSConfig, baseTSConfig)
+      log.info(`Merging BuilderHub ${builder} tsconfig with local ${builder} tsconfig`)
       tsconfigEditor.write(builder, newTSConfig)
     } catch (e) {
       log.error(e)

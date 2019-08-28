@@ -1,20 +1,23 @@
-export const mockBuilderHubDatasource = () => {
-  jest.doMock('../../../modules/setup/BuilderHubDatasource', () => {
+export const mockCreateClients = () => {
+  const builder = {
+    builderHubTsConfig: jest.fn(),
+    typingsInfo: jest.fn(),
+  }
+
+  jest.doMock('../../../clients/index', () => {
     return {
-      BuilderHubDatasource: {
-        builderHubTsConfig: jest.fn(),
-        typingsInfo: jest.fn(),
-      },
+      createClients: jest.fn().mockReturnValue({
+        builder,
+      }),
     }
   })
-  const { BuilderHubDatasource } = jest.requireMock('../../../modules/setup/BuilderHubDatasource')
 
   let builderHubTypings = {}
-  BuilderHubDatasource.typingsInfo.mockImplementation(() => Promise.resolve(builderHubTypings))
+  builder.typingsInfo.mockImplementation(() => Promise.resolve(builderHubTypings))
   const setBuilderHubTypings = (newTypings: any) => (builderHubTypings = newTypings)
 
   let builderHubTsConfig = {}
-  BuilderHubDatasource.builderHubTsConfig.mockImplementation(() => Promise.resolve(builderHubTsConfig))
+  builder.builderHubTsConfig.mockImplementation(() => Promise.resolve(builderHubTsConfig))
   const setBuilderHubTsConfig = (newTSConfig: any) => (builderHubTsConfig = newTSConfig)
 
   return { setBuilderHubTypings, setBuilderHubTsConfig }
