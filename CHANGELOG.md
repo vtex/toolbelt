@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.68.0] - 2019-08-28
+
 - Add revenue and last 24h revenue to AB test status.
 
 ## [2.67.2] - 2019-08-28
