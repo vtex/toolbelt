@@ -11,5 +11,6 @@ test('list files in a directory ignoring everything except the folders and the m
     // 'empty' is an empty file and therefore is ignored.
   ]
   const files = await listLocalFiles(root)
-  expect(files).toStrictEqual(expectedFiles)
+  expect(files.length).toEqual(expectedFiles.length)
+  expect(files).toEqual(expect.arrayContaining(expectedFiles))
 })
