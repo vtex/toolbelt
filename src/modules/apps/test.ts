@@ -20,13 +20,13 @@ const root = getAppRoot()
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 3
 const buildersToRunLocalYarn = ['react', 'node']
-const RETRY_OPTS_INITIAL_LINK = {
+const RETRY_OPTS_TEST = {
   retries: 2,
   minTimeout: 1000,
   factor: 2,
 }
 
-const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<void> => {
+const performTest = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<void> => {
   const linkConfig = await createLinkConfig(root)
 
   extraData.linkConfig = linkConfig
@@ -82,7 +82,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
       throw err
     }
   }
-  await retry(testApp, RETRY_OPTS_INITIAL_LINK)
+  await retry(testApp, RETRY_OPTS_TEST)
 }
 
 export default async (options) => {
@@ -121,7 +121,7 @@ export default async (options) => {
 
   const extraData = { linkConfig: null }
   try {
-    const buildTrigger = performInitialLink.bind(this, appId, builder, extraData, unsafe)
+    const buildTrigger = performTest.bind(this, appId, builder, extraData, unsafe)
     const [subject] = appId.split('@')
     await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
   } catch (e) {

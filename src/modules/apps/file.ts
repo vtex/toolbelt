@@ -3,7 +3,7 @@ import * as chokidar from 'chokidar'
 import { createReadStream, lstat, readdir, readFileSync, realpath, Stats } from 'fs-extra'
 import * as glob from 'globby'
 import { dirname, join, resolve as resolvePath, sep } from 'path'
-import { filter, map, partition, toPairs, unnest, values } from 'ramda'
+import { filter, map, partition, reject, toPairs, unnest, values, F } from 'ramda'
 
 import { Readable } from 'stream'
 import log from '../../logger'
@@ -135,20 +135,14 @@ export function getLinkedDepsDirs(linkConfig: LinkConfig): string[] {
   return values(linkConfig.metadata)
 }
 
+const isTestOrMockPath = (p: string) => /.*(test|mock).*/.test(p.toLowerCase())
+
 export const getIgnoredPaths = (root: string, test: boolean = false): string[] => {
   try {
-    let filesToIgnore = readFileSync(join(root, '.vtexignore')).toString().split('\n')
+    const filesToIgnore = readFileSync(join(root, '.vtexignore')).toString().split('\n')
       .map(p => p.trim()).filter(p => p !== '')
       .map(p => p.replace(/\/$/, '/**')).concat(defaultIgnored)
-    if (test) {
-      for(let i = 0; i < filesToIgnore.length; i++) {
-        if (/.*(test|mock).*/.test(filesToIgnore[i].toLowerCase())) {
-          filesToIgnore.splice(i,1)
-          i--
-        }
-      }
-    }    
-    return filesToIgnore
+    return test ? reject(isTestOrMockPath, filesToIgnore) : filesToIgnore
   } catch (e) {
     return defaultIgnored
   }
