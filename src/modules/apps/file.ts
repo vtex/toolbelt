@@ -3,7 +3,7 @@ import * as chokidar from 'chokidar'
 import { createReadStream, lstat, readdir, readFileSync, realpath, Stats } from 'fs-extra'
 import * as glob from 'globby'
 import { dirname, join, resolve as resolvePath, sep } from 'path'
-import { filter, map, partition, reject, toPairs, unnest, values, F } from 'ramda'
+import { filter, map, partition, reject, toPairs, unnest, values } from 'ramda'
 
 import { Readable } from 'stream'
 import log from '../../logger'
@@ -135,7 +135,7 @@ export function getLinkedDepsDirs(linkConfig: LinkConfig): string[] {
   return values(linkConfig.metadata)
 }
 
-const isTestOrMockPath = (p: string) => /.*(test|mock).*/.test(p.toLowerCase())
+const isTestOrMockPath = (p: string) => /.*(test|mock|snapshot).*/.test(p.toLowerCase())
 
 export const getIgnoredPaths = (root: string, test: boolean = false): string[] => {
   try {
