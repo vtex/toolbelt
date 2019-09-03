@@ -6,6 +6,7 @@ import userAgent from '../user-agent'
 import Billing from './billingClient'
 import Builder from './Builder'
 import { dummyLogger } from './dummyLogger'
+import { Rewriter } from './rewriter'
 
 const DEFAULT_TIMEOUT = 15000
 const context = {
@@ -43,11 +44,12 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
     builder: new Builder(mergedContext, mergedOptions),
     logger: new Logger(mergedContext, mergedOptions),
     registry: new Registry(mergedContext, mergedOptions),
+    rewriter: new Rewriter(mergedContext, mergedOptions),
     events: new Events(mergedContext, mergedOptions),
   }
 }
 
-const [apps, router, workspaces, logger, events, billing] = getToken()
+const [apps, router, workspaces, logger, events, billing, rewriter] = getToken()
   ? [
     new Apps(context, options),
     new Router(context, options),
@@ -55,6 +57,7 @@ const [apps, router, workspaces, logger, events, billing] = getToken()
     new Logger(context),
     new Events(context),
     new Billing(context, options),
+    new Rewriter(context, options),
   ]
   : [
     interceptor<Apps>('apps'),
@@ -63,6 +66,7 @@ const [apps, router, workspaces, logger, events, billing] = getToken()
     interceptor<Logger>('logger'),
     interceptor<Events>('events'),
     interceptor<Billing>('billing'),
+    interceptor<Rewriter>('rewriter'),
   ]
 
 export { 
@@ -73,6 +77,7 @@ export {
   events, 
   createClients, 
   billing,
+  rewriter
 }
 
 

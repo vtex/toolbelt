@@ -434,6 +434,23 @@ export default {
     description: 'Prints base URL for current account, workspace and environment',
     handler: './url',
   },
+  redirects: {
+    import: {
+      description: 'Import redirects for the current account and workspace',
+      handler: './rewriter/import',
+      requiredArgs: 'csvPath',
+    },
+    export: {
+    description: 'Export all redirects in the current account and workspace',
+    handler: './rewriter/export',
+    requiredArgs: 'csvPath',
+    },
+    delete: {
+      description: 'Delete redirects in the current account and workspace',
+      handler: './rewriter/delete',
+      requiredArgs: 'csvPath',
+    },
+  },
   'edition': {
     description: 'Get edition of the current account',
     handler: './sponsor/getEdition',
