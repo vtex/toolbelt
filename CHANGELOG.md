@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Refactor
+
+- `vtex setup` command
+
 ## [2.68.1] - 2019-08-29
 
 - Fix test
