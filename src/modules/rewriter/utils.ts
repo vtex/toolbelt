@@ -1,20 +1,19 @@
 import * as Ajv from 'ajv'
 import * as  csv from 'csvtojson'
-import { readFile, readJson, writeJsonSync } from 'fs-extra'
+import { writeJsonSync } from 'fs-extra'
 import * as jsonSplit from 'json-array-split'
 import * as ProgressBar from 'progress'
-import { keys, length, map, match } from 'ramda'
+import { keys, map, match } from 'ramda'
 
+import { rewriter } from '../../clients'
+import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
 
-const MAX_ENTRIES_PER_REQUEST = 10
+export const MAX_ENTRIES_PER_REQUEST = 10
 export const METAINFO_FILE = '.vtex_redirects_metainfo.json'
 export const MAX_RETRIES = 10
-export const PROGRESS_DEFAULT_CONFIG = {
-  complete: '=',
-  incomplete: ' ',
-  width: '50',
-}
+export const accountAndWorkspace = [getAccount(), getWorkspace()]
+
 
 export const progressString = (message: string) => `${message} [:bar] :current/:total :percent`
 
@@ -27,10 +26,12 @@ export const readCSV = async (path: string) =>
 export const splitJsonArray = (data: any) => jsonSplit(data, MAX_ENTRIES_PER_REQUEST)
 
 export const progressBar = (message: string, curr: number, total: number) =>
-  new ProgressBar(progressString('Deleting routes...'), {
-    ...PROGRESS_DEFAULT_CONFIG,
-    curr: counter,
-    total: length(separatedPaths),
+  new ProgressBar(`${message} [:bar] :current/:total :percent`, {
+    complete: '=',
+    incomplete: ' ',
+    width: '50',
+    curr,
+    total,
     })
 
 const parseErrorDataPath = (dataPath: string) => {
@@ -66,3 +67,19 @@ export const saveMetainfo = (metainfo: any, metainfoType: string, fileHash: stri
   writeJsonSync(METAINFO_FILE, metainfo, {spaces: 2})
 }
 
+export const deleteMetainfo = (metainfo: any, metainfoType: string, fileHash: string) => {
+  if (!metainfo[metainfoType]) {
+    return
+  }
+  delete metainfo[metainfoType][fileHash]
+  writeJsonSync(METAINFO_FILE, metainfo, {spaces: 2})
+}
+
+export const ensureIndexCreation = async () => {
+  const index = await rewriter.routesIndex()
+  if (index === null) {
+    await rewriter.createRoutesIndex()
+    console.error('Error getting redirects index. Please try again in some seconds..')
+    process.exit()
+  }
+}

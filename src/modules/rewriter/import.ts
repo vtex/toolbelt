@@ -1,22 +1,18 @@
-import * as Ajv from 'ajv'
 import { createHash } from 'crypto'
-import * as  csv from 'csvtojson'
 import { readFile, readJson } from 'fs-extra'
-import * as ProgressBar from 'progress'
-import { keys, length, map, match } from 'ramda'
+import { length }  from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
 import { RedirectInput } from '../../clients/rewriter'
-import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
-import { MAX_RETRIES, METAINFO_FILE, saveMetainfo, sleep, validateInput, readCSV, PROGRESS_DEFAULT_CONFIG, progressString, splitJsonArray } from './utils'
+import { isVerbose } from '../../utils'
+import { accountAndWorkspace, deleteMetainfo, ensureIndexCreation, MAX_RETRIES, METAINFO_FILE, progressBar, readCSV, saveMetainfo, sleep, splitJsonArray, validateInput } from './utils'
 
-const account = getAccount()
-const workspace = getWorkspace()
+const IMPORTS = 'imports'
+const [account, workspace] = accountAndWorkspace
 
-const inputSchema = {
-  type: 'array',
+const inputSchema = { type: 'array',
   items: {
     type: 'object',
     properties: {
@@ -38,24 +34,20 @@ const inputSchema = {
 }
 
 const handleImport = async (csvPath: string) => {
-  const fileHash = await readFile(csvPath).then(data => createHash('md5').update(`${account}${workspace}${data}`).digest('hex'))
+  const fileHash = await readFile(csvPath).then(data => createHash('md5').update(`${account}_${workspace}_${data}`).digest('hex'))
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
-  const importMetainfo = metainfo.import || {}
-  let counter = importMetainfo[fileHash] || 0
+  const importMetainfo = metainfo[IMPORTS] || {}
+  let counter = importMetainfo[fileHash] ? importMetainfo[fileHash].counter : 0
   const routes = await readCSV(csvPath)
   validateInput(inputSchema, routes)
 
   const routesList = splitJsonArray(routes)
 
-  const bar = new ProgressBar(progressString('Importing routes...'), {
-    ...PROGRESS_DEFAULT_CONFIG,
-    curr: counter,
-    total: length(routesList),
-    })
+  const bar = progressBar('Importing routes...', counter, length(routesList))
 
   const listener = createInterface({ input: process.stdin, output: process.stdout })
     .on('SIGINT', () => {
-      saveMetainfo(metainfo, 'imports', fileHash, counter)
+      saveMetainfo(metainfo, IMPORTS, fileHash, counter)
       console.log('\n')
       process.exit()
     })
@@ -66,7 +58,7 @@ const handleImport = async (csvPath: string) => {
       try {
         await rewriter.importRedirects(redirects)
       } catch (e) {
-        await saveMetainfo(importMetainfo, 'imports', fileHash, counter)
+        await saveMetainfo(metainfo, IMPORTS, fileHash, counter)
         listener.close()
         throw e
       }
@@ -74,17 +66,10 @@ const handleImport = async (csvPath: string) => {
       bar.tick()
     }
   )
-  console.log('\nFinished!')
-  process.exit()
-}
 
-const ensureIndexCreation = async () => {
-  const index = await rewriter.routesIndex()
-  if (index === null) {
-    await rewriter.createRoutesIndex()
-    console.error('Error getting redirects index. Please try again in some seconds..')
-    process.exit()
-  }
+  log.info('\nFinished!\n')
+  listener.close()
+  deleteMetainfo(metainfo, IMPORTS, fileHash)
 }
 
 let retryCount = 0
@@ -93,13 +78,17 @@ export default async (csvPath: string) => {
   await ensureIndexCreation()
   try {
     await handleImport(csvPath)
+    process.exit()
   } catch (e) {
-    console.error('\nError handling import')
+    log.error('\nError handling import')
     if (retryCount >= MAX_RETRIES) {
       throw e
     }
-    console.error('Retrying in 10 seconds...')
-    console.log('Press CTRL+C to abort')
+    if (isVerbose) {
+      log.error(e)
+    }
+    log.error('Retrying in 10 seconds...')
+    log.info('Press CTRL+C to abort')
     await sleep(10000)
     retryCount++
     await module.exports.default(csvPath)

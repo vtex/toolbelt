@@ -30,7 +30,7 @@ export enum RedirectTypes {
 
 export class Rewriter extends AppGraphQLClient {
   constructor(context: IOContext, options: InstanceOptions) {
-    super('vtex.rewriter', context, options)
+    super('vtex.rewriter', context, {...options, headers: {'cache-control': 'no-cache'}})
   }
 
   public createRoutesIndex = (): Promise<boolean> =>

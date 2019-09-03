@@ -1,18 +1,15 @@
-import * as Ajv from 'ajv'
 import { createHash } from 'crypto'
-import * as  csv from 'csvtojson'
 import { readFile, readJson } from 'fs-extra'
-import * as ProgressBar from 'progress'
-import { keys, length, map, match } from 'ramda'
+import { length, map } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
-import { MAX_ENTRIES_PER_REQUEST, MAX_RETRIES, METAINFO_FILE, saveMetainfo, sleep, validateInput, readCSV, PROGRESS_DEFAULT_CONFIG, progressString, splitJsonArray } from './utils'
+import { isVerbose } from '../../utils'
+import { accountAndWorkspace, deleteMetainfo, ensureIndexCreation, MAX_RETRIES, METAINFO_FILE, progressBar, readCSV, saveMetainfo, sleep, splitJsonArray, validateInput } from './utils'
 
-const account = getAccount()
-const workspace = getWorkspace()
+const DELETES = 'deletes'
+const [account, workspace] = accountAndWorkspace
 
 const inputSchema = {
   type: 'array',
@@ -27,10 +24,10 @@ const inputSchema = {
 }
 
 const handleDelete = async (csvPath: string) => {
-  const fileHash = await readFile(csvPath).then(data => createHash('md5').update(`${account}${workspace}${data}`).digest('hex'))
+  const fileHash = await readFile(csvPath).then(data => createHash('md5').update(`${account}_${workspace}_${data}`).digest('hex'))
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
-  const deleteMetainfo = metainfo.deletes || {}
-  let counter = deleteMetainfo[fileHash] || 0
+  const deletesMetainfo = metainfo[DELETES] || {}
+  let counter = deletesMetainfo[fileHash] ? deletesMetainfo[fileHash].counter : 0
   const routes = await readCSV(csvPath)
   validateInput(inputSchema, routes)
 
@@ -39,19 +36,13 @@ const handleDelete = async (csvPath: string) => {
     routes
   )
 
-  console.log(JSON.stringify(allPaths))
   const separatedPaths = splitJsonArray(allPaths)
-  console.log(JSON.stringify(separatedPaths))
 
-  const bar = new ProgressBar(progressString('Deleting routes...'), {
-    ...PROGRESS_DEFAULT_CONFIG,
-    curr: counter,
-    total: length(separatedPaths),
-    })
+  const bar = progressBar('Deleting routes...', counter, length(separatedPaths))
 
   const listener = createInterface({ input: process.stdin, output: process.stdout })
     .on('SIGINT', () => {
-      saveMetainfo(metainfo, 'deletes', fileHash, counter)
+      saveMetainfo(metainfo, DELETES, fileHash, counter)
       console.log('\n')
       process.exit()
     })
@@ -70,18 +61,11 @@ const handleDelete = async (csvPath: string) => {
       bar.tick()
     }
   )
-  console.log('\nFinished!')
-  process.exit()
+  log.info('\nFinished!\n')
+  listener.close()
+  deleteMetainfo(metainfo, DELETES, fileHash)
 }
 
-const ensureIndexCreation = async () => {
-  const index = await rewriter.routesIndex()
-  if (index === null) {
-    await rewriter.createRoutesIndex()
-    console.error('Error getting redirects index. Please try again in some seconds..')
-    process.exit()
-  }
-}
 
 let retryCount = 0
 export default async (csvPath: string) => {
@@ -90,12 +74,15 @@ export default async (csvPath: string) => {
   try {
     await handleDelete(csvPath)
   } catch (e) {
-    console.error('\nError handling delete')
+    log.error('\nError handling delete')
     if (retryCount >= MAX_RETRIES) {
       throw e
     }
-    console.error('Retrying in 10 seconds...')
-    console.log('Press CTRL+C to abort')
+    if (isVerbose) {
+      log.error(e)
+    }
+    log.error('Retrying in 10 seconds...')
+    log.info('Press CTRL+C to abort')
     await sleep(10000)
     retryCount++
     await module.exports.default(csvPath)
