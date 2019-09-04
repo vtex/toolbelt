@@ -1,8 +1,8 @@
 import { Builder } from '@vtex/api'
-import * as retry from 'async-retry'
+import retry from 'async-retry'
 import { map, reduce } from 'ramda'
 
-import * as moment from 'moment'
+import moment from 'moment'
 import { getStickyHost, hasStickyHost, saveStickyHost } from './conf'
 import { BuilderHubTimeoutError } from './errors'
 import log from './logger'

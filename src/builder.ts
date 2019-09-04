@@ -1,4 +1,4 @@
-import * as archiver from 'archiver'
+import archiver from 'archiver'
 import axios, { AxiosInstance } from 'axios'
 import { publicEndpoint } from './env'
 

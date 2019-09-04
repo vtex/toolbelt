@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import * as moment from 'moment'
+import moment from 'moment'
 import { changesToString } from '../apps'
 
 test('creates a log given a set of changes', () => {

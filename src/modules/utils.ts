@@ -5,7 +5,7 @@ import { diffArrays } from 'diff'
 import { existsSync, pathExists, readFile } from 'fs-extra'
 import { writeFile } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
-import * as R from 'ramda'
+import R from 'ramda'
 
 import { dummyLogger } from '../clients/dummyLogger'
 import { currentContext, getAccount, getToken, getWorkspace } from '../conf'

@@ -1,4 +1,4 @@
-import * as Confirm from 'prompt-confirm'
+import Confirm from 'prompt-confirm'
 
 // Prompt definitions that are used in many modules of this project.
 

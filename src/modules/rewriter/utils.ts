@@ -1,8 +1,8 @@
-import * as Ajv from 'ajv'
-import * as csv from 'csvtojson'
+import Ajv from 'ajv'
+import csv from 'csvtojson'
 import { writeJsonSync } from 'fs-extra'
-import * as jsonSplit from 'json-array-split'
-import * as ProgressBar from 'progress'
+import jsonSplit from 'json-array-split'
+import ProgressBar from 'progress'
 import { keys, map, match } from 'ramda'
 
 import { rewriter } from '../../clients'

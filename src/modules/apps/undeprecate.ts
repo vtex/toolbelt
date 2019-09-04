@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { AxiosResponse } from 'axios'
-import * as Bluebird from 'bluebird'
+import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { head, prepend, tail } from 'ramda'
 import { getAccount, getToken, getWorkspace, Region } from '../../conf'

@@ -1,8 +1,8 @@
-import * as Bluebird from 'bluebird'
+import Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as ora from 'ora'
+import ora from 'ora'
 import { curry, path } from 'ramda'
-import * as semver from 'semver'
+import semver from 'semver'
 
 import { router } from '../../clients'
 import { Region } from '../../conf'

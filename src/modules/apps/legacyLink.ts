@@ -1,7 +1,7 @@
 import axios from 'axios'
-import * as Bluebird from 'bluebird'
-import * as debounce from 'debounce'
-import * as moment from 'moment'
+import Bluebird from 'bluebird'
+import debounce from 'debounce'
+import moment from 'moment'
 import { prop, uniqBy } from 'ramda'
 import { createInterface } from 'readline'
 

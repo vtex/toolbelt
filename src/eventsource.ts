@@ -1,4 +1,4 @@
-import * as EventSource from 'eventsource'
+import EventSource from 'eventsource'
 import { forEach } from 'ramda'
 
 // Colossus ping is set at 45s

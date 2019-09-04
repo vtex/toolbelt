@@ -1,8 +1,8 @@
-import * as Bluebird from 'bluebird'
+import Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as enquirer from 'enquirer'
+import enquirer from 'enquirer'
 import { outputJson, readJson } from 'fs-extra'
-import * as moment from 'moment'
+import moment from 'moment'
 import { join } from 'path'
 import { keys, merge, prop, reject, test } from 'ramda'
 

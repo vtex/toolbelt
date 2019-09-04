@@ -1,6 +1,6 @@
 import { help } from 'findhelp'
 
-import * as pkg from '../../package.json'
+import pkg from '../../package.json'
 import { greeting } from '../greeting'
 import tree from './tree'
 

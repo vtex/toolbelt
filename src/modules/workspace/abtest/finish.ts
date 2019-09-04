@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import * as enquirer from 'enquirer'
+import enquirer from 'enquirer'
 import { map, prop } from 'ramda'
 
 import { getAccount } from '../../../conf'

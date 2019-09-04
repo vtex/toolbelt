@@ -1,4 +1,4 @@
-import * as winston from 'winston'
+import winston from 'winston'
 
 // TODO: Configure transport to send errors to Splunk
 winston.cli()

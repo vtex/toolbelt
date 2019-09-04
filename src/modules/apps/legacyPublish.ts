@@ -1,6 +1,6 @@
-import * as archiver from 'archiver'
+import archiver from 'archiver'
 import axios, { AxiosInstance } from 'axios'
-import * as ora from 'ora'
+import ora from 'ora'
 import { map } from 'ramda'
 
 import { publicEndpoint } from '../../env'

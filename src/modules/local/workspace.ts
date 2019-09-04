@@ -1,4 +1,4 @@
-import * as clipboardy from 'clipboardy'
+import clipboardy from 'clipboardy'
 import { getWorkspace } from '../../conf'
 
 export default () => {

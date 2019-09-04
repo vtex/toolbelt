@@ -1,6 +1,6 @@
 import { outputJsonSync, readJsonSync } from 'fs-extra'
 import { getAppRoot } from '../../manifest'
-import * as path from 'path'
+import path from 'path'
 
 type Files = 'tsconfig' | 'esLintrc' | 'packageJson'
 

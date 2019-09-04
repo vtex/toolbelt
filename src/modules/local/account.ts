@@ -1,4 +1,4 @@
-import * as clipboardy from 'clipboardy'
+import clipboardy from 'clipboardy'
 import { getAccount } from '../../conf'
 
 export default () => {

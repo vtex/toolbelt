@@ -1,7 +1,7 @@
-import * as Bluebird from 'bluebird'
-import * as chokidar from 'chokidar'
+import Bluebird from 'bluebird'
+import chokidar from 'chokidar'
 import { createReadStream, lstat, readdir, readFileSync, realpath, Stats } from 'fs-extra'
-import * as glob from 'globby'
+import glob from 'globby'
 import { dirname, join, resolve as resolvePath, sep } from 'path'
 import { filter, map, partition, toPairs, unnest, values } from 'ramda'
 

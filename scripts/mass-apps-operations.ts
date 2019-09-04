@@ -1,10 +1,10 @@
 import { Apps, Workspaces } from '@vtex/api'
-import * as bluebird from 'bluebird'
+import bluebird from 'bluebird'
 import c from 'chalk'
 import { TaskQueue } from 'cwait'
 import { readFileSync, readJSONSync, writeJSON } from 'fs-extra'
 import { prompt } from 'inquirer'
-import * as minimist from 'minimist'
+import minimist from 'minimist'
 import { join } from 'path'
 
 global.Promise = bluebird
