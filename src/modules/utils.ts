@@ -164,7 +164,7 @@ export const getPinnedDependencies = async (builderHttp: AxiosInstance) => {
 }
 
 const getEntryMapFromObject = (obj: object, field: string) => {
-  if (obj.hasOwnProperty(field)) {
+  if (Object.prototype.hasOwnProperty.call(obj, field)) {
     return new Map<string, string>(Object.entries(obj[field]))
   } else {
     return new Map<string, string>()
@@ -189,10 +189,10 @@ export const fixPinnedDependencies = R.curry(async (pinnedDeps: Map<string, stri
   const newPackageJSON = R.reduce(
     (obj, dep) => {
       log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}`)
-      if (obj.hasOwnProperty('dependencies') && obj.dependencies[dep]) {
+      if (Object.prototype.hasOwnProperty.call(obj, 'dependencies') && obj.dependencies[dep]) {
         obj.dependencies[dep] = pinnedDeps.get(dep)
       }
-      if (obj.hasOwnProperty('devDependencies') && obj.devDependencies[dep]) {
+      if (Object.prototype.hasOwnProperty.call(obj, 'devDependencies') && obj.devDependencies[dep]) {
         obj.devDependencies[dep] = pinnedDeps.get(dep)
       }
       return obj
