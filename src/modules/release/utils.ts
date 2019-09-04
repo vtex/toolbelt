@@ -12,12 +12,11 @@ import {
 } from 'fs-extra'
 import { safeLoad } from 'js-yaml'
 import { resolve } from 'path'
-import { find, path }  from 'ramda'
+import { find, path } from 'ramda'
 import * as semver from 'semver'
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { promptConfirm } from '../prompts'
-
 
 const root = getAppRoot()
 const versionFile = resolve(root, 'manifest.json')
@@ -27,7 +26,7 @@ const unreleased = '## [Unreleased]'
 const readVersionFile = () => {
   try {
     return readJsonSync(versionFile)
-  } catch(e) {
+  } catch (e) {
     if (e.code === 'ENOENT') {
       log.error(`Version file not found: ${versionFile}.`)
     }
@@ -36,7 +35,7 @@ const readVersionFile = () => {
 }
 
 const writeVersionFile = (newManifest: any) => {
-  writeJsonSync(versionFile, newManifest, {spaces: 2})
+  writeJsonSync(versionFile, newManifest, { spaces: 2 })
 }
 
 export const readVersion = () => {
@@ -47,11 +46,7 @@ export const readVersion = () => {
   return version
 }
 
-export const incrementVersion = (
-  rawOldVersion: string,
-  releaseType: string,
-  tagName: string
-) => {
+export const incrementVersion = (rawOldVersion: string, releaseType: string, tagName: string) => {
   const oldVersion = semver.valid(rawOldVersion, true)
   if (tagName !== 'stable' && releaseType !== 'prerelease') {
     return semver.inc(oldVersion, `pre${releaseType}`, tagName)
@@ -72,7 +67,7 @@ const runCommand = (
 ) => {
   let output
   try {
-    output = execSync(cmd, {stdio: hideOutput ? 'pipe' : 'inherit', cwd: root})
+    output = execSync(cmd, { stdio: hideOutput ? 'pipe' : 'inherit', cwd: root })
     if (!hideSuccessMessage) {
       log.info(successMessage + chalk.blue(` >  ${cmd}`))
     }
@@ -83,13 +78,7 @@ const runCommand = (
       throw e
     }
     log.info(`Retrying...`)
-    return runCommand(
-      cmd,
-      successMessage,
-      hideOutput,
-      retries - 1,
-      hideSuccessMessage
-    )
+    return runCommand(cmd, successMessage, hideOutput, retries - 1, hideSuccessMessage)
   }
 }
 
@@ -104,22 +93,16 @@ export const commit = (tagName: string) => {
   if (existsSync(changelogPath)) {
     successMessage = `Files ${versionFile} ${changelogPath} commited`
   }
-  return runCommand(
-    `git commit -m "${commitMessage}"`,
-    successMessage,
-    true
-  )
+  return runCommand(`git commit -m "${commitMessage}"`, successMessage, true)
 }
 
 export const tag = (tagName: string) => {
   const tagMessage = `Release ${tagName}`
-  return runCommand(`git tag ${tagName} -m "${tagMessage}"`,
-    `Tag created: ${tagName}`, true)
+  return runCommand(`git tag ${tagName} -m "${tagMessage}"`, `Tag created: ${tagName}`, true)
 }
 
 export const push = (tagName: string) => {
-    return runCommand(`git push && git push origin ${tagName}`,
-      'Pushed commit and tags', true, 2)
+  return runCommand(`git push && git push origin ${tagName}`, 'Pushed commit and tags', true, 2)
 }
 
 export const preRelease = () => {
@@ -220,16 +203,16 @@ export const updateChangelog = (changelogVersion: any) => {
       throw new Error(`Error reading file: ${e}`)
     }
     if (data.indexOf(unreleased) < 0) {
-      log.info(chalk.red.bold(
-        `I can\'t update your CHANGELOG. :( \n
+      log.info(
+        chalk.red.bold(
+          `I can\'t update your CHANGELOG. :( \n
         Make your CHANGELOG great again and follow the CHANGELOG format
         http://keepachangelog.com/en/1.0.0/`
-      ))
+        )
+      )
     } else {
       const position = data.indexOf(unreleased) + unreleased.length
-      const bufferedText = Buffer.from(
-        `${changelogVersion}${data.substring(position)}`
-      )
+      const bufferedText = Buffer.from(`${changelogVersion}${data.substring(position)}`)
       const file = openSync(changelogPath, 'r+')
       try {
         writeSync(file, bufferedText, 0, bufferedText.length, position)

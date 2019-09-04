@@ -63,19 +63,19 @@ export const validateAppManifest = (manifest: any) => {
   const nameRegex = new RegExp(`^${namePattern}$`)
   const versionRegex = new RegExp(`^${versionPattern}$`)
   if (manifest.name === undefined) {
-    throw new CommandError('Field \'name\' should be set in manifest.json file')
+    throw new CommandError("Field 'name' should be set in manifest.json file")
   }
   if (manifest.version === undefined) {
-    throw new CommandError('Field \'version\' should be set in manifest.json file')
+    throw new CommandError("Field 'version' should be set in manifest.json file")
   }
   if (manifest.vendor === undefined) {
-    throw new CommandError('Field \'vendor\' should be set in manifest.json file')
+    throw new CommandError("Field 'vendor' should be set in manifest.json file")
   }
   if (!nameRegex.test(manifest.name)) {
-    throw new CommandError('Field \'name\' may contain only letters, numbers, underscores and hyphens')
+    throw new CommandError("Field 'name' may contain only letters, numbers, underscores and hyphens")
   }
   if (!vendorRegex.test(manifest.vendor)) {
-    throw new CommandError('Field \'vendor\' may contain only letters, numbers, underscores and hyphens')
+    throw new CommandError("Field 'vendor' may contain only letters, numbers, underscores and hyphens")
   }
   if (!versionRegex.test(manifest.version)) {
     throw new CommandError('The version format is invalid')
@@ -93,11 +93,13 @@ export const validateApp = (app: string, skipVersion: boolean = false) => {
   return app
 }
 
-export const getManifest = memoize(async (): Promise<Manifest> => {
-  const manifest = parseManifest(await readFileUtf(getManifestPath()))
-  validateAppManifest(manifest)
-  return manifest
-})
+export const getManifest = memoize(
+  async (): Promise<Manifest> => {
+    const manifest = parseManifest(await readFileUtf(getManifestPath()))
+    validateAppManifest(manifest)
+    return manifest
+  }
+)
 
 export const writeManifestSchema = async () => {
   const content = await readFileUtf(getManifestPath())

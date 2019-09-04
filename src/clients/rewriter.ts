@@ -30,26 +30,33 @@ export enum RedirectTypes {
 
 export class Rewriter extends AppGraphQLClient {
   constructor(context: IOContext, options: InstanceOptions) {
-    super('vtex.rewriter', context, {...options, headers: {'cache-control': 'no-cache'}})
+    super('vtex.rewriter', context, { ...options, headers: { 'cache-control': 'no-cache' } })
   }
 
   public createRoutesIndex = (): Promise<boolean> =>
-    this.graphql.mutate<boolean, {}>({
-      mutate: `
+    this.graphql
+      .mutate<boolean, {}>(
+        {
+          mutate: `
       mutation CreateRoutesIndex {
         redirect {
           createIndex
         }
       }
       `,
-      variables: {},
-    }, {
-      metric: 'rewriter-create-redirects-index',
-    }).then(path(['data', 'redirect', 'createIndex'])) as Promise<boolean>
+          variables: {},
+        },
+        {
+          metric: 'rewriter-create-redirects-index',
+        }
+      )
+      .then(path(['data', 'redirect', 'createIndex'])) as Promise<boolean>
 
   public routesIndex = (): Promise<RouteIndexEntry[]> =>
-    this.graphql.query<string[], {}>({
-      query: `
+    this.graphql
+      .query<string[], {}>(
+        {
+          query: `
       query RoutesIndex {
         redirect {
           index {
@@ -59,14 +66,19 @@ export class Rewriter extends AppGraphQLClient {
         }
       }
       `,
-      variables: {},
-    }, {
-      metric: 'rewriter-get-redirects-index',
-    }).then(path(['data', 'redirect', 'index'])) as Promise<RouteIndexEntry[]>
+          variables: {},
+        },
+        {
+          metric: 'rewriter-get-redirects-index',
+        }
+      )
+      .then(path(['data', 'redirect', 'index'])) as Promise<RouteIndexEntry[]>
 
   public exportRedirects = (from: number, to: number): Promise<Redirect[]> =>
-    this.graphql.query<Redirect[], {from: number, to: number}>({
-      query: `
+    this.graphql
+      .query<Redirect[], { from: number; to: number }>(
+        {
+          query: `
       query ListRedirects($from: Int!, $to: Int!) {
         redirect {
           list(from: $from, to: $to) {
@@ -78,36 +90,49 @@ export class Rewriter extends AppGraphQLClient {
         }
       }
       `,
-      variables: {from, to},
-    }, {
-      metric: 'rewriter-get-redirects',
-    }).then(path(['data', 'redirect', 'list'])) as Promise<Redirect[]>
+          variables: { from, to },
+        },
+        {
+          metric: 'rewriter-get-redirects',
+        }
+      )
+      .then(path(['data', 'redirect', 'list'])) as Promise<Redirect[]>
 
   public importRedirects = (routes: RedirectInput[]): Promise<boolean> =>
-    this.graphql.mutate<boolean, {routes: RedirectInput[]}>({
-      mutate: `
+    this.graphql
+      .mutate<boolean, { routes: RedirectInput[] }>(
+        {
+          mutate: `
       mutation SaveMany($routes: [RedirectInput!]!) {
         redirect {
           saveMany(routes: $routes)
         }
       }
       `,
-      variables: { routes },
-    }, {
-      metric: 'rewriter-import-redirects',
-    }).then(path(['data', 'redirect', 'saveMany'])) as Promise<boolean>
+          variables: { routes },
+        },
+        {
+          metric: 'rewriter-import-redirects',
+        }
+      )
+      .then(path(['data', 'redirect', 'saveMany'])) as Promise<boolean>
 
   public deleteRedirects = (paths: string[]): Promise<boolean> =>
-    this.graphql.mutate<boolean, {paths: string[]}>({
-      mutate: `
+    this.graphql
+      .mutate<boolean, { paths: string[] }>(
+        {
+          mutate: `
       mutation DeleteMany($paths: [String!]!) {
         redirect {
           deleteMany(paths: $paths)
         }
       }
       `,
-      variables: { paths },
-    }, {
-      metric: 'rewriter-delete-redirects',
-    }).then(path(['data', 'redirect', 'deleteMany'])) as Promise<boolean>
+          variables: { paths },
+        },
+        {
+          metric: 'rewriter-delete-redirects',
+        }
+      )
+      .then(path(['data', 'redirect', 'deleteMany'])) as Promise<boolean>
 }

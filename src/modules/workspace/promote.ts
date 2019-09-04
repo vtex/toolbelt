@@ -18,23 +18,27 @@ const isMaster = Promise.method((workspace: string) => {
 })
 
 const isPromotable = (workspace: string): Bluebird<never | void> =>
-  isMaster(workspace)
-    .then(async () => {
-      const meta = await get(account, currentWorkspace)
-      if (!meta.production) {
-        throw new CommandError(`Workspace ${chalk.green(currentWorkspace)} is not a ${chalk.green('production')} workspace\nOnly production workspaces may be promoted\nUse the command ${chalk.blue('vtex workspace create <workspace> --production')} to create a production workspace`)
-      }
-    })
-
-const promptPromoteConfirm = (workspace: string): Promise<any> =>
-  promptConfirm(
-    `Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`,
-    true
-  ).then(answer => {
-    if (!answer) {
-      throw new UserCancelledError()
+  isMaster(workspace).then(async () => {
+    const meta = await get(account, currentWorkspace)
+    if (!meta.production) {
+      throw new CommandError(
+        `Workspace ${chalk.green(currentWorkspace)} is not a ${chalk.green(
+          'production'
+        )} workspace\nOnly production workspaces may be promoted\nUse the command ${chalk.blue(
+          'vtex workspace create <workspace> --production'
+        )} to create a production workspace`
+      )
     }
   })
+
+const promptPromoteConfirm = (workspace: string): Promise<any> =>
+  promptConfirm(`Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`, true).then(
+    answer => {
+      if (!answer) {
+        throw new UserCancelledError()
+      }
+    }
+  )
 
 export default () => {
   log.debug('Promoting workspace', currentWorkspace)

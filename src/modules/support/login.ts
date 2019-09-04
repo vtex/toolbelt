@@ -12,7 +12,7 @@ const getAvailableRoles = async (region: string, token: string, supportedAccount
     `http://support-authority.vtex.${region}.vtex.io/${getAccount()}/${getWorkspace()}/${supportedAccount}/roles`,
     {
       headers: {
-        'Authorization': token,
+        Authorization: token,
         'X-Vtex-Original-Credential': token,
       },
     }
@@ -22,12 +22,15 @@ const getAvailableRoles = async (region: string, token: string, supportedAccount
 
 const promptRoles = async (roles: string[]): Promise<string> => {
   const cancel = 'Cancel'
-  const chosen = prop<string>('role', await inquirer.prompt({
-    name: 'role',
-    message: 'Which role do you want to assume?',
-    type: 'list',
-    choices: [...roles, cancel],
-  }))
+  const chosen = prop<string>(
+    'role',
+    await inquirer.prompt({
+      name: 'role',
+      message: 'Which role do you want to assume?',
+      type: 'list',
+      choices: [...roles, cancel],
+    })
+  )
   if (chosen === cancel) {
     log.info('Bye! o/')
     return process.exit()
@@ -40,7 +43,7 @@ const loginAsRole = async (region: string, token: string, supportedAccount: stri
     `http://support-authority.vtex.${region}.vtex.io/${getAccount()}/${getWorkspace()}/${supportedAccount}/login/${role}`,
     {
       headers: {
-        'Authorization': token,
+        Authorization: token,
         'X-Vtex-Original-Credential': token,
       },
     }
@@ -78,8 +81,7 @@ export default async (account: string) => {
     assertToken(newToken)
     saveSupportCredentials(account, newToken)
     log.info(`Logged into ${chalk.blue(account)} with role ${role}!`)
-  }
-  catch (err) {
+  } catch (err) {
     if (err.message) {
       log.error(err.message)
       if (err.response && err.response.status === 404) {

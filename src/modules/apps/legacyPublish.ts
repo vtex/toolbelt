@@ -31,7 +31,9 @@ class LegacyBuilder {
 
   public prePublishApp = (files: File[]) => {
     if (!(files[0] && files[0].path && files[0].content)) {
-      throw new Error('Argument files must be an array of {path, content}, where content can be a String, a Buffer or a ReadableStream.')
+      throw new Error(
+        'Argument files must be an array of {path, content}, where content can be a String, a Buffer or a ReadableStream.'
+      )
     }
     const indexOfManifest = files.findIndex(({ path }) => path === 'manifest.json')
     if (indexOfManifest === -1) {
@@ -48,8 +50,8 @@ class LegacyBuilder {
 }
 
 interface File {
-  path: string,
-  content: any,
+  path: string
+  content: any
 }
 
 export const legacyPublisher = (account: string, workspace: string = 'master') => {
@@ -75,7 +77,7 @@ export const legacyPublisher = (account: string, workspace: string = 'master') =
       const paths = await listLocalFiles(appRoot)
       const filesWithContent = map(pathToFileObject(appRoot), paths)
       log.debug('Sending files:', '\n' + paths.join('\n'))
-      await listenBuild(appId, (unlistenBuild) => prePublish(filesWithContent, tag, unlistenBuild), options)
+      await listenBuild(appId, unlistenBuild => prePublish(filesWithContent, tag, unlistenBuild), options)
     } catch (e) {
       if (e instanceof BuildFailError) {
         log.error(e.message)

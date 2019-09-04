@@ -5,10 +5,8 @@ import { assoc, keys, reduce } from 'ramda'
 import log from '../../logger'
 
 const PREFIX = 'npm:'
-const npmReducer = dependencies => (acc: {}, k: string): {} =>
-  assoc(PREFIX + k, dependencies[k], acc)
-const vtexReducer = dependencies => (acc: {}, k: string): {} =>
-  assoc(k, dependencies[k], acc)
+const npmReducer = dependencies => (acc: {}, k: string): {} => assoc(PREFIX + k, dependencies[k], acc)
+const vtexReducer = dependencies => (acc: {}, k: string): {} => assoc(k, dependencies[k], acc)
 
 export default async () => {
   const pkg = await readJson(resolve(process.cwd(), 'package.json'))

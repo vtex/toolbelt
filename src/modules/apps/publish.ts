@@ -21,19 +21,15 @@ import { listLocalFiles } from './file'
 import { legacyPublisher } from './legacyPublish'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
 
-
 const root = getAppRoot()
 const AVAILABILITY_TIMEOUT = 1000
 const N_HOSTS = 5
 const buildersToRunLocalYarn = ['node', 'react']
 
-const automaticTag = (version: string): string =>
-  version.indexOf('-') > 0 ? null : 'latest'
+const automaticTag = (version: string): string => (version.indexOf('-') > 0 ? null : 'latest')
 
 const publisher = (workspace: string = 'master') => {
-
   const publishApp = async (appRoot: string, appId: string, tag: string, builder): Promise<BuildResult> => {
-
     const paths = await listLocalFiles(appRoot)
     const retryOpts = {
       retries: 2,
@@ -46,14 +42,9 @@ const publisher = (workspace: string = 'master') => {
         log.debug('Sending files:', '\n' + paths.join('\n'))
       }
       if (tryCount > 1) {
-        log.info(`Retrying...${tryCount-1}`)
+        log.info(`Retrying...${tryCount - 1}`)
       }
-      const stickyHint = await getSavedOrMostAvailableHost(
-        appId,
-        builder,
-        N_HOSTS,
-        AVAILABILITY_TIMEOUT
-      )
+      const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
       const publishOptions = {
         sticky: true,
         stickyHint,
@@ -81,7 +72,7 @@ const publisher = (workspace: string = 'master') => {
   }
 
   const publishApps = async (path: string, tag: string): Promise<void | never> => {
-    const previousConf = conf.getAll()  // Store previous configuration in memory
+    const previousConf = conf.getAll() // Store previous configuration in memory
 
     const manifest = await getManifest()
     const account = conf.getAccount()
@@ -92,7 +83,9 @@ const publisher = (workspace: string = 'master') => {
     }
 
     if (manifest.vendor !== account) {
-      const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(manifest.vendor)}?`
+      const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(
+        manifest.vendor
+      )}?`
       const canSwitchToVendor = await promptConfirm(switchToVendorMsg)
       if (!canSwitchToVendor) {
         throw new UserCancelledError()
@@ -105,8 +98,7 @@ const publisher = (workspace: string = 'master') => {
 
     const pubTag = tag || automaticTag(manifest.version)
 
-    if (manifest.builders.render
-      || manifest.builders['functions-ts']) {
+    if (manifest.builders.render || manifest.builders['functions-ts']) {
       const unlisten = logAll({ account, workspace }, log.level, `${manifest.vendor}.${manifest.name}`)
       const { legacyPublishApp } = legacyPublisher(manifest.vendor, workspace)
       await legacyPublishApp(path, pubTag, manifest).finally(unlisten)
@@ -116,11 +108,17 @@ const publisher = (workspace: string = 'master') => {
       const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
       try {
         const senders = ['vtex.builder-hub', 'apps']
-        const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, builder), { waitCompletion: true, context, senders })
+        const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, builder), {
+          waitCompletion: true,
+          context,
+          senders,
+        })
         if (response.code !== 'build.accepted') {
-          spinner.warn(`${appId} was published successfully, but you should update your builder hub to the latest version.`)
+          spinner.warn(
+            `${appId} was published successfully, but you should update your builder hub to the latest version.`
+          )
         } else {
-            spinner.succeed(`${appId} was published successfully!`)
+          spinner.succeed(`${appId} was published successfully!`)
         }
       } catch (e) {
         spinner.fail(`Failed to publish ${appId}`)

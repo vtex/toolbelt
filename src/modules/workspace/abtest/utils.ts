@@ -11,7 +11,7 @@ import * as env from '../../../env'
 import { CommandError } from '../../../errors'
 import envTimeout from '../../../timeout'
 import userAgent from '../../../user-agent'
-import { dummyLogger } from '../../../clients/dummyLogger';
+import { dummyLogger } from '../../../clients/dummyLogger'
 
 const account = getAccount()
 
@@ -32,12 +32,12 @@ const contextForMaster = {
   route: {
     id: '',
     params: {},
-  } ,
+  },
   userAgent,
   workspace: 'master',
   requestId: '',
   operationId: '',
-  logger: dummyLogger
+  logger: dummyLogger,
 }
 
 const options = {
@@ -48,7 +48,6 @@ const options = {
 export const abtester = new ABTester(contextForMaster, { ...options, retries: 3 })
 export const apps = new Apps(contextForMaster, options)
 
-
 export const formatDays = (days: number) => {
   let suffix = 'days'
   if (days === 1) {
@@ -57,11 +56,10 @@ export const formatDays = (days: number) => {
   return `${numbro(days).format('0,0')} ${suffix}`
 }
 
-
 export const formatDuration = (durationInMinutes: number) => {
   const minutes = durationInMinutes % 60
-  const hours = Math.trunc(durationInMinutes/60) % 24
-  const days = Math.trunc(durationInMinutes/(60 * 24))
+  const hours = Math.trunc(durationInMinutes / 60) % 24
+  const days = Math.trunc(durationInMinutes / (60 * 24))
   return `${days} days, ${hours} hours and ${minutes} minutes`
 }
 
@@ -79,21 +77,19 @@ testing functionality`)
   }
 }
 
-export const promptProductionWorkspace = async (
-  promptMessage: string
-) => {
-  const productionWorkspaces = await workspaces.list(account)
-    .then(
-      compose<any, any, any>(
-        map(({name}) => name),
-        filter(({name, production}) => (production === true && name !== 'master'))
-      )
+export const promptProductionWorkspace = async (promptMessage: string) => {
+  const productionWorkspaces = await workspaces.list(account).then(
+    compose<any, any, any>(
+      map(({ name }) => name),
+      filter(({ name, production }) => production === true && name !== 'master')
     )
-  return await enquirer.prompt({
-    name: 'workspace',
-    message: promptMessage,
-    type: 'select',
-    choices: productionWorkspaces,
-  }).then(prop('workspace'))
-
+  )
+  return await enquirer
+    .prompt({
+      name: 'workspace',
+      message: promptMessage,
+      type: 'select',
+      choices: productionWorkspaces,
+    })
+    .then(prop('workspace'))
 }

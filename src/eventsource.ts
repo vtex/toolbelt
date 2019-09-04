@@ -27,7 +27,7 @@ export default class CustomEventSource {
   private timerAfterNextPing: any
   private timerBeforeNextPing: any
 
-  constructor (source, configuration) {
+  constructor(source, configuration) {
     this.source = source
     this.configuration = configuration
 
@@ -43,12 +43,10 @@ export default class CustomEventSource {
 
     this.connectEventSource()
     this.addColossusPing()
-    this.reconnectInterval = this.eventSource &&
-      this.eventSource.reconnectInterval ||
-      DEFAULT_RECONNECT_INTERVAL
+    this.reconnectInterval = (this.eventSource && this.eventSource.reconnectInterval) || DEFAULT_RECONNECT_INTERVAL
   }
 
-  set onopen (newOnOpen) {
+  set onopen(newOnOpen) {
     this.esOnOpen = newOnOpen
     this.esOnOpen = this.esOnOpen.bind(this)
     if (this.eventSource) {
@@ -56,15 +54,15 @@ export default class CustomEventSource {
     }
   }
 
-  set onmessage (newOnMessage) {
+  set onmessage(newOnMessage) {
     this.esOnMessage = newOnMessage
     this.esOnMessage = this.esOnMessage.bind(this)
-    if(this.eventSource) {
+    if (this.eventSource) {
       this.eventSource.onmessage = this.esOnMessage
     }
   }
 
-  set onerror (newOnError) {
+  set onerror(newOnError) {
     this.esOnError = newOnError
     this.esOnError = this.esOnError.bind(this)
     if (this.eventSource) {
@@ -72,21 +70,21 @@ export default class CustomEventSource {
     }
   }
 
-  public addEventListener (event: string, handler: any) {
-    this.events.push({event, handler})
+  public addEventListener(event: string, handler: any) {
+    this.events.push({ event, handler })
 
     if (this.eventSource) {
       this.eventSource.addEventListener(event, handler)
     }
   }
 
-  public close () {
+  public close() {
     this.closeEventSource()
     this.clearTimers()
     this.isClosed = true
   }
 
-  public handleError (err) {
+  public handleError(err) {
     if (typeof this.esOnError === 'function') {
       this.esOnError(err)
     }
@@ -96,64 +94,55 @@ export default class CustomEventSource {
       this.close()
     }
 
-    if (!this.eventSource ||
-        this.eventSource &&
-        this.eventSource.readyState === CONNECTION_CLOSED) {
+    if (!this.eventSource || (this.eventSource && this.eventSource.readyState === CONNECTION_CLOSED)) {
       setTimeout(this.reconnect, this.reconnectInterval)
     }
   }
 
-  private addColossusPing () {
+  private addColossusPing() {
     if (this.eventSource) {
       this.eventSource.addEventListener('ping', this.checkPing)
     }
   }
 
-  private addMethods () {
+  private addMethods() {
     if (this.eventSource) {
       this.eventSource.onmessage = this.esOnMessage
       this.eventSource.onopen = this.esOnOpen
       this.eventSource.onerror = this.handleError
 
-      forEach(({event, handler}) => {
+      forEach(({ event, handler }) => {
         this.eventSource.addEventListener(event, handler)
       }, this.events)
     }
   }
 
-  private checkPing () {
+  private checkPing() {
     this.nRetries = 0
     this.pingStatus = true
-    this.timerBeforeNextPing = setTimeout(
-      () => { this.pingStatus = false },
-      BEFORE_NEXT_PING
-    )
-    this.timerAfterNextPing = setTimeout(
-      () => !this.pingStatus && this.reconnect(),
-      AFTER_NEXT_PING
-    )
+    this.timerBeforeNextPing = setTimeout(() => {
+      this.pingStatus = false
+    }, BEFORE_NEXT_PING)
+    this.timerAfterNextPing = setTimeout(() => !this.pingStatus && this.reconnect(), AFTER_NEXT_PING)
   }
 
-  private clearTimers () {
+  private clearTimers() {
     clearTimeout(this.timerBeforeNextPing)
     clearTimeout(this.timerAfterNextPing)
   }
 
-  private closeEventSource () {
+  private closeEventSource() {
     if (this.eventSource) {
       this.eventSource.close()
     }
   }
 
-  private connectEventSource () {
+  private connectEventSource() {
     this.closeEventSource()
-    this.eventSource = new EventSource(
-      this.source,
-      this.configuration
-    )
+    this.eventSource = new EventSource(this.source, this.configuration)
   }
 
-  private reconnect () {
+  private reconnect() {
     if (!this.isClosed) {
       this.connectEventSource()
       this.addColossusPing()

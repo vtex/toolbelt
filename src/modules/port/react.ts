@@ -10,13 +10,13 @@ export default async () => {
   const oldReact = manifest.builders.react
 
   if (!oldReact || ['0.x', '1.x'].indexOf(oldReact) === -1) {
-    throw new CommandError('Couldn\'t find react builder 0.x-1.x in manifest')
+    throw new CommandError("Couldn't find react builder 0.x-1.x in manifest")
   }
 
   if (manifest.builders.react === '0.x') {
     const renderJson = await readJSON('react/render.json').catch(() => null)
     if (!renderJson) {
-      throw new CommandError('Couldn\'t find react/render.json file')
+      throw new CommandError("Couldn't find react/render.json file")
     }
     log.info('Porting react code to react builder version 2.x')
 
@@ -25,12 +25,7 @@ export default async () => {
     const extensions = {}
 
     forEachObjIndexed((val: any, key) => {
-      const {
-        route,
-        component,
-        theme,
-        settings,
-      } = val
+      const { route, component, theme, settings } = val
 
       if (route && route.path) {
         pages[key] = {
@@ -48,8 +43,8 @@ export default async () => {
     }, react0Extensions)
 
     const pagesFile = {
-      ...!isEmpty(pages) && { pages },
-      ...!isEmpty(extensions) && { extensions },
+      ...(!isEmpty(pages) && { pages }),
+      ...(!isEmpty(extensions) && { extensions }),
     }
 
     await outputJSON('pages/pages.json', pagesFile, { spaces: 2 })

@@ -2,7 +2,7 @@ import { AxiosInstance } from 'axios'
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
 import { diffArrays } from 'diff'
-import { existsSync, pathExists, readFile} from 'fs-extra'
+import { existsSync, pathExists, readFile } from 'fs-extra'
 import { writeFile } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import * as R from 'ramda'
@@ -21,10 +21,9 @@ import userAgent from '../user-agent'
 import { promptConfirm } from './prompts'
 
 interface BuildListeningOptions {
-  context?: Context,
-  timeout?: number,
+  context?: Context
+  timeout?: number
 }
-
 
 type BuildEvent = 'start' | 'success' | 'fail' | 'timeout' | 'logs'
 type AnyFunction = (...args: any[]) => any
@@ -51,7 +50,7 @@ export const getIOContext = () => ({
   route: {
     id: '',
     params: {},
-  } ,
+  },
   userAgent,
   workspace: getWorkspace(),
   requestId: '',
@@ -59,10 +58,17 @@ export const getIOContext = () => ({
   logger: dummyLogger,
 })
 
-const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void) => {
+const onBuildEvent = (
+  ctx: Context,
+  timeout: number,
+  appOrKey: string,
+  callback: (type: BuildEvent, message?: Message) => void
+) => {
   const [subject] = appOrKey.split('@')
   const unlistenLogs = logAll(ctx, log.level, subject)
-  const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map((type) => onEvent(ctx, 'vtex.render-builder', subject, [`build.${type}`], (message) => callback(type, message)))
+  const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map(type =>
+    onEvent(ctx, 'vtex.render-builder', subject, [`build.${type}`], message => callback(type, message))
+  )
   const timer = timeout && setTimeout(() => callback('timeout'), timeout)
   const unlistenMap: Record<BuildEvent, AnyFunction> = {
     fail: unlistenFail,
@@ -73,11 +79,17 @@ const onBuildEvent = (ctx: Context, timeout: number, appOrKey: string, callback:
   }
 
   return (...types: BuildEvent[]) => {
-    types.forEach(type => { unlistenMap[type]() })
+    types.forEach(type => {
+      unlistenMap[type]()
+    })
   }
 }
 
-export const listenBuild = (appOrKey: string, triggerBuild: (unlistenBuild?: (response) => void) => Promise<any>, options: BuildListeningOptions = {}) => {
+export const listenBuild = (
+  appOrKey: string,
+  triggerBuild: (unlistenBuild?: (response) => void) => Promise<any>,
+  options: BuildListeningOptions = {}
+) => {
   return new Promise((resolve, reject) => {
     let triggerResponse
 
@@ -99,7 +111,7 @@ export const listenBuild = (appOrKey: string, triggerBuild: (unlistenBuild?: (re
       }
     })
 
-    const unlistenBuild = (response) => {
+    const unlistenBuild = response => {
       unlisten(...allEvents)
       resolve(response)
     }
@@ -116,20 +128,15 @@ export const listenBuild = (appOrKey: string, triggerBuild: (unlistenBuild?: (re
 }
 
 export const formatNano = (nanoseconds: number): string =>
-  `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(
-    0
-  )}ms`
+  `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(0)}ms`
 
 export const runYarn = (relativePath: string, force: boolean) => {
   log.info(`Running yarn in ${chalk.green(relativePath)}`)
   const root = getAppRoot()
-  const command = force ?
-    `${yarnPath} --force --non-interactive --ignore-engines` :
-    `${yarnPath} --non-interactive --ignore-engines`
-  execSync(
-    command,
-    {stdio: 'inherit', cwd: resolvePath(root, relativePath)}
-  )
+  const command = force
+    ? `${yarnPath} --force --non-interactive --ignore-engines`
+    : `${yarnPath} --non-interactive --ignore-engines`
+  execSync(command, { stdio: 'inherit', cwd: resolvePath(root, relativePath) })
   log.info('Finished running yarn')
 }
 
@@ -159,8 +166,7 @@ export const getPinnedDependencies = async (builderHttp: AxiosInstance) => {
 const getEntryMapFromObject = (obj: object, field: string) => {
   if (obj.hasOwnProperty(field)) {
     return new Map<string, string>(Object.entries(obj[field]))
-  }
-  else {
+  } else {
     return new Map<string, string>()
   }
 }
@@ -172,7 +178,7 @@ const leftMapDifference = (left: Map<string, string>, right: Map<string, string>
 
 export const fixPinnedDependencies = R.curry(async (pinnedDeps: Map<string, string>, relativePath: string) => {
   const jsonPath = resolvePath(getAppRoot(), `${relativePath}/package.json`)
-  if (!await pathExists(jsonPath)) {
+  if (!(await pathExists(jsonPath))) {
     return
   }
   const packageJSON = JSON.parse((await readFile(jsonPath)).toString())
@@ -180,21 +186,27 @@ export const fixPinnedDependencies = R.curry(async (pinnedDeps: Map<string, stri
   const devDependencies = getEntryMapFromObject(packageJSON, 'devDependencies')
   const outdatedDeps = leftMapDifference(dependencies, pinnedDeps)
   const outdatedDevDeps = leftMapDifference(devDependencies, pinnedDeps)
-  const newPackageJSON = R.reduce((obj, dep) => {
-    log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}`)
-    if (obj.hasOwnProperty('dependencies') && obj.dependencies[dep]) {
-      obj.dependencies[dep] = pinnedDeps.get(dep)
-    }
-    if (obj.hasOwnProperty('devDependencies') && obj.devDependencies[dep]) {
-      obj.devDependencies[dep] = pinnedDeps.get(dep)
-    }
-    return obj
-  }, packageJSON, [...outdatedDeps, ...outdatedDevDeps])
+  const newPackageJSON = R.reduce(
+    (obj, dep) => {
+      log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}`)
+      if (obj.hasOwnProperty('dependencies') && obj.dependencies[dep]) {
+        obj.dependencies[dep] = pinnedDeps.get(dep)
+      }
+      if (obj.hasOwnProperty('devDependencies') && obj.devDependencies[dep]) {
+        obj.devDependencies[dep] = pinnedDeps.get(dep)
+      }
+      return obj
+    },
+    packageJSON,
+    [...outdatedDeps, ...outdatedDevDeps]
+  )
   await writeFile(jsonPath, JSON.stringify(newPackageJSON, null, 2) + '\n')
 })
 
-const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()) :string => {
-  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(previousAccount)} account?`
+const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()): string => {
+  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(
+    previousAccount
+  )} account?`
 }
 
 export const switchToPreviousAccount = async (previousConf: any) => {
@@ -224,30 +236,27 @@ const cleanVersion = (appId: string) => {
   return R.compose<string, string[], string, string>(
     (version: string) => {
       const [pureVersion, build] = R.split('+build', version)
-      return (build ? `${pureVersion}(linked)` : pureVersion)
+      return build ? `${pureVersion}(linked)` : pureVersion
     },
     R.last,
     R.split('@')
   )(appId)
 }
 
-export const matchedDepsDiffTable = (
-  title1: string,
-  title2: string,
-  deps1: string[],
-  deps2: string[]
-) => {
+export const matchedDepsDiffTable = (title1: string, title2: string, deps1: string[], deps2: string[]) => {
   const depsDiff = diffArrays(deps1, deps2)
   // Get deduplicated names (no version) of the changed deps.
-  const depNames = [...new Set(
-    R.compose<string[], any[], string[], string[], string[]>(
-      R.map(k => R.head(R.split('@', k))),
-      R.flatten,
-      R.pluck('value'),
-      R.filter( (k: any) => !!k.removed || !!k.added )
-    )(depsDiff)
-  )].sort()
-  const produceStartValues = () => (R.map((_) => ([]))(depNames) as any)
+  const depNames = [
+    ...new Set(
+      R.compose<string[], any[], string[], string[], string[]>(
+        R.map(k => R.head(R.split('@', k))),
+        R.flatten,
+        R.pluck('value'),
+        R.filter((k: any) => !!k.removed || !!k.added)
+      )(depsDiff)
+    ),
+  ].sort()
+  const produceStartValues = () => R.map(_ => [])(depNames) as any
   // Each of the following objects will start as a { `depName`: [] }, ... }-like.
   const addedDeps = R.zipObj(depNames, produceStartValues())
   const removedDeps = R.zipObj(depNames, produceStartValues())
@@ -263,44 +272,26 @@ export const matchedDepsDiffTable = (
       R.pluck('value'),
       R.filter(filterFunction)
     )(depsDiff)
-    R.mapObjIndexed(
-      (_, index) => {
-        obj[index] = obj[index].join(',')
-      }
-    )(obj)
+    R.mapObjIndexed((_, index) => {
+      obj[index] = obj[index].join(',')
+    })(obj)
   }
 
   // Setting the objects values.
-  setObjectValues(
-    removedDeps,
-    (k) => chalk.red(`${cleanVersion(k)}`),
-    (k:any) => !!k.removed
-  )
-  setObjectValues(
-    addedDeps,
-    (k) => chalk.green(`${cleanVersion(k)}`),
-    (k:any) => !!k.added
-  )
+  setObjectValues(removedDeps, k => chalk.red(`${cleanVersion(k)}`), (k: any) => !!k.removed)
+  setObjectValues(addedDeps, k => chalk.green(`${cleanVersion(k)}`), (k: any) => !!k.added)
 
   const table = createTable() // Set table headers.
-  table.push([
-    '',
-    chalk.bold.yellow(title1),
-    chalk.bold.yellow(title2),
-  ])
+  table.push(['', chalk.bold.yellow(title1), chalk.bold.yellow(title2)])
 
   const formattedDepNames = R.map(formatAppId, depNames)
   // Push array of changed dependencies pairs to the table.
   Array.prototype.push.apply(
     table,
-    R.map(
-      (k: any[]) => R.flatten(k)
-    )(
-      R.zip( // zipping 3 arrays.
-        R.zip(
-          formattedDepNames,
-          R.values(removedDeps)
-        ),
+    R.map((k: any[]) => R.flatten(k))(
+      R.zip(
+        // zipping 3 arrays.
+        R.zip(formattedDepNames, R.values(removedDeps)),
         R.values(addedDeps)
       )
     )

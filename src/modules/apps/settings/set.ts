@@ -16,7 +16,7 @@ const castValue = value => {
   return isNaN(numberCast) ? parsedValue : numberCast
 }
 
-const transformCommandsToObj = (commandSettings) => {
+const transformCommandsToObj = commandSettings => {
   const k = []
   const v = []
   for (const [idx, val] of commandSettings.entries()) {

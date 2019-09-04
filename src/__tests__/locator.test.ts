@@ -1,10 +1,11 @@
 import * as locator from '../locator'
 
-test.each([
-  ['0.1.2', '0.x'], ['1.0.0', '1.x'], ['2.0', '2.x'],
-])('converts version to major range: %s ---> %s', (version: string, majorRange: string) => {
-  expect(locator.toMajorRange(version)).toBe(majorRange)
-})
+test.each([['0.1.2', '0.x'], ['1.0.0', '1.x'], ['2.0', '2.x']])(
+  'converts version to major range: %s ---> %s',
+  (version: string, majorRange: string) => {
+    expect(locator.toMajorRange(version)).toBe(majorRange)
+  }
+)
 
 test.each([
   [{ vendor: 'vtex', name: 'visa-checkout', version: '0.1.2', builders: {} }, 'vtex.visa-checkout@0.x'],

@@ -4,7 +4,8 @@ const routes = {
   Abort: (workspace: string) => `${routes.ABTester}/finish/${workspace}`,
   ABTester: '/_v/private/abtesting',
   Initialize: (workspace: string) => `${routes.ABTester}/initialize/${workspace}`,
-  InitializeLegacy: (workspace: string, probability: number) => `${routes.ABTester}/initialize/${workspace}/${probability}`,
+  InitializeLegacy: (workspace: string, probability: number) =>
+    `${routes.ABTester}/initialize/${workspace}/${probability}`,
   Preview: (probability: number) => `${routes.ABTester}/time/${probability}`,
   Status: () => `${routes.ABTester}/status`,
 }
@@ -32,5 +33,4 @@ export class ABTester extends AppClient {
 
   // Get data about running AB Tests.
   public status = async () => this.http.get(routes.Status(), { metric: 'abtester-status' })
-
 }

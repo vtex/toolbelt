@@ -1,7 +1,7 @@
 import { Housekeeper, HousekeeperStatesAndUpdates } from '@vtex/api'
 import chalk from 'chalk'
 import * as ora from 'ora'
-import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, prop, props, union  } from 'ramda'
+import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, prop, props, union } from 'ramda'
 
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
@@ -10,11 +10,7 @@ import { promptConfirm } from '../prompts'
 import { matchedDepsDiffTable } from '../utils'
 import { getIOContext, IOClientOptions } from '../utils'
 
-
-const promptUpdate = (): Promise<boolean> =>
-  Promise.resolve(
-    promptConfirm('Apply version updates?')
-  )
+const promptUpdate = (): Promise<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
 
 const toMajorLocator = (appId: string) => {
   const [appName, appVersion] = appId.split('@', 2)
@@ -40,12 +36,10 @@ const printAppsDiff = (
     }
     filterFunction = sourceFilter(source)
     pluckFunction = pluck('id')
-  }
-  else if (includes(type, ['infra', 'runtimes'])) {
+  } else if (includes(type, ['infra', 'runtimes'])) {
     filterFunction = identity
     pluckFunction = identity
-  }
-  else {
+  } else {
     throw new Error(`Invalid type: ${type}`)
   }
 

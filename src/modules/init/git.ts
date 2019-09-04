@@ -5,10 +5,7 @@ import * as unzip from 'unzip-stream'
 
 const urlForRepo = (repo: string) => `https://github.com/vtex-apps/${repo}/archive/master.zip`
 
-const fetchAndUnzip = async (url: string, path: string) => pipeStreams([
-  request(url),
-  unzip.Extract({ path }),
-])
+const fetchAndUnzip = async (url: string, path: string) => pipeStreams([request(url), unzip.Extract({ path })])
 
 export const clone = async (repo: string) => {
   const cwd = process.cwd()

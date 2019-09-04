@@ -7,10 +7,7 @@ import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import { default as abTestStatus } from './status'
-import {
-  abtester,
-  installedABTester,
-} from './utils'
+import { abtester, installedABTester } from './utils'
 
 const [account] = [getAccount()]
 
@@ -18,16 +15,17 @@ const promptContinue = async (workspace: string) => {
   const proceed = await promptConfirm(
     `You are about to finish A/B testing in workspace \
 ${chalk.blue(workspace)}, account ${chalk.green(account)}. Are you sure?`,
-      false
-    )
+    false
+  )
   if (!proceed) {
     throw new UserCancelledError()
   }
 }
 
 const promptWorkspaceToFinishABTest = async () =>
-  await abtester.status()
-    .then(map(({WorkspaceB}) => WorkspaceB))
+  await abtester
+    .status()
+    .then(map(({ WorkspaceB }) => WorkspaceB))
     .then(workspaces =>
       enquirer.prompt({
         name: 'workspace',

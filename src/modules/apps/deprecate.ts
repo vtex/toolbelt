@@ -16,29 +16,32 @@ let originalAccount
 let originalWorkspace
 
 const switchToVendorMessage = (vendor: string): string => {
-  return `You are trying to deprecate this app in an account that differs from the indicated vendor. Do you want to deprecate in account ${chalk.blue(vendor)}?`
+  return `You are trying to deprecate this app in an account that differs from the indicated vendor. Do you want to deprecate in account ${chalk.blue(
+    vendor
+  )}?`
 }
 
 const promptDeprecate = (appsList: string[]): Bluebird<boolean> =>
   promptConfirm(
-    `Are you sure you want to deprecate app` + (appsList.length > 1 ? 's' : '') + ` ${chalk.green(appsList.join(', '))}?`
+    `Are you sure you want to deprecate app` +
+      (appsList.length > 1 ? 's' : '') +
+      ` ${chalk.green(appsList.join(', '))}?`
   )
 
-const promptDeprecateOnVendor = (msg: string): Bluebird<boolean> =>
-  promptConfirm(msg)
+const promptDeprecateOnVendor = (msg: string): Bluebird<boolean> => promptConfirm(msg)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()
   if (previousAccount !== currentAccount) {
     const canSwitchToPrevious = await promptDeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
-      return await switchAccount(previousAccount, {workspace: previousWorkspace})
+      return await switchAccount(previousAccount, { workspace: previousWorkspace })
     }
   }
   return
 }
 
-const deprecateApp = async (app: string) :Promise<void> => {
+const deprecateApp = async (app: string): Promise<void> => {
   const { vendor, name, version } = parseLocator(app)
   const account = getAccount()
   if (vendor !== account) {
@@ -84,7 +87,7 @@ export default async (optionalApp: string, options) => {
   originalWorkspace = getWorkspace()
   const appsList = prepend(optionalApp || toAppLocator(await getManifest()), parseArgs(options._))
 
-  if (!preConfirm && !await promptDeprecate(appsList)) {
+  if (!preConfirm && !(await promptDeprecate(appsList))) {
     throw new UserCancelledError()
   }
   log.debug('Deprecating app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)

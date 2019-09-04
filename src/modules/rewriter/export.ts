@@ -8,12 +8,21 @@ import { createInterface } from 'readline'
 import { rewriter } from '../../clients'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
-import { accountAndWorkspace, deleteMetainfo, MAX_ENTRIES_PER_REQUEST, MAX_RETRIES, METAINFO_FILE, progressBar, saveMetainfo, sleep } from './utils'
+import {
+  accountAndWorkspace,
+  deleteMetainfo,
+  MAX_ENTRIES_PER_REQUEST,
+  MAX_RETRIES,
+  METAINFO_FILE,
+  progressBar,
+  saveMetainfo,
+  sleep,
+} from './utils'
 
 const EXPORTS = 'exports'
 const [account, workspace] = accountAndWorkspace
 
-const FIELDS =  ['from', 'to', 'type', 'endDate']
+const FIELDS = ['from', 'to', 'type', 'endDate']
 
 const generateListOfRanges = (indexLength: number) =>
   map(
@@ -28,7 +37,9 @@ const handleExport = async (csvPath: string) => {
     log.info('No data to be exported.')
     return
   }
-  const indexHash = await createHash('md5').update(`${account}_${workspace}_${JSON.stringify(routesIndex)}`).digest('hex')
+  const indexHash = await createHash('md5')
+    .update(`${account}_${workspace}_${JSON.stringify(routesIndex)}`)
+    .digest('hex')
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const exportMetainfo = metainfo[EXPORTS] || {}
   const listOfRanges = generateListOfRanges(indexLength)
@@ -37,30 +48,26 @@ const handleExport = async (csvPath: string) => {
 
   const bar = progressBar('Exporting routes...', counter, length(listOfRanges))
 
-  const listener = createInterface({ input: process.stdin, output: process.stdout })
-    .on('SIGINT', () => {
-      saveMetainfo(metainfo, EXPORTS, indexHash, counter, listOfRoutes)
-      console.log('\n')
-      process.exit()
-    })
+  const listener = createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
+    saveMetainfo(metainfo, EXPORTS, indexHash, counter, listOfRoutes)
+    console.log('\n')
+    process.exit()
+  })
 
-  await Promise.each(
-    listOfRanges.splice(counter),
-    async ([from, to]) => {
-      let result: any
-      try {
-        result = await rewriter.exportRedirects(from, to)
-      } catch (e) {
-        await saveMetainfo(metainfo, EXPORTS, indexHash, counter, listOfRoutes)
-        listener.close()
-        throw e
-      }
-      listOfRoutes = concat(listOfRoutes, result)
-      counter++
-      bar.tick()
+  await Promise.each(listOfRanges.splice(counter), async ([from, to]) => {
+    let result: any
+    try {
+      result = await rewriter.exportRedirects(from, to)
+    } catch (e) {
+      await saveMetainfo(metainfo, EXPORTS, indexHash, counter, listOfRoutes)
+      listener.close()
+      throw e
     }
-  )
-  const json2csvParser = new Parser({fields: FIELDS, delimiter: ';', quote: ''})
+    listOfRoutes = concat(listOfRoutes, result)
+    counter++
+    bar.tick()
+  })
+  const json2csvParser = new Parser({ fields: FIELDS, delimiter: ';', quote: '' })
   const csv = json2csvParser.parse(listOfRoutes)
   await writeFile(`./${csvPath}`, csv)
   log.info('\nFinished!\n')

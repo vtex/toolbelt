@@ -12,28 +12,31 @@ import { promptConfirm } from '../prompts'
 import { parseLocator, toAppLocator } from './../../locator'
 import { parseArgs, switchAccountMessage } from './utils'
 
-const undeprecateRequestTimeOut = 10000  // 10 seconds
+const undeprecateRequestTimeOut = 10000 // 10 seconds
 let originalAccount
 let originalWorkspace
 
 const switchToVendorMessage = (vendor: string): string => {
-  return `You are trying to undeprecate this app in an account that differs from the indicated vendor. Do you want to undeprecate in account ${chalk.blue(vendor)}?`
+  return `You are trying to undeprecate this app in an account that differs from the indicated vendor. Do you want to undeprecate in account ${chalk.blue(
+    vendor
+  )}?`
 }
 
 const promptUndeprecate = (appsList: string[]): Bluebird<boolean> =>
   promptConfirm(
-    `Are you sure you want to undeprecate app` + (appsList.length > 1 ? 's' : '') + ` ${chalk.green(appsList.join(', '))}?`
+    `Are you sure you want to undeprecate app` +
+      (appsList.length > 1 ? 's' : '') +
+      ` ${chalk.green(appsList.join(', '))}?`
   )
 
-const promptUndeprecateOnVendor = (msg: string): Bluebird<boolean> =>
-  promptConfirm(msg)
+const promptUndeprecateOnVendor = (msg: string): Bluebird<boolean> => promptConfirm(msg)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()
   if (previousAccount !== currentAccount) {
     const canSwitchToPrevious = await promptUndeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
-      await switchAccount(previousAccount, {workspace: previousWorkspace})
+      await switchAccount(previousAccount, { workspace: previousWorkspace })
       return
     }
   }
@@ -57,12 +60,12 @@ const undeprecateApp = async (app: string): Promise<AxiosResponse> => {
     baseURL: `http://apps.${Region.Production}.vtex.io/`,
     timeout: undeprecateRequestTimeOut,
     headers: {
-      'Authorization': getToken(),
+      Authorization: getToken(),
       'Content-Type': 'application/json',
     },
   })
   const finalroute = `http://apps.${Region.Production}.vtex.io/${vendor}/master/registry/${vendor}.${name}/${version}`
-  return await http.patch(finalroute, {deprecated: false})
+  return await http.patch(finalroute, { deprecated: false })
 }
 
 const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
@@ -97,7 +100,7 @@ export default async (optionalApp: string, options) => {
   originalWorkspace = getWorkspace()
   const appsList = prepend(optionalApp || toAppLocator(await getManifest()), parseArgs(options._))
 
-  if (!preConfirm && !await promptUndeprecate(appsList)) {
+  if (!preConfirm && !(await promptUndeprecate(appsList))) {
     throw new UserCancelledError()
   }
   log.debug(`Undeprecating app ${appsList.length > 1 ? 's' : ''} : ${appsList.join(', ')}`)

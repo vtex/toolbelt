@@ -7,7 +7,6 @@ import { clusterIdDomainInfix, publicEndpoint } from '../env'
 // Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯
 const QRCode = require('qrcode-terminal') // tslint:disable-line no-var-requires
 
-
 const isSupportRole = (role: string): boolean => role && role.startsWith('vtex.support-authority')
 
 const isSupportSession = (): boolean => {
@@ -24,16 +23,15 @@ const prepareSupportBrowser = async (account: string, workspace: string): Promis
   const token = conf.getToken()
 
   const uri = `https://${workspace}--${account}.${publicEndpoint()}/_v/private/support-login/prepare`
-  const response = await axios.get(uri,
-    {
-      headers: {
-        'X-Vtex-Original-Credential': token,
-      },
-    })
+  const response = await axios.get(uri, {
+    headers: {
+      'X-Vtex-Original-Credential': token,
+    },
+  })
   return response.data.oneTimeToken
 }
 
-export default async (endpoint='', {q, qr}) => {
+export default async (endpoint = '', { q, qr }) => {
   const { account, workspace } = conf.currentContext
   if (isSupportSession()) {
     const token = await prepareSupportBrowser(account, workspace)

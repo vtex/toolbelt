@@ -28,24 +28,23 @@ const printAvailableServices = (): Bluebird<void> =>
     })
 
 const printAvailableServiceVersions = (name: string, filter: string): Bluebird<void> =>
-  getAvailableVersions(name)
-    .then(({ versions }: InfraResourceVersions) => {
-      const region = Object.keys(versions)[0]
-      return versions[region]
-        .filter(v => !filter || v.indexOf(filter) >= 0)
-        .map<string>(semver.valid)
-        .filter(v => v !== null)
-        .sort(semver.compare)
-        .reverse()
-        .slice(0, 20)
-        .forEach(v => {
-          if (semver.prerelease(v) !== null) {
-            console.log(`  ${chalk.yellow(v)}`)
-          } else {
-            console.log(`  ${chalk.bold.green(v)}`)
-          }
-        })
-    })
+  getAvailableVersions(name).then(({ versions }: InfraResourceVersions) => {
+    const region = Object.keys(versions)[0]
+    return versions[region]
+      .filter(v => !filter || v.indexOf(filter) >= 0)
+      .map<string>(semver.valid)
+      .filter(v => v !== null)
+      .sort(semver.compare)
+      .reverse()
+      .slice(0, 20)
+      .forEach(v => {
+        if (semver.prerelease(v) !== null) {
+          console.log(`  ${chalk.yellow(v)}`)
+        } else {
+          console.log(`  ${chalk.bold.green(v)}`)
+        }
+      })
+  })
 
 const printInstalledServices = (): Bluebird<void> =>
   listInstalledServices()
@@ -53,9 +52,8 @@ const printInstalledServices = (): Bluebird<void> =>
       const table = createTable()
       installedRes.forEach(({ name, version }) => {
         const validVersion = semver.valid(version)
-        const styledVersion = semver.prerelease(validVersion) !== null
-          ? chalk.yellow(validVersion)
-          : chalk.bold.green(validVersion)
+        const styledVersion =
+          semver.prerelease(validVersion) !== null ? chalk.yellow(validVersion) : chalk.bold.green(validVersion)
         table.push([name, styledVersion])
       })
       return table
@@ -69,6 +67,8 @@ export default (name: string, options) => {
   const filter = options.f || options.filter
   const available = options.a || options.available
   return available
-    ? (name ? printAvailableServiceVersions(name, filter) : printAvailableServices())
+    ? name
+      ? printAvailableServiceVersions(name, filter)
+      : printAvailableServices()
     : printInstalledServices()
 }

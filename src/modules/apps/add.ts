@@ -1,36 +1,25 @@
 import { writeFile } from 'fs-extra'
 import * as latestVersion from 'latest-version'
-import {
-  compose,
-  concat,
-  head,
-  last,
-  path,
-  prepend,
-  split,
-  tail,
-} from 'ramda'
+import { compose, concat, head, last, path, prepend, split, tail } from 'ramda'
 
 import { router } from '../../clients'
 import { region } from '../../env'
 import { CommandError } from '../../errors'
 import log from '../../logger'
-import {
-  getManifest,
-  getManifestPath,
-  namePattern,
-  vendorPattern,
-  wildVersionPattern,
-} from '../../manifest'
+import { getManifest, getManifestPath, namePattern, vendorPattern, wildVersionPattern } from '../../manifest'
 
 import { appLatestMajor, handleError, parseArgs, pickLatestVersion, wildVersionByMajor } from './utils'
 
-const unprefixName = compose<string, string[], string>(last, split(':'))
+const unprefixName = compose<string, string[], string>(
+  last,
+  split(':')
+)
 const invalidAppMessage =
   'Invalid app format, please use <vendor>.<name>, <vendor>.<name>@<version>, npm:<name> or npm:<name>@<version>'
 
 const infraLatestVersion = (app: string): Promise<string | never> =>
-  router.getAvailableVersions(app)
+  router
+    .getAvailableVersions(app)
     .then<string[]>(path(['versions', region()]))
     .then(pickLatestVersion)
     .then(wildVersionByMajor)
@@ -66,11 +55,12 @@ const addApp = (app: string): Promise<void> => {
   const isNpm = app.startsWith('npm:')
   const isInfra = app.startsWith('infra:')
   const appName = app.includes(':') ? unprefixName(app) : app
-  const versionRequest = isNpm ? npmLatestVersion(appName)
-    : isInfra ? infraLatestVersion(appName)
-      : appLatestMajor(appName)
-  return versionRequest
-    .then((version: string) => updateManifestDependencies(app, version))
+  const versionRequest = isNpm
+    ? npmLatestVersion(appName)
+    : isInfra
+    ? infraLatestVersion(appName)
+    : appLatestMajor(appName)
+  return versionRequest.then((version: string) => updateManifestDependencies(app, version))
 }
 
 const addApps = (apps: string[]): Promise<void | never> => {
@@ -78,11 +68,9 @@ const addApps = (apps: string[]): Promise<void | never> => {
   const decApps = tail(apps)
   log.debug('Starting to add app', app)
   const appRegex = new RegExp(`^(${vendorPattern}\\.|(npm|infra):)${namePattern}(@${wildVersionPattern})?$`)
-  const appPromise = appRegex.test(app)
-    ? addApp(app)
-    : Promise.reject(new CommandError(invalidAppMessage))
+  const appPromise = appRegex.test(app) ? addApp(app) : Promise.reject(new CommandError(invalidAppMessage))
   return appPromise
-    .then(() => decApps.length > 0 ? addApps(decApps) : Promise.resolve())
+    .then(() => (decApps.length > 0 ? addApps(decApps) : Promise.resolve()))
     .catch(err => {
       // A warn message will display the workspaces not deleted.
       if (!err.toolbeltWarning) {

@@ -22,7 +22,9 @@ export class Builder {
 
   public prePublishApp = (files: File[]) => {
     if (!(files[0] && files[0].path && files[0].content)) {
-      throw new Error('Argument files must be an array of {path, content}, where content can be a String, a Buffer or a ReadableStream.')
+      throw new Error(
+        'Argument files must be an array of {path, content}, where content can be a String, a Buffer or a ReadableStream.'
+      )
     }
     const indexOfManifest = files.findIndex(({ path }) => path === 'manifest.json')
     if (indexOfManifest === -1) {
@@ -39,16 +41,16 @@ export class Builder {
 }
 
 export interface File {
-  path: string,
-  content: any,
+  path: string
+  content: any
 }
 
 export interface InstanceOptions {
-  authToken: string,
-  userAgent: string,
-  account: string,
-  workspace: string,
-  region?: string,
-  endpoint?: string,
-  timeout?: number,
+  authToken: string
+  userAgent: string
+  account: string
+  workspace: string
+  region?: string
+  endpoint?: string
+  timeout?: number
 }

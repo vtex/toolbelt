@@ -23,22 +23,18 @@ const AVAILABILITY_RETRY_OPTS = {
 
 const withTimeout = (promise: Promise<any>, timeout: number) => {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new BuilderHubTimeoutError(`Timeout of ${timeout}ms exceeded`)),
-      timeout
-    )
+    const timer = setTimeout(() => reject(new BuilderHubTimeoutError(`Timeout of ${timeout}ms exceeded`)), timeout)
     promise
-      .then((res) => {
+      .then(res => {
         clearTimeout(timer)
         resolve(res)
       })
-      .catch((err) => {
+      .catch(err => {
         clearTimeout(timer)
         reject(err)
       })
   })
 }
-
 
 const mapAvailability = (appId: string, builder: Builder, timeout: number) => {
   return map(async (hintIdx: number) => {
@@ -47,10 +43,7 @@ const mapAvailability = (appId: string, builder: Builder, timeout: number) => {
       return withTimeout(availabilityP, timeout)
     }
     try {
-      const response = await retry(
-        getAvailabilityWithTimeout,
-        AVAILABILITY_RETRY_OPTS
-      ) as AvailabilityResponse
+      const response = (await retry(getAvailabilityWithTimeout, AVAILABILITY_RETRY_OPTS)) as AvailabilityResponse
       const { host: stickyHint, hostname, score } = response
       log.debug(`Retrieved availability score ${score} from host ${hostname}`)
       return { hostname, score, stickyHint }
@@ -99,7 +92,7 @@ export const getSavedOrMostAvailableHost = async (
   const [appName] = appId.split('@')
   if (hasStickyHost(appName)) {
     log.debug(`Found sticky host saved locally`)
-    const {stickyHost, lastUpdated} = getStickyHost(appName)
+    const { stickyHost, lastUpdated } = getStickyHost(appName)
     const timeElapsed = moment.duration(moment().diff(lastUpdated))
     if (timeElapsed.asHours() <= TTL_SAVED_HOST_HOURS) {
       return stickyHost

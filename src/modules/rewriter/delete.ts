@@ -6,7 +6,19 @@ import { createInterface } from 'readline'
 import { rewriter } from '../../clients'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
-import { accountAndWorkspace, deleteMetainfo, ensureIndexCreation, MAX_RETRIES, METAINFO_FILE, progressBar, readCSV, saveMetainfo, sleep, splitJsonArray, validateInput } from './utils'
+import {
+  accountAndWorkspace,
+  deleteMetainfo,
+  ensureIndexCreation,
+  MAX_RETRIES,
+  METAINFO_FILE,
+  progressBar,
+  readCSV,
+  saveMetainfo,
+  sleep,
+  splitJsonArray,
+  validateInput,
+} from './utils'
 
 const DELETES = 'deletes'
 const [account, workspace] = accountAndWorkspace
@@ -24,48 +36,44 @@ const inputSchema = {
 }
 
 const handleDelete = async (csvPath: string) => {
-  const fileHash = await readFile(csvPath).then(data => createHash('md5').update(`${account}_${workspace}_${data}`).digest('hex'))
+  const fileHash = await readFile(csvPath).then(data =>
+    createHash('md5')
+      .update(`${account}_${workspace}_${data}`)
+      .digest('hex')
+  )
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const deletesMetainfo = metainfo[DELETES] || {}
   let counter = deletesMetainfo[fileHash] ? deletesMetainfo[fileHash].counter : 0
   const routes = await readCSV(csvPath)
   validateInput(inputSchema, routes)
 
-  const allPaths = map(
-    ({from}) => from,
-    routes
-  )
+  const allPaths = map(({ from }) => from, routes)
 
   const separatedPaths = splitJsonArray(allPaths)
 
   const bar = progressBar('Deleting routes...', counter, length(separatedPaths))
 
-  const listener = createInterface({ input: process.stdin, output: process.stdout })
-    .on('SIGINT', () => {
-      saveMetainfo(metainfo, DELETES, fileHash, counter)
-      console.log('\n')
-      process.exit()
-    })
+  const listener = createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
+    saveMetainfo(metainfo, DELETES, fileHash, counter)
+    console.log('\n')
+    process.exit()
+  })
 
-  await Promise.each(
-    separatedPaths.splice(counter),
-    async (paths: string[]) => {
-      try {
-        await rewriter.deleteRedirects(paths)
-      } catch (e) {
-        await saveMetainfo(metainfo, 'deletes', fileHash, counter)
-        listener.close()
-        throw e
-      }
-      counter++
-      bar.tick()
+  await Promise.each(separatedPaths.splice(counter), async (paths: string[]) => {
+    try {
+      await rewriter.deleteRedirects(paths)
+    } catch (e) {
+      await saveMetainfo(metainfo, 'deletes', fileHash, counter)
+      listener.close()
+      throw e
     }
-  )
+    counter++
+    bar.tick()
+  })
   log.info('\nFinished!\n')
   listener.close()
   deleteMetainfo(metainfo, DELETES, fileHash)
 }
-
 
 let retryCount = 0
 export default async (csvPath: string) => {

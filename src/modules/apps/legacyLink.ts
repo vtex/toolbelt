@@ -23,21 +23,19 @@ const { link, patch } = apps
 const root = process.cwd()
 const pathProp = prop('path')
 
-const mapFilesToChanges = (files: string[]): Change[] =>
-  files.map((path): Change => ({ path, action: 'save' }))
+const mapFilesToChanges = (files: string[]): Change[] => files.map((path): Change => ({ path, action: 'save' }))
 
 const sendChanges = (() => {
   let queue = []
-  const publishPatch = debounce(
-    (data: Manifest) => {
-      const locator = toMajorLocator(data)
-      log.debug(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
-      return patch(locator, queue)
-        .tap(() => console.log(changesToString(queue, moment().format('HH:mm:ss'))))
-        .tap(() => { queue = [] })
-    },
-    50
-  )
+  const publishPatch = debounce((data: Manifest) => {
+    const locator = toMajorLocator(data)
+    log.debug(`Sending ${queue.length} change` + (queue.length > 1 ? 's' : ''))
+    return patch(locator, queue)
+      .tap(() => console.log(changesToString(queue, moment().format('HH:mm:ss'))))
+      .tap(() => {
+        queue = []
+      })
+  }, 50)
   return async (changes: Change[]) => {
     if (changes.length === 0) {
       return
@@ -68,7 +66,7 @@ const checkAppStatus = (manifest: Manifest) => {
 
 const CACHE_CLEAN_AWAIT_MS = 5000
 
-export default async (options) => {
+export default async options => {
   const manifest = await getManifest()
   const unlisten = logAll(currentContext, log.level, `${manifest.vendor}.${manifest.name}`)
 
@@ -102,11 +100,10 @@ export default async (options) => {
 
   await watch(root, sendChanges, folder)
 
-  createInterface({ input: process.stdin, output: process.stdout })
-    .on('SIGINT', () => {
-      unlisten()
-      log.info('Your app is still in development mode.')
-      log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
-      process.exit()
-    })
+  createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
+    unlisten()
+    log.info('Your app is still in development mode.')
+    log.info(`You can unlink it with: 'vtex unlink ${majorLocator}'`)
+    process.exit()
+  })
 }

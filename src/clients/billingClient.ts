@@ -8,14 +8,20 @@ export default class Billing {
     this.http = HttpClient.forWorkspace('billing.vtex', ioContext, opts)
   }
 
-  public installApp = async (appName: string, termsOfUseAccepted: boolean, force: boolean): Promise<InstallResponse> => {
+  public installApp = async (
+    appName: string,
+    termsOfUseAccepted: boolean,
+    force: boolean
+  ): Promise<InstallResponse> => {
     const graphQLQuery = `mutation InstallApps{
       install(appName:"${appName}", termsOfUseAccepted:${termsOfUseAccepted}, force:${force}) {
         code
         billingOptions
       }
     }`
-    const { data: { data, errors } } = await this.http.postRaw<any>(`/_v/graphql`, { query: graphQLQuery })
+    const {
+      data: { data, errors },
+    } = await this.http.postRaw<any>(`/_v/graphql`, { query: graphQLQuery })
     if (errors) {
       throw new GraphQlError(errors)
     }
