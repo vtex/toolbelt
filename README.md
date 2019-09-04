@@ -95,6 +95,10 @@ $ vtex
     settings set <app> <fields> <value>         Set a value
     settings unset <app> <fields>               Unset a value
 
+    redirects import <csvPath>      Import redirects for the current account and workspace
+    redirects export <csvPath>      Export all redirects in the current account and workspace
+    redirects delete <csvPath>      Delete redirects in the current account and workspace
+
     url                               Prints base URL for current account, workspace and account
 
     workspace                         Alias for vtex workspace info
