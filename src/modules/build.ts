@@ -64,7 +64,7 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
         } = eventData
         if (code === 'success') {
           if (waitCompletion) {
-            unlisten(...allEvents)
+            unlisten(...allEvents) // eslint-disable-line @typescript-eslint/no-use-before-define
             resolve(() => undefined)
           }
           if (onBuild) {
@@ -75,7 +75,7 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
         if (code === 'fail') {
           runErrorAction(details.errorCode, message, onError)
           if (waitCompletion) {
-            unlisten(...allEvents)
+            unlisten(...allEvents) // eslint-disable-line @typescript-eslint/no-use-before-define
             reject(new BuildFailError(eventData))
           }
         }

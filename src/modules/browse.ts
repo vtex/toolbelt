@@ -5,7 +5,7 @@ import * as R from 'ramda'
 import * as conf from '../conf'
 import { clusterIdDomainInfix, publicEndpoint } from '../env'
 // Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯
-const QRCode = require('qrcode-terminal') // tslint:disable-line no-var-requires
+const QRCode = require('qrcode-terminal') // eslint-disable-line @typescript-eslint/no-var-requires
 
 const isSupportRole = (role: string): boolean => role && role.startsWith('vtex.support-authority')
 

@@ -9,7 +9,7 @@ import { dummyLogger } from './dummyLogger'
 import { Rewriter } from './rewriter'
 
 const DEFAULT_TIMEOUT = 15000
-const context = {
+const context: IOContext = {
   account: getAccount(),
   authToken: getToken(),
   production: false,
@@ -24,7 +24,7 @@ const context = {
   requestId: '',
   operationId: '',
   logger: dummyLogger,
-} as IOContext
+}
 
 const options = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,

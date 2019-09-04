@@ -63,7 +63,7 @@ declare global {
     content: Structure
   }
 
-  type Structure = Array<File | Folder>
+  type Structure = (File | Folder)[]
 
   interface Message {
     level: string
