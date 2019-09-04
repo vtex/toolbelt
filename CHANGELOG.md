@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## Refactor
+- Use `prettier` as formatter and `eslint` as linter
+
 ## [2.69.0] - 2019-09-03
 ### Added
 - `vtex redirects import/export/delete` command for handling redirects in `vtex.rewriter`.
