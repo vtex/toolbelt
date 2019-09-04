@@ -3,104 +3,104 @@ import { Readable } from 'stream'
 
 declare global {
   interface Change {
-    path: string,
-    action: 'save' | 'remove',
+    path: string
+    action: 'save' | 'remove'
   }
 
   interface Batch {
-    path: string,
-    content: string | Readable | Buffer | null,
+    path: string
+    content: string | Readable | Buffer | null
   }
 
   interface BatchStream {
-    path: string,
-    content: NodeJS.ReadableStream,
+    path: string
+    content: NodeJS.ReadableStream
   }
 
   type Manifest = AppManifest
 
   interface InstalledApp {
-    app: string,
+    app: string
   }
 
   interface InfraResourceVersions {
     versions: {
-      [region: string]: string[],
-    },
+      [region: string]: string[]
+    }
   }
 
   interface IoVersions {
-    version: string,
-    tested: boolean,
+    version: string
+    tested: boolean
     services: {
-      [name: string]: string,
+      [name: string]: string
     }
   }
 
   interface InfraUpdate {
     [name: string]: {
-      latest: string,
-      current: string,
-    },
+      latest: string
+      current: string
+    }
   }
 
   interface InfraVersionMap {
     latest: {
-      [name: string]: string,
-    },
-    update: InfraUpdate,
+      [name: string]: string
+    }
+    update: InfraUpdate
   }
 
   interface File {
-    type: 'file',
-    name: string,
+    type: 'file'
+    name: string
     content: string
   }
 
   interface Folder {
-    type: 'folder',
-    name: string,
+    type: 'folder'
+    name: string
     content: Structure
   }
 
   type Structure = Array<File | Folder>
 
   interface Message {
-    level: string,
-    sender: string,
-    subject: string,
+    level: string
+    sender: string
+    subject: string
     body: {
-      code: string,
-      message: string,
-      details: any,
-      subject?: string,
-    },
+      code: string
+      message: string
+      details: any
+      subject?: string
+    }
   }
 
   type Unlisten = () => void
 
   interface MessageJSON {
-    data: string,
+    data: string
   }
 
   interface WorkspaceResponse {
-    name: string,
-    weight: number,
-    production: boolean,
+    name: string
+    weight: number
+    production: boolean
   }
 
   interface VersionByApp {
-    location: string,
-    versionIdentifier: string,
+    location: string
+    versionIdentifier: string
   }
 
   interface VersionsByAppResponse {
-    data: VersionByApp[],
+    data: VersionByApp[]
   }
 
   interface Context {
-    account: string,
-    workspace: string,
+    account: string
+    workspace: string
   }
 
   interface InstallResponse {
@@ -154,7 +154,7 @@ declare global {
   }
 
   interface LinkConfig {
-    metadata: Record<string, string>,
-    graph : Record<string, string[]>
+    metadata: Record<string, string>
+    graph: Record<string, string[]>
   }
 }

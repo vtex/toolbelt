@@ -6,12 +6,7 @@ import * as R from 'ramda'
 import { getAccount } from '../../../conf'
 import log from '../../../logger'
 import { createTable } from '../../../table'
-import {
-  abtester,
-  installedABTester,
-  formatDuration,
-} from './utils'
-
+import { abtester, installedABTester, formatDuration } from './utils'
 
 interface ABTestStatus {
   ABTestBeginning: string
@@ -67,24 +62,35 @@ const printResultsTable = (testInfo: ABTestStatus) => {
   } = testInfo
   console.log(chalk.bold(`VTEX AB Test: ${chalk.blue(`${WorkspaceA} (A)`)} vs ${chalk.blue(`${WorkspaceB} (B)`)}\n`))
   if (R.any(R.isNil)([ExpectedLossChoosingA, ExpectedLossChoosingB, ProbabilityAlternativeBeatMaster])) {
-    log.error('Unexpected value of conversion. Perhaps your user traffic is too small and this creates distortions in the data')
-
+    log.error(
+      'Unexpected value of conversion. Perhaps your user traffic is too small and this creates distortions in the data'
+    )
   }
 
   const rawDataTable = createTable()
   rawDataTable.push(bold(['', chalk.blue(WorkspaceA), chalk.blue(WorkspaceB)]))
   rawDataTable.push(bold(['Conversion', formatPercent(ConversionA), formatPercent(ConversionB)]))
-  rawDataTable.push(bold(['Conversion (last 24h)',
-      formatPercent(ConversionALast24Hours), formatPercent(ConversionBLast24Hours)]))
+  rawDataTable.push(
+    bold(['Conversion (last 24h)', formatPercent(ConversionALast24Hours), formatPercent(ConversionBLast24Hours)])
+  )
   rawDataTable.push(bold(['N. of Sessions', formatInteger(WorkspaceASessions), formatInteger(WorkspaceBSessions)]))
-  rawDataTable.push(bold(['N. of Sessions (last 24h)',
-      formatInteger(WorkspaceASessionsLast24Hours), formatInteger(WorkspaceBSessionsLast24Hours)]))
+  rawDataTable.push(
+    bold([
+      'N. of Sessions (last 24h)',
+      formatInteger(WorkspaceASessionsLast24Hours),
+      formatInteger(WorkspaceBSessionsLast24Hours),
+    ])
+  )
   rawDataTable.push(bold(['Revenue', formatInteger(OrdersValueA), formatInteger(OrdersValueB)]))
-  rawDataTable.push(bold(['Revenue (last 24h)', formatInteger(OrdersValueALast24Hours), formatInteger(OrdersValueBLast24Hours)]))
+  rawDataTable.push(
+    bold(['Revenue (last 24h)', formatInteger(OrdersValueALast24Hours), formatInteger(OrdersValueBLast24Hours)])
+  )
 
   const comparisonTable = createTable()
   comparisonTable.push(bold(['', chalk.blue(WorkspaceA), chalk.blue(WorkspaceB)]))
-  comparisonTable.push(bold(['Expected Loss', formatPercent(ExpectedLossChoosingA), formatPercent(ExpectedLossChoosingB)]))
+  comparisonTable.push(
+    bold(['Expected Loss', formatPercent(ExpectedLossChoosingA), formatPercent(ExpectedLossChoosingB)])
+  )
 
   const probabilitiesTable = createTable()
   probabilitiesTable.push(bold(['Event', 'Condition', 'Probability']))

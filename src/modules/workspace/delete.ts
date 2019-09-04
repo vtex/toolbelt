@@ -47,10 +47,12 @@ export default async (name: string, options) => {
   log.debug('Deleting workspace' + (names.length > 1 ? 's' : '') + ':', names.join(', '))
 
   if (!force && contains(workspace, names)) {
-    return log.error(`You are currently using the workspace ${chalk.green(workspace)}, please change your workspace before deleting`)
+    return log.error(
+      `You are currently using the workspace ${chalk.green(workspace)}, please change your workspace before deleting`
+    )
   }
 
-  if (!preConfirm && !await promptWorkspaceDeletion(names)) {
+  if (!preConfirm && !(await promptWorkspaceDeletion(names))) {
     throw new UserCancelledError()
   }
 

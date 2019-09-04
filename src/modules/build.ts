@@ -4,17 +4,17 @@ import log from '../logger'
 import { logAll, onEvent } from '../sse'
 
 interface ListeningOptions {
-  context?: Context,
-  waitCompletion?: boolean,
-  onBuild?: AnyFunction,
-  onError?: { [code: string]: AnyFunction },
-  senders?: string[],
+  context?: Context
+  waitCompletion?: boolean
+  onBuild?: AnyFunction
+  onError?: { [code: string]: AnyFunction }
+  senders?: string[]
 }
 
 type BuildTrigger<T> = () => Promise<T>
 
 interface ListenResponse<T> {
-  response: T,
+  response: T
   unlisten: Unlisten
 }
 
@@ -23,16 +23,25 @@ type BuildEvent = 'logs' | 'build.status'
 
 const allEvents: BuildEvent[] = ['logs', 'build.status']
 
-const onBuildEvent = (ctx: Context, appOrKey: string, callback: (type: BuildEvent, message?: Message) => void, senders?: string[]) => {
+const onBuildEvent = (
+  ctx: Context,
+  appOrKey: string,
+  callback: (type: BuildEvent, message?: Message) => void,
+  senders?: string[]
+) => {
   const unlistenLogs = logAll(ctx, log.level, appOrKey, senders)
-  const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', appOrKey, ['build.status'], message => callback('build.status', message))
+  const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', appOrKey, ['build.status'], message =>
+    callback('build.status', message)
+  )
   const unlistenMap: Record<BuildEvent, AnyFunction> = {
     'build.status': unlistenBuild,
     logs: unlistenLogs,
   }
 
   return (...types: BuildEvent[]) => {
-    types.forEach(type => { unlistenMap[type]() })
+    types.forEach(type => {
+      unlistenMap[type]()
+    })
   }
 }
 
@@ -50,7 +59,9 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
     const { waitCompletion, onError = {}, onBuild = false, context = currentContext, senders = null } = options
     const callback = (eventType, eventData) => {
       if (eventType === 'build.status') {
-        const { body: { code, details, message } } = eventData
+        const {
+          body: { code, details, message },
+        } = eventData
         if (code === 'success') {
           if (waitCompletion) {
             unlisten(...allEvents)
@@ -79,7 +90,11 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
   })
 }
 
-export const listenBuild = async <T = void>(appOrKey: string, triggerBuild: BuildTrigger<T>, options: ListeningOptions = {}): Promise<ListenResponse<T>> => {
+export const listenBuild = async <T = void>(
+  appOrKey: string,
+  triggerBuild: BuildTrigger<T>,
+  options: ListeningOptions = {}
+): Promise<ListenResponse<T>> => {
   const listenPromise = listen(appOrKey, options)
   try {
     const response = await triggerBuild()

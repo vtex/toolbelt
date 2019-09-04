@@ -29,18 +29,18 @@ const tagNamesToUpdateChangelog = ['stable']
 
 const shouldUpdateChangelog = (releaseType, tagName) => {
   return (
-    (releaseTypesToUpdateChangelog.indexOf(releaseType) >= 0) &&
-    (tagNamesToUpdateChangelog.indexOf(tagName) >= 0)
-  ) || semver.valid(releaseType)
+    (releaseTypesToUpdateChangelog.indexOf(releaseType) >= 0 && tagNamesToUpdateChangelog.indexOf(tagName) >= 0) ||
+    semver.valid(releaseType)
+  )
 }
 
-const getNewAndOldVersions = (releaseType, tagName) =>  {
+const getNewAndOldVersions = (releaseType, tagName) => {
   if (semver.valid(releaseType)) {
     // If `releaseType` is a valid (semver) version, use it.
     const oldVersion = readVersion()
     const newVersion = semver.parse(releaseType).version
     if (!semver.gt(newVersion, oldVersion)) {
-    // TODO: Remove the below log.error when toolbelt has better error handling.
+      // TODO: Remove the below log.error when toolbelt has better error handling.
       log.error(`The new version has to be greater than the old one: \
 ${newVersion} <= ${oldVersion}`)
       throw new Error(`The new version has to be greater than the old one: \
@@ -73,7 +73,7 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
 }
 
 export default async (
-  releaseType = 'patch',  // This arg. can also be a valid (semver) version.
+  releaseType = 'patch', // This arg. can also be a valid (semver) version.
   tagName = 'beta'
 ) => {
   checkGit()
@@ -85,10 +85,8 @@ export default async (
   log.info(`New version: ${chalk.bold.yellow(newVersion)}`)
 
   const [month, day, year] = new Date()
-    .toLocaleDateString(
-      'en-US',
-      {year: 'numeric', month: '2-digit', day: '2-digit'}
-    ).split('/')
+    .toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
+    .split('/')
 
   // Pachamama v2 requires that version tags start with a 'v' character.
   const tagText = `v${newVersion}`

@@ -6,13 +6,7 @@ import * as semver from 'semver'
 import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
-import {
-  abtester,
-  installedABTester,
-  formatDays,
-  promptProductionWorkspace,
-  SIGNIFICANCE_LEVELS,
-} from './utils'
+import { abtester, installedABTester, formatDays, promptProductionWorkspace, SIGNIFICANCE_LEVELS } from './utils'
 
 const promptSignificanceLevel = async () => {
   const significanceTimePreviews = await Promise.all(
@@ -21,40 +15,35 @@ const promptSignificanceLevel = async () => {
       values
     )(SIGNIFICANCE_LEVELS)
   )
-  const significanceTimePreviewMap = fromPairs(
-    zip(
-      keys(SIGNIFICANCE_LEVELS),
-      significanceTimePreviews
-    )
-  )
-  return await enquirer.prompt({
-    name: 'level',
-    message: 'Choose the significance level:',
-    type: 'select',
-    choices: values(
-      mapObjIndexed(
-        (value, key) => (
-          {
-            message: `${key} (~ ${formatDays(value as number)})`,
-            value: key,
-          }
-        ))(significanceTimePreviewMap)
-    ),
-  }).then(prop('level'))
+  const significanceTimePreviewMap = fromPairs(zip(keys(SIGNIFICANCE_LEVELS), significanceTimePreviews))
+  return await enquirer
+    .prompt({
+      name: 'level',
+      message: 'Choose the significance level:',
+      type: 'select',
+      choices: values(
+        mapObjIndexed((value, key) => ({
+          message: `${key} (~ ${formatDays(value as number)})`,
+          value: key,
+        }))(significanceTimePreviewMap)
+      ),
+    })
+    .then(prop('level'))
 }
 
 const promptContinue = async (workspace: string, significanceLevel?: string) => {
-  const proceed = significanceLevel ? await promptConfirm(
-    `You are about to start an A/B test between workspaces \
+  const proceed = significanceLevel
+    ? await promptConfirm(
+        `You are about to start an A/B test between workspaces \
 ${chalk.green('master')} and ${chalk.green(workspace)} with \
 ${chalk.red(significanceLevel)} significance level. Proceed?`,
-    false
-  ) :
-  await promptConfirm(
-    `You are about to start an A/B test between workspaces \
+        false
+      )
+    : await promptConfirm(
+        `You are about to start an A/B test between workspaces \
 ${chalk.green('master')} and ${chalk.green(workspace)}. Proceed?`,
-    false
-  )
+        false
+      )
   if (!proceed) {
     throw new UserCancelledError()
   }
@@ -81,10 +70,8 @@ export default async () => {
         ${significanceLevel} significance level`)
     await abtester.startLegacy(workspace, significanceLevelValue)
     log.info(`Workspace ${chalk.green(workspace)} in A/B test`)
-    log.info(
-      `You can stop the test using ${chalk.blue('vtex workspace abtest finish')}`
-    )
-  } catch(err) {
+    log.info(`You can stop the test using ${chalk.blue('vtex workspace abtest finish')}`)
+  } catch (err) {
     if (err.message === 'Workspace not found') {
       console.log(`Test not initialized due to workspace ${workspace} not found by ab-tester.`)
     }

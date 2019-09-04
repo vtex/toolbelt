@@ -14,13 +14,14 @@ const { uninstallApp } = apps
 
 const promptAppUninstall = (appsList: string[]): Promise<void> =>
   promptConfirm(
-    `Are you sure you want to uninstall ${appsList.join(', ')} from account ${chalk.blue(getAccount())}, workspace ${chalk.green(getWorkspace())}?`
-  ).then((answer) => {
-      if (!answer) {
-        throw new UserCancelledError()
-      }
+    `Are you sure you want to uninstall ${appsList.join(', ')} from account ${chalk.blue(
+      getAccount()
+    )}, workspace ${chalk.green(getWorkspace())}?`
+  ).then(answer => {
+    if (!answer) {
+      throw new UserCancelledError()
+    }
   })
-
 
 const uninstallApps = async (appsList: string[]): Promise<void> => {
   if (appsList.length === 0) {

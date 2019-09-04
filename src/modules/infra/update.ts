@@ -13,13 +13,9 @@ import { diffVersions, getTag } from './utils'
 
 const { listAvailableServices, listInstalledServices, installService } = router
 
-const promptUpdate = (): Bluebird<boolean> =>
-  Promise.resolve(
-    promptConfirm('Apply version updates?')
-  )
+const promptUpdate = (): Bluebird<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
 
-const calculateColSize = (names: string[]): number =>
-  Math.max(...names.map(n => n.length))
+const calculateColSize = (names: string[]): number => Math.max(...names.map(n => n.length))
 
 const logLatest = (name: string, version: string, colSize: number): void =>
   console.log(`${pad(name, colSize)}  ${chalk.yellow(version)}`)
@@ -38,29 +34,29 @@ const logVersionMap = ({ latest, update }: InfraVersionMap): void => {
 }
 
 const createVersionMap = (availableRes: AvailableServices, installedRes: InstalledService[]): InfraVersionMap =>
-  installedRes.reduce((acc, { name, version: currentVersion }) => {
-    const tag = getTag(currentVersion)
-    const latestVersion = availableRes[name].versions[Region.Production] // See comment in src/modules/infra/install.ts:82
-      .filter(v => getTag(v) === tag)
-      .sort(semver.rcompare)[0]
-    if (currentVersion !== latestVersion) {
-      acc.update[name] = {
-        current: currentVersion,
-        latest: latestVersion,
+  installedRes.reduce(
+    (acc, { name, version: currentVersion }) => {
+      const tag = getTag(currentVersion)
+      const latestVersion = availableRes[name].versions[Region.Production] // See comment in src/modules/infra/install.ts:82
+        .filter(v => getTag(v) === tag)
+        .sort(semver.rcompare)[0]
+      if (currentVersion !== latestVersion) {
+        acc.update[name] = {
+          current: currentVersion,
+          latest: latestVersion,
+        }
+      } else {
+        acc.latest[name] = currentVersion
       }
-    } else {
-      acc.latest[name] = currentVersion
-    }
-    return acc
-  }, { latest: {}, update: {} })
+      return acc
+    },
+    { latest: {}, update: {} }
+  )
 
-const hasUpdate = (update: InfraUpdate): boolean =>
-  Object.keys(update).length > 0
+const hasUpdate = (update: InfraUpdate): boolean => Object.keys(update).length > 0
 
 const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
-  Bluebird.all(
-    Object.keys(update).map(name => installService(name, update[name].latest))
-  )
+  Bluebird.all(Object.keys(update).map(name => installService(name, update[name].latest)))
 
 export default () => {
   const spinner = ora('Getting available updates').start()
@@ -72,16 +68,16 @@ export default () => {
       console.log('')
       return hasUpdate(update)
         ? promptUpdate()
-          .then(confirm => {
-            if (!confirm) {
-              return
-            }
-            spinner.text = 'Installing'
-            spinner.start()
-            return installUpdates(update)
-          })
-          .then(() => spinner.stop())
-          .then(() => log.info('All updates were installed'))
+            .then(confirm => {
+              if (!confirm) {
+                return
+              }
+              spinner.text = 'Installing'
+              spinner.start()
+              return installUpdates(update)
+            })
+            .then(() => spinner.stop())
+            .then(() => log.info('All updates were installed'))
         : log.info('All up to date!')
     })
     .catch(err => {

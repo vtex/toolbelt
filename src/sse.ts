@@ -12,19 +12,12 @@ import { isVerbose } from './utils'
 
 const levelAdapter = { warning: 'warn' }
 
-const onOpen = type => () =>
-  log.debug(`Connected to ${type} server`)
+const onOpen = type => () => log.debug(`Connected to ${type} server`)
 
-const onError = type => (err) =>
-  log.error(`Connection to ${type} server has failed with status ${err.status}`)
+const onError = type => err => log.error(`Connection to ${type} server has failed with status ${err.status}`)
 
 const parseMessage = (msg: MessageJSON): Message => {
-  const {
-    sender,
-    subject,
-    level,
-    body,
-  }: Message = JSON.parse(msg.data)
+  const { sender, subject, level, body }: Message = JSON.parse(msg.data)
   return {
     body,
     level: levelAdapter[level] || level,
@@ -37,7 +30,7 @@ const createEventSource = (source: string) =>
   new EventSource(source, {
     headers: {
       authorization: `bearer ${getToken()}`,
-      'cookie': envCookies(),
+      cookie: envCookies(),
       'user-agent': userAgent,
     },
   })
@@ -51,9 +44,10 @@ const parseKeyToQueryParameter = (keys: string[]): string => {
 }
 
 const matchSubject = (msg: Message, subject: string) => {
-  return msg.subject.startsWith(subject)
-    || msg.subject.startsWith('-')
-    && (pathOr('', ['body', 'subject'], msg) as string).startsWith(subject)
+  return (
+    msg.subject.startsWith(subject) ||
+    (msg.subject.startsWith('-') && (pathOr('', ['body', 'subject'], msg) as string).startsWith(subject))
+  )
 }
 
 const hasNoSubject = (msg: Message) => {
@@ -61,9 +55,11 @@ const hasNoSubject = (msg: Message) => {
 }
 
 const filterMessage = (subject: string, logAny: boolean = false, senders?: string[]) => (msg: Message) => {
-  return (matchSubject(msg, subject) || logAny && hasNoSubject(msg))
-    && (!senders || contains(removeVersion(msg.sender), senders))
-    && msg
+  return (
+    (matchSubject(msg, subject) || (logAny && hasNoSubject(msg))) &&
+    (!senders || contains(removeVersion(msg.sender), senders)) &&
+    msg
+  )
 }
 
 const maybeCall = (callback: (message: Message) => void) => (msg: Message) => {
@@ -72,20 +68,42 @@ const maybeCall = (callback: (message: Message) => void) => (msg: Message) => {
   }
 }
 
-const onLog = (ctx: Context, subject: string, logLevel: string, callback: (message: Message) => void, senders?: string[]): Unlisten => {
+const onLog = (
+  ctx: Context,
+  subject: string,
+  logLevel: string,
+  callback: (message: Message) => void,
+  senders?: string[]
+): Unlisten => {
   const source = `${endpoint('colossus')}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)
-  es.onmessage = compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage)
+  es.onmessage = compose(
+    maybeCall(callback),
+    filterMessage(subject, true, senders),
+    parseMessage
+  )
   es.onerror = onError(`${logLevel} log`)
   return es.close.bind(es)
 }
 
-export const onEvent = (ctx: Context, sender: string, subject: string, keys: string[], callback: (message: Message) => void): Unlisten => {
-  const source = `${endpoint('colossus')}/${ctx.account}/${ctx.workspace}/events?sender=${sender}${parseKeyToQueryParameter(keys)}`
+export const onEvent = (
+  ctx: Context,
+  sender: string,
+  subject: string,
+  keys: string[],
+  callback: (message: Message) => void
+): Unlisten => {
+  const source = `${endpoint('colossus')}/${ctx.account}/${
+    ctx.workspace
+  }/events?sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
-  es.onmessage = compose(maybeCall(callback), filterMessage(subject), parseMessage)
+  es.onmessage = compose(
+    maybeCall(callback),
+    filterMessage(subject),
+    parseMessage
+  )
   es.onerror = onError('event')
   return es.close.bind(es)
 }
@@ -96,28 +114,32 @@ const filterAndMaybeLogVTEXLogs = (message: string) => {
     return ''
   }
 
-  return message.split('\n').map((m: string) => {
-    try {
-      const obj = JSON.parse(m)
-      if (obj.__VTEX_IO_LOG) {
-        if (isVerbose) {
-          delete obj.__VTEX_IO_LOG
-          console.log(chalk.dim('// The following object was logged to Splunk:'))
-          console.log(obj)
+  return (
+    message
+      .split('\n')
+      .map((m: string) => {
+        try {
+          const obj = JSON.parse(m)
+          if (obj.__VTEX_IO_LOG) {
+            if (isVerbose) {
+              delete obj.__VTEX_IO_LOG
+              console.log(chalk.dim('// The following object was logged to Splunk:'))
+              console.log(obj)
+            }
+            return ''
+          } else {
+            // Not a log object, just return original string
+            return m
+          }
+        } catch (e) {
+          // Not an object, just return original string
+          return m
         }
-        return ''
-      } else {
-        // Not a log object, just return original string
-        return m
-      }
-    } catch (e) {
-      // Not an object, just return original string
-      return m
-    }
-  })
-  .filter(s => s !== '')
-  // Undo split
-  .join('\n')
+      })
+      .filter(s => s !== '')
+      // Undo split
+      .join('\n')
+  )
 }
 
 export const logAll = (context: Context, logLevel: string, id: string, senders?: string[]) => {
@@ -143,7 +165,12 @@ export const logAll = (context: Context, logLevel: string, id: string, senders?:
   return onLog(context, id, logLevel, callback, senders)
 }
 
-export const onAuth = (account: string, workspace: string, state: string, returnUrl: string): Promise<[string, string]> => {
+export const onAuth = (
+  account: string,
+  workspace: string,
+  state: string,
+  returnUrl: string
+): Promise<[string, string]> => {
   const source = `https://${workspace}--${account}.${publicEndpoint()}/_v//private/auth-server/v1/sse/${state}`
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
@@ -153,7 +180,7 @@ export const onAuth = (account: string, workspace: string, state: string, return
       resolve([token, returnUrl])
     }
 
-    es.onerror = (event) => {
+    es.onerror = event => {
       es.close()
       reject(new SSEConnectionError(`Connection to login server has failed with status ${event.status}`, event.status))
     }

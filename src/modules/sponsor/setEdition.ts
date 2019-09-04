@@ -10,9 +10,7 @@ import { switchToPreviousAccount } from '../utils'
 import { getIOContext, IOClientOptions } from '../utils'
 
 const promptChangeToSponsorAccount = async (sponsorAccount: string) => {
-  const proceed = await promptConfirm(
-    `Do you wish to log into the sponsor account ${sponsorAccount}?`
-  )
+  const proceed = await promptConfirm(`Do you wish to log into the sponsor account ${sponsorAccount}?`)
   if (!proceed) {
     throw new UserCancelledError()
   }
@@ -33,6 +31,10 @@ export default async (edition: string) => {
   }
   const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
   await sponsorClientForSponsorAccount.setEdition(previousAccount, edition)
-  log.info(`Successfully set new edition in account ${chalk.blue(previousAccount)}. You stil need to wait for the house keeper to update this account.`)
+  log.info(
+    `Successfully set new edition in account ${chalk.blue(
+      previousAccount
+    )}. You stil need to wait for the house keeper to update this account.`
+  )
   await switchToPreviousAccount(previousConf)
 }

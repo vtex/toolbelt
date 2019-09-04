@@ -5,7 +5,7 @@ const noop = () => {
   return
 }
 
-export const dummyLogger = {
+export const dummyLogger = ({
   account: getAccount(),
   workspace: getWorkspace(),
   operationId: '',
@@ -15,4 +15,4 @@ export const dummyLogger = {
   warn: noop,
   error: noop,
   sendLog: noop,
-} as unknown as Logger
+} as unknown) as Logger

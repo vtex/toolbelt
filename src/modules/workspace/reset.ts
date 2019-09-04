@@ -30,7 +30,11 @@ export default async (name: string, options) => {
   try {
     log.debug('Starting to reset workspace', workspace, 'with production =', production)
     await (workspaces as any).reset(account, workspace, { production })
-    log.info(`Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')} using ${chalk.green(`production=${production}`)}`)
+    log.info(
+      `Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')} using ${chalk.green(
+        `production=${production}`
+      )}`
+    )
   } catch (err) {
     log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
     if (err.response) {

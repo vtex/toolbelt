@@ -7,7 +7,7 @@ import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
-import { join, resolve as resolvePath, sep} from 'path'
+import { join, resolve as resolvePath, sep } from 'path'
 import { compose, concat, intersection, isEmpty, keys, map, not, pipe, prop, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
@@ -51,26 +51,36 @@ const builderHttp = axios.create({
   baseURL: `http://builder-hub.vtex.${region()}.vtex.io/${account}/${workspace}`,
   timeout: 2000,
   headers: {
-    'Authorization': getToken(),
+    Authorization: getToken(),
   },
 })
 
-const shouldStartDebugger = (manifest: Manifest) => compose<Manifest, any, string[], string[], boolean, boolean>(
-  not,
-  isEmpty,
-  intersection(buildersToStartDebugger),
-  keys,
-  prop('builders')
-)(manifest)
+const shouldStartDebugger = (manifest: Manifest) =>
+  compose<Manifest, any, string[], string[], boolean, boolean>(
+    not,
+    isEmpty,
+    intersection(buildersToStartDebugger),
+    keys,
+    prop('builders')
+  )(manifest)
 
-
-const warnAndLinkFromStart = (appId: string, builder: Builder, unsafe: boolean, extraData: { linkConfig: LinkConfig } = { linkConfig: null }) => {
+const warnAndLinkFromStart = (
+  appId: string,
+  builder: Builder,
+  unsafe: boolean,
+  extraData: { linkConfig: LinkConfig } = { linkConfig: null }
+) => {
   log.warn('Initial link requested by builder')
   performInitialLink(appId, builder, extraData, unsafe)
   return null
 }
 
-const watchAndSendChanges = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<any> => {
+const watchAndSendChanges = async (
+  appId: string,
+  builder: Builder,
+  extraData: { linkConfig: LinkConfig },
+  unsafe: boolean
+): Promise<any> => {
   const changeQueue: Change[] = []
 
   const onInitialLinkRequired = e => {
@@ -91,12 +101,14 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   }
 
   const sendChanges = debounce(() => {
-    builder.relinkApp(appId, changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
+    builder
+      .relinkApp(appId, changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
       .catch(onInitialLinkRequired)
   }, 1000)
 
   const pathToChange = (path: string, remove?: boolean): Change => ({
-    content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'), path : pathModifier(path),
+    content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'),
+    path: pathModifier(path),
   })
 
   const moduleAndMetadata = toPairs(extraData.linkConfig.metadata)
@@ -113,11 +125,11 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
 
   const pathModifier = pipe(
     mapLocalToBuiderPath,
-    path => path.split(sep).join('/'))
+    path => path.split(sep).join('/')
+  )
 
-  const addIgnoreNodeModulesRule =
-    (paths: Array<string | ((path: string) => boolean)>) =>
-      paths.concat((path: string) => path.includes('node_modules'))
+  const addIgnoreNodeModulesRule = (paths: Array<string | ((path: string) => boolean)>) =>
+    paths.concat((path: string) => path.includes('node_modules'))
 
   const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
     atomic: stabilityThreshold,
@@ -141,7 +153,12 @@ const watchAndSendChanges = async (appId: string, builder: Builder, extraData : 
   })
 }
 
-const performInitialLink = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<void> => {
+const performInitialLink = async (
+  appId: string,
+  builder: Builder,
+  extraData: { linkConfig: LinkConfig },
+  unsafe: boolean
+): Promise<void> => {
   const linkConfig = await createLinkConfig(root)
 
   extraData.linkConfig = linkConfig
@@ -151,16 +168,19 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     const plural = usedDeps.length > 1
     log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
     usedDeps.forEach(([dep, path]) => log.info(`${dep} (from: ${path})`))
-    log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
+    log.info(
+      `If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${
+        plural ? 'them' : 'it'
+      }`
+    )
   }
 
   const linkApp = async (bail: any, tryCount: number) => {
     // wrapper for builder.linkApp to be used with the retry function below.
-    const [localFiles, linkedFiles] =
-      await Promise.all([
-        listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
-        getLinkedFiles(linkConfig),
-      ])
+    const [localFiles, linkedFiles] = await Promise.all([
+      listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
+      getLinkedFiles(linkConfig),
+    ])
     const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
 
     if (tryCount === 1) {
@@ -171,7 +191,7 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
     }
 
     if (tryCount > 1) {
-      log.info(`Retrying...${tryCount-1}`)
+      log.info(`Retrying...${tryCount - 1}`)
     }
 
     const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
@@ -200,13 +220,13 @@ const performInitialLink = async (appId: string, builder: Builder, extraData : {
   await retry(linkApp, RETRY_OPTS_INITIAL_LINK)
 }
 
-export default async (options) => {
+export default async options => {
   await validateAppAction('link')
   const unsafe = !!(options.unsafe || options.u)
   const manifest = await getManifest()
   try {
     await writeManifestSchema()
-  } catch(e) {
+  } catch (e) {
     log.debug('Failed to write schema on manifest.')
   }
   const builderHubMessage = await checkBuilderHubMessage('link')
@@ -214,8 +234,7 @@ export default async (options) => {
     await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
   }
 
-  if (manifest.builders.render
-    || manifest.builders['functions-ts']) {
+  if (manifest.builders.render || manifest.builders['functions-ts']) {
     return legacyLink(options)
   }
 
@@ -226,9 +245,9 @@ export default async (options) => {
   }
   try {
     const aux = await getPinnedDependencies(builderHttp)
-    const pinnedDeps : Map<string, string> = new Map(Object.entries(aux))
+    const pinnedDeps: Map<string, string> = new Map(Object.entries(aux))
     await bluebird.map(buildersToRunLocalYarn, fixPinnedDependencies(pinnedDeps), { concurrency: 1 })
-  } catch(e) {
+  } catch (e) {
     log.info('Failed to check for pinned dependencies')
   }
   // Always run yarn locally for some builders
@@ -243,7 +262,9 @@ export default async (options) => {
   }
 
   const onError = {
-    build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
+    build_failed: () => {
+      log.error(`App build failed. Waiting for changes...`)
+    },
     initial_link_required: () => warnAndLinkFromStart(appId, builder, unsafe),
   }
 
@@ -263,7 +284,11 @@ export default async (options) => {
       try {
         const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
         debuggerStarted = true
-        log.info(`Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue('chrome://inspect')} in Google Chrome to debug your running application.`)
+        log.info(
+          `Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue(
+            'chrome://inspect'
+          )} in Google Chrome to debug your running application.`
+        )
       } catch (e) {
         log.error(e.message)
       }
@@ -281,30 +306,37 @@ export default async (options) => {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
       return
     }
-    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
+    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(
+      prop('unlisten')
+    )
   } catch (e) {
     if (e.response) {
       const { data } = e.response
       if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
-        return log.error('Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)')
+        return log.error(
+          'Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)'
+        )
       }
 
       if (data.code === 'link_on_production') {
-        throw new CommandError(`Please use a dev workspace to link apps. Create one with (${chalk.blue('vtex use <workspace> -rp')}) to be able to link apps`)
+        throw new CommandError(
+          `Please use a dev workspace to link apps. Create one with (${chalk.blue(
+            'vtex use <workspace> -rp'
+          )}) to be able to link apps`
+        )
       }
     }
     throw e
   }
 
-  createInterface({ input: process.stdin, output: process.stdout })
-    .on('SIGINT', () => {
-      if (unlistenBuild) {
-        unlistenBuild()
-      }
-      log.info('Your app is still in development mode.')
-      log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
-      process.exit()
-    })
+  createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
+    if (unlistenBuild) {
+      unlistenBuild()
+    }
+    log.info('Your app is still in development mode.')
+    log.info(`You can unlink it with: 'vtex unlink ${appId}'`)
+    process.exit()
+  })
 
   await watchAndSendChanges(appId, builder, extraData, unsafe)
 }

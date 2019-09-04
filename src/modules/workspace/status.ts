@@ -4,7 +4,7 @@ import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
 
-const workspaceState = (meta: WorkspaceResponse) => meta.production ? 'production' : 'dev'
+const workspaceState = (meta: WorkspaceResponse) => (meta.production ? 'production' : 'dev')
 
 export default async (name: string): Promise<void> => {
   const account = getAccount()
@@ -12,5 +12,9 @@ export default async (name: string): Promise<void> => {
 
   const meta = await workspaces.get(account, workspace)
 
-  log.info(`Workspace ${chalk.green(workspace)} in account ${chalk.blue(account)} is a ${chalk.yellowBright(workspaceState(meta))} workspace with weight ${chalk.yellowBright(`${meta.weight}`)}`)
+  log.info(
+    `Workspace ${chalk.green(workspace)} in account ${chalk.blue(account)} is a ${chalk.yellowBright(
+      workspaceState(meta)
+    )} workspace with weight ${chalk.yellowBright(`${meta.weight}`)}`
+  )
 }

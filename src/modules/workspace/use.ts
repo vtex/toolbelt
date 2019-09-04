@@ -2,7 +2,7 @@ import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
-import { getAccount, saveWorkspace, getLastUsedWorkspace} from '../../conf'
+import { getAccount, saveWorkspace, getLastUsedWorkspace } from '../../conf'
 import { UserCancelledError, CommandError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
@@ -22,8 +22,8 @@ const shouldPromptProduction = (production: boolean): boolean => {
 }
 
 export default async (name: string, options?) => {
-  const reset = options ? (options.r || options.reset) : null
-  let production = options ? (options.p || options.production) : null
+  const reset = options ? options.r || options.reset : null
+  let production = options ? options.p || options.production : null
   let confirm
   const accountName = getAccount()
 
@@ -45,7 +45,7 @@ export default async (name: string, options?) => {
       if (shouldPromptProduction(production)) {
         production = await promptWorkspaceProductionFlag()
       }
-      await createCmd(name, {production})
+      await createCmd(name, { production })
     } else {
       throw err
     }
@@ -53,7 +53,7 @@ export default async (name: string, options?) => {
   await saveWorkspace(name)
 
   if (reset && !confirm) {
-    await resetWks(name, {production})
+    await resetWks(name, { production })
   }
   log.info(`You're now using the workspace ${chalk.green(name)} on account ${chalk.blue(accountName)}!`)
 }

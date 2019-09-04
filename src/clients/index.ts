@@ -18,7 +18,7 @@ const context = {
   route: {
     id: '',
     params: {},
-  } ,
+  },
   userAgent,
   workspace: getWorkspace() || 'master',
   requestId: '',
@@ -30,12 +30,15 @@ const options = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
 }
 
-const interceptor = <T>(client): T => new Proxy({}, {
-  get: (_, name) => () => {
-    throw new Error(`Error trying to call ${client}.${name.toString()} before login.`)
-  },
-}) as T
-
+const interceptor = <T>(client): T =>
+  new Proxy(
+    {},
+    {
+      get: (_, name) => () => {
+        throw new Error(`Error trying to call ${client}.${name.toString()} before login.`)
+      },
+    }
+  ) as T
 
 const createClients = (customContext: Partial<IOContext> = {}, customOptions: InstanceOptions = {}) => {
   const mergedContext = { ...context, ...customContext }
@@ -51,34 +54,22 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
 
 const [apps, router, workspaces, logger, events, billing, rewriter] = getToken()
   ? [
-    new Apps(context, options),
-    new Router(context, options),
-    new Workspaces(context, options),
-    new Logger(context),
-    new Events(context),
-    new Billing(context, options),
-    new Rewriter(context, options),
-  ]
+      new Apps(context, options),
+      new Router(context, options),
+      new Workspaces(context, options),
+      new Logger(context),
+      new Events(context),
+      new Billing(context, options),
+      new Rewriter(context, options),
+    ]
   : [
-    interceptor<Apps>('apps'),
-    interceptor<Router>('router'),
-    interceptor<Workspaces>('workspaces'),
-    interceptor<Logger>('logger'),
-    interceptor<Events>('events'),
-    interceptor<Billing>('billing'),
-    interceptor<Rewriter>('rewriter'),
-  ]
+      interceptor<Apps>('apps'),
+      interceptor<Router>('router'),
+      interceptor<Workspaces>('workspaces'),
+      interceptor<Logger>('logger'),
+      interceptor<Events>('events'),
+      interceptor<Billing>('billing'),
+      interceptor<Rewriter>('rewriter'),
+    ]
 
-export { 
-  apps, 
-  router, 
-  workspaces, 
-  logger,
-  events, 
-  createClients, 
-  billing,
-  rewriter
-}
-
-
-
+export { apps, router, workspaces, logger, events, createClients, billing, rewriter }

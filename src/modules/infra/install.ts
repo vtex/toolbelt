@@ -12,13 +12,11 @@ import { diffVersions, getTag } from './utils'
 
 const { getAvailableVersions, listInstalledServices, installService } = router
 
-const promptInstall = (): Bluebird<boolean> =>
-  Promise.resolve(
-    promptConfirm('Continue with the installation?')
-  )
+const promptInstall = (): Bluebird<boolean> => Promise.resolve(promptConfirm('Continue with the installation?'))
 
 const findVersion = (pool: string[], predicate: (version: string) => boolean): string =>
-  pool.filter(v => semver.valid(v))
+  pool
+    .filter(v => semver.valid(v))
     .filter(predicate)
     .sort(semver.rcompare)
     .shift()
@@ -38,10 +36,13 @@ const getNewVersion = curry<string, string, string[], [string, string]>(
 
     const hasValidRange = semver.validRange(suffix, true)
     const hasTagOrInstalledVersion = !tag || !installedVersion
-    const fn = hasValidRange ? v => semver.satisfies(v, suffix, true)
-      : suffix && !hasValidSuffix ? v => getTag(v) === null
-        : hasTagOrInstalledVersion ? v => semver.prerelease(v) === null
-          : v => getTag(v) === tag
+    const fn = hasValidRange
+      ? v => semver.satisfies(v, suffix, true)
+      : suffix && !hasValidSuffix
+      ? v => getTag(v) === null
+      : hasTagOrInstalledVersion
+      ? v => semver.prerelease(v) === null
+      : v => getTag(v) === tag
     const newVersion = findVersion(availableVersions, fn)
     return [installedVersion, newVersion]
   }
@@ -65,7 +66,7 @@ const logInstall = curry<string, [string, string], void>(
 )
 
 const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolean =>
-  !!(newVersion && (newVersion !== installedVersion))
+  !!(newVersion && newVersion !== installedVersion)
 
 const getInstalledVersion = (service: string): Bluebird<string> =>
   listInstalledServices()
@@ -89,19 +90,19 @@ export default (name: string) => {
     .then((versions: [string, string]) => {
       return hasNewVersion(versions)
         ? Promise.resolve(console.log(''))
-          .then(promptInstall)
-          .then(confirm => {
-            if (!confirm) {
-              return
-            }
-            spinner.text = 'Installing'
-            spinner.start()
-            return installService(service, versions[1])
-          })
-          .then(() => {
-            spinner.stop()
-            log.info('Installation complete')
-          })
+            .then(promptInstall)
+            .then(confirm => {
+              if (!confirm) {
+                return
+              }
+              spinner.text = 'Installing'
+              spinner.start()
+              return installService(service, versions[1])
+            })
+            .then(() => {
+              spinner.stop()
+              log.info('Installation complete')
+            })
         : null
     })
     .catch(err => {

@@ -16,7 +16,8 @@ import { onAuth } from '../../sse'
 import { promptConfirm } from '../prompts'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
-const details = cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`
+const details =
+  cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`
 
 const oldLoginUrls = (workspace: string, state: string): [string, string] => {
   const returnUrl = `/_v/private/auth-server/v1/callback?workspace=${workspace}&state=${state}`
@@ -45,10 +46,7 @@ const getLoginUrl = async (account: string, workspace: string, state: string): P
   }
   const fullReturnUrl = baseUrl + returnUrl
   const returnUrlEncoded = encodeURIComponent(returnUrl)
-  return [
-    `${baseUrl}${url}&returnUrl=${returnUrlEncoded}`,
-    fullReturnUrl,
-  ]
+  return [`${baseUrl}${url}&returnUrl=${returnUrlEncoded}`, fullReturnUrl]
 }
 
 const startUserAuth = async (account: string, workspace: string): Promise<string[] | never> => {
@@ -61,23 +59,24 @@ const startUserAuth = async (account: string, workspace: string): Promise<string
 const promptUsePrevious = (): Bluebird<boolean> =>
   promptConfirm(`Do you want to use the previous login details? (${details})`)
 
-const promptAccount = async (promptPreviousAcc) => {
+const promptAccount = async promptPreviousAcc => {
   if (promptPreviousAcc) {
-    const confirm =  await promptConfirm(
-      `Use previous account? (${chalk.blue(cachedAccount)})`
-    )
+    const confirm = await promptConfirm(`Use previous account? (${chalk.blue(cachedAccount)})`)
     if (confirm) {
       return cachedAccount
     }
   }
 
-  const account = prop('account', await enquirer.prompt({
-    type: 'input',
-    result: (s) => s.trim(),
-    message: 'Account:',
-    name: 'account',
-    validate: (s) => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
-  }))
+  const account = prop(
+    'account',
+    await enquirer.prompt({
+      type: 'input',
+      result: s => s.trim(),
+      message: 'Account:',
+      name: 'account',
+      validate: s => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
+    })
+  )
   return account
 }
 
@@ -88,7 +87,11 @@ const saveCredentials = (login: string, account: string, token: string, workspac
   conf.saveWorkspace(workspace)
 }
 
-const authAndSave = async (account, workspace, optionWorkspace): Promise<{ login: string, token: string, returnUrl: string }> => {
+const authAndSave = async (
+  account,
+  workspace,
+  optionWorkspace
+): Promise<{ login: string; token: string; returnUrl: string }> => {
   const [token, returnUrl] = await startUserAuth(account, optionWorkspace ? workspace : 'master')
   const decodedToken = jwt.decode(token)
   const login: string = decodedToken.sub
@@ -99,18 +102,21 @@ const authAndSave = async (account, workspace, optionWorkspace): Promise<{ login
 
 const closeChromeTabIfMac = (returnUrl: string) => {
   if (process.platform === 'darwin') {
-    const cp = childProcess.spawn('osascript', [join(__dirname, '../../../scripts/closeChrome.scpt'), returnUrl], {stdio: 'ignore', detached: true})
+    const cp = childProcess.spawn('osascript', [join(__dirname, '../../../scripts/closeChrome.scpt'), returnUrl], {
+      stdio: 'ignore',
+      detached: true,
+    })
     cp.unref()
   }
-
 }
 
-export default async (options) => {
+export default async options => {
   const defaultArgumentAccount = options && options._ && options._[0]
-  const optionAccount = options ? (options.a || options.account || defaultArgumentAccount) : null
-  const optionWorkspace = options ? (options.w || options.workspace) : null
-  const usePrevious = !(optionAccount || optionWorkspace) && details && await promptUsePrevious()
-  const account = optionAccount || (usePrevious && cachedAccount) || await promptAccount(cachedAccount && optionWorkspace)
+  const optionAccount = options ? options.a || options.account || defaultArgumentAccount : null
+  const optionWorkspace = options ? options.w || options.workspace : null
+  const usePrevious = !(optionAccount || optionWorkspace) && details && (await promptUsePrevious())
+  const account =
+    optionAccount || (usePrevious && cachedAccount) || (await promptAccount(cachedAccount && optionWorkspace))
   const workspace = optionWorkspace || (usePrevious && cachedWorkspace) || 'master'
   try {
     const { login, token, returnUrl } = await authAndSave(account, workspace, optionWorkspace)

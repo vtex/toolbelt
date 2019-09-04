@@ -40,15 +40,14 @@ let loginPending = false
 // Setup logging
 if (isVerbose) {
   log.level = 'debug'
-  ;(log.default.transports.console as any).timestamp = () =>
-    chalk.grey(moment().format('HH:mm:ss.SSS'))
+  ;(log.default.transports.console as any).timestamp = () => chalk.grey(moment().format('HH:mm:ss.SSS'))
 }
 
 if (process.env.NODE_ENV === 'development') {
   try {
     require('longjohn') // tslint:disable-line
   } catch (e) {
-    log.debug('Couldn\'t require longjohn. If you want long stack traces, run: npm install -g longjohn')
+    log.debug("Couldn't require longjohn. If you want long stack traces, run: npm install -g longjohn")
   }
 }
 
@@ -61,7 +60,9 @@ const logToolbeltVersion = () => {
 
 const hasValidToken = (): boolean => {
   const token = getToken()
-  if (!token) { return false }
+  if (!token) {
+    return false
+  }
 
   const decoded = decode(token)
   return decoded && typeof decoded !== 'string' && decoded.exp && Number(decoded.exp) >= Date.now() / 1000
@@ -108,7 +109,9 @@ const onError = e => {
         log.error('There was an authentication error. Please login again')
         // Try to login and re-issue the command.
         loginPending = true
-        return run({ command: loginCmd }).tap(clearCachedModules).then(main) // TODO: catch with different handler for second error
+        return run({ command: loginCmd })
+          .tap(clearCachedModules)
+          .then(main) // TODO: catch with different handler for second error
       } else {
         return // Prevent multiple login attempts
       }

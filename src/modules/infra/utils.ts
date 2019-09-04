@@ -4,8 +4,7 @@ import * as semver from 'semver'
 
 const EMPTY_STRING = ''
 
-const stitch = (main: string, prerelease: string): string =>
-  prerelease.length > 0 ? `${main}-${prerelease}` : main
+const stitch = (main: string, prerelease: string): string => (prerelease.length > 0 ? `${main}-${prerelease}` : main)
 
 //
 // Zips all items from two lists using EMPTY_STRING for any missing items.
@@ -27,21 +26,20 @@ const diff = (a: string | string[], b: string | string[]): string[] => {
   let fromFormatter = x => x
   let toFormatter = x => x
   R.compose(
-    R.map(
-      ([aDigit, bDigit]) => {
-        if (aDigit !== bDigit) {
-          fromFormatter = x => chalk.red(x)
-          toFormatter = x => chalk.green(x)
-        }
-        if (aDigit !== EMPTY_STRING) {
-          from.push(fromFormatter(aDigit))
-        }
-        if (bDigit !== EMPTY_STRING) {
-          to.push(toFormatter(bDigit))
-        }
+    R.map(([aDigit, bDigit]) => {
+      if (aDigit !== bDigit) {
+        fromFormatter = x => chalk.red(x)
+        toFormatter = x => chalk.green(x)
       }
-    ),
-    zipLongest)(a, b)
+      if (aDigit !== EMPTY_STRING) {
+        from.push(fromFormatter(aDigit))
+      }
+      if (bDigit !== EMPTY_STRING) {
+        to.push(toFormatter(bDigit))
+      }
+    }),
+    zipLongest
+  )(a, b)
   return [from.join('.'), to.join('.')]
 }
 

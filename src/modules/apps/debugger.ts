@@ -89,7 +89,10 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
   }
 }
 
-export default function startDebuggerTunnel(manifest: Manifest, port: number = DEFAULT_DEBUGGER_PORT): Promise<number | void> {
+export default function startDebuggerTunnel(
+  manifest: Manifest,
+  port: number = DEFAULT_DEBUGGER_PORT
+): Promise<number | void> {
   const { name, vendor, version, builders } = manifest
   const { node, 'service-js': serviceJs } = builders
   if (!node && !serviceJs) {

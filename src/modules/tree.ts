@@ -89,7 +89,8 @@ export default {
           long: 'available',
           short: 'a',
           type: 'bool',
-        }, {
+        },
+        {
           description: 'Only list versions containing this word',
           long: 'filter',
           short: 'f',
@@ -176,7 +177,7 @@ export default {
       handler: './local/workspace',
     },
     token: {
-      description: 'Show user\'s auth token and copy it to clipboard',
+      description: "Show user's auth token and copy it to clipboard",
       handler: './local/token',
     },
   },
@@ -222,7 +223,7 @@ export default {
     },
   },
   production: {
-    description: 'Set this workspace\'s production mode to true or false (deprecated)',
+    description: "Set this workspace's production mode to true or false (deprecated)",
     handler: './workspace/production',
     optionalArgs: 'production',
   },
@@ -364,7 +365,7 @@ export default {
           type: 'boolean',
         },
         {
-          description: 'Ignore if you\'re currently using the workspace',
+          description: "Ignore if you're currently using the workspace",
           long: 'force',
           short: 'f',
           type: 'boolean',
@@ -426,7 +427,8 @@ export default {
     },
   },
   release: {
-    description: 'Bump app version, commit and push to remote. Only for git users. The first option can also be a specific valid semver version',
+    description:
+      'Bump app version, commit and push to remote. Only for git users. The first option can also be a specific valid semver version',
     handler: './release',
     optionalArgs: ['releaseType', 'tagName'],
   },
@@ -441,9 +443,9 @@ export default {
       requiredArgs: 'csvPath',
     },
     export: {
-    description: 'Export all redirects in the current account and workspace',
-    handler: './rewriter/export',
-    requiredArgs: 'csvPath',
+      description: 'Export all redirects in the current account and workspace',
+      handler: './rewriter/export',
+      requiredArgs: 'csvPath',
     },
     delete: {
       description: 'Delete redirects in the current account and workspace',
@@ -451,10 +453,10 @@ export default {
       requiredArgs: 'csvPath',
     },
   },
-  'edition': {
+  edition: {
     description: 'Get edition of the current account',
     handler: './sponsor/getEdition',
-    'set': {
+    set: {
       description: 'Set edition of the current account',
       handler: './sponsor/setEdition',
       requiredArgs: 'edition',
