@@ -29,9 +29,13 @@ const buildersToRunLocalYarn = ['node', 'react']
 const automaticTag = (version: string): string => (version.indexOf('-') > 0 ? null : 'latest')
 
 const publisher = (workspace: string = 'master') => {
-
-  const publishApp = async (appRoot: string, appId: string, tag: string, force: boolean, builder): Promise<BuildResult> => {
-
+  const publishApp = async (
+    appRoot: string,
+    appId: string,
+    tag: string,
+    force: boolean,
+    builder
+  ): Promise<BuildResult> => {
     const paths = await listLocalFiles(appRoot)
     const retryOpts = {
       retries: 2,
@@ -74,7 +78,7 @@ const publisher = (workspace: string = 'master') => {
   }
 
   const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {
-    const previousConf = conf.getAll()  // Store previous configuration in memory
+    const previousConf = conf.getAll() // Store previous configuration in memory
 
     const manifest = await getManifest()
     const account = conf.getAccount()
