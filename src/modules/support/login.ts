@@ -1,6 +1,6 @@
 import axios from 'axios'
 import chalk from 'chalk'
-import * as inquirer from 'inquirer'
+import * as enquirer from 'enquirer'
 import * as jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
 import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../../conf'
@@ -24,10 +24,10 @@ const promptRoles = async (roles: string[]): Promise<string> => {
   const cancel = 'Cancel'
   const chosen = prop<string>(
     'role',
-    await inquirer.prompt({
+    await enquirer.prompt({
       name: 'role',
       message: 'Which role do you want to assume?',
-      type: 'list',
+      type: 'select',
       choices: [...roles, cancel],
     })
   )
