@@ -6,7 +6,6 @@ import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
 import { decode } from 'jsonwebtoken'
-import * as moment from 'moment'
 import * as path from 'path'
 import { reject, without } from 'ramda'
 import { isFunction } from 'ramda-adjunct'
@@ -36,12 +35,6 @@ const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join
 
 const loginCmd = tree.login
 let loginPending = false
-
-// Setup logging
-if (isVerbose) {
-  log.level = 'debug'
-  ;(log.default.transports.console as any).timestamp = () => chalk.grey(moment().format('HH:mm:ss.SSS'))
-}
 
 if (process.env.NODE_ENV === 'development') {
   try {
@@ -145,13 +138,12 @@ const onError = e => {
         log.error('A temporary failure in name resolution occurred :(')
         break
       default:
-        log.error('Unexpected error occurred')
+        log.error('Unhandled exception')
+        log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
         if (e.config && e.config.url && e.config.method) {
           log.error(`${e.config.method} ${e.config.url}`)
         }
-        if (isVerbose) {
-          log.error(e)
-        }
+        log.debug(e)
     }
   } else {
     switch (e.name) {
@@ -173,15 +165,10 @@ const onError = e => {
         log.debug('User Cancelled')
         break
       default:
-        log.error('Unexpected error occurred')
-        if (e.message) {
-          log.error(`${e.message}`)
-        }
-        if (isVerbose) {
-          log.error(e)
-        } else {
-          log.error(reject(isFunction, e))
-        }
+        log.error('Unhandled exception')
+        log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
+        log.error(reject(isFunction, e))
+        log.debug(e)
     }
   }
   process.exit(1)
