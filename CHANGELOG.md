@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Refactor
 - Use `prettier` as formatter and `eslint` as linter
+- Use `esModuleInterop` option on `tsconfig.json`
 
 ## [2.69.0] - 2019-09-03
 ### Added
