@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.70.0] - 2019-09-05
+- Parameter `-f` or `--force` in `vtex publish` to skip check for sem ver.
+
 ## [2.69.1] - 2019-09-04
 ### Fixed
 - Add `vtex redirects import/export/delete` to README.

@@ -29,7 +29,13 @@ const buildersToRunLocalYarn = ['node', 'react']
 const automaticTag = (version: string): string => (version.indexOf('-') > 0 ? null : 'latest')
 
 const publisher = (workspace: string = 'master') => {
-  const publishApp = async (appRoot: string, appId: string, tag: string, builder): Promise<BuildResult> => {
+  const publishApp = async (
+    appRoot: string,
+    appId: string,
+    tag: string,
+    force: boolean,
+    builder
+  ): Promise<BuildResult> => {
     const paths = await listLocalFiles(appRoot)
     const retryOpts = {
       retries: 2,
@@ -51,7 +57,7 @@ const publisher = (workspace: string = 'master') => {
         tag,
       }
       try {
-        return await builder.publishApp(appId, filesWithContent, publishOptions)
+        return await builder.publishApp(appId, filesWithContent, publishOptions, { skipSemVerEnsure: force })
       } catch (err) {
         const response = err.response
         const status = response.status
@@ -71,7 +77,7 @@ const publisher = (workspace: string = 'master') => {
     return await retry(publish, retryOpts)
   }
 
-  const publishApps = async (path: string, tag: string): Promise<void | never> => {
+  const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {
     const previousConf = conf.getAll() // Store previous configuration in memory
 
     const manifest = await getManifest()
@@ -108,7 +114,7 @@ const publisher = (workspace: string = 'master') => {
       const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
       try {
         const senders = ['vtex.builder-hub', 'apps']
-        const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, builder), {
+        const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, force, builder), {
           waitCompletion: true,
           context,
           senders,
@@ -137,10 +143,11 @@ export default (path: string, options) => {
 
   path = path || root
   const workspace = options.w || options.workspace
+  const force = options.f || options.force
 
   // Always run yarn locally for some builders
   map(runYarnIfPathExists, buildersToRunLocalYarn)
 
   const { publishApps } = publisher(workspace)
-  return publishApps(path, options.tag)
+  return publishApps(path, options.tag, force)
 }
