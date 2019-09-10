@@ -50,16 +50,18 @@ const inputSchema = {
       },
     },
     additionalProperties: false,
-    required: ["from", "to", "type"]
+    required: ['from', 'to', 'type'],
   },
 }
 
 const handleImport = async (csvPath: string) => {
-  const fileHash = await readFile(csvPath).then(data =>
-    createHash('md5')
-      .update(`${account}_${workspace}_${data}`)
-      .digest('hex')
-  ).catch(handleReadError) as string
+  const fileHash = (await readFile(csvPath)
+    .then(data =>
+      createHash('md5')
+        .update(`${account}_${workspace}_${data}`)
+        .digest('hex')
+    )
+    .catch(handleReadError)) as string
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const importMetainfo = metainfo[IMPORTS] || {}
   let counter = importMetainfo[fileHash] ? importMetainfo[fileHash].counter : 0
@@ -112,7 +114,7 @@ export default async (csvPath: string, options: any) => {
     }
     log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
-    await sleep(RETRY_INTERVAL_S*1000)
+    await sleep(RETRY_INTERVAL_S * 1000)
     retryCount++
     importedRoutes = await module.exports.default(csvPath)
   }
@@ -122,9 +124,11 @@ export default async (csvPath: string, options: any) => {
       const fileName = `.vtex_redirects_to_delete_${Date.now().toString()}.csv`
       const filePath = `./${fileName}`
       log.info('Deleting old redirects...')
-      log.info(`In case this step fails, run 'vtex redirects delete ${resolve(fileName)}' to finish deleting old redirects.`)
+      log.info(
+        `In case this step fails, run 'vtex redirects delete ${resolve(fileName)}' to finish deleting old redirects.`
+      )
       const json2csvParser = new Parser({ fields: ['from'], delimiter: ';', quote: '' })
-      const csv = json2csvParser.parse(map((route) => ({from: route}), routesToDelete))
+      const csv = json2csvParser.parse(map(route => ({ from: route }), routesToDelete))
       await writeFile(filePath, csv)
       await deleteRedirects(filePath)
       await remove(filePath)

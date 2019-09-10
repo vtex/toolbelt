@@ -19,13 +19,12 @@ export const progressString = (message: string) => `${message} [:bar] :current/:
 
 export const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 
-export const handleReadError = (path: string) =>
-  (error: any) => {
-    console.log(JSON.stringify(error))
-    log.error(`Error reading file: ${path}`)
-    log.error(`${error.message}`)
-    process.exit()
-  }
+export const handleReadError = (path: string) => (error: any) => {
+  console.log(JSON.stringify(error))
+  log.error(`Error reading file: ${path}`)
+  log.error(`${error.message}`)
+  process.exit()
+}
 
 export const readCSV = async (path: string) => {
   try {

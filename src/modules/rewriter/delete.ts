@@ -34,16 +34,18 @@ const inputSchema = {
         type: 'string',
       },
     },
-    required: ["from"],
+    required: ['from'],
   },
 }
 
 const handleDelete = async (csvPath: string) => {
-  const fileHash = await readFile(csvPath).then(data =>
-    createHash('md5')
-      .update(`${account}_${workspace}_${data}`)
-      .digest('hex')
-  ).catch(handleReadError) as string
+  const fileHash = (await readFile(csvPath)
+    .then(data =>
+      createHash('md5')
+        .update(`${account}_${workspace}_${data}`)
+        .digest('hex')
+    )
+    .catch(handleReadError)) as string
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const deletesMetainfo = metainfo[DELETES] || {}
   let counter = deletesMetainfo[fileHash] ? deletesMetainfo[fileHash].counter : 0
@@ -94,7 +96,7 @@ export default async (csvPath: string) => {
     }
     log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
-    await sleep(RETRY_INTERVAL_S*1000)
+    await sleep(RETRY_INTERVAL_S * 1000)
     retryCount++
     await module.exports.default(csvPath)
   }

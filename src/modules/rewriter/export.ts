@@ -90,7 +90,7 @@ export default async (csvPath: string) => {
     }
     log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
-    await sleep(RETRY_INTERVAL_S*1000)
+    await sleep(RETRY_INTERVAL_S * 1000)
     retryCount++
     await module.exports.default(csvPath)
   }
