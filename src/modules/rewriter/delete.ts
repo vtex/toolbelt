@@ -18,6 +18,8 @@ import {
   sleep,
   splitJsonArray,
   validateInput,
+  handleReadError,
+  RETRY_INTERVAL_S,
 } from './utils'
 
 const DELETES = 'deletes'
@@ -32,6 +34,7 @@ const inputSchema = {
         type: 'string',
       },
     },
+    required: ["from"],
   },
 }
 
@@ -40,7 +43,7 @@ const handleDelete = async (csvPath: string) => {
     createHash('md5')
       .update(`${account}_${workspace}_${data}`)
       .digest('hex')
-  )
+  ).catch(handleReadError) as string
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const deletesMetainfo = metainfo[DELETES] || {}
   let counter = deletesMetainfo[fileHash] ? deletesMetainfo[fileHash].counter : 0
@@ -89,9 +92,9 @@ export default async (csvPath: string) => {
     if (isVerbose) {
       log.error(e)
     }
-    log.error('Retrying in 10 seconds...')
+    log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
-    await sleep(10000)
+    await sleep(RETRY_INTERVAL_S*1000)
     retryCount++
     await module.exports.default(csvPath)
   }
