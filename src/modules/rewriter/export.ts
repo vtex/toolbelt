@@ -17,6 +17,7 @@ import {
   progressBar,
   saveMetainfo,
   sleep,
+  RETRY_INTERVAL_S,
 } from './utils'
 
 const EXPORTS = 'exports'
@@ -87,9 +88,9 @@ export default async (csvPath: string) => {
     if (isVerbose) {
       log.error(e)
     }
-    log.error('Retrying in 10 seconds...')
+    log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
-    await sleep(10000)
+    await sleep(RETRY_INTERVAL_S * 1000)
     retryCount++
     await module.exports.default(csvPath)
   }

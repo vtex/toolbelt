@@ -12,13 +12,27 @@ import log from '../../logger'
 export const MAX_ENTRIES_PER_REQUEST = 10
 export const METAINFO_FILE = '.vtex_redirects_metainfo.json'
 export const MAX_RETRIES = 10
+export const RETRY_INTERVAL_S = 5
 export const accountAndWorkspace = [getAccount(), getWorkspace()]
 
 export const progressString = (message: string) => `${message} [:bar] :current/:total :percent`
 
 export const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 
-export const readCSV = async (path: string) => await csv({ delimiter: ';', ignoreEmpty: true }).fromFile(path)
+export const handleReadError = (path: string) => (error: any) => {
+  console.log(JSON.stringify(error))
+  log.error(`Error reading file: ${path}`)
+  log.error(`${error.message}`)
+  process.exit()
+}
+
+export const readCSV = async (path: string) => {
+  try {
+    return await csv({ delimiter: ';', ignoreEmpty: true }).fromFile(path)
+  } catch (e) {
+    handleReadError(path)(e)
+  }
+}
 
 export const splitJsonArray = (data: any) => jsonSplit(data, MAX_ENTRIES_PER_REQUEST)
 
@@ -76,4 +90,5 @@ export const ensureIndexCreation = async () => {
     console.error('Error getting redirects index. Please try again in some seconds..')
     process.exit()
   }
+  return index
 }

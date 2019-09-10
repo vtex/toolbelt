@@ -1,12 +1,16 @@
 import { createHash } from 'crypto'
-import { readFile, readJson } from 'fs-extra'
-import { length } from 'ramda'
+import { readFile, readJson, remove } from 'fs-extra'
+import { difference, isEmpty, length, map, pluck } from 'ramda'
 import { createInterface } from 'readline'
+import { Parser } from 'json2csv'
+import { writeFile } from 'fs-extra'
+import { resolve } from 'path'
 
 import { rewriter } from '../../clients'
 import { RedirectInput } from '../../clients/rewriter'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
+import { default as deleteRedirects } from './delete'
 import {
   accountAndWorkspace,
   deleteMetainfo,
@@ -19,6 +23,8 @@ import {
   sleep,
   splitJsonArray,
   validateInput,
+  handleReadError,
+  RETRY_INTERVAL_S,
 } from './utils'
 
 const IMPORTS = 'imports'
@@ -43,15 +49,19 @@ const inputSchema = {
         enum: ['PERMANENT', 'TEMPORARY'],
       },
     },
+    additionalProperties: false,
+    required: ['from', 'to', 'type'],
   },
 }
 
 const handleImport = async (csvPath: string) => {
-  const fileHash = await readFile(csvPath).then(data =>
-    createHash('md5')
-      .update(`${account}_${workspace}_${data}`)
-      .digest('hex')
-  )
+  const fileHash = (await readFile(csvPath)
+    .then(data =>
+      createHash('md5')
+        .update(`${account}_${workspace}_${data}`)
+        .digest('hex')
+    )
+    .catch(handleReadError)) as string
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const importMetainfo = metainfo[IMPORTS] || {}
   let counter = importMetainfo[fileHash] ? importMetainfo[fileHash].counter : 0
@@ -83,15 +93,17 @@ const handleImport = async (csvPath: string) => {
   log.info('\nFinished!\n')
   listener.close()
   deleteMetainfo(metainfo, IMPORTS, fileHash)
+  return pluck('from', routes)
 }
 
 let retryCount = 0
-export default async (csvPath: string) => {
+export default async (csvPath: string, options: any) => {
   // First check if the redirects index exists
-  await ensureIndexCreation()
+  const index = await ensureIndexCreation()
+  const indexedRoutes = pluck('id', index)
+  let importedRoutes
   try {
-    await handleImport(csvPath)
-    process.exit()
+    importedRoutes = await handleImport(csvPath)
   } catch (e) {
     log.error('\nError handling import')
     if (retryCount >= MAX_RETRIES) {
@@ -100,10 +112,27 @@ export default async (csvPath: string) => {
     if (isVerbose) {
       log.error(e)
     }
-    log.error('Retrying in 10 seconds...')
+    log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
-    await sleep(10000)
+    await sleep(RETRY_INTERVAL_S * 1000)
     retryCount++
-    await module.exports.default(csvPath)
+    importedRoutes = await module.exports.default(csvPath)
   }
+  if (options.r || options.reset) {
+    const routesToDelete = difference(indexedRoutes || [], importedRoutes || [])
+    if (routesToDelete && !isEmpty(routesToDelete)) {
+      const fileName = `.vtex_redirects_to_delete_${Date.now().toString()}.csv`
+      const filePath = `./${fileName}`
+      log.info('Deleting old redirects...')
+      log.info(
+        `In case this step fails, run 'vtex redirects delete ${resolve(fileName)}' to finish deleting old redirects.`
+      )
+      const json2csvParser = new Parser({ fields: ['from'], delimiter: ';', quote: '' })
+      const csv = json2csvParser.parse(map(route => ({ from: route }), routesToDelete))
+      await writeFile(filePath, csv)
+      await deleteRedirects(filePath)
+      await remove(filePath)
+    }
+  }
+  return importedRoutes
 }
