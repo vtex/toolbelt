@@ -143,7 +143,9 @@ const onError = e => {
         if (e.config && e.config.url && e.config.method) {
           log.error(`${e.config.method} ${e.config.url}`)
         }
-        log.debug(e)
+        if (isVerbose) {
+          console.log(e)
+        }
     }
   } else {
     switch (e.name) {
@@ -168,7 +170,9 @@ const onError = e => {
         log.error('Unhandled exception')
         log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
         log.error(reject(isFunction, e))
-        log.debug(e)
+        if (isVerbose) {
+          console.log(e)
+        }
     }
   }
   process.exit(1)

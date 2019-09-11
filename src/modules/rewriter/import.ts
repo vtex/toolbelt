@@ -110,7 +110,7 @@ export default async (csvPath: string, options: any) => {
       throw e
     }
     if (isVerbose) {
-      log.error(e)
+      console.log(e)
     }
     log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
