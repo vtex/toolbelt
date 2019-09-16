@@ -56,30 +56,34 @@ export const mockAppsUtils = () => {
     return {
       isLinked: jest.requireActual('../../../modules/apps/utils').isLinked,
       resolveAppId: jest.fn(),
+      appIdFromRegistry: jest.fn(),
     }
   })
 
-  const { resolveAppId } = jest.requireMock('../../../modules/apps/utils')
+  const { resolveAppId, appIdFromRegistry } = jest.requireMock('../../../modules/apps/utils')
+  let appsAppIDs = {}
+  resolveAppId.mockImplementation((appName: string, appVersion: string) => appsAppIDs[appName][appVersion])
+  let registryAppIDs = {}
+  appIdFromRegistry.mockImplementation((appName: string, appVersion: string) => registryAppIDs[appName][appVersion])
 
-  let appIDs = {}
-  resolveAppId.mockImplementation((appName: string, appVersion: string) => appIDs[appName][appVersion])
-
-  const setAvailableAppIDs = (newAppIDs: any) => (appIDs = newAppIDs)
-  return { setAvailableAppIDs }
+  const setAppsAvailableAppIDs = (newAppIDs: any) => (appsAppIDs = newAppIDs)
+  const setRegistryAvailableAppIDs = (newAppIDs: any) => (registryAppIDs = newAppIDs)
+  return { setAppsAvailableAppIDs, setRegistryAvailableAppIDs, resolveAppId, appIdFromRegistry }
 }
 
 export const mockSetupUtils = () => {
   jest.doMock('../../../modules/setup/utils', () => {
     return {
+      checkIfTarGzIsEmpty: jest.fn(),
       tsconfigEditor: { read: jest.fn(), write: jest.fn(), path: jest.fn() },
       packageJsonEditor: { read: jest.fn(), write: jest.fn(), path: jest.fn() },
       esLintrcEditor: { read: jest.fn(), write: jest.fn(), path: jest.fn() },
     }
   })
 
-  const { tsconfigEditor, packageJsonEditor, esLintrcEditor } = jest.requireMock(
+  const { tsconfigEditor, packageJsonEditor, esLintrcEditor, checkIfTarGzIsEmpty } = jest.requireMock(
     '../../../modules/setup/utils'
-  ) as Record<string, { read: jest.Mock; write: jest.Mock; path: jest.Mock }>
+  ) as Record<string, { read: jest.Mock; write: jest.Mock; path: jest.Mock }> & { checkIfTarGzIsEmpty: jest.Mock }
 
   const mockEditor = (editor: any, editorName: string) => {
     let dataByBuilder = {
@@ -101,11 +105,15 @@ export const mockSetupUtils = () => {
   const { setDataByBuilder: setPackageJsonByBuilder } = mockEditor(packageJsonEditor, 'packageJson')
   const { setDataByBuilder: setTSConfigByBuilder } = mockEditor(tsconfigEditor, 'tsconfig')
 
+  const setTarGzEmptyResponse = (res: boolean) => checkIfTarGzIsEmpty.mockResolvedValue(res)
+
   return {
     tsconfigEditorMock: tsconfigEditor,
     setTSConfigByBuilder,
     packageJsonEditorMock: packageJsonEditor,
     setPackageJsonByBuilder,
     esLintrcEditorMock: esLintrcEditor,
+    checkIfTarGzIsEmpty,
+    setTarGzEmptyResponse,
   }
 }
