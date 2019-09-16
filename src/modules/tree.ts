@@ -122,8 +122,16 @@ export default {
     optionalArgs: 'app',
   },
   setup: {
-    description: 'Download react app typings, lint config and tsconfig',
+    description: 'Download react app typings, graphql app typings, lint config and tsconfig',
     handler: './setup',
+    options: [
+      {
+        description: 'Add only types from apps published',
+        long: 'ignore-linked',
+        short: 'i',
+        type: 'boolean',
+      },
+    ],
   },
   link: {
     description: 'Start a development session for this app',
