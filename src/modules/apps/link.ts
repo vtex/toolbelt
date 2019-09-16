@@ -241,7 +241,7 @@ export default async options => {
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
   if (options.setup || options.s) {
-    await setup()
+    await setup({ 'ignore-linked': false })
   }
   try {
     const aux = await getPinnedDependencies(builderHttp)
