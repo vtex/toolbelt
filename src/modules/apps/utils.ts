@@ -125,6 +125,13 @@ export const appLatestVersion = (app: string, version = 'x'): Promise<string | n
     .catch(handleError(app))
 }
 
+export const appIdFromRegistry = (app: string, majorLocator: string) => {
+  return createClients()
+    .registry.getAppManifest(app, majorLocator)
+    .then<string>(prop('id'))
+    .catch(handleError(app))
+}
+
 export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
   return !!manifest.builders['service-js']
 }
