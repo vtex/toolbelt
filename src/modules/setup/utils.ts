@@ -1,6 +1,26 @@
+import axios from 'axios'
 import { outputJsonSync, readJsonSync } from 'fs-extra'
-import { getAppRoot } from '../../manifest'
 import * as path from 'path'
+import { pipeline } from 'stream'
+import * as tar from 'tar'
+import * as util from 'util'
+import { getToken } from '../../conf'
+import { getAppRoot } from '../../manifest'
+
+export const checkIfTarGzIsEmpty = (url: string) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await axios.get(url, { responseType: 'stream', headers: { Authorization: getToken() } })
+      let fileCount = 0
+      const fileEmitter = tar.list()
+      fileEmitter.on('entry', () => (fileCount += 1))
+      await util.promisify(pipeline)([res.data, fileEmitter])
+      resolve(fileCount === 0)
+    } catch (err) {
+      reject(err)
+    }
+  })
+}
 
 type Files = 'tsconfig' | 'esLintrc' | 'packageJson'
 
