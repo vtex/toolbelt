@@ -24,7 +24,9 @@ const addArgs = format(info => {
 
 const messageFormatter = format.printf(info => {
   const { timestamp: timeString = '', sender = '', message, args = [] } = info
-  const formattedMsgWithArgs = util.formatWithOptions({ colors: true }, message, ...args)
+  const formattedMsgWithArgs = util.formatWithOptions
+    ? util.formatWithOptions({ colors: true }, message, ...args)
+    : util.format(message, ...args)
   const msg = `${chalk.gray(timeString)} - ${info.level}: ${formattedMsgWithArgs}  ${chalk.gray(sender)}`
   return msg
 })
