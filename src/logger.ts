@@ -1,64 +1,84 @@
 import chalk from 'chalk'
 import { join } from 'path'
+import * as util from 'util'
 import { createLogger, format, transports } from 'winston'
-import * as Transport from 'winston-transport'
 import { configDir } from './conf'
 
 // Setup logging
 const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 
-const { combine, timestamp, colorize } = format
-
 // The debug file is likely to be on ~/.config/configstore/vtex_debug.txt
 export const DEBUG_LOG_FILE_PATH = join(configDir, 'vtex_debug.txt')
 
-class SimpleConsoleTransport extends Transport {
-  constructor(opts) {
-    super(opts)
-  }
-
-  public log(info, callback) {
-    setImmediate(() => {
-      this.emit('logged', info)
-    })
-    if (info.message) {
-      console.log(info.message)
-    }
-    callback()
-  }
+const isObject = (a: any) => {
+  return !!a && a.constructor === Object
 }
 
-const messageFormatter = format((info, _) => {
-  // Write all relevant information in info.message
-  const { timestamp: timeString = '', sender = '', message } = info
-  info.message = `${chalk.gray(timeString)} - ${info.level}:  ${message} ${chalk.gray(sender)}`
+const addArgs = format(info => {
+  // @ts-ignore
+  const args: any[] = info[Symbol.for('splat')]
+  info.args = args ? [...args] : []
   return info
 })
 
-const filterMessage = format((info, _) => {
-  if (!info.message) {
-    return false
+const messageFormatter = format.printf(info => {
+  const { timestamp: timeString = '', sender = '', message, args = [] } = info
+  const formattedMsgWithArgs = util.formatWithOptions({ colors: true }, message, ...args)
+  const msg = `${chalk.gray(timeString)} - ${info.level}: ${formattedMsgWithArgs}  ${chalk.gray(sender)}`
+  return msg
+})
+
+// JSON.stringify doesn't get non-enumerable properties
+// This is a workaround based on https://stackoverflow.com/a/18391400/11452359
+const errorJsonReplacer = (key: any, value: any) => {
+  if (key === '' && isObject(value) && value.args != null) {
+    value.args = value.args.map((arg: any) => {
+      if (arg instanceof Error) {
+        const error = {}
+        Object.getOwnPropertyNames(arg).forEach(key => {
+          error[key] = arg[key]
+        })
+        return error
+      }
+
+      return arg
+    })
   }
-  return info
-})
 
-const consoleTransport = new SimpleConsoleTransport({
-  format: combine(filterMessage(), timestamp({ format: 'HH:mm:ss.SSS' }), colorize(), messageFormatter()),
-  level: isVerbose ? 'debug' : 'info',
-})
+  return value
+}
 
 const logger = createLogger({
+  format: format.combine(addArgs(), format.timestamp({ format: 'HH:mm:ss.SSS' })),
   transports: [
-    consoleTransport,
+    new transports.Console({
+      format: format.combine(format.colorize(), messageFormatter),
+      level: isVerbose ? 'debug' : 'info',
+    }),
     new transports.File({
       filename: DEBUG_LOG_FILE_PATH,
-      format: combine(timestamp({ format: 'hh:mm:ss.SSS' }), format.json()),
+      format: format.combine(format.json({ replacer: errorJsonReplacer, space: 2 })),
       level: 'debug',
-      maxsize: 10e6,
-      maxFiles: 1,
+      maxsize: 5e6,
+      maxFiles: 2,
     }),
   ],
+})
+
+const levels = ['debug', 'info', 'error']
+levels.forEach(level => {
+  logger[level] = (msg: any, ...remains: any[]) => {
+    if (remains.length > 0 && isObject(remains[0]) && remains[0].message) {
+      msg += ' '
+    }
+
+    if (typeof msg != 'string') {
+      return logger.log(level, '', msg, ...remains)
+    }
+
+    logger.log(level, msg, ...remains)
+  }
 })
 
 logger.on('error', err => {
