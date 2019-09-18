@@ -24,9 +24,7 @@ const addArgs = format(info => {
 
 const messageFormatter = format.printf(info => {
   const { timestamp: timeString = '', sender = '', message, args = [] } = info
-  const formattedMsgWithArgs = util.formatWithOptions
-    ? util.formatWithOptions({ colors: true }, message, ...args)
-    : util.format(message, ...args)
+  const formattedMsgWithArgs = util.formatWithOptions({ colors: true }, message, ...args)
   const msg = `${chalk.gray(timeString)} - ${info.level}: ${formattedMsgWithArgs}  ${chalk.gray(sender)}`
   return msg
 })
@@ -68,7 +66,7 @@ const logger = createLogger({
   ],
 })
 
-const levels = ['debug', 'info', 'error']
+const levels = ['debug', 'info', 'error', 'warn', 'verbose', 'silly']
 levels.forEach(level => {
   logger[level] = (msg: any, ...remains: any[]) => {
     if (remains.length > 0 && isObject(remains[0]) && remains[0].message) {
