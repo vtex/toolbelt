@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed 
+
+- Enforce node version >= 10
+
 ## [2.74.0] - 2019-09-18
 
 ## [2.73.1] - 2019-09-11
