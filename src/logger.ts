@@ -9,7 +9,7 @@ const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 
 // The debug file is likely to be on ~/.config/configstore/vtex_debug.txt
-export const DEBUG_LOG_FILE_PATH = join(configDir, 'vtex_debug.txt')
+export const DEBUG_LOG_FILE_PATH = join(configDir, 'vtex_debug.json')
 
 const isObject = (a: any) => {
   return !!a && a.constructor === Object
