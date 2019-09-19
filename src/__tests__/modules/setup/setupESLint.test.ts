@@ -26,7 +26,7 @@ beforeEach(() => {
 
 describe('Yarn is called correctly and .eslintrc is created', () => {
   const checkYarnCall = (builder: string) => {
-    const yarnInstallation = `${yarnPath} add eslint@^5.15.1 eslint-config-vtex@^10.1.0 eslint-config-vtex-react@^4.1.0 --dev`
+    const yarnInstallation = `${yarnPath} add eslint@^6.4.0 eslint-config-vtex@^11.0.0 eslint-config-vtex-react@^5.0.1 --dev`
     expect(execSync).toBeCalledWith(yarnInstallation, {
       cwd: path.resolve('app-root', builder),
       stdio: 'inherit',
