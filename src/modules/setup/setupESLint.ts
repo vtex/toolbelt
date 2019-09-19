@@ -7,9 +7,9 @@ import { yarnPath } from '../utils'
 import { esLintrcEditor, packageJsonEditor } from './utils'
 
 const addToPackageJson = {
-  eslint: '^5.15.1',
-  'eslint-config-vtex': '^10.1.0',
-  'eslint-config-vtex-react': '^4.1.0',
+  eslint: '^6.4.0',
+  'eslint-config-vtex': '^11.0.0',
+  'eslint-config-vtex-react': '^5.0.1',
 }
 
 const addToEslintrc = {
