@@ -41,7 +41,7 @@ const interceptor = <T>(client): T =>
   ) as T
 
 const createClients = (customContext: Partial<IOContext> = {}, customOptions: InstanceOptions = {}) => {
-  const mergedContext = { ...context, ...customContext } as IOContext
+  const mergedContext = { ...context, ...customContext }
   const mergedOptions = { ...options, ...customOptions }
   return {
     builder: new Builder(mergedContext, mergedOptions),
