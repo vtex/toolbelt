@@ -23,6 +23,7 @@ const context = (workspace: string) => {
     requestId: '',
     operationId: '',
     logger: dummyLogger,
+    platform: '',
   }
 }
 
