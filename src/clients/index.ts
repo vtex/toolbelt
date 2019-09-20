@@ -24,6 +24,7 @@ const context: IOContext = {
   requestId: '',
   operationId: '',
   logger: dummyLogger,
+  platform: '',
 }
 
 const options = {

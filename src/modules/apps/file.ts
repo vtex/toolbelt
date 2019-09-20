@@ -3,7 +3,7 @@ import * as chokidar from 'chokidar'
 import { createReadStream, lstat, readdir, readFileSync, realpath, Stats } from 'fs-extra'
 import * as glob from 'globby'
 import { dirname, join, resolve as resolvePath, sep } from 'path'
-import { filter, map, partition, toPairs, unnest, values } from 'ramda'
+import { filter, map, partition, reject, toPairs, unnest, values } from 'ramda'
 
 import { Readable } from 'stream'
 import log from '../../logger'
@@ -135,26 +135,29 @@ export function getLinkedDepsDirs(linkConfig: LinkConfig): string[] {
   return values(linkConfig.metadata)
 }
 
-export const getIgnoredPaths = (root: string): string[] => {
+const isTestOrMockPath = (p: string) => /.*(test|mock|snapshot).*/.test(p.toLowerCase())
+
+export const getIgnoredPaths = (root: string, test: boolean = false): string[] => {
   try {
-    return readFileSync(join(root, '.vtexignore'))
+    const filesToIgnore = readFileSync(join(root, '.vtexignore'))
       .toString()
       .split('\n')
       .map(p => p.trim())
       .filter(p => p !== '')
       .map(p => p.replace(/\/$/, '/**'))
       .concat(defaultIgnored)
+    return test ? reject(isTestOrMockPath, filesToIgnore) : filesToIgnore
   } catch (e) {
     return defaultIgnored
   }
 }
 
-export const listLocalFiles = (root: string, folder?: string): Promise<string[]> =>
+export const listLocalFiles = (root: string, test: boolean = false, folder?: string): Promise<string[]> =>
   Promise.resolve(
     glob(['manifest.json', 'policies.json', 'node/.*', 'react/.*', `${safeFolder(folder)}`], {
       cwd: root,
       follow: true,
-      ignore: getIgnoredPaths(root),
+      ignore: getIgnoredPaths(root, test),
       nodir: true,
     })
   )

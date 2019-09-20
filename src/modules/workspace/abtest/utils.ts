@@ -38,11 +38,10 @@ const contextForMaster = {
   requestId: '',
   operationId: '',
   logger: dummyLogger,
+  platform: '',
 }
 
-const options = {
-  timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
-}
+const options = { timeout: (envTimeout || DEFAULT_TIMEOUT) as number }
 
 // Clients for the 'master' workspace
 export const abtester = new ABTester(contextForMaster, { ...options, retries: 3 })

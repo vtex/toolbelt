@@ -729,13 +729,14 @@
     lodash.unescape "4.0.1"
     semver "5.5.0"
 
-"@vtex/api@^3.46.0":
-  version "3.46.0"
-  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.46.0.tgz#f43a58ce15e08dfa366daf44a4c2ec4928527236"
-  integrity sha512-Dqlu/LE6mn1oUIb744bjj+RgNbb+xMSB0C6H6RcUvVGOQPJgY4OfqNY11jae6qjInWXIVVyBkRKFwnFpUNqfxA==
+"@vtex/api@^3.48.0":
+  version "3.53.0"
+  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.53.0.tgz#aa821fd0c6ad0aa3dfc049ae1b0d3ace0074faa9"
+  integrity sha512-Jrtd0t0JUJswFclrMGwjIVSbbpvihuDmQEkg+eH9djauuXzSz3yda1T4NeinxcsIKbTuBTk4/Ku2YUFD5VAWcQ==
   dependencies:
     "@types/koa" "^2.0.48"
     "@types/koa-compose" "^3.2.3"
+    "@wry/equality" "^0.1.9"
     apollo-datasource "^0.3.1"
     apollo-server-core "^2.4.8"
     apollo-server-errors "^2.2.1"
@@ -763,6 +764,13 @@
     semver "^5.5.1"
     stats-lite vtex/node-stats-lite#dist
     tar-fs "^2.0.0"
+
+"@wry/equality@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@wry/equality/-/equality-0.1.9.tgz#b13e18b7a8053c6858aa6c85b54911fb31e3a909"
+  integrity sha512-mB6ceGjpMGz1ZTza8HYnrPGos2mC6So4NhS1PtZ8s4Qt0K7fBiIGhpSxUbQmhwcSWE3no+bYxmI2OL6KuXYmoQ==
+  dependencies:
+    tslib "^1.9.3"
 
 abab@^2.0.0:
   version "2.0.0"
@@ -6500,7 +6508,7 @@ static-extend@^0.1.1, static-extend@^0.1.2:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-stats-lite@vtex/node-stats-lite#dist:
+"stats-lite@github:vtex/node-stats-lite#dist":
   version "2.2.0"
   resolved "https://codeload.github.com/vtex/node-stats-lite/tar.gz/1b0d39cc41ef7aaecfd541191f877887a2044797"
   dependencies:

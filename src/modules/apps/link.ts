@@ -1,6 +1,5 @@
 import { Builder, Change } from '@vtex/api'
 import * as retry from 'async-retry'
-import axios from 'axios'
 import * as bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as chokidar from 'chokidar'
@@ -11,8 +10,7 @@ import { join, resolve as resolvePath, sep } from 'path'
 import { compose, concat, intersection, isEmpty, keys, map, not, pipe, prop, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getToken, getWorkspace } from '../../conf'
-import { region } from '../../env'
+import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
@@ -20,7 +18,7 @@ import log from '../../logger'
 import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
-import { fixPinnedDependencies, formatNano, getPinnedDependencies } from '../utils'
+import { fixPinnedDependencies, formatNano } from '../utils'
 import { runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
@@ -45,15 +43,6 @@ const RETRY_OPTS_DEBUGGER = {
   minTimeout: 1000,
   factor: 2,
 }
-const account = getAccount()
-const workspace = getWorkspace()
-const builderHttp = axios.create({
-  baseURL: `http://builder-hub.vtex.${region()}.vtex.io/${account}/${workspace}`,
-  timeout: 2000,
-  headers: {
-    Authorization: getToken(),
-  },
-})
 
 const shouldStartDebugger = (manifest: Manifest) =>
   compose<Manifest, any, string[], string[], boolean, boolean>(
@@ -240,11 +229,13 @@ export default async options => {
 
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
+  const { builder } = createClients(context, { timeout: 60000 })
+
   if (options.setup || options.s) {
     await setup({ 'ignore-linked': false })
   }
   try {
-    const aux = await getPinnedDependencies(builderHttp)
+    const aux = await builder.getPinnedDependencies()
     const pinnedDeps: Map<string, string> = new Map(Object.entries(aux))
     await bluebird.map(buildersToRunLocalYarn, fixPinnedDependencies(pinnedDeps), { concurrency: 1 })
   } catch (e) {
@@ -252,8 +243,6 @@ export default async options => {
   }
   // Always run yarn locally for some builders
   map(runYarnIfPathExists, buildersToRunLocalYarn)
-
-  const { builder } = createClients(context, { timeout: 60000 })
 
   if (options.c || options.clean) {
     log.info('Requesting to clean cache in builder.')
