@@ -56,7 +56,7 @@ export const getIOContext = () => ({
   operationId: '',
   logger: dummyLogger,
   platform: '',
-}) 
+})
 
 const onBuildEvent = (
   ctx: Context,

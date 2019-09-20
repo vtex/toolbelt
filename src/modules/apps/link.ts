@@ -236,7 +236,7 @@ export default async options => {
   }
   try {
     const aux = await builder.getPinnedDependencies()
-    const pinnedDeps : Map<string, string> = new Map(Object.entries(aux))
+    const pinnedDeps: Map<string, string> = new Map(Object.entries(aux))
     await bluebird.map(buildersToRunLocalYarn, fixPinnedDependencies(pinnedDeps), { concurrency: 1 })
   } catch (e) {
     log.info('Failed to check for pinned dependencies')

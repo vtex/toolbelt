@@ -139,9 +139,13 @@ const isTestOrMockPath = (p: string) => /.*(test|mock|snapshot).*/.test(p.toLowe
 
 export const getIgnoredPaths = (root: string, test: boolean = false): string[] => {
   try {
-    const filesToIgnore = readFileSync(join(root, '.vtexignore')).toString().split('\n')
-      .map(p => p.trim()).filter(p => p !== '')
-      .map(p => p.replace(/\/$/, '/**')).concat(defaultIgnored)
+    const filesToIgnore = readFileSync(join(root, '.vtexignore'))
+      .toString()
+      .split('\n')
+      .map(p => p.trim())
+      .filter(p => p !== '')
+      .map(p => p.replace(/\/$/, '/**'))
+      .concat(defaultIgnored)
     return test ? reject(isTestOrMockPath, filesToIgnore) : filesToIgnore
   } catch (e) {
     return defaultIgnored

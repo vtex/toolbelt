@@ -26,7 +26,12 @@ const RETRY_OPTS_TEST = {
   factor: 2,
 }
 
-const performTest = async (appId: string, builder: Builder, extraData : {linkConfig : LinkConfig}, unsafe: boolean): Promise<void> => {
+const performTest = async (
+  appId: string,
+  builder: Builder,
+  extraData: { linkConfig: LinkConfig },
+  unsafe: boolean
+): Promise<void> => {
   const linkConfig = await createLinkConfig(root)
 
   extraData.linkConfig = linkConfig
@@ -36,16 +41,19 @@ const performTest = async (appId: string, builder: Builder, extraData : {linkCon
     const plural = usedDeps.length > 1
     log.info(`The following local dependenc${plural ? 'ies are' : 'y is'} linked to your app:`)
     usedDeps.forEach(([dep, path]) => log.info(`${dep} (from: ${path})`))
-    log.info(`If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${plural ? 'them' : 'it'}`)
+    log.info(
+      `If you don\'t want ${plural ? 'them' : 'it'} to be used by your vtex app, please unlink ${
+        plural ? 'them' : 'it'
+      }`
+    )
   }
 
   const testApp = async (bail: any, tryCount: number) => {
     const test = true
-    const [localFiles, linkedFiles] =
-      await Promise.all([
-        listLocalFiles(root, test).then(paths => map(pathToFileObject(root), paths)),
-        getLinkedFiles(linkConfig),
-      ])
+    const [localFiles, linkedFiles] = await Promise.all([
+      listLocalFiles(root, test).then(paths => map(pathToFileObject(root), paths)),
+      getLinkedFiles(linkConfig),
+    ])
     const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]
 
     if (tryCount === 1) {
@@ -56,7 +64,7 @@ const performTest = async (appId: string, builder: Builder, extraData : {linkCon
     }
 
     if (tryCount > 1) {
-      log.info(`Retrying...${tryCount-1}`)
+      log.info(`Retrying...${tryCount - 1}`)
     }
 
     const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
@@ -85,13 +93,13 @@ const performTest = async (appId: string, builder: Builder, extraData : {linkCon
   await retry(testApp, RETRY_OPTS_TEST)
 }
 
-export default async (options) => {
+export default async options => {
   await validateAppAction('test')
   const unsafe = !!(options.unsafe || options.u)
   const manifest = await getManifest()
   try {
     await writeManifestSchema()
-  } catch(e) {
+  } catch (e) {
     log.debug('Failed to write schema on manifest.')
   }
 
@@ -101,16 +109,18 @@ export default async (options) => {
 
   try {
     const aux = await builder.getPinnedDependencies()
-    const pinnedDeps : Map<string, string> = new Map(Object.entries(aux))
+    const pinnedDeps: Map<string, string> = new Map(Object.entries(aux))
     await bluebird.map(buildersToRunLocalYarn, fixPinnedDependencies(pinnedDeps), { concurrency: 1 })
-  } catch(e) {
+  } catch (e) {
     log.info('Failed to check for pinned dependencies')
   }
   // Always run yarn locally for some builders
   map(runYarnIfPathExists, buildersToRunLocalYarn)
 
   const onError = {
-    build_failed: () => { log.error(`App build failed. Waiting for changes...`) },
+    build_failed: () => {
+      log.error(`App build failed. Waiting for changes...`)
+    },
   }
 
   const onBuild = async () => {
@@ -128,11 +138,17 @@ export default async (options) => {
     if (e.response) {
       const { data } = e.response
       if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
-        return log.error('Please install vtex.builder-hub in your account to enable app testing (vtex install vtex.builder-hub)')
+        return log.error(
+          'Please install vtex.builder-hub in your account to enable app testing (vtex install vtex.builder-hub)'
+        )
       }
 
       if (data.code === 'link_on_production') {
-        throw new CommandError(`Please use a dev workspace to test apps. Create one with (${chalk.blue('vtex use <workspace> -rp')}) to be able to test apps`)
+        throw new CommandError(
+          `Please use a dev workspace to test apps. Create one with (${chalk.blue(
+            'vtex use <workspace> -rp'
+          )}) to be able to test apps`
+        )
       }
     }
     throw e
