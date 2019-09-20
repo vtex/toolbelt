@@ -62,7 +62,7 @@ $ vtex
     promote                 Promote this workspace to master
     publish [path]          Publish the current app or a path containing an app
     switch <account>        Switch to another VTEX account
-    test                    Run your VTEX app tests
+    test                    Run your VTEX app unit tests
     uninstall [app]         Uninstall an app (defaults to the app in the current directory)
     unlink [app]            Unlink an app on the current directory or a specified one
     update                  Update all installed apps to the latest version
