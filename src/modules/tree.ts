@@ -294,7 +294,7 @@ export default {
     requiredArgs: 'account',
   },
   test: {
-    description: 'Run unit tests',
+    description: 'Run your VTEX app unit tests',
     handler: './apps/test',
     options: [
       {
