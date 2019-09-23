@@ -1,6 +1,12 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
 import { path } from 'ramda'
 
+
+export interface RouteIndexFileEntry {
+  fileName: string
+  fileSize: string
+}
+
 export interface RouteIndexEntry {
   id: string
   lastChangeDate: string
@@ -33,40 +39,43 @@ export class Rewriter extends AppGraphQLClient {
     super('vtex.rewriter', context, { ...options, headers: { 'cache-control': 'no-cache' } })
   }
 
-  public createRoutesIndex = (): Promise<boolean> =>
+  public routesIndexFiles = (): Promise<RouteIndexFileEntry[]> =>
     this.graphql
-      .mutate<boolean, {}>(
+      .query<string[], {}>(
         {
-          mutate: `
-      mutation CreateRoutesIndex {
+          query: `
+      query RoutesIndexFiles {
         redirect {
-          createIndex
+          indexFiles {
+            fileName
+            fileSize
+          }
         }
       }
       `,
           variables: {},
         },
         {
-          metric: 'rewriter-create-redirects-index',
+          metric: 'rewriter-get-redirects-index-files',
         }
       )
-      .then(path(['data', 'redirect', 'createIndex'])) as Promise<boolean>
+      .then(path(['data', 'redirect', 'indexFiles'])) as Promise<RouteIndexFileEntry[]>
 
-  public routesIndex = (): Promise<RouteIndexEntry[]> =>
+  public routesIndex = (fileName: string): Promise<RouteIndexEntry[]> =>
     this.graphql
-      .query<string[], {}>(
+      .query<string[], { fileName: string }>(
         {
           query: `
-      query RoutesIndex {
+      query RoutesIndex($fileName: String!) {
         redirect {
-          index {
-            id
-            lastChangeDate
+          index(fileName: $fileName) {
+            fileName
+            fileSize
           }
         }
       }
       `,
-          variables: {},
+          variables: { fileName },
         },
         {
           metric: 'rewriter-get-redirects-index',

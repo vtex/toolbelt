@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { writeFile } from 'fs-extra'
 import { readJson } from 'fs-extra'
 import { Parser } from 'json2csv'
-import { concat, length, map, range } from 'ramda'
+import { concat, length, map, range, pluck, sum } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
@@ -18,6 +18,7 @@ import {
   saveMetainfo,
   sleep,
   RETRY_INTERVAL_S,
+  LAST_CHANGE_DATE
 } from './utils'
 
 const EXPORTS = 'exports'
@@ -32,18 +33,19 @@ const generateListOfRanges = (indexLength: number) =>
   )
 
 const handleExport = async (csvPath: string) => {
-  const routesIndex = await rewriter.routesIndex()
-  const indexLength = length(routesIndex)
-  if (indexLength <= 0) {
+  const routesIndexFiles = await rewriter.routesIndexFiles()
+  const indexHash = await createHash('md5')
+    .update(`${account}_${workspace}_${JSON.stringify(routesIndexFiles)}`)
+    .digest('hex')
+  delete routesIndexFiles[LAST_CHANGE_DATE]
+  const numberOfFiles = sum(pluck(1, routesIndexFiles))
+  if (numberOfFiles <= 0) {
     log.info('No data to be exported.')
     return
   }
-  const indexHash = await createHash('md5')
-    .update(`${account}_${workspace}_${JSON.stringify(routesIndex)}`)
-    .digest('hex')
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const exportMetainfo = metainfo[EXPORTS] || {}
-  const listOfRanges = generateListOfRanges(indexLength)
+  const listOfRanges = generateListOfRanges(numberOfFiles)
   let counter = exportMetainfo[indexHash] ? exportMetainfo[indexHash].counter : 0
   let listOfRoutes = exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
 

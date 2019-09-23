@@ -9,7 +9,6 @@ import { isVerbose } from '../../utils'
 import {
   accountAndWorkspace,
   deleteMetainfo,
-  ensureIndexCreation,
   MAX_RETRIES,
   METAINFO_FILE,
   progressBar,
@@ -82,8 +81,6 @@ const handleDelete = async (csvPath: string) => {
 
 let retryCount = 0
 export default async (csvPath: string) => {
-  // First check if the redirects index exists
-  await ensureIndexCreation()
   try {
     await handleDelete(csvPath)
   } catch (e) {

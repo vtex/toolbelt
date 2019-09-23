@@ -1,6 +1,6 @@
 import { createHash } from 'crypto'
 import { readFile, readJson, remove } from 'fs-extra'
-import { difference, isEmpty, length, map, pluck } from 'ramda'
+import { compose, concat, difference, isEmpty, length, map, pluck, reduce } from 'ramda'
 import { createInterface } from 'readline'
 import { Parser } from 'json2csv'
 import { writeFile } from 'fs-extra'
@@ -14,7 +14,6 @@ import { default as deleteRedirects } from './delete'
 import {
   accountAndWorkspace,
   deleteMetainfo,
-  ensureIndexCreation,
   MAX_RETRIES,
   METAINFO_FILE,
   progressBar,
@@ -98,9 +97,14 @@ const handleImport = async (csvPath: string) => {
 
 let retryCount = 0
 export default async (csvPath: string, options: any) => {
-  // First check if the redirects index exists
-  const index = await ensureIndexCreation()
-  const indexedRoutes = pluck('id', index)
+  const indexFiles = await rewriter.routesIndexFiles().then(pluck('fileName'))
+  const indexedRoutes = await Promise.each(indexFiles, rewriter.routesIndex)
+    .then(
+      compose<any, any, any>(
+        pluck('id'),
+        reduce(concat, [])
+      )
+    )
   let importedRoutes
   try {
     importedRoutes = await handleImport(csvPath)
