@@ -19,6 +19,7 @@ import {
   validateInput,
   handleReadError,
   RETRY_INTERVAL_S,
+  showGraphQLErrors,
 } from './utils'
 
 const DELETES = 'deletes'
@@ -74,7 +75,7 @@ const handleDelete = async (csvPath: string) => {
     counter++
     bar.tick()
   })
-  log.info('\nFinished!\n')
+  log.info('Finished!\n')
   listener.close()
   deleteMetainfo(metainfo, DELETES, fileHash)
 }
@@ -84,12 +85,13 @@ export default async (csvPath: string) => {
   try {
     await handleDelete(csvPath)
   } catch (e) {
-    log.error('\nError handling delete')
-    if (retryCount >= MAX_RETRIES) {
-      throw e
-    }
+    log.error('Error handling delete')
+    const maybeGraphQLError = showGraphQLErrors(e)
     if (isVerbose) {
       console.log(e)
+    }
+    if (retryCount >= MAX_RETRIES || maybeGraphQLError) {
+      process.exit()
     }
     log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')

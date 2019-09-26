@@ -1,6 +1,6 @@
 import { createHash } from 'crypto'
 import { readFile, readJson, remove } from 'fs-extra'
-import { compose, concat, difference, isEmpty, length, map, pluck, reduce } from 'ramda'
+import { compose, concat, difference, isEmpty, length, map, pluck, reduce, reject } from 'ramda'
 import { createInterface } from 'readline'
 import { Parser } from 'json2csv'
 import { writeFile } from 'fs-extra'
@@ -19,11 +19,13 @@ import {
   progressBar,
   readCSV,
   saveMetainfo,
+  showGraphQLErrors,
   sleep,
   splitJsonArray,
   validateInput,
   handleReadError,
   RETRY_INTERVAL_S,
+  isLastChangeDate,
 } from './utils'
 
 const IMPORTS = 'imports'
@@ -89,7 +91,7 @@ const handleImport = async (csvPath: string) => {
     bar.tick()
   })
 
-  log.info('\nFinished!\n')
+  log.info('Finished!\n')
   listener.close()
   deleteMetainfo(metainfo, IMPORTS, fileHash)
   return pluck('from', routes)
@@ -97,24 +99,28 @@ const handleImport = async (csvPath: string) => {
 
 let retryCount = 0
 export default async (csvPath: string, options: any) => {
-  const indexFiles = await rewriter.routesIndexFiles().then(pluck('fileName'))
-  const indexedRoutes = await Promise.each(indexFiles, rewriter.routesIndex)
-    .then(
-      compose<any, any, any>(
+  const reset = options ? options.r || options.reset : undefined
+  let indexedRoutes
+  if (reset) {
+    const indexFiles = await rewriter.routesIndexFiles()
+    const indexFileNames = reject(isLastChangeDate, indexFiles ? pluck('fileName', indexFiles) : [])
+    indexedRoutes = await Promise.mapSeries(indexFileNames, rewriter.routesIndex)
+      .then(compose<any, any, any>(
         pluck('id'),
         reduce(concat, [])
-      )
-    )
+      ))
+  }
   let importedRoutes
   try {
     importedRoutes = await handleImport(csvPath)
   } catch (e) {
-    log.error('\nError handling import')
-    if (retryCount >= MAX_RETRIES) {
-      throw e
-    }
+    log.error('Error handling import')
+    const maybeGraphQLErrors = showGraphQLErrors(e)
     if (isVerbose) {
       console.log(e)
+    }
+    if (retryCount >= MAX_RETRIES || maybeGraphQLErrors) {
+      process.exit()
     }
     log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
@@ -122,7 +128,7 @@ export default async (csvPath: string, options: any) => {
     retryCount++
     importedRoutes = await module.exports.default(csvPath)
   }
-  if (options.r || options.reset) {
+  if (reset) {
     const routesToDelete = difference(indexedRoutes || [], importedRoutes || [])
     if (routesToDelete && !isEmpty(routesToDelete)) {
       const fileName = `.vtex_redirects_to_delete_${Date.now().toString()}.csv`

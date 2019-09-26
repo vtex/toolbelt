@@ -69,8 +69,8 @@ export class Rewriter extends AppGraphQLClient {
       query RoutesIndex($fileName: String!) {
         redirect {
           index(fileName: $fileName) {
-            fileName
-            fileSize
+            id
+            lastChangeDate
           }
         }
       }

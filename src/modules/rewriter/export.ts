@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { writeFile } from 'fs-extra'
 import { readJson } from 'fs-extra'
 import { Parser } from 'json2csv'
-import { concat, length, map, range, pluck, sum } from 'ramda'
+import { compose, concat, length, map, range, pluck, prop, reject, sum } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
@@ -18,7 +18,8 @@ import {
   saveMetainfo,
   sleep,
   RETRY_INTERVAL_S,
-  LAST_CHANGE_DATE
+  isLastChangeDate,
+  showGraphQLErrors,
 } from './utils'
 
 const EXPORTS = 'exports'
@@ -33,13 +34,13 @@ const generateListOfRanges = (indexLength: number) =>
   )
 
 const handleExport = async (csvPath: string) => {
-  const routesIndexFiles = await rewriter.routesIndexFiles()
+  const rawRoutesIndexFiles = await rewriter.routesIndexFiles()
+  const routesIndexFiles = reject(compose(isLastChangeDate, prop('fileName')), rawRoutesIndexFiles)
   const indexHash = await createHash('md5')
     .update(`${account}_${workspace}_${JSON.stringify(routesIndexFiles)}`)
     .digest('hex')
-  delete routesIndexFiles[LAST_CHANGE_DATE]
-  const numberOfFiles = sum(pluck(1, routesIndexFiles))
-  if (numberOfFiles <= 0) {
+  const numberOfFiles = sum(compose<any, any, any>(map(Number), pluck('fileSize'))(routesIndexFiles))
+  if (numberOfFiles === 0) {
     log.info('No data to be exported.')
     return
   }
@@ -73,7 +74,7 @@ const handleExport = async (csvPath: string) => {
   const json2csvParser = new Parser({ fields: FIELDS, delimiter: ';', quote: '' })
   const csv = json2csvParser.parse(listOfRoutes)
   await writeFile(`./${csvPath}`, csv)
-  log.info('\nFinished!\n')
+  log.info('Finished!\n')
   listener.close()
   deleteMetainfo(metainfo, EXPORTS, indexHash)
 }
@@ -83,12 +84,13 @@ export default async (csvPath: string) => {
   try {
     await handleExport(csvPath)
   } catch (e) {
-    log.error('\nError handling export\n')
-    if (retryCount >= MAX_RETRIES) {
-      throw e
-    }
+    log.error('Error handling export\n')
+    showGraphQLErrors(e)
     if (isVerbose) {
       console.log(e)
+    }
+    if (retryCount >= MAX_RETRIES) {
+      process.exit()
     }
     log.error(`Retrying in ${RETRY_INTERVAL_S} seconds...`)
     log.info('Press CTRL+C to abort')
