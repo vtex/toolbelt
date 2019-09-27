@@ -1,5 +1,9 @@
 declare module '*/package.json' {
   const name: string
   const version: string
-  export { name, version }
+  const engines: {
+    node: string
+  }
+
+  export { name, version, engines }
 }

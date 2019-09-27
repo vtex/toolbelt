@@ -17,7 +17,15 @@ import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import notify from './update'
+import * as semver from 'semver'
+import * as os from 'os'
 import { isVerbose, VERBOSE } from './utils'
+
+const nodeVersion = process.version.replace('v', '')
+if (!semver.satisfies(nodeVersion, pkg.engines.node)) {
+  console.error(chalk.bold('Incompatible with node < v10. Please upgrade node to major 10 or higher.'))
+  process.exit(1)
+}
 
 axios.interceptors.request.use(config => {
   if (envCookies()) {
@@ -75,6 +83,8 @@ const main = async () => {
   conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
   logToolbeltVersion()
+  log.debug('node %s - %s %s', process.version, os.platform(), os.release())
+  log.debug(args)
 
   await checkLogin(args)
 
