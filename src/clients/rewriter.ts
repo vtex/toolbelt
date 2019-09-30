@@ -1,7 +1,6 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
 import { path } from 'ramda'
 
-
 export interface RouteIndexFiles {
   lastChangeDate: string
   routeIndexFiles: RouteIndexFileEntry[]

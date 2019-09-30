@@ -20,7 +20,7 @@ export const progressString = (message: string) => `${message} [:bar] :current/:
 export const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 
 export const showGraphQLErrors = (e: any) => {
-  if(e.graphQLErrors){
+  if (e.graphQLErrors) {
     log.error(join('\n', pluck('message', e.graphQLErrors as any[])))
     return true
   }
