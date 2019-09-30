@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { writeFile } from 'fs-extra'
 import { readJson } from 'fs-extra'
 import { Parser } from 'json2csv'
-import { compose, concat, length, map, range, pluck, prop, reject, sum } from 'ramda'
+import { compose, concat, length, map, range, pluck, prop, sum } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
@@ -18,7 +18,6 @@ import {
   saveMetainfo,
   sleep,
   RETRY_INTERVAL_S,
-  isLastChangeDate,
   showGraphQLErrors,
 } from './utils'
 
@@ -35,9 +34,13 @@ const generateListOfRanges = (indexLength: number) =>
 
 const handleExport = async (csvPath: string) => {
   const rawRoutesIndexFiles = await rewriter.routesIndexFiles()
-  const routesIndexFiles = reject(compose(isLastChangeDate, prop('fileName')), rawRoutesIndexFiles)
+  if (!rawRoutesIndexFiles) {
+    log.info('No data to be exported.')
+    return
+  }
+  const routesIndexFiles = prop('routeIndexFiles', rawRoutesIndexFiles)
   const indexHash = await createHash('md5')
-    .update(`${account}_${workspace}_${JSON.stringify(routesIndexFiles)}`)
+    .update(`${account}_${workspace}_${JSON.stringify(rawRoutesIndexFiles)}`)
     .digest('hex')
   const numberOfFiles = sum(compose<any, any, any>(map(Number), pluck('fileSize'))(routesIndexFiles))
   if (numberOfFiles === 0) {

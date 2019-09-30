@@ -15,8 +15,6 @@ export const MAX_RETRIES = 10
 export const RETRY_INTERVAL_S = 5
 export const accountAndWorkspace = [getAccount(), getWorkspace()]
 
-export const isLastChangeDate = x => x === LAST_CHANGE_DATE
-
 export const progressString = (message: string) => `${message} [:bar] :current/:total :percent`
 
 export const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))

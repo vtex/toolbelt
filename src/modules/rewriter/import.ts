@@ -1,6 +1,6 @@
 import { createHash } from 'crypto'
 import { readFile, readJson, remove } from 'fs-extra'
-import { compose, concat, difference, isEmpty, length, map, pluck, reduce, reject } from 'ramda'
+import { compose, concat, difference, isEmpty, length, map, pluck, reduce, prop } from 'ramda'
 import { createInterface } from 'readline'
 import { Parser } from 'json2csv'
 import { writeFile } from 'fs-extra'
@@ -25,7 +25,6 @@ import {
   validateInput,
   handleReadError,
   RETRY_INTERVAL_S,
-  isLastChangeDate,
 } from './utils'
 
 const IMPORTS = 'imports'
@@ -102,8 +101,8 @@ export default async (csvPath: string, options: any) => {
   const reset = options ? options.r || options.reset : undefined
   let indexedRoutes
   if (reset) {
-    const indexFiles = await rewriter.routesIndexFiles()
-    const indexFileNames = reject(isLastChangeDate, indexFiles ? pluck('fileName', indexFiles) : [])
+    const indexFiles = await rewriter.routesIndexFiles().then(prop('routeIndexFiles'))
+    const indexFileNames = pluck('fileName', indexFiles)
     indexedRoutes = await Promise.mapSeries(indexFileNames, rewriter.routesIndex)
       .then(compose<any, any, any>(
         pluck('id'),
