@@ -19,6 +19,7 @@ const defaultIgnored = [
   'package.json',
   'node_modules/**',
   '**/node_modules/**',
+  '.git/**',
 ]
 
 const services = ['react', 'render', 'masterdata', 'service']
