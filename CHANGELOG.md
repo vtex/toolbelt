@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- Use new rewriter API for redirects management.
 
 ## [2.76.1] - 2019-09-23
 ### Fixed
@@ -27,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.74.1] - 2019-09-18
 
-### Changed 
+### Changed
 
 - Enforce node version >= 10
 
