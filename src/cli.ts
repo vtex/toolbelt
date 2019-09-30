@@ -23,7 +23,10 @@ import { isVerbose, VERBOSE } from './utils'
 
 const nodeVersion = process.version.replace('v', '')
 if (!semver.satisfies(nodeVersion, pkg.engines.node)) {
-  console.error(chalk.bold('Incompatible with node < v10. Please upgrade node to major 10 or higher.'))
+  const minMajor = pkg.engines.node.replace('>=', '')
+  console.error(
+    chalk.bold(`Incompatible with node < v${minMajor}. Please upgrade node to major ${minMajor} or higher.`)
+  )
   process.exit(1)
 }
 
