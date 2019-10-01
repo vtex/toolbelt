@@ -3,12 +3,12 @@ import * as csv from 'csvtojson'
 import { writeJsonSync } from 'fs-extra'
 import * as jsonSplit from 'json-array-split'
 import * as ProgressBar from 'progress'
-import { keys, map, match } from 'ramda'
+import { keys, join, map, match, pluck } from 'ramda'
 
-import { rewriter } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
 
+export const LAST_CHANGE_DATE = 'lastChangeDate'
 export const MAX_ENTRIES_PER_REQUEST = 10
 export const METAINFO_FILE = '.vtex_redirects_metainfo.json'
 export const MAX_RETRIES = 10
@@ -18,6 +18,13 @@ export const accountAndWorkspace = [getAccount(), getWorkspace()]
 export const progressString = (message: string) => `${message} [:bar] :current/:total :percent`
 
 export const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
+
+export const showGraphQLErrors = (e: any) => {
+  if (e.graphQLErrors) {
+    log.error(join('\n', pluck('message', e.graphQLErrors as any[])))
+    return true
+  }
+}
 
 export const handleReadError = (path: string) => (error: any) => {
   console.log(JSON.stringify(error))
@@ -81,14 +88,4 @@ export const deleteMetainfo = (metainfo: any, metainfoType: string, fileHash: st
   }
   delete metainfo[metainfoType][fileHash]
   writeJsonSync(METAINFO_FILE, metainfo, { spaces: 2 })
-}
-
-export const ensureIndexCreation = async () => {
-  const index = await rewriter.routesIndex()
-  if (index === null) {
-    await rewriter.createRoutesIndex()
-    console.error('Error getting redirects index. Please try again in some seconds..')
-    process.exit()
-  }
-  return index
 }

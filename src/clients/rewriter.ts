@@ -1,6 +1,16 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
 import { path } from 'ramda'
 
+export interface RouteIndexFiles {
+  lastChangeDate: string
+  routeIndexFiles: RouteIndexFileEntry[]
+}
+
+export interface RouteIndexFileEntry {
+  fileName: string
+  fileSize: string
+}
+
 export interface RouteIndexEntry {
   id: string
   lastChangeDate: string
@@ -33,40 +43,46 @@ export class Rewriter extends AppGraphQLClient {
     super('vtex.rewriter', context, { ...options, headers: { 'cache-control': 'no-cache' } })
   }
 
-  public createRoutesIndex = (): Promise<boolean> =>
+  public routesIndexFiles = (): Promise<RouteIndexFiles> =>
     this.graphql
-      .mutate<boolean, {}>(
+      .query<string[], {}>(
         {
-          mutate: `
-      mutation CreateRoutesIndex {
+          query: `
+      query RoutesIndexFiles {
         redirect {
-          createIndex
+          indexFiles {
+            lastChangeDate
+            routeIndexFiles {
+              fileName
+              fileSize
+            }
+          }
         }
       }
       `,
           variables: {},
         },
         {
-          metric: 'rewriter-create-redirects-index',
+          metric: 'rewriter-get-redirects-index-files',
         }
       )
-      .then(path(['data', 'redirect', 'createIndex'])) as Promise<boolean>
+      .then(path(['data', 'redirect', 'indexFiles'])) as Promise<RouteIndexFiles>
 
-  public routesIndex = (): Promise<RouteIndexEntry[]> =>
+  public routesIndex = (fileName: string): Promise<RouteIndexEntry[]> =>
     this.graphql
-      .query<string[], {}>(
+      .query<string[], { fileName: string }>(
         {
           query: `
-      query RoutesIndex {
+      query RoutesIndex($fileName: String!) {
         redirect {
-          index {
+          index(fileName: $fileName) {
             id
             lastChangeDate
           }
         }
       }
       `,
-          variables: {},
+          variables: { fileName },
         },
         {
           metric: 'rewriter-get-redirects-index',
