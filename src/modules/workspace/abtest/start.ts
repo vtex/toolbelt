@@ -6,7 +6,15 @@ import * as semver from 'semver'
 import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
-import { abtester, installedABTester, formatDays, promptConstraintDuration, promptProductionWorkspace, promptProportionTrafic, SIGNIFICANCE_LEVELS } from './utils'
+import {
+  abtester,
+  installedABTester,
+  formatDays,
+  promptConstraintDuration,
+  promptProductionWorkspace,
+  promptProportionTrafic,
+  SIGNIFICANCE_LEVELS,
+} from './utils'
 
 const promptSignificanceLevel = async (): Promise<string> => {
   const significanceTimePreviews = await Promise.all(
