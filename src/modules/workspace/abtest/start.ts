@@ -6,9 +6,17 @@ import * as semver from 'semver'
 import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
-import { abtester, installedABTester, formatDays, promptProductionWorkspace, SIGNIFICANCE_LEVELS } from './utils'
+import {
+  abtester,
+  installedABTester,
+  formatDays,
+  promptConstraintDuration,
+  promptProductionWorkspace,
+  promptProportionTrafic,
+  SIGNIFICANCE_LEVELS,
+} from './utils'
 
-const promptSignificanceLevel = async () => {
+const promptSignificanceLevel = async (): Promise<string> => {
   const significanceTimePreviews = await Promise.all(
     compose<any, number[], Array<Promise<number>>>(
       map(value => abtester.preview(value as number)),
@@ -56,9 +64,11 @@ export default async () => {
   try {
     if (semver.satisfies(abTesterManifest.version, '>=0.10.0')) {
       log.info(`Setting workspace ${chalk.green(workspace)} to A/B test`)
-      await abtester.start(workspace)
       await promptContinue(workspace)
-      log.info(`Workspace ${chalk.green(workspace)} in A/B test`)
+      const proportion = Number(await promptProportionTrafic())
+      const timeLength = Number(await promptConstraintDuration())
+      await abtester.customStart(workspace, timeLength, proportion)
+      log.info(`Workspace ${chalk.green(String(workspace))} in A/B test`)
       log.info(`You can stop the test using ${chalk.blue('vtex workspace abtest finish')}`)
       return
     }
