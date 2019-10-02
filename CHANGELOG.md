@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.77.1] - 2019-10-02
+### Changed
+- Increase timeout and retries in the `rewriter` client.
+- Sort the redirects list by the `from` prop before starting import.
+
 ## [2.77.0] - 2019-10-02
 
 ## [2.76.3] - 2019-10-02

@@ -1,11 +1,13 @@
 import * as Ajv from 'ajv'
+import { createHash } from 'crypto'
 import * as csv from 'csvtojson'
 import { writeJsonSync } from 'fs-extra'
 import * as jsonSplit from 'json-array-split'
 import * as ProgressBar from 'progress'
-import { keys, join, map, match, pluck } from 'ramda'
+import { compose, keys, join, map, match, pluck, prop, replace, sortBy, toLower } from 'ramda'
 
 import { getAccount, getWorkspace } from '../../conf'
+import { Redirect } from '../../clients/rewriter'
 import log from '../../logger'
 
 export const LAST_CHANGE_DATE = 'lastChangeDate'
@@ -33,9 +35,22 @@ export const handleReadError = (path: string) => (error: any) => {
   process.exit()
 }
 
+const normalizePath = (path: string) =>
+  compose(
+    replace(/\/+$/, ''),
+    toLower,
+    decodeURI
+  )(path)
+
+const sortFunction = (redirect: Redirect) =>
+  `${createHash('md5')
+    .update(normalizePath(prop('from', redirect)))
+    .digest('hex')}`
+
 export const readCSV = async (path: string) => {
   try {
-    return await csv({ delimiter: ';', ignoreEmpty: true }).fromFile(path)
+    const result = (await csv({ delimiter: ';', ignoreEmpty: true }).fromFile(path)) as Redirect[]
+    return sortBy(sortFunction, result)
   } catch (e) {
     handleReadError(path)(e)
   }
