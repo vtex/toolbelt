@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.76.3] - 2019-10-02
+
 ### Added
 - Ensure `node` >= v10
 - Add debug logs on `node` version, OS basic info and command executed 
