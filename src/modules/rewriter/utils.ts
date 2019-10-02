@@ -35,14 +35,21 @@ export const handleReadError = (path: string) => (error: any) => {
   process.exit()
 }
 
-const normalizePath = (path: string) => compose(replace(/\/+$/, ''), toLower, decodeURI)(path)
+const normalizePath = (path: string) =>
+  compose(
+    replace(/\/+$/, ''),
+    toLower,
+    decodeURI
+  )(path)
 
 const sortFunction = (redirect: Redirect) =>
-  `${createHash('md5').update(normalizePath(prop('from', redirect))).digest('hex')}`
+  `${createHash('md5')
+    .update(normalizePath(prop('from', redirect)))
+    .digest('hex')}`
 
 export const readCSV = async (path: string) => {
   try {
-    const result = await csv({ delimiter: ';', ignoreEmpty: true }).fromFile(path) as Redirect[]
+    const result = (await csv({ delimiter: ';', ignoreEmpty: true }).fromFile(path)) as Redirect[]
     return sortBy(sortFunction, result)
   } catch (e) {
     handleReadError(path)(e)
