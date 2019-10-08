@@ -26,7 +26,7 @@ const promptWorkspaceToFinishABTest = async () =>
   await abtester
     .status()
     .then(map(({ WorkspaceB }) => WorkspaceB))
-    .then(workspaces =>
+    .then((workspaces: string[]) =>
       enquirer.prompt({
         name: 'workspace',
         message: 'Choose which workspace to finish A/B testing:',

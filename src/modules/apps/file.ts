@@ -206,5 +206,5 @@ export const watch = (root: string, sendChanges: AnyFunction, folder?: string): 
       .on('unlink', file => sendRemoveChanges(file, sendChanges))
       .on('error', reject)
       .on('ready', resolve)
-  })
+  }) as Bluebird<string | void>
 }
