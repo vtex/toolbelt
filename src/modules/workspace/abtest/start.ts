@@ -34,7 +34,7 @@ const promptSignificanceLevel = async (): Promise<string> => {
           message: `${key} (~ ${formatDays(value as number)})`,
           value: key,
         }))(significanceTimePreviewMap)
-      ),
+      ) as any,
     })
     .then(prop('level'))
 }
