@@ -32,7 +32,7 @@ const templates = {
   'render-guide': 'render-guide',
   'masterdata-graphql-guide': 'masterdata-graphql-guide',
   'support app': 'hello-support',
-  'react-guide': 'react-repo-template',
+  'react-guide': 'react-app-template',
 }
 
 const titles = {
