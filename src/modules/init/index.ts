@@ -182,6 +182,6 @@ export default async () => {
     log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
   } catch (err) {
     log.error(err.message)
-    err.printStackTrace()
+    log.debug(err)
   }
 }
