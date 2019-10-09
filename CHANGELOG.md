@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Update typescript version to 3.6.3
+
 ## [2.77.1] - 2019-10-02
 ### Changed
 - Increase timeout and retries in the `rewriter` client.
