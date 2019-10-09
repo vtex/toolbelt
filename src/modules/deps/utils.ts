@@ -21,5 +21,5 @@ const cleanDeps = compose(
 )
 
 export const getCleanDependencies = async context => {
-  return await new Apps(context).getDependencies().then(cleanDeps)
+  return (await new Apps(context).getDependencies().then(cleanDeps)) as string[]
 }
