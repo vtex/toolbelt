@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fix
+
+- Typescript compile error that happened on darwin platform
+
 ## [2.77.2] - 2019-10-09
 
 ### Changed
