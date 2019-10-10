@@ -28,7 +28,7 @@ const FIELDS = ['from', 'to', 'type', 'endDate']
 
 const generateListOfRanges = (indexLength: number) =>
   map(
-    (n: number) => [n * MAX_ENTRIES_PER_REQUEST, Math.min((n + 1) * MAX_ENTRIES_PER_REQUEST, indexLength)],
+    (n: number) => [n * MAX_ENTRIES_PER_REQUEST, Math.min((n + 1) * MAX_ENTRIES_PER_REQUEST - 1, indexLength)],
     range(0, Math.ceil(indexLength / MAX_ENTRIES_PER_REQUEST))
   )
 
@@ -50,6 +50,7 @@ const handleExport = async (csvPath: string) => {
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const exportMetainfo = metainfo[EXPORTS] || {}
   const listOfRanges = generateListOfRanges(numberOfFiles)
+console.log(`listOfRanges: ${JSON.stringify(listOfRanges)}`)
   let counter = exportMetainfo[indexHash] ? exportMetainfo[indexHash].counter : 0
   let listOfRoutes = exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
 
