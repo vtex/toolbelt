@@ -50,7 +50,6 @@ const handleExport = async (csvPath: string) => {
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const exportMetainfo = metainfo[EXPORTS] || {}
   const listOfRanges = generateListOfRanges(numberOfFiles)
-console.log(`listOfRanges: ${JSON.stringify(listOfRanges)}`)
   let counter = exportMetainfo[indexHash] ? exportMetainfo[indexHash].counter : 0
   let listOfRoutes = exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
 
