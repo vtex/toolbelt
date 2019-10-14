@@ -22,12 +22,14 @@ export const checkIfTarGzIsEmpty = (url: string) => {
   })
 }
 
-type Files = 'tsconfig' | 'esLintrc' | 'packageJson'
+type Files = 'tsconfig' | 'esLintrc' | 'packageJson' | 'eslintIgnore' | 'prettierrc'
 
 const paths: Record<Files, (builder: string) => string> = {
   tsconfig: (builder: string) => path.join(getAppRoot(), builder, 'tsconfig.json'),
-  esLintrc: (builder: string) => path.join(getAppRoot(), builder, '.eslintrc'),
+  esLintrc: (builder: string) => path.join(getAppRoot(), builder, '.eslintrc.json'),
   packageJson: (builder: string) => path.join(getAppRoot(), builder, 'package.json'),
+  eslintIgnore: (builder: string) => path.join(getAppRoot(), builder, '.eslintignore'),
+  prettierrc: (builder: string) => path.join(getAppRoot(), builder, '.prettierrc'),
 }
 
 class FileReaderWriter {
@@ -49,3 +51,5 @@ class FileReaderWriter {
 export const packageJsonEditor = new FileReaderWriter('packageJson')
 export const esLintrcEditor = new FileReaderWriter('esLintrc')
 export const tsconfigEditor = new FileReaderWriter('tsconfig')
+export const eslintIgnoreEditor = new FileReaderWriter('eslintIgnore')
+export const prettierrcEditor = new FileReaderWriter('prettierrc')

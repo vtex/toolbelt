@@ -25,55 +25,77 @@ beforeEach(() => {
 })
 
 describe('Yarn is called correctly and .eslintrc is created', () => {
-  const checkYarnCall = (builder: string) => {
-    const yarnInstallation = `${yarnPath} add eslint@^6.4.0 eslint-config-vtex@^11.0.0 eslint-config-vtex-react@^5.0.1 --dev`
+  const checkYarnCall = () => {
+    const dependencies = [
+      'eslint@^6.4.0',
+      'eslint-config-vtex@^11.0.0',
+      'eslint-config-vtex-react@^5.0.1',
+      '@types/node@^12.7.12',
+      'prettier@^1.18.2',
+      'typescript@^3.5.3',
+    ]
+
+    const yarnInstallation = `${yarnPath} add ${dependencies.join(' ')} --dev`
     expect(execSync).toBeCalledWith(yarnInstallation, {
-      cwd: path.resolve('app-root', builder),
+      cwd: path.resolve('app-root'),
       stdio: 'inherit',
     })
   }
 
-  const checkEsLintrc = (builder: string) => {
-    expect(esLintrcEditorMock.write).toBeCalledWith(builder, expect.anything())
+  const checkEsLintrc = () => {
+    expect(esLintrcEditorMock.write).toBeCalledWith('.', expect.anything())
   }
 
   test(`If package.json doesn't have any eslint deps`, async () => {
     const pkg = { devDependencies: { '@types/node': '12.0.0' } }
-    setPackageJsonByBuilder({ node: pkg, react: pkg })
+    setPackageJsonByBuilder({ root: pkg })
 
     const builders = ['node', 'react']
     await setupESLint(manifestSamples['node4-react3-app'], builders)
-    builders.forEach(builder => {
-      checkYarnCall(builder)
-      checkEsLintrc(builder)
-    })
+
+    checkYarnCall()
+    checkEsLintrc()
   })
 
   test('If package.json has some eslint deps', async () => {
     const pkg = { devDependencies: { eslint: '^5.15.1' } }
-    setPackageJsonByBuilder({ node: pkg, react: pkg })
+    setPackageJsonByBuilder({ root: pkg })
 
-    const builders = ['node', 'react']
-    await setupESLint(manifestSamples['node4-react3-app'], builders)
-    builders.forEach(builder => {
-      checkYarnCall(builder)
-      checkEsLintrc(builder)
-    })
+    const builders = ['node']
+    await setupESLint(manifestSamples['node4-app'], builders)
+
+    checkYarnCall()
+    checkEsLintrc()
   })
 
   test('If package.json has all eslint deps', async () => {
     const pkg = {
       devDependencies: {
-        eslint: '^5.15.1',
-        'eslint-config-vtex': '^10.1.0',
-        'eslint-config-vtex-react': '^4.1.0',
+        eslint: '^6.4.0',
+        'eslint-config-vtex': '^11.0.0',
+        'eslint-config-vtex-react': '^5.0.1',
+        '@types/node': '^12.7.12',
+        prettier: '^1.18.2',
+        typescript: '^3.5.3',
       },
     }
 
-    setPackageJsonByBuilder({ node: pkg, react: pkg })
+    setPackageJsonByBuilder({ root: pkg })
     const builders = ['node', 'react']
     await setupESLint(manifestSamples['node4-react3-app'], builders)
     expect(execSync).not.toBeCalled()
-    builders.forEach(builder => checkEsLintrc(builder))
+    checkEsLintrc()
+  })
+
+  it('should add custom config for react builder', async () => {
+    const builders = ['react']
+
+    await setupESLint(manifestSamples['react3-app'], builders)
+    expect(esLintrcEditorMock.write).toHaveBeenCalledWith(
+      'react',
+      expect.objectContaining({
+        extends: 'vtex-react',
+      })
+    )
   })
 })
