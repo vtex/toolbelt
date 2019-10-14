@@ -98,4 +98,12 @@ describe('Yarn is called correctly and .eslintrc is created', () => {
       })
     )
   })
+
+  it('should not install react custom config on node-only app', async () => {
+    const builders = ['node']
+
+    await setupESLint(manifestSamples['node4-app'], builders)
+
+    expect(esLintrcEditorMock.write).toHaveBeenCalledTimes(1)
+  })
 })
