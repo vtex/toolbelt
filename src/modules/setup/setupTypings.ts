@@ -12,10 +12,16 @@ import { checkIfTarGzIsEmpty, packageJsonEditor } from './utils'
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/
 
+const appIdWithMajorRange = (appId: string) => {
+  const [appNameWithVendor, appVersion] = appId.split('@')
+  return `${appNameWithVendor}@${toMajorRange(appVersion)}`
+}
+
 const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLinked: boolean): Promise<string> => {
   const appId = ignoreLinked
     ? await appIdFromRegistry(appName, appMajorLocator)
     : await resolveAppId(appName, appMajorLocator)
+
   const vendor = getVendor(appId)
   const linked = isLinked({ version: appId, vendor, name: '', builders: {} })
 
@@ -25,7 +31,7 @@ const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLin
   const base =
     linked && !ignoreLinked
       ? `https://${getWorkspace()}--${getAccount()}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/public`
-      : `http://vtex.vteximg.com.br/_v/public/typings/v1/${appId}/public`
+      : `http://vtex.vteximg.com.br/_v/public/typings/v1/${appIdWithMajorRange(appId)}/public`
 
   log.info(`Checking if ${chalk.bold(appId)} has new types format`)
   try {
