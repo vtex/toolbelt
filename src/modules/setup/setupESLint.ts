@@ -45,8 +45,6 @@ const baseEslintrc = {
   },
 }
 
-// eslint-disable-next-line
-// @ts-ignore
 const customEslintrc = {
   react: {
     extends: 'vtex-react',
