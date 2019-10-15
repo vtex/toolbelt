@@ -102,7 +102,7 @@ export default async (csvPath: string, options: any) => {
   let indexedRoutes
   if (reset) {
     const indexFiles = await rewriter.routesIndexFiles().then(prop('routeIndexFiles'))
-    const indexFileNames = pluck('fileName', indexFiles)
+    const indexFileNames = pluck('fileName', indexFiles) || []
     indexedRoutes = await Promise.mapSeries(indexFileNames, rewriter.routesIndex).then(
       compose<any, any, any>(
         pluck('id'),
