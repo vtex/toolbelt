@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { outputJsonSync, readJsonSync } from 'fs-extra'
+import { outputJsonSync, readJsonSync, readFileSync, outputFileSync } from 'fs-extra'
 import * as path from 'path'
 import { pipeline } from 'stream'
 import * as tar from 'tar'
@@ -33,23 +33,31 @@ const paths: Record<Files, (builder: string) => string> = {
 }
 
 class FileReaderWriter {
-  constructor(private file: Files) {}
+  constructor(private file: Files, private isJSON = true) {}
 
   public path = (builder: string) => {
     return paths[this.file](builder)
   }
 
   public read = (builder: string) => {
-    return readJsonSync(this.path(builder))
+    if (this.isJSON) {
+      return readJsonSync(this.path(builder))
+    }
+
+    return readFileSync(this.path(builder))
   }
 
   public write = (builder: string, data: any) => {
-    return outputJsonSync(this.path(builder), data, { spaces: 2 })
+    if (this.isJSON) {
+      return outputJsonSync(this.path(builder), data, { spaces: 2 })
+    }
+
+    return outputFileSync(this.path(builder), data)
   }
 }
 
 export const packageJsonEditor = new FileReaderWriter('packageJson')
 export const esLintrcEditor = new FileReaderWriter('esLintrc')
 export const tsconfigEditor = new FileReaderWriter('tsconfig')
-export const eslintIgnoreEditor = new FileReaderWriter('eslintIgnore')
+export const eslintIgnoreEditor = new FileReaderWriter('eslintIgnore', false)
 export const prettierrcEditor = new FileReaderWriter('prettierrc')
