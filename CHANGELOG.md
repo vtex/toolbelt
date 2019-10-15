@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.77.6] - 2019-10-15
+### Changed
+- Update `vtex setup` ESLint configuration to match current recipe instructions.
+
 ## [2.77.5] - 2019-10-11
 
 ## [2.77.4] - 2019-10-10
