@@ -3,7 +3,7 @@ import { yarnPath } from '../../../modules/utils'
 import { manifestSamples } from '../../fixtures/manifests'
 import { mockSetupUtils } from './mocks'
 
-const { setPackageJsonByBuilder, esLintrcEditorMock } = mockSetupUtils()
+const { setPackageJsonByBuilder, esLintrcEditorMock, packageJsonEditorMock } = mockSetupUtils()
 jest.mock('child-process-es6-promise', () => {
   return {
     execSync: jest.fn(),
@@ -105,5 +105,22 @@ describe('Yarn is called correctly and .eslintrc is created', () => {
     await setupESLint(manifestSamples['node4-app'], builders)
 
     expect(esLintrcEditorMock.write).toHaveBeenCalledTimes(1)
+  })
+
+  it("shouldn't crash when no package.json exists in app root", async () => {
+    const builders = ['node']
+
+    packageJsonEditorMock.read.mockImplementationOnce(() => {
+      const err = new Error('File not found')
+
+      // @ts-ignore
+      err.code = 'ENOENT'
+
+      throw err
+    })
+
+    await setupESLint(manifestSamples['node4-app'], builders)
+
+    expect(packageJsonEditorMock.write).toHaveBeenCalledTimes(1)
   })
 })

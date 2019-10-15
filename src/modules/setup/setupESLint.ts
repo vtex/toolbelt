@@ -1,6 +1,7 @@
 import { execSync } from 'child-process-es6-promise'
-import { resolve as resolvePath } from 'path'
+import { resolve as resolvePath, dirname } from 'path'
 import * as R from 'ramda'
+
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { yarnPath } from '../utils'
@@ -67,7 +68,18 @@ const yarnAddESLint = () => {
 
 const createESLintSetup = (appName: string, lintPackages: string[]) => {
   try {
-    const originalRootPackageJson = packageJsonEditor.read('.')
+    let originalRootPackageJson = {}
+
+    try {
+      originalRootPackageJson = packageJsonEditor.read('.')
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        log.info(`No package.json found in ${dirname(packageJsonEditor.path('.'))}. Creating one.`)
+      } else {
+        log.error(err)
+        return
+      }
+    }
 
     packageJsonEditor.write('.', R.mergeDeepRight(originalRootPackageJson, basePackageJson(appName)))
     eslintIgnoreEditor.write('.', eslintIgnore)
