@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.77.7] - 2019-10-16
+### Fixed
+- `vtex redirects import --reset` when the redirects index is empty in `vtex.rewriter`.
+
 ## [2.77.6] - 2019-10-15
 ### Changed
 - Update `vtex setup` ESLint configuration to match current recipe instructions.
@@ -41,7 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Ensure `node` >= v10
-- Add debug logs on `node` version, OS basic info and command executed 
+- Add debug logs on `node` version, OS basic info and command executed
 
 ## [2.76.2] - 2019-10-01
 ### Changed
