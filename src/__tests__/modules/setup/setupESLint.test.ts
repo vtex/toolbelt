@@ -107,7 +107,7 @@ describe('Yarn is called correctly and .eslintrc is created', () => {
     expect(esLintrcEditorMock.write).toHaveBeenCalledTimes(1)
   })
 
-  it("shouldn't crash when no package.json exists in app root", async () => {
+  it('should not crash when no package.json exists in app root', async () => {
     const builders = ['node']
 
     packageJsonEditorMock.read.mockImplementationOnce(() => {
@@ -122,5 +122,28 @@ describe('Yarn is called correctly and .eslintrc is created', () => {
     await setupESLint(manifestSamples['node4-app'], builders)
 
     expect(packageJsonEditorMock.write).toHaveBeenCalledTimes(1)
+  })
+
+  it('should not replace custom package.json scripts', async () => {
+    const builders = ['node']
+
+    const pkg = {
+      scripts: {
+        lint: 'tsc --noEmit && eslint --ext ts,tsx .',
+      },
+    }
+
+    setPackageJsonByBuilder({ root: pkg })
+
+    await setupESLint(manifestSamples['node4-app'], builders)
+
+    expect(packageJsonEditorMock.write).toHaveBeenCalledWith(
+      '.',
+      expect.objectContaining({
+        scripts: {
+          lint: pkg.scripts.lint,
+        },
+      })
+    )
   })
 })
