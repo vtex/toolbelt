@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- `inquirer` package
+
 ## [2.77.7] - 2019-10-16
 ### Fixed
 - `vtex redirects import --reset` when the redirects index is empty in `vtex.rewriter`.
