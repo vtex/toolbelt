@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `.git/**` to defaultIgnored files
+
 ## [2.77.8] - 2019-10-18
 
 ### Removed
