@@ -81,7 +81,7 @@ const createESLintSetup = (appName: string, lintPackages: string[]) => {
       }
     }
 
-    packageJsonEditor.write('.', R.mergeDeepRight(originalRootPackageJson, basePackageJson(appName)))
+    packageJsonEditor.write('.', R.mergeDeepRight(basePackageJson(appName), originalRootPackageJson))
     eslintIgnoreEditor.write('.', eslintIgnore)
     prettierrcEditor.write('.', basePrettierRc)
 
