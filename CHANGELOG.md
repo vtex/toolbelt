@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Remove CHANGELOG.md from lint of ignored files
+
 ## [2.77.10] - 2019-10-21
 ### Fixed
 - Fix `vtex setup` overriding the app's existing `package.json`.
