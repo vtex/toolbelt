@@ -15,7 +15,6 @@ const defaultIgnored = [
   '.DS_Store',
   'README.md',
   '.gitignore',
-  'CHANGELOG.md',
   'package.json',
   'node_modules/**',
   '**/node_modules/**',
