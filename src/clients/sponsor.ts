@@ -25,7 +25,7 @@ export class Sponsor extends IOClient {
     const [ sponsor, editionName ] = edition.split('.')
     return this.http.post(
       this.routes.setEdition(account),
-      { sponsor,  edition: editionName, version },
+      { sponsor, edition: editionName, version },
       { metric: 'set-edition' }
     )
   }
