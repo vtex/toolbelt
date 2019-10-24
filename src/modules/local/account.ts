@@ -1,8 +1,8 @@
-import * as clipboardy from 'clipboardy'
+import { copyToClipboard } from './utils'
 import { getAccount } from '../../conf'
 
 export default () => {
   const account = getAccount()
-  clipboardy.writeSync(account)
+  copyToClipboard(account)
   return console.log(account)
 }

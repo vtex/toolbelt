@@ -1,8 +1,8 @@
-import * as clipboardy from 'clipboardy'
+import { copyToClipboard } from './utils'
 import { getWorkspace } from '../../conf'
 
 export default () => {
   const workspace = getWorkspace()
-  clipboardy.writeSync(workspace)
+  copyToClipboard(workspace)
   return console.log(workspace)
 }
