@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.77.12] - 2019-10-25
+### Changed
+- Use `tenant-provisioner`'s `migrate` API to set account's editions.
+
 ### Fixed
 - Remove CHANGELOG.md from list of ignored files
 
