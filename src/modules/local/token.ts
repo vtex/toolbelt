@@ -1,8 +1,8 @@
-import * as clipboardy from 'clipboardy'
+import { copyToClipboard } from './utils'
 import { getToken } from '../../conf'
 
 export default () => {
   const token = getToken()
-  clipboardy.writeSync(token)
+  copyToClipboard(token)
   return console.log(token)
 }

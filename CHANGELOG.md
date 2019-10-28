@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.77.13] - 2019-10-28
+### Fixed
+- Error `Unhandled exception` when generating local token/workspace/account, due to nonexistent display.
+
 ## [2.77.12] - 2019-10-25
 ### Changed
 - Use `tenant-provisioner`'s `migrate` API to set account's editions.
