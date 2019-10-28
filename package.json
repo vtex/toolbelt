@@ -56,7 +56,7 @@
     "clear-module": "^3.0.0",
     "cli-table": "^0.3.1",
     "cli-table2": "^0.2.0",
-    "clipboardy": "^1.1.4",
+    "clipboardy": "^2.1.0",
     "configstore": "^4.0.0",
     "csvtojson": "^2.0.10",
     "debounce": "^1.0.0",
