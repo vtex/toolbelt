@@ -1,7 +1,7 @@
 import * as clipboardy from 'clipboardy'
 
 export const copyToClipboard = (str: string) => {
-  if (!process.env.DISPLAY) {
+  if (process.platform === 'linux' && !process.env.DISPLAY) {
     // skip, probably running on a server
     return
   }
