@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fix copy to clipboard of `vtex local token` when it's executed on Mac OS.
+
 ## [2.77.13] - 2019-10-28
 ### Fixed
 - Error `Unhandled exception` when generating local token/workspace/account, due to nonexistent display.
