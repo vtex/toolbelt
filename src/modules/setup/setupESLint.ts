@@ -122,6 +122,6 @@ export const setupESLint = (manifest: Manifest, buildersToAddAdditionalPackages:
   const buildersWithCustomLint = R.intersection(builders, R.keys(customEslintrc))
 
   buildersWithCustomLint.forEach(builder => {
-    setupCustomEsLintForBuilder(builder)
+    setupCustomEsLintForBuilder(builder as string)
   })
 }

@@ -8,6 +8,16 @@ import log from '../../logger'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 
+const warmUpRouteMap = async (workspace: string) => {
+  try {
+    const { builder } = createClients({ workspace: workspace })
+    await builder.availability('vtex.builder-hub@0.x', null)
+    log.debug('Warmed up route map')
+  } catch (err) {
+    return
+  }
+}
+
 export default async (name: string, options: any) => {
   if (!VALID_WORKSPACE.test(name)) {
     throw new CommandError("Whoops! That's not a valid workspace name. Please use only lowercase letters and numbers.")
@@ -25,9 +35,7 @@ export default async (name: string, options: any) => {
       )}`
     )
     // First request on a brand new workspace takes very long because of route map generation, so we warm it up.
-    const { builder } = createClients({ workspace: name })
-    await builder.availability('vtex.builder-hub@0.x', null)
-    log.debug('Warmed up route map')
+    await warmUpRouteMap(name)
   } catch (err) {
     if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
       log.error(err.response.data.message)
