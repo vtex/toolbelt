@@ -12,7 +12,7 @@ const warmUpRouteMap = async (workspace: string) => {
   try {
     const { builder } = createClients({ workspace: workspace })
     await builder.availability('vtex.builder-hub@0.x', null)
-    log.debug('Warmed up route map 2')
+    log.debug('Warmed up route map')
   } catch (err) {
     return
   }

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Ignore errors warming up the route map after create a workspace
+
+## [2.77.14] - 2019-11-06
+### Fixed
 - Fix copy to clipboard of `vtex local token` when it's executed on Mac OS.
 
 ## [2.77.13] - 2019-10-28
