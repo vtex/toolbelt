@@ -80,10 +80,11 @@ const promptAccount = async promptPreviousAcc => {
   return account
 }
 
-const saveCredentials = (login: string, account: string, token: string, workspace: string): void => {
+export const saveCredentials = (login: string, account: string, token: string, workspace: string): void => {
   conf.saveLogin(login)
   conf.saveAccount(account)
   conf.saveToken(token)
+  conf.saveAccountToken(account, token)
   conf.saveWorkspace(workspace)
 }
 

@@ -84,3 +84,11 @@ export const currentContext: Context = {
 export enum Region {
   Production = 'aws-us-east-1',
 }
+
+export const saveAccountToken = (account: string, token: string) => {
+  conf.set(`tokens.${account}`, token)
+}
+
+export const getTokens = () => {
+  return conf.get('tokens') || {}
+}
