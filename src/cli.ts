@@ -5,20 +5,20 @@ import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
-import { decode } from 'jsonwebtoken'
+import * as os from 'os'
 import * as path from 'path'
 import { reject, without } from 'ramda'
 import { isFunction } from 'ramda-adjunct'
+import * as semver from 'semver'
 import * as pkg from '../package.json'
-import { getToken } from './conf'
 import * as conf from './conf'
+import { getToken } from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
+import { Token } from './Token.js'
 import notify from './update'
-import * as semver from 'semver'
-import * as os from 'os'
 import { isVerbose, VERBOSE } from './utils'
 
 const nodeVersion = process.version.replace('v', '')
@@ -62,20 +62,11 @@ const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
-const hasValidToken = (): boolean => {
-  const token = getToken()
-  if (!token) {
-    return false
-  }
-
-  const decoded = decode(token)
-  return decoded && typeof decoded !== 'string' && decoded.exp && Number(decoded.exp) >= Date.now() / 1000
-}
-
 const checkLogin = args => {
   const first = args[0]
   const whitelist = [undefined, 'config', 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version', 'release']
-  if (!hasValidToken() && whitelist.indexOf(first) === -1) {
+  const token = new Token(getToken())
+  if (!token.isValid() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
     return run({ command: loginCmd })
   }
