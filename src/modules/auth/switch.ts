@@ -1,10 +1,10 @@
 import chalk from 'chalk'
-
 import { split } from 'ramda'
-import { getAccount, getLastUsedAccount } from '../../conf'
+import { getAccount, getLastUsedAccount, getLogin, getTokens, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
-import loginCmd from './login'
+import { Token } from '../../Token'
+import loginCmd, { saveCredentials } from './login'
 
 export const switchAccount = async (account: string, options, previousAccount = getAccount()) => {
   const isValidAccount = /^\s*[\w-]+\s*$/.test(account)
@@ -18,7 +18,19 @@ export const switchAccount = async (account: string, options, previousAccount = 
     throw new CommandError(`You're already using the account ${chalk.blue(account)}`)
   }
 
-  return await loginCmd({ account, workspace })
+  const accountToken = new Token(getTokens()[account])
+  if (accountToken.isValid()) {
+    log.debug(`Token stored for ${account}/${accountToken.login} is still valid`)
+    saveCredentials(accountToken.login, account, accountToken.token, workspace)
+    log.info(
+      `Logged into ${chalk.blue(getAccount())} as ${chalk.green(getLogin())} at workspace ${chalk.green(
+        getWorkspace()
+      )}`
+    )
+  } else {
+    log.debug(`Token for ${account} isn't stored or isn't valid`)
+    return loginCmd({ account, workspace })
+  }
 }
 
 const hasAccountSwitched = (account: string) => {
@@ -41,7 +53,7 @@ export default async (account: string, options) => {
     options = { ...options, w: parsedWorkspace, workspace: parsedWorkspace }
   }
   await switchAccount(parsedAccount, options)
-  if (hasAccountSwitched(account)) {
-    log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(account)}`)
+  if (hasAccountSwitched(parsedAccount)) {
+    log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(parsedAccount)}`)
   }
 }
