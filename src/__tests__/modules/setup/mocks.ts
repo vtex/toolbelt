@@ -49,6 +49,8 @@ export const mockRunYarn = () => {
       runYarn: jest.fn().mockReturnValue(undefined),
     }
   })
+
+  return jest.requireMock('../../../modules/utils')
 }
 
 export const mockAppsUtils = () => {
@@ -106,12 +108,20 @@ export const mockSetupUtils = () => {
 
     const setDataByBuilder = (newData: any) => {
       editor.read.mockImplementation((builder: string) => {
+        let retVal = dataByBuilder[builder]
         if (builder === '.') {
-          return dataByBuilder['root']
+          retVal = dataByBuilder['root']
         }
 
-        return dataByBuilder[builder]
+        if (!retVal) {
+          const err: any = new Error('MockError')
+          err.code = 'ENOENT'
+          throw err
+        }
+
+        return retVal
       })
+
       editor.write.mockImplementation((builder: string, newData: any) => {
         if (builder === '.') {
           dataByBuilder['root'] = newData
@@ -121,6 +131,7 @@ export const mockSetupUtils = () => {
 
         return newData
       })
+
       dataByBuilder = newData
     }
 
