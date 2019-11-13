@@ -1,15 +1,17 @@
-import { getManifest } from '../../manifest'
+import { getManifest, getAppRoot } from '../../manifest'
 import { setupESLint } from './setupESLint'
 import { setupTSConfig } from './setupTSConfig'
-import { setupTypings } from './setupTypings'
+import { IOAppTypesManager } from './IOAppTypesManager'
 
 const buildersToAddAdditionalPackages = ['react', 'node']
-const buildersToAddTypes = ['react', 'node']
 
 export default async (opts: { i?: boolean; 'ignore-linked': boolean }) => {
   const ignoreLinked = opts.i || opts['ignore-linked']
   const manifest = await getManifest()
   setupESLint(manifest, buildersToAddAdditionalPackages)
   await setupTSConfig(manifest)
-  await setupTypings(manifest, ignoreLinked, buildersToAddTypes)
+
+  const root = getAppRoot()
+  const typesManager = new IOAppTypesManager(root, manifest, { ignoreLinked })
+  await typesManager.setupTypes()
 }
