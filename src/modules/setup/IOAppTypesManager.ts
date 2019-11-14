@@ -37,7 +37,7 @@ interface BuilderHubInjectedDepsResponse {
 const typingsURLRegex = /_v\/\w*\/typings/
 
 export class IOAppTypesManager {
-  private static buildersToAddTypes(manifest: Manifest) {
+  public static buildersToAddTypes(manifest: Manifest) {
     return R.intersection(['node', 'react'], Object.keys(manifest.builders || {}))
   }
 

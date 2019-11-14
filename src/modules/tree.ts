@@ -131,6 +131,18 @@ export default {
         short: 'i',
         type: 'boolean',
       },
+      {
+        description: 'Setup only types',
+        long: 'types',
+        short: 't',
+        type: 'boolean',
+      },
+      {
+        description: 'Setup only this app types',
+        long: 'own-types',
+        short: 'o',
+        type: 'boolean',
+      },
     ],
   },
   link: {
