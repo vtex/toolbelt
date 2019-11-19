@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Store tokens of other accounts visited in order to change account without opening browser when possible
+
 ## [2.77.15] - 2019-11-07
 
 ### Fixed
