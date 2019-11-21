@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Update version of node-vtex-api to do requests with https
+
 ## [2.78.0] - 2019-11-19
 
 ### Changed
