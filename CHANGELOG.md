@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+#### vtex setup
+
+- Change the behavior setting up the types for the app itself: download own app types and add them to `node_modules` instead of adding the URL to `package.json`
+- Change the added types URLs hosts from `vteximg` to `vtexassets`
+- Add an action while setting up the types to add the script `vtex setup --types --own-types` to `scripts.postinstall` on `node/package.json` and `react/package.json`, if they are present.
+
+- Add new options to `vtex setup` command:
+  - `--types`: setup only types
+  - `--own-types`: setup only the types for the app itself
+
+- Refactor types setup code to use more of an OOP approach 
+
 ## [2.78.1] - 2019-11-21
 
 ### Fixed
