@@ -40,7 +40,7 @@ export enum RedirectTypes {
 
 export class Rewriter extends AppGraphQLClient {
   constructor(context: IOContext, options: InstanceOptions) {
-    super('vtex.rewriter', context, {
+    super('vtex.rewriter@1.x', context, {
       ...options,
       headers: { 'cache-control': 'no-cache' },
       retries: 5,

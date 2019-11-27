@@ -14,7 +14,7 @@ const routes = {
 
 export class ABTester extends AppClient {
   constructor(context: IOContext, options: InstanceOptions) {
-    super('vtex.ab-tester', context, options)
+    super('vtex.ab-tester@0.x', context, options)
   }
 
   // Abort AB Test in a workspace.
