@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.78.2] - 2019-11-27
+
 ### Fixed
 - Use `vendor.appname@major.x` on `ABTester` and `Rewriter` clients constructors in order to use new `node-vtex-api` routing. 
 
