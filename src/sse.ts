@@ -96,7 +96,7 @@ export const onEvent = (
 ): Unlisten => {
   const source = `${endpoint('colossus')}/${ctx.account}/${
     ctx.workspace
-  }/events?sender=${sender}${parseKeyToQueryParameter(keys)}`
+  }/events?onUnsubscribe=link_interrupted&sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
   es.onmessage = compose(
