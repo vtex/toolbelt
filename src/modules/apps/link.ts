@@ -22,7 +22,6 @@ import { fixPinnedDependencies, formatNano } from '../utils'
 import { runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
-import legacyLink from './legacyLink'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
 
 const root = getAppRoot()
@@ -221,10 +220,6 @@ export default async options => {
   const builderHubMessage = await checkBuilderHubMessage('link')
   if (!isEmpty(builderHubMessage)) {
     await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
-  }
-
-  if (manifest.builders.render || manifest.builders['functions-ts']) {
-    return legacyLink(options)
   }
 
   const appId = toAppLocator(manifest)
