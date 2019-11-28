@@ -125,6 +125,7 @@ const publisher = (workspace: string = 'master') => {
           )
         } else {
           spinner.succeed(`${appId} was published successfully!`)
+          log.info(`For Black Friday, we have turned off automatic update of apps. Log into the accounts you wish to update, create a workspace, install ${appId}, check it works and then promote the workspace.`)
         }
       } catch (e) {
         spinner.fail(`Failed to publish ${appId}`)
