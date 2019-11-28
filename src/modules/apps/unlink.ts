@@ -54,8 +54,7 @@ export default async (optionalApp: string, options) => {
     return unlinkAllApps()
   }
 
-  const manifest = new ManifestEditor()
-  const app = optionalApp || manifest.appLocator
+  const app = optionalApp || new ManifestEditor().appLocator
   const appsList = [app, ...parseArgs(options._)]
   return unlinkApps(appsList)
 }
