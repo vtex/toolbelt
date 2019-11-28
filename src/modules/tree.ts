@@ -168,10 +168,6 @@ export default {
     handler: './apps/list',
   },
   local: {
-    manifest: {
-      description: 'Generate manifest from package.json',
-      handler: './local/manifest',
-    },
     account: {
       description: 'Show current account and copy it to clipboard',
       handler: './local/account',
