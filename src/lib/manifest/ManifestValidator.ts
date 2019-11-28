@@ -1,18 +1,21 @@
-import { CommandError } from '../errors'
+import { CommandError } from '../../errors'
+import { App } from '../../App'
 
 export class ManifestValidator {
   public static readonly namePattern = '[\\w_-]+'
   public static readonly vendorPattern = '[\\w_-]+'
   public static readonly versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
   public static readonly wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
-  
-  public static readonly appName = new RegExp(`^${ManifestValidator.vendorPattern}\\.${ManifestValidator.namePattern}$`)
+  public static readonly majorVersionLocatorPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
+
+  public static readonly appID = new RegExp(`^${ManifestValidator.vendorPattern}\\.${ManifestValidator.namePattern}$`)
+  public static readonly dependencyName = new RegExp(
+    `^(${ManifestValidator.vendorPattern}\\.|(infra):)${ManifestValidator.namePattern}(@${ManifestValidator.wildVersionPattern})?$`
+  )
   public static readonly appLocator = new RegExp(
     `^${ManifestValidator.vendorPattern}\\.${ManifestValidator.namePattern}(?:@${ManifestValidator.wildVersionPattern})?$`
   )
-  
-  public static readonly dependencyName = new RegExp(`^(${ManifestValidator.vendorPattern}\\.|(infra):)${ManifestValidator.namePattern}(@${ManifestValidator.wildVersionPattern})?$`)
-    
+
 
   public static validate(manifest: any) {
     const vendorRegex = new RegExp(`^${this.vendorPattern}$`)
@@ -39,7 +42,7 @@ export class ManifestValidator {
   }
 
   public static validateApp(app: string, skipVersion: boolean = false) {
-    const regex = skipVersion ? this.appName : this.appLocator
+    const regex = skipVersion ? App.appID : App.appLocator
     if (!regex.test(app)) {
       throw new CommandError(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`)
     }

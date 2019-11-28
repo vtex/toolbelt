@@ -1,7 +1,7 @@
-import { readJson, readJsonSync, writeJson } from 'fs-extra'
+import { readJson, readJsonSync, writeJson, writeJsonSync } from 'fs-extra'
 import * as path from 'path'
-import { CommandError } from '../errors'
-import { getAppRoot } from '../manifest'
+import { CommandError } from '../../errors'
+import { getAppRoot } from '../../manifest'
 import { ManifestValidator } from './ManifestValidator'
 
 export class ManifestEditor {
@@ -40,8 +40,12 @@ export class ManifestEditor {
     ManifestValidator.validate(this.manifest)
   }
 
+  public flushChangesSync() {
+    return writeJsonSync(this.path, this.manifest, { spaces: 2 }) 
+  }
+
   public flushChanges() {
-    return writeJson(this.path, this.manifest, { spaces: 2 }) 
+    return writeJson(this.path, this.manifest, { spaces: 2 })
   }
 
   public async writeSchema() {
