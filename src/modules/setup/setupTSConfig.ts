@@ -2,6 +2,7 @@ import * as R from 'ramda'
 import { createClients } from '../../clients'
 import log from '../../logger'
 import { tsconfigEditor } from './utils'
+import { ManifestEditor } from '../../lib/manifest'
 
 const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: string) => {
   const builderTSConfig = R.prop(builder, tsconfigsFromBuilder)
@@ -11,7 +12,7 @@ const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: str
   return null
 }
 
-export const setupTSConfig = async (manifest: Manifest) => {
+export const setupTSConfig = async (manifest: ManifestEditor) => {
   const { builder: builderClient } = createClients({}, { retries: 2 })
   log.info(`Fetching BuilderHub tsconfig`)
   const tsconfigsFromBuilder = await builderClient.builderHubTsConfig()

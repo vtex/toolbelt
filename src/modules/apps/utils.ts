@@ -4,15 +4,15 @@ import * as Table from 'cli-table2'
 import * as enquirer from 'enquirer'
 import { createReadStream } from 'fs-extra'
 import { join } from 'path'
-import { __, compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail } from 'ramda'
+import { compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import * as semverDiff from 'semver-diff'
-
 import { apps, createClients, workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
+import { ManifestEditor } from '../../lib/manifest'
 import log from '../../logger'
-import { isManifestReadable } from '../../manifest'
 import { promptConfirm } from '../prompts'
+
 
 export const pathToFileObject = (root = process.cwd(), prefix: string = '') => (path: string): BatchStream => ({
   path: join(prefix, path),
@@ -76,7 +76,7 @@ export const validateAppAction = async (operation: string, app?) => {
   }
 
   // No app arguments and no manifest file.
-  const isReadable = await isManifestReadable()
+  const isReadable = ManifestEditor.isManifestReadable()
   if (!app && !isReadable) {
     throw new CommandError(
       `No app was found, please fix your manifest.json${app ? ' or use <vendor>.<name>[@<version>]' : ''}`

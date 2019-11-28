@@ -6,6 +6,7 @@ import log from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { yarnPath } from '../utils'
 import { esLintrcEditor, packageJsonEditor, eslintIgnoreEditor, prettierrcEditor } from './utils'
+import { ManifestEditor } from '../../lib/manifest'
 
 const basePackageJson = (appName: string) => ({
   name: appName,
@@ -109,7 +110,7 @@ const setupCustomEsLintForBuilder = (builder: string) => {
   }
 }
 
-export const setupESLint = (manifest: Manifest, buildersToAddAdditionalPackages: string[]) => {
+export const setupESLint = (manifest: ManifestEditor, buildersToAddAdditionalPackages: string[]) => {
   const builders = R.keys(R.prop('builders', manifest) || {})
   const filteredBuilders = R.intersection(builders, buildersToAddAdditionalPackages)
 

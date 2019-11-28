@@ -8,14 +8,14 @@ import * as conf from '../../conf'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
 import { getSavedOrMostAvailableHost } from '../../host'
+import { ManifestEditor } from '../../lib/manifest'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
-import { getAppRoot, getManifest } from '../../manifest'
+import { getAppRoot } from '../../manifest'
 import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { promptConfirm } from '../prompts'
-import { runYarnIfPathExists } from '../utils'
-import { switchToPreviousAccount } from '../utils'
+import { runYarnIfPathExists, switchToPreviousAccount } from '../utils'
 import { listLocalFiles } from './file'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
 
@@ -78,7 +78,7 @@ const publisher = (workspace: string = 'master') => {
   const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {
     const previousConf = conf.getAll() // Store previous configuration in memory
 
-    const manifest = await getManifest()
+    const manifest = new ManifestEditor()
     const account = conf.getAccount()
 
     const builderHubMessage = await checkBuilderHubMessage('publish')

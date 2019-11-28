@@ -8,6 +8,7 @@ import log from '../../logger'
 import { isLinked, resolveAppId, appIdFromRegistry } from '../apps/utils'
 import { runYarn } from '../utils'
 import { checkIfTarGzIsEmpty, packageJsonEditor } from './utils'
+import { ManifestEditor } from '../../lib/manifest'
 
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/
@@ -97,7 +98,7 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLi
   }
 }
 
-export const setupTypings = async (manifest: Manifest, ignoreLinked: boolean, buildersToAddTypes: string[]) => {
+export const setupTypings = async (manifest: ManifestEditor, ignoreLinked: boolean, buildersToAddTypes: string[]) => {
   const appName = manifest.vendor + '.' + manifest.name
   const appMajor = toMajorRange(manifest.version)
 

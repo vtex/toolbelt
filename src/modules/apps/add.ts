@@ -42,8 +42,7 @@ const addApp = async (app: string, manifest: ManifestEditor) => {
 
 const addApps = async (apps: string[], manifest: ManifestEditor) => {
   try {
-    for (let i = 0; i < apps.length; i += 1) {
-      const app = apps[i]
+    for (const app of apps) {
       log.debug('Starting to add app', app)
 
       if (!ManifestValidator.dependencyName.test(app)) {

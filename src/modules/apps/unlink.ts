@@ -1,15 +1,13 @@
-import { path, prepend } from 'ramda'
-
+import { path } from 'ramda'
 import { apps } from '../../clients'
+import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
-import { getManifest, validateApp } from '../../manifest'
-import { toMajorLocator } from './../../locator'
 import { parseArgs, validateAppAction } from './utils'
 
 const { unlink, unlinkAll, listLinks } = apps
 
 const unlinkApp = async (app: string) => {
-  validateApp(app)
+  ManifestValidator.validateApp(app)
 
   try {
     log.info('Starting to unlink app:', app)
@@ -30,7 +28,7 @@ Make sure you typed the right app vendor, name and version.`)
 
 const unlinkApps = async (appsList: string[]): Promise<void> => {
   await validateAppAction('unlink', appsList)
-  await Promise.map(appsList, unlinkApp)
+  await Promise.all(appsList.map(unlinkApp))
 }
 
 const unlinkAllApps = async (): Promise<void> => {
@@ -56,7 +54,8 @@ export default async (optionalApp: string, options) => {
     return unlinkAllApps()
   }
 
-  const app = optionalApp || toMajorLocator(await getManifest())
-  const appsList = prepend(app, parseArgs(options._))
+  const manifest = new ManifestEditor()
+  const app = optionalApp || manifest.appLocator
+  const appsList = [app, ...parseArgs(options._)]
   return unlinkApps(appsList)
 }

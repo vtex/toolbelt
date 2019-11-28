@@ -1,15 +1,13 @@
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import { head, prepend, tail } from 'ramda'
-
 import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
+import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
-import { getManifest, validateApp } from '../../manifest'
 import switchAccount from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { parseLocator, toAppLocator } from './../../locator'
+import { parseLocator } from './../../locator'
 import { parseArgs, switchAccountMessage } from './utils'
 
 let originalAccount
@@ -56,40 +54,42 @@ const deprecateApp = async (app: string): Promise<void> => {
   return await registry.deprecateApp(`${vendor}.${name}`, version)
 }
 
-const prepareDeprecate = async (appsList: string[]): Promise<void> => {
-  if (appsList.length === 0) {
-    await switchToPreviousAccount(originalAccount, originalWorkspace)
-    return
-  }
-
-  const app = await validateApp(head(appsList))
-  try {
+const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
+  for (const app of appsList) {
+    ManifestValidator.validateApp(app)
     log.debug('Starting to deprecate app:', app)
-    await deprecateApp(app)
-    log.info('Successfully deprecated', app)
-  } catch (e) {
-    if (e.response && e.response.status && e.response.status === 404) {
-      log.error(`Error deprecating ${app}. App not found`)
-    } else if (e.message && e.response.statusText) {
-      log.error(`Error deprecating ${app}. ${e.message}. ${e.response.statusText}`)
-      return await switchToPreviousAccount(originalAccount, originalWorkspace)
-    } else {
-      await switchToPreviousAccount(originalAccount, originalWorkspace)
-      throw e
+
+    try {
+      await deprecateApp(app)
+      log.info('Successfully deprecated', app)
+    } catch (e) {
+      if (e.response && e.response.status && e.response.status === 404) {
+        log.error(`Error deprecating ${app}. App not found`)
+      } else if (e.message && e.response.statusText) {
+        log.error(`Error deprecating ${app}. ${e.message}. ${e.response.statusText}`)
+        return await switchToPreviousAccount(originalAccount, originalWorkspace)
+      } else {
+        await switchToPreviousAccount(originalAccount, originalWorkspace)
+        throw e
+      }
     }
   }
-  await prepareDeprecate(tail(appsList))
+
+  await switchToPreviousAccount(originalAccount, originalWorkspace)
 }
 
 export default async (optionalApp: string, options) => {
   const preConfirm = options.y || options.yes
+
   originalAccount = getAccount()
   originalWorkspace = getWorkspace()
-  const appsList = prepend(optionalApp || toAppLocator(await getManifest()), parseArgs(options._))
+  const manifest = new ManifestEditor()
+  const appsList = [optionalApp || manifest.appLocator, ...parseArgs(options._)]
 
   if (!preConfirm && !(await promptDeprecate(appsList))) {
     throw new UserCancelledError()
   }
+
   log.debug('Deprecating app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
-  return prepareDeprecate(appsList)
+  return prepareAndDeprecateApps(appsList)
 }
