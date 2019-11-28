@@ -41,7 +41,7 @@ export class ManifestEditor {
   }
 
   public flushChangesSync() {
-    return writeJsonSync(this.path, this.manifest, { spaces: 2 }) 
+    return writeJsonSync(this.path, this.manifest, { spaces: 2 })
   }
 
   public flushChanges() {
@@ -58,8 +58,7 @@ export class ManifestEditor {
   public addDependency(app: string, version: string) {
     this.manifest.dependencies = {
       ...this.manifest.dependencies,
-      [app] : version
+      [app]: version,
     }
   }
-
 }

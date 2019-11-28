@@ -1,2 +1,2 @@
-export { ManifestEditor } from "./ManifestEditor";
-export { ManifestValidator } from "./ManifestValidator";
+export { ManifestEditor } from './ManifestEditor'
+export { ManifestValidator } from './ManifestValidator'

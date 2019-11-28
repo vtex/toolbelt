@@ -16,7 +16,6 @@ export class ManifestValidator {
     `^${ManifestValidator.vendorPattern}\\.${ManifestValidator.namePattern}(?:@${ManifestValidator.wildVersionPattern})?$`
   )
 
-
   public static validate(manifest: any) {
     const vendorRegex = new RegExp(`^${this.vendorPattern}$`)
     const nameRegex = new RegExp(`^${this.namePattern}$`)
