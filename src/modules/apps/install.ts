@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { compose, equals, head, path, prepend } from 'ramda'
+import { compose, equals, head, path } from 'ramda'
 import { apps, billing } from '../../clients'
 import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
@@ -112,9 +112,8 @@ const logGraphQLErrorMessage = e => {
 export default async (optionalApp: string, options) => {
   const force = options.f || options.force
   await validateAppAction('install', optionalApp)
-  const manifest = new ManifestEditor()
-  const app = optionalApp || manifest.appLocator
-  const appsList = prepend(app, parseArgs(options._))
+  const app = optionalApp || new ManifestEditor().appLocator
+  const appsList = [app, ...parseArgs(options._)]
   log.debug('Installing app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
   return prepareInstall(appsList, force)
 }

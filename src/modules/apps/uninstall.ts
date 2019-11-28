@@ -22,13 +22,13 @@ const promptAppUninstall = (appsList: string[]): Promise<void> =>
 
 const uninstallApps = async (appsList: string[]): Promise<void> => {
   for (const app of appsList) {
-    ManifestValidator.validateApp(app.split('@')[0], true)
+    const appName = ManifestValidator.validateApp(app.split('@')[0], true)
     try {
-      log.debug('Starting to uninstall app', app)
-      await uninstallApp(app)
-      log.info(`Uninstalled app ${app} successfully`)
+      log.debug('Starting to uninstall app', appName)
+      await uninstallApp(appName)
+      log.info(`Uninstalled app ${appName} successfully`)
     } catch (e) {
-      log.warn(`The following app was not uninstalled: ${app}`)
+      log.warn(`The following app was not uninstalled: ${appName}`)
       log.error(`${e.response.status}: ${e.response.statusText}. ${e.response.data.message}`)
     }
   }
@@ -36,8 +36,7 @@ const uninstallApps = async (appsList: string[]): Promise<void> => {
 
 export default async (optionalApp: string, options) => {
   await validateAppAction('uninstall', optionalApp)
-  const manifest = new ManifestEditor()
-  const app = optionalApp || manifest.appLocator
+  const app = optionalApp || new ManifestEditor().appLocator
   const appsList = [app, ...parseArgs(options._)]
   const preConfirm = options.y || options.yes
 
