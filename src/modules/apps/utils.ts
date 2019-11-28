@@ -13,7 +13,6 @@ import { ManifestEditor } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 
-
 export const pathToFileObject = (root = process.cwd(), prefix: string = '') => (path: string): BatchStream => ({
   path: join(prefix, path),
   content: createReadStream(join(root, path)),

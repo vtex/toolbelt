@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from 'axios'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import { prepend } from 'ramda'
 import { getAccount, getToken, getWorkspace, Region } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
@@ -93,8 +92,7 @@ export default async (optionalApp: string, options) => {
   const preConfirm = options.y || options.yes
   originalAccount = getAccount()
   originalWorkspace = getWorkspace()
-  const manifest = new ManifestEditor()
-  const appsList = prepend(optionalApp || manifest.appLocator, parseArgs(options._))
+  const appsList = [optionalApp || new ManifestEditor().appLocator, ...parseArgs(options._)]
 
   if (!preConfirm && !(await promptUndeprecate(appsList))) {
     throw new UserCancelledError()

@@ -83,8 +83,7 @@ export default async (optionalApp: string, options) => {
 
   originalAccount = getAccount()
   originalWorkspace = getWorkspace()
-  const manifest = new ManifestEditor()
-  const appsList = [optionalApp || manifest.appLocator, ...parseArgs(options._)]
+  const appsList = [optionalApp || new ManifestEditor().appLocator, ...parseArgs(options._)]
 
   if (!preConfirm && !(await promptDeprecate(appsList))) {
     throw new UserCancelledError()
