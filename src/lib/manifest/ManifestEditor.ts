@@ -40,6 +40,35 @@ export class ManifestEditor {
     ManifestValidator.validate(this.manifest)
   }
 
+  public get name() {
+    return this.manifest.name
+  }
+
+  public get version() {
+    return this.manifest.version
+  }
+
+  public get vendor() {
+    return this.manifest.vendor
+  }
+
+  public get dependencies() {
+    return this.manifest.dependencies
+  }
+
+  public get builders() {
+    return this.manifest.builders
+  }
+
+
+
+
+  public get appLocator() {
+    const { vendor, name, version } = this.manifest
+    return `${vendor}.${name}@${version}`
+  }
+
+
   public flushChangesSync() {
     return writeJsonSync(this.path, this.manifest, { spaces: 2 })
   }
