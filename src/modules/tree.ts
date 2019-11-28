@@ -224,12 +224,6 @@ export default {
       type: 'boolean',
     },
   ],
-  port: {
-    react: {
-      description: 'Convert your app from React 0.x to React 2.x',
-      handler: './port/react',
-    },
-  },
   production: {
     description: "Set this workspace's production mode to true or false (deprecated)",
     handler: './workspace/production',
