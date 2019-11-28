@@ -1,97 +1,75 @@
-import { writeFile } from 'fs-extra'
-import * as latestVersion from 'latest-version'
-import { compose, concat, head, last, path, prepend, split, tail } from 'ramda'
-
+import chalk from 'chalk'
 import { router } from '../../clients'
 import { region } from '../../env'
 import { CommandError } from '../../errors'
+import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
-import { getManifest, getManifestPath, namePattern, vendorPattern, wildVersionPattern } from '../../manifest'
+import { appLatestMajor, parseArgs, pickLatestVersion, wildVersionByMajor } from './utils'
 
-import { appLatestMajor, handleError, parseArgs, pickLatestVersion, wildVersionByMajor } from './utils'
-
-const unprefixName = compose<string, string[], string>(
-  last,
-  split(':')
-)
-const invalidAppMessage =
-  'Invalid app format, please use <vendor>.<name>, <vendor>.<name>@<version>, npm:<name> or npm:<name>@<version>'
-
-const infraLatestVersion = (app: string): Promise<string | never> =>
-  router
-    .getAvailableVersions(app)
-    .then<string[]>(path(['versions', region()]))
-    .then(pickLatestVersion)
-    .then(wildVersionByMajor)
-    .catch(handleError(app))
-
-const npmLatestVersion = (app: string): Promise<string | never> => {
-  return latestVersion(app)
-    .then(concat('^'))
-    .catch(err => Promise.reject(new CommandError(err.message)))
+const unprefixName = (str: string) => {
+  return str.split(':').pop()
 }
 
-const updateManifestDependencies = (app: string, version: string): Promise<void> => {
-  return getManifest()
-    .then((manifest: Manifest) => {
-      return {
-        ...manifest,
-        dependencies: {
-          ...manifest.dependencies,
-          [app]: version,
-        },
-      }
-    })
-    .then((newManifest: Manifest) => JSON.stringify(newManifest, null, 2) + '\n')
-    .then((manifestJson: string) => writeFile(getManifestPath(), manifestJson))
+const invalidAppMessage = 'Invalid app format, please use <vendor>.<name>, <vendor>.<name>@<version>'
+
+const infraLatestVersion = async (app: string) => {
+  try {
+    const { versions } = await router.getAvailableVersions(app)
+    const latest = pickLatestVersion(versions[region()])
+    return wildVersionByMajor(latest)
+  } catch (err) {
+    if (err.response && err.response.status === 404) {
+      throw new CommandError(`App ${chalk.green(app)} not found`)
+    }
+
+    throw err
+  }
 }
 
-const addApp = (app: string): Promise<void> => {
+const addApp = async (app: string, manifest: ManifestEditor) => {
   const hasVersion = app.indexOf('@') > -1
   if (hasVersion) {
     const [appId, version] = app.split('@')
-    return updateManifestDependencies(appId, version)
+    return manifest.addDependency(appId, version)
   }
-  const isNpm = app.startsWith('npm:')
+
   const isInfra = app.startsWith('infra:')
   const appName = app.includes(':') ? unprefixName(app) : app
-  const versionRequest = isNpm
-    ? npmLatestVersion(appName)
-    : isInfra
-    ? infraLatestVersion(appName)
-    : appLatestMajor(appName)
-  return versionRequest.then((version: string) => updateManifestDependencies(app, version))
+  const version = await (isInfra ? infraLatestVersion(appName) : appLatestMajor(appName))
+
+  return manifest.addDependency(app, version)
 }
 
-const addApps = (apps: string[]): Promise<void | never> => {
-  const app = head(apps)
-  const decApps = tail(apps)
-  log.debug('Starting to add app', app)
-  const appRegex = new RegExp(`^(${vendorPattern}\\.|(npm|infra):)${namePattern}(@${wildVersionPattern})?$`)
-  const appPromise = appRegex.test(app) ? addApp(app) : Promise.reject(new CommandError(invalidAppMessage))
-  return appPromise
-    .then(() => (decApps.length > 0 ? addApps(decApps) : Promise.resolve()))
-    .catch(err => {
-      // A warn message will display the workspaces not deleted.
-      if (!err.toolbeltWarning) {
-        log.warn(`The following app` + (apps.length > 1 ? 's were' : ' was') + ` not added: ${apps.join(', ')}`)
-        // the warn message is only displayed the first time the err occurs.
-        err.toolbeltWarning = true
+const addApps = async (apps: string[], manifest: ManifestEditor) => {
+  try {
+    for (let i = 0; i < apps.length; i += 1) {
+      const app = apps[i]
+      log.debug('Starting to add app', app)
+
+      if (!ManifestValidator.dependencyName.test(app)) {
+        throw new CommandError(invalidAppMessage)
       }
-      return Promise.reject(err)
-    })
+      await addApp(app, manifest)
+    }
+  } catch (err) {
+    log.warn(`The following app` + (apps.length > 1 ? 's were' : ' was') + ` not added: ${apps.join(', ')}`)
+    throw err
+  }
 }
 
-export default (app: string, options) => {
-  const apps = prepend(app, parseArgs(options._))
+export default async (app: string, options) => {
+  const apps = [app, ...parseArgs(options._)]
+  const manifest = new ManifestEditor()
   log.debug('Adding app' + (apps.length > 1 ? 's' : '') + `: ${apps.join(', ')}`)
-  return addApps(apps)
-    .then(() => log.info('App' + (apps.length > 1 ? 's' : '') + ' added succesfully!'))
-    .catch(err => {
-      if (err instanceof CommandError) {
-        log.error(err.message)
-        return Promise.resolve()
-      }
-      return Promise.reject(err)
-    })
+  try {
+    await addApps(apps, manifest)
+    log.info('App' + (apps.length > 1 ? 's' : '') + ' added succesfully!')
+  } catch (err) {
+    if (err instanceof CommandError) {
+      log.error(err.message)
+      return
+    }
+
+    throw err
+  }
 }

@@ -72,7 +72,6 @@
     "json-array-split": "^1.0.0",
     "json2csv": "^4.5.2",
     "jsonwebtoken": "^8.2.0",
-    "latest-version": "^4.0.0",
     "moment": "^2.24.0",
     "numbro": "2.1.0",
     "opn": "^5.2.0",
