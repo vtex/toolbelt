@@ -172,10 +172,6 @@ export default {
       description: 'Generate manifest from package.json',
       handler: './local/manifest',
     },
-    package: {
-      description: 'Generate package.json from manifest',
-      handler: './local/package',
-    },
     account: {
       description: 'Show current account and copy it to clipboard',
       handler: './local/account',
