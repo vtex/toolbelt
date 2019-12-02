@@ -37,7 +37,7 @@ export default async function checkAndOpenNPSLink() {
   if (moment() > nextFeedbackDate) {
     const shouldOpenFeedbackForm = await promptConfirm(`Would you please fill in the feedback form?`, false)
     if (shouldOpenFeedbackForm) {
-      // Ask for feedback again in 3 months
+      // Ask for feedback again in 3 months.
       saveNextFeedbackDate(
         moment()
           .add(3, 'months')
