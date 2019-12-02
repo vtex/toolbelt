@@ -7,7 +7,7 @@ import { getNextFeedbackDate, saveNextFeedbackDate } from './conf'
 import { promptConfirm } from './modules/prompts'
 
 const NEVER = 'NEVER'
-const NPSFormURL = 'https://docs.google.com/forms/d/1wTBsqoK11kG10-6bnuha5yzocipX_5lKG226vRNYsIk/edit?ts=5dded52b'
+const NPSFormURL = 'https://forms.gle/CRRHn6P3x9AeaWTQ8'
 
 const choices = {
   'In 1 day': [1, 'days'],
