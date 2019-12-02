@@ -10,9 +10,9 @@ import { switchToPreviousAccount } from '../utils'
 import { getIOContext, IOClientOptions } from '../utils'
 
 const promptSwitchToAccount = async (account: string, initial: boolean) => {
-  const reason = initial ?
-    `Initial edition can only be set by ${chalk.blue(account)} account` :
-    `Only current account sponsor (${chalk.blue(account)}') can change its edition`
+  const reason = initial
+    ? `Initial edition can only be set by ${chalk.blue(account)} account`
+    : `Only current account sponsor (${chalk.blue(account)}) can change its edition`
   const proceed = await promptConfirm(`${reason}. Do you want to switch to account ${chalk.blue(account)}?`)
   if (!proceed) {
     throw new UserCancelledError()
