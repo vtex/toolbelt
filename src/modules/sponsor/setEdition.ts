@@ -33,8 +33,6 @@ export default async (edition: string) => {
   }
   const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
   await sponsorClientForSponsorAccount.setEdition(previousAccount, edition)
-  log.info(
-    `Successfully set new edition in account ${chalk.blue(previousAccount)}.`
-  )
+  log.info(`Successfully set new edition in account ${chalk.blue(previousAccount)}.`)
   await switchToPreviousAccount(previousConf)
 }
