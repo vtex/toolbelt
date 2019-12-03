@@ -20,7 +20,7 @@ import tree from './modules/tree'
 import { Token } from './Token.js'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
-import checkAndOpenNPSLink from './nps'
+import { checkAndOpenNPSLink } from './nps'
 
 const nodeVersion = process.version.replace('v', '')
 if (!semver.satisfies(nodeVersion, pkg.engines.node)) {

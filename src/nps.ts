@@ -1,22 +1,21 @@
 import * as enquirer from 'enquirer'
 import * as moment from 'moment'
 import * as opn from 'opn'
-import { prop, keys } from 'ramda'
 
 import { getNextFeedbackDate, saveNextFeedbackDate } from './conf'
 import { promptConfirm } from './modules/prompts'
 
-const NEVER = 'NEVER'
+const NEVER = 'Never'
 const NPSFormURL = 'https://forms.gle/CRRHn6P3x9AeaWTQ8'
 
 const choices = {
   'In 1 day': [1, 'days'],
   'In 1 week': [1, 'weeks'],
   'In 1 month': [1, 'months'],
-  Never: NEVER,
+  [NEVER]: NEVER,
 }
 
-export default async function checkAndOpenNPSLink() {
+export async function checkAndOpenNPSLink() {
   const nextFeedbackDateString = getNextFeedbackDate()
 
   if (nextFeedbackDateString === NEVER) {
@@ -45,14 +44,13 @@ export default async function checkAndOpenNPSLink() {
       )
       opn(NPSFormURL, { wait: false })
     } else {
-      let remindChoice = await enquirer
+      let { remindChoice } = await enquirer
         .prompt({
-          name: 'choice',
+          name: 'remindChoice',
           message: 'When would you like to be reminded?',
           type: 'select',
-          choices: keys(choices),
+          choices: Object.keys(choices),
         })
-        .then(prop('choice'))
 
       if (remindChoice !== NEVER) {
         const [n, unit] = choices[remindChoice]
