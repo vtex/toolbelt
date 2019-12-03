@@ -9,12 +9,15 @@ import { promptConfirm } from '../prompts'
 import { switchToPreviousAccount } from '../utils'
 import { getIOContext, IOClientOptions } from '../utils'
 
-const promptChangeToSponsorAccount = async (sponsorAccount: string) => {
-  const proceed = await promptConfirm(`Do you wish to log into the sponsor account ${sponsorAccount}?`)
+const promptSwitchToAccount = async (account: string, initial: boolean) => {
+  const reason = initial
+    ? `Initial edition can only be set by ${chalk.blue(account)} account`
+    : `Only current account sponsor (${chalk.blue(account)}) can change its edition`
+  const proceed = await promptConfirm(`${reason}. Do you want to switch to account ${chalk.blue(account)}?`)
   if (!proceed) {
     throw new UserCancelledError()
   }
-  await switchAccount(sponsorAccount, {})
+  await switchAccount(account, {})
 }
 
 export default async (edition: string) => {
@@ -24,17 +27,12 @@ export default async (edition: string) => {
   const data = await sponsorClient.getSponsorAccount()
   const sponsorAccount = R.prop('sponsorAccount', data)
   if (!sponsorAccount) {
-    throw new Error(`No sponsor account found for account ${chalk.blue(previousAccount)}`)
-  }
-  if (previousAccount !== sponsorAccount) {
-    await promptChangeToSponsorAccount(sponsorAccount)
+    await promptSwitchToAccount('vtex', true)
+  } else if (previousAccount !== sponsorAccount) {
+    await promptSwitchToAccount(sponsorAccount, false)
   }
   const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
   await sponsorClientForSponsorAccount.setEdition(previousAccount, edition)
-  log.info(
-    `Successfully set new edition in account ${chalk.blue(
-      previousAccount
-    )}. You stil need to wait for the house keeper to update this account.`
-  )
+  log.info(`Successfully set new edition in account ${chalk.blue(previousAccount)}.`)
   await switchToPreviousAccount(previousConf)
 }
