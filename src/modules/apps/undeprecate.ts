@@ -1,9 +1,8 @@
-import axios from 'axios'
-import { AxiosResponse } from 'axios'
+import { createClients } from '../../clients'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { head, prepend, tail } from 'ramda'
-import { getAccount, getToken, getWorkspace, Region } from '../../conf'
+import { getAccount, getToken, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { getManifest, validateApp } from '../../manifest'
@@ -12,7 +11,6 @@ import { promptConfirm } from '../prompts'
 import { parseLocator, toAppLocator } from './../../locator'
 import { parseArgs, switchAccountMessage } from './utils'
 
-const undeprecateRequestTimeOut = 10000 // 10 seconds
 let originalAccount
 let originalWorkspace
 
@@ -43,7 +41,7 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
   return
 }
 
-const undeprecateApp = async (app: string): Promise<AxiosResponse> => {
+const undeprecateApp = async (app: string): Promise<void> => {
   const { vendor, name, version } = parseLocator(app)
   const account = getAccount()
   if (vendor !== account) {
@@ -53,19 +51,10 @@ const undeprecateApp = async (app: string): Promise<AxiosResponse> => {
     }
     await switchAccount(vendor, {})
   }
-  // The below 'axios' request is temporary until we implement an
-  // `undeprecateApp` method in node-vtex-api and upgrade the library version
-  // used in this project.
-  const http = axios.create({
-    baseURL: `http://apps.${Region.Production}.vtex.io/`,
-    timeout: undeprecateRequestTimeOut,
-    headers: {
-      Authorization: getToken(),
-      'Content-Type': 'application/json',
-    },
-  })
-  const finalroute = `http://apps.${Region.Production}.vtex.io/${vendor}/master/registry/${vendor}.${name}/${version}`
-  return await http.patch(finalroute, { deprecated: false })
+
+  const context = { account: vendor, workspace: 'master', authToken: getToken() }
+  const { registry } = createClients(context)
+  return await registry.undeprecateApp(`${vendor}.${name}`, version)
 }
 
 const prepareUndeprecate = async (appsList: string[]): Promise<void> => {

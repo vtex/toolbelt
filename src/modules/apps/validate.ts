@@ -11,19 +11,13 @@ import { promptConfirm } from '../prompts'
 import { parseLocator, toAppLocator } from './../../locator'
 import { switchAccountMessage } from './utils'
 
-let originalAccount
-let originalWorkspace
-
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to validate this app in an account that differs from the indicated vendor. Do you want to valite in account ${chalk.blue(
     vendor
   )}?`
 }
 
-const promptValidate = (app: string): Bluebird<boolean> =>
-  promptConfirm(
-    `Are you sure you want to validate app ${app}`
-  )
+const promptValidate = (app: string): Bluebird<boolean> => promptConfirm(`Are you sure you want to validate app ${app}`)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()
@@ -51,7 +45,7 @@ const validateRelease = async (app: string): Promise<void> => {
   return await registry.validateApp(`${vendor}.${name}`, version)
 }
 
-const prepareValidate = async (app: string): Promise<void> => {
+const prepareValidate = async (app, originalAccount, originalWorkspace: string): Promise<void> => {
   app = await validateApp(app)
   try {
     log.debug('Starting to validate app:', app)
@@ -73,13 +67,13 @@ const prepareValidate = async (app: string): Promise<void> => {
 
 export default async (optionalApp: string, options) => {
   const preConfirm = options.y || options.yes
-  originalAccount = getAccount()
-  originalWorkspace = getWorkspace()
+  const originalAccount = getAccount()
+  const originalWorkspace = getWorkspace()
   const app = optionalApp || toAppLocator(await getManifest())
 
   if (!preConfirm && !(await promptValidate(app))) {
     throw new UserCancelledError()
   }
   log.debug(`Validating app ${app}`)
-  return prepareValidate(app)
+  return prepareValidate(app, originalAccount, originalWorkspace)
 }

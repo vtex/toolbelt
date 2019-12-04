@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - New command to validate a published app
 
+### Fixed
+- Use vtex/api on undeprecate request instead of axios 
+
 ## [2.78.6] - 2019-12-04
 ### Refactor
 - Make `vtex init` never change the cloned app's manifest.
