@@ -11,14 +11,12 @@ import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest } from '../../manifest'
-import { logAll } from '../../sse'
 import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { promptConfirm } from '../prompts'
 import { runYarnIfPathExists } from '../utils'
 import { switchToPreviousAccount } from '../utils'
 import { listLocalFiles } from './file'
-import { legacyPublisher } from './legacyPublish'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
 
 const root = getAppRoot()
@@ -104,32 +102,27 @@ const publisher = (workspace: string = 'master') => {
 
     const pubTag = tag || automaticTag(manifest.version)
 
-    if (manifest.builders.render || manifest.builders['functions-ts']) {
-      const unlisten = logAll({ account, workspace }, log.level, `${manifest.vendor}.${manifest.name}`)
-      const { legacyPublishApp } = legacyPublisher(manifest.vendor, workspace)
-      await legacyPublishApp(path, pubTag, manifest).finally(unlisten)
-    } else {
-      const appId = toAppLocator(manifest)
-      const oraMessage = ora(`Publishing ${appId} ...`)
-      const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
-      try {
-        const senders = ['vtex.builder-hub', 'apps']
-        const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, force, builder), {
-          waitCompletion: true,
-          context,
-          senders,
-        })
-        if (response.code !== 'build.accepted') {
-          spinner.warn(
-            `${appId} was published successfully, but you should update your builder hub to the latest version.`
-          )
-        } else {
-          spinner.succeed(`${appId} was published successfully!`)
-        }
-      } catch (e) {
-        spinner.fail(`Failed to publish ${appId}`)
+    const appId = toAppLocator(manifest)
+    const oraMessage = ora(`Publishing ${appId} ...`)
+    const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
+    try {
+      const senders = ['vtex.builder-hub', 'apps']
+      const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, force, builder), {
+        waitCompletion: true,
+        context,
+        senders,
+      })
+      if (response.code !== 'build.accepted') {
+        spinner.warn(
+          `${appId} was published successfully, but you should update your builder hub to the latest version.`
+        )
+      } else {
+        spinner.succeed(`${appId} was published successfully!`)
       }
+    } catch (e) {
+      spinner.fail(`Failed to publish ${appId}`)
     }
+
     await switchToPreviousAccount(previousConf)
 
     Promise.resolve()

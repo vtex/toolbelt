@@ -132,10 +132,6 @@ export const appIdFromRegistry = (app: string, majorLocator: string) => {
     .catch(handleError(app))
 }
 
-export const hasServiceOnBuilders = (manifest: Manifest): boolean => {
-  return !!manifest.builders['service-js']
-}
-
 export function optionsFormatter(billingOptions: BillingOptions) {
   /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({
