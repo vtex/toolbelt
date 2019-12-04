@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.78.6] - 2019-12-04
+### Refactor
+- Make `vtex init` never change the cloned app's manifest.
+
 ## [2.78.5] - 2019-12-04
 
 ### Refactor
@@ -21,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.78.2] - 2019-11-27
 
 ### Fixed
-- Use `vendor.appname@major.x` on `ABTester` and `Rewriter` clients constructors in order to use new `node-vtex-api` routing. 
+- Use `vendor.appname@major.x` on `ABTester` and `Rewriter` clients constructors in order to use new `node-vtex-api` routing.
 
 ## [2.78.1] - 2019-11-21
 
