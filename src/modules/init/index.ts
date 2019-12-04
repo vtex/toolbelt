@@ -8,7 +8,6 @@ import { promptConfirm } from '../prompts'
 
 import * as git from './git'
 
-
 const VTEXInternalTemplates = [
   // Only show these templates for VTEX e-mail users.
   'graphql-example',
