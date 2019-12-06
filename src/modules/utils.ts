@@ -1,13 +1,10 @@
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
 import { diffArrays } from 'diff'
-import { existsSync, pathExists, readFile } from 'fs-extra'
-import { writeFile } from 'fs-extra'
+import { existsSync, pathExists, readFile, writeFile } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import * as R from 'ramda'
-
 import { dummyLogger } from '../clients/dummyLogger'
-import { currentContext, getAccount, getToken, getWorkspace } from '../conf'
 import * as conf from '../conf'
 import * as env from '../env'
 import { BuildFailError } from '../errors'
@@ -41,8 +38,8 @@ export const IOClientOptions = {
 }
 
 export const getIOContext = () => ({
-  account: getAccount(),
-  authToken: getToken(),
+  account: conf.getAccount(),
+  authToken: conf.getToken(),
   production: false,
   product: '',
   region: env.region(),
@@ -51,7 +48,7 @@ export const getIOContext = () => ({
     params: {},
   },
   userAgent,
-  workspace: getWorkspace(),
+  workspace: conf.getWorkspace(),
   requestId: '',
   operationId: '',
   logger: dummyLogger,
@@ -93,7 +90,7 @@ export const listenBuild = (
   return new Promise((resolve, reject) => {
     let triggerResponse
 
-    const { context = currentContext, timeout = 5000 } = options
+    const { context = conf.currentContext, timeout = 5000 } = options
     const unlisten = onBuildEvent(context, timeout, appOrKey, (eventType, message) => {
       switch (eventType) {
         case 'start':
