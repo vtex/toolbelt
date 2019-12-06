@@ -53,7 +53,7 @@ const prepareValidate = async (app, originalAccount, originalWorkspace: string):
     log.info('Successfully validated', app)
   } catch (e) {
     if (e.response && e.response.status && e.response.status === 404) {
-      log.error(`Error validating ${app}. App not found`)
+      log.error(`Error validating ${app}. App not found or already validated`)
     } else if (e.message && e.response.statusText) {
       log.error(`Error validating ${app}. ${e.message}. ${e.response.statusText}`)
       return await switchToPreviousAccount(originalAccount, originalWorkspace)
