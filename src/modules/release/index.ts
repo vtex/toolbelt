@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { indexOf, prop } from 'ramda'
-import * as semver from 'semver'
+import semver from 'semver'
 
 import log from '../../logger'
 import {

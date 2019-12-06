@@ -1,6 +1,6 @@
 import { execSync } from 'child-process-es6-promise'
 import { resolve as resolvePath, dirname } from 'path'
-import * as R from 'ramda'
+import R from 'ramda'
 
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'

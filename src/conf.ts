@@ -1,4 +1,4 @@
-import * as Configstore from 'configstore'
+import Configstore from 'configstore'
 import { dirname } from 'path'
 
 import { name as pkgName } from '../package.json'

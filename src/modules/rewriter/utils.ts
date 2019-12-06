@@ -1,9 +1,9 @@
-import * as Ajv from 'ajv'
+import Ajv from 'ajv'
 import { createHash } from 'crypto'
-import * as csv from 'csvtojson'
+import csv from 'csvtojson'
 import { writeJsonSync } from 'fs-extra'
-import * as jsonSplit from 'json-array-split'
-import * as ProgressBar from 'progress'
+import jsonSplit from 'json-array-split'
+import ProgressBar from 'progress'
 import { compose, keys, join, map, match, pluck, prop, replace, sortBy, toLower } from 'ramda'
 
 import { getAccount, getWorkspace } from '../../conf'

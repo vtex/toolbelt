@@ -1,5 +1,5 @@
 import { writeFile } from 'fs-extra'
-import * as latestVersion from 'latest-version'
+import latestVersion from 'latest-version'
 import { compose, concat, head, last, path, prepend, split, tail } from 'ramda'
 
 import { router } from '../../clients'

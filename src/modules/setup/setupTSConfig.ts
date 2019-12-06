@@ -1,4 +1,4 @@
-import * as R from 'ramda'
+import R from 'ramda'
 import { createClients } from '../../clients'
 import log from '../../logger'
 import { tsconfigEditor } from './utils'

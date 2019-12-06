@@ -1,5 +1,5 @@
 import { createClients } from '../../clients'
-import * as Bluebird from 'bluebird'
+import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { head, prepend, tail } from 'ramda'
 import { getAccount, getToken, getWorkspace } from '../../conf'

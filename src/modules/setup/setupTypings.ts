@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import * as R from 'ramda'
+import R from 'ramda'
 import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { publicEndpoint } from '../../env'

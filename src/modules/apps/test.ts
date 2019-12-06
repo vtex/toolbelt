@@ -1,6 +1,6 @@
 import { Builder } from '@vtex/api'
-import * as retry from 'async-retry'
-import * as bluebird from 'bluebird'
+import retry from 'async-retry'
+import bluebird from 'bluebird'
 import chalk from 'chalk'
 import { concat, map, prop, toPairs } from 'ramda'
 import { createClients } from '../../clients'
