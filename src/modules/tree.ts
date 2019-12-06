@@ -29,6 +29,11 @@ export default {
       },
     ],
   },
+  validate: {
+    description: 'Validate a release of an app',
+    handler: './apps/validate',
+    optionalArgs: 'app',
+  },
   deprecate: {
     description: 'Deprecate app(s)',
     handler: './apps/deprecate',
