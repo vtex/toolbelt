@@ -6515,8 +6515,9 @@ static-extend@^0.1.1, static-extend@^0.1.2:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-"stats-lite@github:vtex/node-stats-lite#dist":
+stats-lite@vtex/node-stats-lite#dist:
   version "2.2.0"
+  uid "1b0d39cc41ef7aaecfd541191f877887a2044797"
   resolved "https://codeload.github.com/vtex/node-stats-lite/tar.gz/1b0d39cc41ef7aaecfd541191f877887a2044797"
   dependencies:
     isnumber "~1.0.0"
@@ -7424,9 +7425,9 @@ yargs@^12.0.2:
     yargs-parser "^11.1.1"
 
 yarn@^1.9.4:
-  version "1.13.0"
-  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.13.0.tgz#affa9c956739548024068532a902cf18c9cb523f"
-  integrity sha512-Unfw2eefv8imt4ZMPhvFVP44WCz38huDxkHs+Yqrx4wBTK75Tr0mh3V4rh+2Nw5iQq0rcM/VafotCZo9qTb5DA==
+  version "1.17.3"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.17.3.tgz#60e0b77d079eb78e753bb616f7592b51b6a9adce"
+  integrity sha512-CgA8o7nRZaQvmeF/WBx2FC7f9W/0X59T2IaLYqgMo6637wfp5mMEsM3YXoJtKUspnpmDJKl/gGFhnqS+sON7hA==
 
 zen-observable-ts@^0.8.18:
   version "0.8.18"
