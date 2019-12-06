@@ -10,10 +10,7 @@ import { getManifest, getManifestPath, namePattern, vendorPattern, wildVersionPa
 
 import { appLatestMajor, handleError, parseArgs, pickLatestVersion, wildVersionByMajor } from './utils'
 
-const unprefixName = compose<string, string[], string>(
-  last,
-  split(':')
-)
+const unprefixName = compose<string, string[], string>(last, split(':'))
 const invalidAppMessage =
   'Invalid app format, please use <vendor>.<name>, <vendor>.<name>@<version>, npm:<name> or npm:<name>@<version>'
 
