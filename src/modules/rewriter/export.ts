@@ -42,12 +42,7 @@ const handleExport = async (csvPath: string) => {
   const indexHash = await createHash('md5')
     .update(`${account}_${workspace}_${JSON.stringify(rawRoutesIndexFiles)}`)
     .digest('hex')
-  const numberOfFiles = sum(
-    compose<any, any, any>(
-      map(Number),
-      pluck('fileSize')
-    )(routesIndexFiles)
-  )
+  const numberOfFiles = sum(compose<any, any, any>(map(Number), pluck('fileSize'))(routesIndexFiles))
   if (numberOfFiles === 0) {
     log.info('No data to be exported.')
     return

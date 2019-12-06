@@ -111,10 +111,7 @@ const watchAndSendChanges = async (
     return path
   }
 
-  const pathModifier = pipe(
-    mapLocalToBuiderPath,
-    path => path.split(sep).join('/')
-  )
+  const pathModifier = pipe(mapLocalToBuiderPath, path => path.split(sep).join('/'))
 
   const addIgnoreNodeModulesRule = (paths: Array<string | ((path: string) => boolean)>) =>
     paths.concat((path: string) => path.includes('node_modules'))

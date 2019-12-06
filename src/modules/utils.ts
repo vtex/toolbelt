@@ -268,8 +268,16 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
   }
 
   // Setting the objects values.
-  setObjectValues(removedDeps, k => chalk.red(`${cleanVersion(k)}`), (k: any) => !!k.removed)
-  setObjectValues(addedDeps, k => chalk.green(`${cleanVersion(k)}`), (k: any) => !!k.added)
+  setObjectValues(
+    removedDeps,
+    k => chalk.red(`${cleanVersion(k)}`),
+    (k: any) => !!k.removed
+  )
+  setObjectValues(
+    addedDeps,
+    k => chalk.green(`${cleanVersion(k)}`),
+    (k: any) => !!k.added
+  )
 
   const table = createTable() // Set table headers.
   table.push(['', chalk.bold.yellow(title1), chalk.bold.yellow(title2)])

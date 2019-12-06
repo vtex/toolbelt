@@ -84,16 +84,9 @@ export const validateAppAction = async (operation: string, app?) => {
   }
 }
 
-export const wildVersionByMajor = compose<string, string[], string, string>(
-  concat(__, '.x'),
-  head,
-  split('.')
-)
+export const wildVersionByMajor = compose<string, string[], string, string>(concat(__, '.x'), head, split('.'))
 
-export const extractVersionFromId = compose<string, string[], string>(
-  last,
-  split('@')
-)
+export const extractVersionFromId = compose<string, string[], string>(last, split('@'))
 
 export const pickLatestVersion = (versions: string[]): string => {
   const start = head(versions)
@@ -142,7 +135,10 @@ export function optionsFormatter(billingOptions: BillingOptions) {
   if (billingOptions.free) {
     table.push([{ content: chalk.green('This app is free'), colSpan: 2, hAlign: 'center' }])
   } else {
-    table.push([{ content: 'Plan', hAlign: 'center' }, { content: 'Values', hAlign: 'center' }])
+    table.push([
+      { content: 'Plan', hAlign: 'center' },
+      { content: 'Values', hAlign: 'center' },
+    ])
 
     billingOptions.policies.forEach(policy => {
       let rowCount = 0

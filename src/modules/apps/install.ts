@@ -99,11 +99,7 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
   await prepareInstall(tail(appsList), force)
 }
 
-const isError = (errorCode: number) =>
-  compose(
-    equals(errorCode),
-    path(['response', 'status'])
-  )
+const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
 const isForbiddenError = isError(403)
 const isNotFoundError = isError(404)
 const hasErrorMessage = path(['response', 'data', 'message'])
