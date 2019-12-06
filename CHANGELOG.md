@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.79.0] - 2019-12-06
+
 ### Added
 - New command to validate a published app
 
