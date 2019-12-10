@@ -173,14 +173,6 @@ export default {
     handler: './apps/list',
   },
   local: {
-    manifest: {
-      description: 'Generate manifest from package.json',
-      handler: './local/manifest',
-    },
-    package: {
-      description: 'Generate package.json from manifest',
-      handler: './local/package',
-    },
     account: {
       description: 'Show current account and copy it to clipboard',
       handler: './local/account',
@@ -229,12 +221,6 @@ export default {
       type: 'boolean',
     },
   ],
-  port: {
-    react: {
-      description: 'Convert your app from React 0.x to React 2.x',
-      handler: './port/react',
-    },
-  },
   production: {
     description: "Set this workspace's production mode to true or false (deprecated)",
     handler: './workspace/production',
