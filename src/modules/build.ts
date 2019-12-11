@@ -19,9 +19,9 @@ interface ListenResponse<T> {
 }
 
 type AnyFunction = (...args: any[]) => any
-type BuildEvent = 'logs' | 'build.status'
+type BuildEvent = 'logs' | 'build.status' | 'receive.status'
 
-const allEvents: BuildEvent[] = ['logs', 'build.status']
+const allEvents: BuildEvent[] = ['logs', 'build.status', 'receive.status']
 
 const onBuildEvent = (
   ctx: Context,
@@ -33,8 +33,13 @@ const onBuildEvent = (
   const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', appOrKey, ['build.status'], message =>
     callback('build.status', message)
   )
+  const unlistenReceive = onEvent(ctx, 'vtex.builder-hub', appOrKey, ['receive.status'], message =>
+    callback('receive.status', message)
+  )
+
   const unlistenMap: Record<BuildEvent, AnyFunction> = {
     'build.status': unlistenBuild,
+    'receive.status': unlistenReceive,
     logs: unlistenLogs,
   }
 
@@ -79,6 +84,16 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
             reject(new BuildFailError(eventData))
           }
         }
+      }
+
+      if (eventType === 'receive.status') {
+        const transfered = parseFloat(eventData.body.bytesTransferred)
+        const total = parseFloat(eventData.body.totalBytes)
+        const percentage = Math.round((100 * transfered) / total)
+
+        log.info(
+          `Sending files: ${percentage}% - ${(transfered / 1000000).toFixed(2)}MB/${(total / 1000000).toFixed(2)}MB`
+        )
       }
     }
     const unlisten = onBuildEvent(context, appOrKey, callback, senders)
