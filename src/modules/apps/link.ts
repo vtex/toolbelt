@@ -1,4 +1,4 @@
-import { Builder, Change } from '@vtex/api'
+import { Change } from '@vtex/api'
 import * as retry from 'async-retry'
 import * as bluebird from 'bluebird'
 import chalk from 'chalk'
@@ -12,24 +12,22 @@ import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
-import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
-import { fixPinnedDependencies, formatNano } from '../utils'
-import { runYarnIfPathExists } from '../utils'
+import { fixPinnedDependencies, formatNano, runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
+import { ProjectUploader, ProjectSizeLimitError } from './ProjectUploader'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
 
 const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
-const AVAILABILITY_TIMEOUT = 1000
-const N_HOSTS = 3
+
 const buildersToStartDebugger = ['node']
 const buildersToRunLocalYarn = ['react', 'node']
 const RETRY_OPTS_INITIAL_LINK = {
@@ -53,19 +51,17 @@ const shouldStartDebugger = (manifest: Manifest) =>
   )(manifest)
 
 const warnAndLinkFromStart = (
-  appId: string,
-  builder: Builder,
+  projectUploader: ProjectUploader,
   unsafe: boolean,
   extraData: { linkConfig: LinkConfig } = { linkConfig: null }
 ) => {
   log.warn('Initial link requested by builder')
-  performInitialLink(appId, builder, extraData, unsafe)
+  performInitialLink(projectUploader, extraData, unsafe)
   return null
 }
 
 const watchAndSendChanges = async (
-  appId: string,
-  builder: Builder,
+  projectUploader: ProjectUploader,
   extraData: { linkConfig: LinkConfig },
   unsafe: boolean
 ): Promise<any> => {
@@ -74,7 +70,7 @@ const watchAndSendChanges = async (
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
     if (data && data.code && data.code === 'initial_link_required') {
-      return warnAndLinkFromStart(appId, builder, unsafe, extraData)
+      return warnAndLinkFromStart(projectUploader, unsafe, extraData)
     }
     throw e
   }
@@ -89,8 +85,8 @@ const watchAndSendChanges = async (
   }
 
   const sendChanges = debounce(() => {
-    builder
-      .relinkApp(appId, changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
+    projectUploader
+      .sendToRelink(changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
       .catch(onInitialLinkRequired)
   }, 1000)
 
@@ -139,8 +135,7 @@ const watchAndSendChanges = async (
 }
 
 const performInitialLink = async (
-  appId: string,
-  builder: Builder,
+  projectUploader: ProjectUploader,
   extraData: { linkConfig: LinkConfig },
   unsafe: boolean
 ): Promise<void> => {
@@ -179,26 +174,32 @@ const performInitialLink = async (
       log.info(`Retrying...${tryCount - 1}`)
     }
 
-    const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-    const linkOptions = { sticky: true, stickyHint }
     try {
-      const { code } = await builder.linkApp(appId, filesWithContent, linkOptions, { tsErrorsAsWarnings: unsafe })
+      const { code } = await projectUploader.sendToLink(filesWithContent, { tsErrorsAsWarnings: unsafe })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
     } catch (err) {
-      const response = err.response
-      const status = response.status
-      const data = response && response.data
-      const message = data.message
-      const statusMessage = status ? `: Status ${status}` : ''
-      log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
-      if (message) {
-        log.error(`Message: ${message}`)
+      if (err instanceof ProjectSizeLimitError) {
+        log.error(err.message)
+        process.exit(1)
       }
-      if (status && status < 500) {
-        return
+
+      if (err.status) {
+        const response = err.response
+        const status = response.status
+        const data = response && response.data
+        const message = data.message
+        const statusMessage = status ? `: Status ${status}` : ''
+        log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
+        if (message) {
+          log.error(`Message: ${message}`)
+        }
+        if (status && status < 500) {
+          return
+        }
       }
+
       throw err
     }
   }
@@ -222,6 +223,7 @@ export default async options => {
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
   const { builder } = createClients(context, { timeout: 60000 })
+  const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
   if (options.setup || options.s) {
     await setup({ 'ignore-linked': false })
@@ -246,7 +248,7 @@ export default async options => {
     build_failed: () => {
       log.error(`App build failed. Waiting for changes...`)
     },
-    initial_link_required: () => warnAndLinkFromStart(appId, builder, unsafe),
+    initial_link_required: () => warnAndLinkFromStart(projectUploader, unsafe),
   }
 
   let debuggerStarted = false
@@ -281,7 +283,7 @@ export default async options => {
   let unlistenBuild
   const extraData = { linkConfig: null }
   try {
-    const buildTrigger = performInitialLink.bind(this, appId, builder, extraData, unsafe)
+    const buildTrigger = performInitialLink.bind(this, projectUploader, extraData, unsafe)
     const [subject] = appId.split('@')
     if (options.watch === false) {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
@@ -319,5 +321,5 @@ export default async options => {
     process.exit()
   })
 
-  await watchAndSendChanges(appId, builder, extraData, unsafe)
+  await watchAndSendChanges(projectUploader, extraData, unsafe)
 }

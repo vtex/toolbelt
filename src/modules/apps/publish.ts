@@ -3,25 +3,21 @@ import * as retry from 'async-retry'
 import chalk from 'chalk'
 import * as ora from 'ora'
 import { isEmpty, map } from 'ramda'
-import { createClients } from '../../clients'
 import * as conf from '../../conf'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
-import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest } from '../../manifest'
 import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { promptConfirm } from '../prompts'
-import { runYarnIfPathExists } from '../utils'
-import { switchToPreviousAccount } from '../utils'
+import { runYarnIfPathExists, switchToPreviousAccount } from '../utils'
 import { listLocalFiles } from './file'
+import { ProjectUploader } from './ProjectUploader'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
 
 const root = getAppRoot()
-const AVAILABILITY_TIMEOUT = 1000
-const N_HOSTS = 5
 const buildersToRunLocalYarn = ['node', 'react']
 
 const automaticTag = (version: string): string => (version.indexOf('-') > 0 ? null : 'latest')
@@ -29,10 +25,9 @@ const automaticTag = (version: string): string => (version.indexOf('-') > 0 ? nu
 const publisher = (workspace: string = 'master') => {
   const publishApp = async (
     appRoot: string,
-    appId: string,
     tag: string,
     force: boolean,
-    builder
+    projectUploader: ProjectUploader
   ): Promise<BuildResult> => {
     const paths = await listLocalFiles(appRoot)
     const retryOpts = {
@@ -48,14 +43,9 @@ const publisher = (workspace: string = 'master') => {
       if (tryCount > 1) {
         log.info(`Retrying...${tryCount - 1}`)
       }
-      const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-      const publishOptions = {
-        sticky: true,
-        stickyHint,
-        tag,
-      }
+
       try {
-        return await builder.publishApp(appId, filesWithContent, publishOptions, { skipSemVerEnsure: force })
+        return await projectUploader.sendToPublish(filesWithContent, tag, { skipSemVerEnsure: force })
       } catch (err) {
         const response = err.response
         const status = response.status
@@ -97,17 +87,16 @@ const publisher = (workspace: string = 'master') => {
       await switchAccount(manifest.vendor, {})
     }
 
-    const context = { account: manifest.vendor, workspace, region: region(), authToken: conf.getToken() }
-    const { builder } = createClients(context, { timeout: 60000 })
-
     const pubTag = tag || automaticTag(manifest.version)
-
     const appId = toAppLocator(manifest)
+    const context = { account: manifest.vendor, workspace, region: region(), authToken: conf.getToken() }
+    const projectUploader = ProjectUploader.getProjectUploader(appId, context)
+
     const oraMessage = ora(`Publishing ${appId} ...`)
     const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
     try {
       const senders = ['vtex.builder-hub', 'apps']
-      const { response } = await listenBuild(appId, () => publishApp(path, appId, pubTag, force, builder), {
+      const { response } = await listenBuild(appId, () => publishApp(path, pubTag, force, projectUploader), {
         waitCompletion: true,
         context,
         senders,
