@@ -78,11 +78,7 @@ const onLog = (
   const source = `${endpoint('colossus')}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)
-  es.onmessage = compose(
-    maybeCall(callback),
-    filterMessage(subject, true, senders),
-    parseMessage
-  )
+  es.onmessage = compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage)
   es.onerror = onError(`${logLevel} log`)
   return es.close.bind(es)
 }
@@ -99,11 +95,7 @@ export const onEvent = (
   }/events?onUnsubscribe=link_interrupted&sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
   es.onopen = onOpen('event')
-  es.onmessage = compose(
-    maybeCall(callback),
-    filterMessage(subject),
-    parseMessage
-  )
+  es.onmessage = compose(maybeCall(callback), filterMessage(subject), parseMessage)
   es.onerror = onError('event')
   return es.close.bind(es)
 }

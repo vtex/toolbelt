@@ -15,10 +15,7 @@ export const removeNpm = (deps, inValues?) => {
   return deps
 }
 
-const cleanDeps = compose(
-  keys,
-  removeNpm
-)
+const cleanDeps = compose(keys, removeNpm)
 
 export const getCleanDependencies = async context => {
   return (await new Apps(context).getDependencies().then(cleanDeps)) as string[]

@@ -10,10 +10,7 @@ import { removeNpm } from './utils'
 
 const { getDependencies, updateDependencies, updateDependency } = apps
 
-const cleanDeps = compose(
-  keys,
-  removeNpm
-)
+const cleanDeps = compose(keys, removeNpm)
 
 export default async (optionalApp: string, options) => {
   const appsList = prepend(optionalApp, parseArgs(options._)).filter(arg => arg && arg !== '')

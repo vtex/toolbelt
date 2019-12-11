@@ -9,18 +9,9 @@ import { createTable } from '../../table'
 
 const { listApps } = apps
 
-const cleanVersion = compose<string, string[], string>(
-  head,
-  split('+build')
-)
+const cleanVersion = compose<string, string[], string>(head, split('+build'))
 
-const filterBySource = (source: string) =>
-  filter(
-    compose<any, string, boolean>(
-      equals(source),
-      prop('_source')
-    )
-  )
+const filterBySource = (source: string) => filter(compose<any, string, boolean>(equals(source), prop('_source')))
 
 const renderTable = ({
   title,
