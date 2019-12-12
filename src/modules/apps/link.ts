@@ -1,4 +1,3 @@
-import { Change } from '@vtex/api'
 import * as retry from 'async-retry'
 import * as bluebird from 'bluebird'
 import chalk from 'chalk'
@@ -20,8 +19,9 @@ import { default as setup } from '../setup'
 import { fixPinnedDependencies, formatNano, runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
-import { ProjectUploader, ProjectSizeLimitError } from './ProjectUploader'
+import { ChangeToSend, ProjectSizeLimitError, ProjectUploader, ChangeSizeLimitError } from './ProjectUploader'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
+import logger from '../../logger'
 
 const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
@@ -65,7 +65,7 @@ const watchAndSendChanges = async (
   extraData: { linkConfig: LinkConfig },
   unsafe: boolean
 ): Promise<any> => {
-  const changeQueue: Change[] = []
+  const changeQueue: ChangeToSend[] = []
 
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
@@ -84,16 +84,29 @@ const watchAndSendChanges = async (
     sendChanges()
   }
 
-  const sendChanges = debounce(() => {
-    projectUploader
-      .sendToRelink(changeQueue.splice(0, changeQueue.length), { tsErrorsAsWarnings: unsafe })
-      .catch(onInitialLinkRequired)
+  const sendChanges = debounce(async () => {
+    try {
+      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), {
+        tsErrorsAsWarnings: unsafe,
+      })
+    } catch (err) {
+      if (err instanceof ChangeSizeLimitError) {
+        logger.error(err.message)
+        process.exit(1)
+      }
+      onInitialLinkRequired(err)
+    }
   }, 1000)
 
-  const pathToChange = (path: string, remove?: boolean): Change => ({
-    content: remove ? null : readFileSync(resolvePath(root, path)).toString('base64'),
-    path: pathModifier(path),
-  })
+  const pathToChange = (path: string, remove?: boolean): ChangeToSend => {
+    const content = remove ? null : readFileSync(resolvePath(root, path)).toString('base64')
+    const byteSize = remove ? 0 : Buffer.byteLength(content)
+    return {
+      content,
+      byteSize,
+      path: pathModifier(path),
+    }
+  }
 
   const moduleAndMetadata = toPairs(extraData.linkConfig.metadata)
 

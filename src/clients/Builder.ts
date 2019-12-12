@@ -1,4 +1,5 @@
-import { AppClient, CacheType, Change, InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
+import { ChangeToSend } from '../modules/apps/ProjectUploader'
 
 interface StickyOptions {
   sticky?: boolean
@@ -106,7 +107,7 @@ export class Builder extends AppClient {
     return this.sendZipFile(routes.link(app), app, zipFile, stickyOptions, params)
   }
 
-  public relinkApp = (app: string, changes: Change[], params: RequestParams = {}) => {
+  public relinkApp = (app: string, changes: ChangeToSend[], params: RequestParams = {}) => {
     const headers = {
       'Content-Type': 'application/json',
       ...(this.stickyHost && { 'x-vtex-sticky-host': this.stickyHost }),

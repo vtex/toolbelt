@@ -1,21 +1,22 @@
-import { Change } from '@vtex/api'
 import * as archiver from 'archiver'
 import chalk from 'chalk'
 import * as getStream from 'get-stream'
 import { Readable } from 'stream'
 import { ZlibOptions } from 'zlib'
+import { createClients } from '../../clients'
 import { Builder, BuildResult, RequestParams } from '../../clients/Builder'
 import { getSavedOrMostAvailableHost } from '../../host'
 import logger from '../../logger'
-import { createClients } from '../../clients'
 
 const MB = 1000000
 
-interface FileToSend {
+export interface FileToSend {
   path: string
   content: String | Readable | Buffer | NodeJS.ReadableStream
   byteSize: number
 }
+
+export type ChangeToSend = FileToSend
 
 const getSizeString = (byteSize: number, colored = true, megaBytesintensityScale = [10, 20]) => {
   const mbSize = byteSize / MB
@@ -34,14 +35,23 @@ const getSizeString = (byteSize: number, colored = true, megaBytesintensityScale
 }
 
 export class ProjectSizeLimitError extends Error {
-  constructor(projectByteSize: number, maxByteSize: number) {
+  constructor(public projectByteSize: number, maxByteSize: number) {
     super(
       `This project size (${getSizeString(projectByteSize)}) is exceeding the size limit ${getSizeString(maxByteSize)} `
     )
   }
 }
 
+export class ChangeSizeLimitError extends Error {
+  constructor(public changeByteSize: number, maxByteSize: number) {
+    super(
+      `This change size (${getSizeString(changeByteSize)}) is exceeding the size limit ${getSizeString(maxByteSize)} `
+    )
+  }
+}
+
 export class ProjectUploader {
+  public static CHANGE_BYTESIZE_LIMIT = 50 * MB
   public static PROJECT_BYTESIZE_LIMIT = 90 * MB
   public static BYTES_PROJECT_SIZE_SCALE = [10 * MB, 20 * MB]
 
@@ -73,22 +83,30 @@ export class ProjectUploader {
     return this.sendWholeProject('link', files, requestParams)
   }
 
-  public sendToRelink(changes: Change[], requestParams: RequestParams = {}) {
+  public sendToRelink(changes: ChangeToSend[], requestParams: RequestParams = {}) {
+    this.checkSizeLimits(changes, true)
     return this.builderHubClient.relinkApp(this.appName, changes, requestParams)
   }
 
-  private checkSizeLimits(files: FileToSend[]) {
-    const projectByteSize = files.reduce((acc, file) => acc + file.byteSize, 0)
-    if (projectByteSize > ProjectUploader.PROJECT_BYTESIZE_LIMIT) {
-      logger.error(`This project is exceeding the size limit: ${getSizeString(projectByteSize)}`)
-      throw new ProjectSizeLimitError(projectByteSize, ProjectUploader.PROJECT_BYTESIZE_LIMIT)
+  private checkSizeLimits(filesOrChanges: FileToSend[] | ChangeToSend[], isChange = false) {
+    const totalByteSize = filesOrChanges.reduce((acc, file) => acc + file.byteSize, 0)
+    const sizeLimit = isChange ? ProjectUploader.CHANGE_BYTESIZE_LIMIT : ProjectUploader.PROJECT_BYTESIZE_LIMIT
+    if (totalByteSize > sizeLimit) {
+      if (isChange) {
+        throw new ChangeSizeLimitError(totalByteSize, sizeLimit)
+      } else {
+        throw new ProjectSizeLimitError(totalByteSize, sizeLimit)
+      }
     }
 
-    const logMessage = `Project size: ${getSizeString(projectByteSize)}`
-    if (projectByteSize > ProjectUploader.BYTES_PROJECT_SIZE_SCALE[0]) {
-      logger.warn(logMessage)
-    } else {
-      logger.info(logMessage)
+    if (!isChange || isChange) {
+      const logMessage = `Project size: ${getSizeString(totalByteSize)}`
+
+      if (totalByteSize > ProjectUploader.BYTES_PROJECT_SIZE_SCALE[0]) {
+        logger.warn(logMessage)
+      } else {
+        logger.info(logMessage)
+      }
     }
   }
 
