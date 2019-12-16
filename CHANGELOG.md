@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.80.1] - 2019-12-16
+### Fixed
+- The command `vtex redirects export` no longer exports duplicate entries.
+
 ## [2.80.0] - 2019-12-16
 ### Added
 - Periodically prompt user for feedback about toolbelt's usage experience.
