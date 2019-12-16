@@ -59,6 +59,10 @@ export const getLastUsedAccount = (): string => conf.get('_lastUsedAccount')
 
 export const getLastUsedWorkspace = (): string => conf.get('_lastUsedWorkspace')
 
+export const getNextFeedbackDate = (): string => conf.get('_nextFeedbackDate')
+
+export const saveNextFeedbackDate = (date: string) => conf.set('_nextFeedbackDate', date)
+
 const envFromProcessEnv = {
   prod: Environment.Production,
 }
