@@ -126,9 +126,10 @@ export async function getLinkedFiles(linkConfig: LinkConfig): Promise<BatchStrea
 
 function jsonToStream(path: string, linkConfig: LinkConfig): BatchStream {
   const stream = new Readable()
+  const json = JSON.stringify(linkConfig)
   stream.push(JSON.stringify(linkConfig))
   stream.push(null) // EOF
-  return { path, content: stream }
+  return { path, content: stream, byteSize: Buffer.byteLength(json) }
 }
 
 export function getLinkedDepsDirs(linkConfig: LinkConfig): string[] {

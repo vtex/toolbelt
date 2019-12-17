@@ -2,11 +2,10 @@ import axios from 'axios'
 import chalk from 'chalk'
 import * as Table from 'cli-table2'
 import * as enquirer from 'enquirer'
-import { createReadStream } from 'fs-extra'
+import { createReadStream, statSync } from 'fs-extra'
 import { join } from 'path'
-import { __, compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail } from 'ramda'
+import { compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import * as semverDiff from 'semver-diff'
-
 import { apps, createClients, workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
@@ -14,10 +13,15 @@ import log from '../../logger'
 import { isManifestReadable } from '../../manifest'
 import { promptConfirm } from '../prompts'
 
-export const pathToFileObject = (root = process.cwd(), prefix: string = '') => (path: string): BatchStream => ({
-  path: join(prefix, path),
-  content: createReadStream(join(root, path)),
-})
+export const pathToFileObject = (root = process.cwd(), prefix: string = '') => (path: string): BatchStream => {
+  const realAbsolutePath = join(root, path)
+  const stats = statSync(realAbsolutePath)
+  return {
+    path: join(prefix, path),
+    content: createReadStream(realAbsolutePath),
+    byteSize: stats.size,
+  }
+}
 
 const workspaceExampleName = process.env.USER || 'example'
 

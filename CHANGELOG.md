@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.81.0] - 2019-12-17
+### Added
+- Show upload progress
+- Show project original and compressed sizes
+- Add a 90MB limit to project original size
+
+
+### Removed
+- Remove unnused client 
+
 ## [2.80.1] - 2019-12-16
 ### Fixed
 - The command `vtex redirects export` no longer exports duplicate entries.

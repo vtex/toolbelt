@@ -1,4 +1,3 @@
-import { Builder } from '@vtex/api'
 import * as retry from 'async-retry'
 import * as bluebird from 'bluebird'
 import chalk from 'chalk'
@@ -6,19 +5,16 @@ import { concat, map, prop, toPairs } from 'ramda'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
-import { getSavedOrMostAvailableHost } from '../../host'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
-import { fixPinnedDependencies } from '../utils'
-import { runYarnIfPathExists } from '../utils'
+import { fixPinnedDependencies, runYarnIfPathExists } from '../utils'
 import { createLinkConfig, getLinkedFiles, listLocalFiles } from './file'
+import { ProjectUploader } from './ProjectUploader'
 import { pathToFileObject, validateAppAction } from './utils'
 
 const root = getAppRoot()
-const AVAILABILITY_TIMEOUT = 1000
-const N_HOSTS = 3
 const buildersToRunLocalYarn = ['react', 'node']
 const RETRY_OPTS_TEST = {
   retries: 2,
@@ -27,8 +23,7 @@ const RETRY_OPTS_TEST = {
 }
 
 const performTest = async (
-  appId: string,
-  builder: Builder,
+  projectUploader: ProjectUploader,
   extraData: { linkConfig: LinkConfig },
   unsafe: boolean
 ): Promise<void> => {
@@ -67,10 +62,8 @@ const performTest = async (
       log.info(`Retrying...${tryCount - 1}`)
     }
 
-    const stickyHint = await getSavedOrMostAvailableHost(appId, builder, N_HOSTS, AVAILABILITY_TIMEOUT)
-    const testOptions = { sticky: true, stickyHint }
     try {
-      const { code } = await builder.testApp(appId, filesWithContent, testOptions, { tsErrorsAsWarnings: unsafe })
+      const { code } = await projectUploader.sendToTest(filesWithContent, { tsErrorsAsWarnings: unsafe })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
@@ -106,6 +99,7 @@ export default async options => {
   const appId = toAppLocator(manifest)
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
   const { builder } = createClients(context, { timeout: 60000 })
+  const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
   try {
     const aux = await builder.getPinnedDependencies()
@@ -131,7 +125,7 @@ export default async options => {
 
   const extraData = { linkConfig: null }
   try {
-    const buildTrigger = performTest.bind(this, appId, builder, extraData, unsafe)
+    const buildTrigger = performTest.bind(this, projectUploader, extraData, unsafe)
     const [subject] = appId.split('@')
     await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
   } catch (e) {

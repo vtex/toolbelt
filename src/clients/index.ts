@@ -4,7 +4,7 @@ import * as env from '../env'
 import envTimeout from '../timeout'
 import userAgent from '../user-agent'
 import Billing from './billingClient'
-import Builder from './Builder'
+import { Builder } from './Builder'
 import { dummyLogger } from './dummyLogger'
 import { Rewriter } from './rewriter'
 
