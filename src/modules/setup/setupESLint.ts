@@ -28,12 +28,12 @@ const basePrettierRc = {
 }
 
 const lintDeps = {
-  eslint: '^6.4.0',
-  'eslint-config-vtex': '^11.0.0',
-  'eslint-config-vtex-react': '^5.0.1',
-  '@types/node': '^12.7.12',
-  prettier: '^1.18.2',
-  typescript: '^3.5.3',
+  eslint: '^6.7.2',
+  'eslint-config-vtex': '^11.2.1',
+  'eslint-config-vtex-react': '^5.1.0',
+  '@types/node': '^12.12.21',
+  prettier: '^1.19.1',
+  typescript: '^3.7.3',
 }
 
 const baseEslintrc = {

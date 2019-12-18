@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.81.1] - 2019-12-18
+### Changed
+- Update `vtex setup` added lint deps
+
 ## [2.81.0] - 2019-12-17
 ### Added
 - Show upload progress
