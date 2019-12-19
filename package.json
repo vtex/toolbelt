@@ -17,6 +17,7 @@
     "test-jest": "jest --coverage",
     "test": "run-s format lint build test-jest",
     "test-watch": "run-p ts-watch test-jest",
+    "ci:test": "jest --ci",
     "prepublish": "run-s clean test",
     "prereleasy": "npm run prepublish",
     "postreleasy": "npm publish"
