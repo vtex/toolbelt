@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.81.2] - 2019-12-19
+### Added
+- Use `v8-compile-cache` to slightly reduce commands startup
+
 ## [2.81.1] - 2019-12-18
 ### Changed
 - Update `vtex setup` added lint deps

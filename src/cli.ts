@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import 'any-promise/register/bluebird'
+import 'v8-compile-cache'
 import axios from 'axios'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
