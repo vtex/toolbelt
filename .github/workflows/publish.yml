@@ -1,8 +1,6 @@
 name: publish
 
-on:
-  release:
-    types: [created]
+on: [push]
 
 jobs:
   build:
@@ -15,7 +13,7 @@ jobs:
       - run: yarn install --ignore-scripts
       - run: yarn lint
       - run: yarn ci:test
-      
+
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
