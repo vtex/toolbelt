@@ -1,6 +1,6 @@
 name: ci
 
-on: [release]
+on: [push]
 
 jobs:
   lint:
