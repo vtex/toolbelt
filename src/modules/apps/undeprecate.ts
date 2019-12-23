@@ -1,14 +1,13 @@
-import { createClients } from '../../clients'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
-import { head, prepend, tail } from 'ramda'
+import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
+import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
-import { getManifest, validateApp } from '../../manifest'
 import switchAccount from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { parseLocator, toAppLocator } from './../../locator'
+import { parseLocator } from './../../locator'
 import { parseArgs, switchAccountMessage } from './utils'
 
 let originalAccount
@@ -58,36 +57,32 @@ const undeprecateApp = async (app: string): Promise<void> => {
 }
 
 const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
-  if (appsList.length === 0) {
-    await switchToPreviousAccount(originalAccount, originalWorkspace)
-    return
-  }
-
-  const app = await validateApp(head(appsList))
-  try {
-    log.debug('Starting to undeprecate app:', app)
-    await undeprecateApp(app)
-    log.info('Successfully undeprecated', app)
-  } catch (e) {
-    if (e.response && e.response.status && e.response.status === 404) {
-      log.error(`Error undeprecating ${app}. App not found`)
-    } else if (e.message && e.response.statusText) {
-      log.error(`Error undeprecating ${app}. ${e.message}. ${e.response.statusText}`)
-      await switchToPreviousAccount(originalAccount, originalWorkspace)
-      return
-    } else {
-      await switchToPreviousAccount(originalAccount, originalWorkspace)
-      throw e
+  for (const app of appsList) {
+    ManifestValidator.validateApp(app)
+    try {
+      log.debug('Starting to undeprecate app:', app)
+      await undeprecateApp(app)
+      log.info('Successfully undeprecated', app)
+    } catch (e) {
+      if (e.response && e.response.status && e.response.status === 404) {
+        log.error(`Error undeprecating ${app}. App not found`)
+      } else if (e.message && e.response.statusText) {
+        log.error(`Error undeprecating ${app}. ${e.message}. ${e.response.statusText}`)
+        await switchToPreviousAccount(originalAccount, originalWorkspace)
+        return
+      } else {
+        await switchToPreviousAccount(originalAccount, originalWorkspace)
+        throw e
+      }
     }
   }
-  await prepareUndeprecate(tail(appsList))
 }
 
 export default async (optionalApp: string, options) => {
   const preConfirm = options.y || options.yes
   originalAccount = getAccount()
   originalWorkspace = getWorkspace()
-  const appsList = prepend(optionalApp || toAppLocator(await getManifest()), parseArgs(options._))
+  const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator, ...parseArgs(options._)]
 
   if (!preConfirm && !(await promptUndeprecate(appsList))) {
     throw new UserCancelledError()

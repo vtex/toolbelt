@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.81.3] - 2019-12-23
+### Refactor
+- Refactor `vtex deprecate`, `vtex undeprecate`, `vtex publish`
+
 ## [2.81.2] - 2019-12-19
 ### Added
 - Use `v8-compile-cache` to slightly reduce commands startup

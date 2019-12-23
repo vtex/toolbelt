@@ -8,7 +8,7 @@ import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
-import { getAppRoot, getManifest } from '../../manifest'
+import { getAppRoot } from '../../manifest'
 import switchAccount from '../auth/switch'
 import { listenBuild } from '../build'
 import { promptConfirm } from '../prompts'
@@ -16,6 +16,7 @@ import { runYarnIfPathExists, switchToPreviousAccount } from '../utils'
 import { listLocalFiles } from './file'
 import { ProjectUploader } from './ProjectUploader'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
+import { ManifestEditor } from '../../lib/manifest'
 
 const root = getAppRoot()
 const buildersToRunLocalYarn = ['node', 'react']
@@ -68,7 +69,7 @@ const publisher = (workspace: string = 'master') => {
   const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {
     const previousConf = conf.getAll() // Store previous configuration in memory
 
-    const manifest = await getManifest()
+    const manifest = await ManifestEditor.getManifestEditor()
     const account = conf.getAccount()
 
     const builderHubMessage = await checkBuilderHubMessage('publish')
