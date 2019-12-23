@@ -121,8 +121,18 @@ const publisher = (workspace: string = 'master') => {
   return { publishApp, publishApps }
 }
 
-export default (path: string, options) => {
+export default async (path: string, options) => {
   log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
+
+  const response = await promptConfirm(
+    chalk.yellow.bold(
+      `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change here: https://vtex.io/docs/releases/2019-week-47-48-49-50-51/publish-command. Acknowledged?`
+    ),
+    false
+  )
+  if (!response) {
+    process.exit(1)
+  }
 
   path = path || root
   const workspace = options.w || options.workspace
@@ -132,5 +142,5 @@ export default (path: string, options) => {
   map(runYarnIfPathExists, buildersToRunLocalYarn)
 
   const { publishApps } = publisher(workspace)
-  return publishApps(path, options.tag, force)
+  await publishApps(path, options.tag, force)
 }
