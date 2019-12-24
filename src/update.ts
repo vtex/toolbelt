@@ -27,8 +27,8 @@ export default function notify() {
     notifier.notify({
       isGlobal: true,
       isYarnGlobal: true,
-      message: `New ${type} version of ${pkg.name} available! ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}\n
-        ${chalk.yellow('Changelog:')} ${chalk.cyan(changelog)}\n
+      message: `New ${type} version of ${pkg.name} available! ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}
+        ${chalk.yellow('Changelog:')} ${chalk.cyan(changelog)}
         Run ${chalk.green(`yarn global add ${pkg.name}`)} to update!`,
     })
   }
