@@ -26,6 +26,7 @@ beforeEach(() => {
 describe('Version comparison', () => {
   const versionComparison = [
     [{ yarnResolved: '1.2.3', required: '1.2.3', found: '1.2.3', satisfies: true }],
+    [{ yarnResolved: '1.2.3', required: '1.2.3', found: '1.2.3', satisfies: true }],
     [{ yarnResolved: '1.2.4', required: '1.2.3', found: '1.2.4', satisfies: false }],
     [{ yarnResolved: '1.2.3', required: '^1.0.0', found: '^1.0.0', satisfies: true }],
     [{ yarnResolved: '1.1.1', required: '^1.0.0', found: '1.1.1', satisfies: true }],
@@ -42,10 +43,14 @@ describe('Version comparison', () => {
     [{ yarnResolved: '1.0.1', required: '^1.1.0', found: '~1.0.0', satisfies: false }],
     [{ yarnResolved: '1.0.5', required: '^1.1.0', found: '^1.0.0', satisfies: false }],
     [{ yarnResolved: '1.2.3', required: '^1.1.0', found: '^1.0.0', satisfies: true }],
+    [{ yarnResolved: undefined, required: '1.2.3', found: '1.2.3', satisfies: true }],
+    [{ yarnResolved: undefined, required: '1.2.4', found: '1.2.3', satisfies: false }],
+    [{ yarnResolved: undefined, required: '^1.1.0', found: '1.0.0', satisfies: false }],
+    [{ yarnResolved: undefined, required: '^1.1.0', found: 'invalid', satisfies: false }],
   ]
 
-  test.each(versionComparison)('versionSatisfies: %p', ({ required, found, yarnResolved, satisfies }) => {
-    expect(PackageJson.versionSatisfiesWithUserPriority(required, found, yarnResolved)).toBe(satisfies)
+  test.each(versionComparison)('%# versionSatisfies: %p', ({ required, found, yarnResolved, satisfies }) => {
+    expect(PackageJson.versionSatisfiesWithYarnPriority(required, found, yarnResolved)).toBe(satisfies)
   })
 })
 

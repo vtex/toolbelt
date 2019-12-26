@@ -244,6 +244,7 @@ export default async options => {
     await fixPinnedDependencies(pinnedDeps, buildersToRunLocalYarn, manifest.builders)
   } catch (e) {
     log.info('Failed to check for pinned dependencies')
+    log.debug(e)
   }
   // Always run yarn locally for some builders
   map(runYarnIfPathExists, buildersToRunLocalYarn)

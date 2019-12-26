@@ -10,20 +10,28 @@ export interface PackageJsonInterface {
   devDependencies?: Record<string, string>
 }
 
+const isRangeVersion = (version: string) => {
+  return semver.validRange(version) && !semver.valid(version)
+}
+
 export class PackageJson {
-  static versionSatisfiesWithUserPriority(versionRequired: string, versionFound: string, yarnResolvedVersion: string) {
+  static versionSatisfiesWithYarnPriority(versionRequired: string, versionFound: string, yarnResolvedVersion: string) {
     if (!semver.valid(versionFound) && !semver.validRange(versionFound)) {
       return false
     }
 
-    if (semver.validRange(versionRequired)) {
-      if (semver.validRange(versionFound)) {
+    if (!yarnResolvedVersion) {
+      return versionRequired === versionFound
+    }
+
+    if (isRangeVersion(versionRequired)) {
+      if (isRangeVersion(versionFound)) {
         return semver.satisfies(yarnResolvedVersion, versionRequired)
       } else {
         return semver.satisfies(versionFound, versionRequired)
       }
     } else {
-      return versionRequired !== versionFound
+      return versionRequired === versionFound
     }
   }
 
@@ -81,10 +89,10 @@ export class PackageJson {
     return this.content.devDependencies ?? {}
   }
 
-  private getYarnResolvedVersion(depType: string, depName: string) {
+  private getYarnResolvedVersion(depType: string, depName: string): string | undefined {
     const depVersionLocator = this.content[depType][depName]
     const yarnDepLocator = `${depName}@${depVersionLocator}`
-    return this.yarnLock?.object?.[yarnDepLocator]
+    return this.yarnLock?.object?.[yarnDepLocator]?.version
   }
 
   public flushChanges() {
@@ -107,7 +115,7 @@ export class PackageJson {
   ) {
     if (
       this.content[depType]?.[depName] != null &&
-      !PackageJson.versionSatisfiesWithUserPriority(
+      !PackageJson.versionSatisfiesWithYarnPriority(
         depVersion,
         this.content[depType][depName],
         this.getYarnResolvedVersion(depType, depName)
