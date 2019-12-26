@@ -25,27 +25,27 @@ beforeEach(() => {
 
 describe('Version comparison', () => {
   const versionComparison = [
-    [{ required: '1.2.3', found: '1.2.4', satisfies: false }],
-    [{ required: '1.2.3', found: '1.2.3', satisfies: true }],
-
-    [{ required: '^1.0.0', found: '^1.0.0', satisfies: true }],
-    [{ required: '^1.0.0', found: '1.1.1', satisfies: true }],
-    [{ required: '^1.0.0', found: '^1.1.1', satisfies: true }],
-    [{ required: '^1.0.0', found: '~1.1.1', satisfies: true }],
-    [{ required: '^1.0.0', found: '1.x', satisfies: true }],
-
-    [{ required: '^1.0.0', found: '2.1.1', satisfies: false }],
-    [{ required: '^1.0.0', found: '^2.1.1', satisfies: false }],
-    [{ required: '^1.0.0', found: '~2.1.1', satisfies: false }],
-    [{ required: '^1.0.0', found: '2.x', satisfies: false }],
-
-    [{ required: '^1.1.0', found: '1.x', satisfies: false }],
-    [{ required: '^1.1.0', found: '~1.0.0', satisfies: false }],
-    [{ required: '^1.1.0', found: '^1.0.0', satisfies: false }],
+    [{ yarnResolved: '1.2.3', required: '1.2.3', found: '1.2.3', satisfies: true }],
+    [{ yarnResolved: '1.2.4', required: '1.2.3', found: '1.2.4', satisfies: false }],
+    [{ yarnResolved: '1.2.3', required: '^1.0.0', found: '^1.0.0', satisfies: true }],
+    [{ yarnResolved: '1.1.1', required: '^1.0.0', found: '1.1.1', satisfies: true }],
+    [{ yarnResolved: '1.2.3', required: '^1.0.0', found: '^1.1.1', satisfies: true }],
+    [{ yarnResolved: '1.1.2', required: '^1.0.0', found: '~1.1.1', satisfies: true }],
+    [{ yarnResolved: '1.2.3', required: '^1.0.0', found: '1.x', satisfies: true }],
+    [{ yarnResolved: '2.1.1', required: '^1.0.0', found: '2.1.1', satisfies: false }],
+    [{ yarnResolved: '2.2.2', required: '^1.0.0', found: '^2.1.1', satisfies: false }],
+    [{ yarnResolved: '2.1.2', required: '^1.0.0', found: '~2.1.1', satisfies: false }],
+    [{ yarnResolved: '2.3.4', required: '^1.0.0', found: '2.x', satisfies: false }],
+    [{ yarnResolved: '1.0.0', required: '^1.1.0', found: '1.x', satisfies: false }],
+    [{ yarnResolved: '1.2.3', required: '^1.1.0', found: '1.x', satisfies: true }],
+    [{ yarnResolved: '1.2.3', required: '^1.1.0', found: '~1.0.0', satisfies: true }],
+    [{ yarnResolved: '1.0.1', required: '^1.1.0', found: '~1.0.0', satisfies: false }],
+    [{ yarnResolved: '1.0.5', required: '^1.1.0', found: '^1.0.0', satisfies: false }],
+    [{ yarnResolved: '1.2.3', required: '^1.1.0', found: '^1.0.0', satisfies: true }],
   ]
 
-  test.each(versionComparison)('versionSatisfies: %s', ({ required, found, satisfies }) => {
-    expect(PackageJson.versionSatisfiesWithUserPriority(required, found)).toBe(satisfies)
+  test.each(versionComparison)('versionSatisfies: %p', ({ required, found, yarnResolved, satisfies }) => {
+    expect(PackageJson.versionSatisfiesWithUserPriority(required, found, yarnResolved)).toBe(satisfies)
   })
 })
 

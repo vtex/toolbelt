@@ -1,5 +1,6 @@
-import { pathExists, readJson, writeJson, writeJsonSync } from 'fs-extra'
-import { resolve } from 'path'
+import { parse as parseYarnLock } from '@yarnpkg/lockfile'
+import { pathExists, readFile, readJson, writeJson, writeJsonSync } from 'fs-extra'
+import { dirname, join, resolve } from 'path'
 import * as semver from 'semver'
 
 export interface PackageJsonInterface {
@@ -10,15 +11,14 @@ export interface PackageJsonInterface {
 }
 
 export class PackageJson {
-  static versionSatisfiesWithUserPriority(versionRequired: string, versionFound: string) {
+  static versionSatisfiesWithUserPriority(versionRequired: string, versionFound: string, yarnResolvedVersion: string) {
     if (!semver.valid(versionFound) && !semver.validRange(versionFound)) {
       return false
     }
 
     if (semver.validRange(versionRequired)) {
       if (semver.validRange(versionFound)) {
-        const minFoundVersion = semver.minVersion(versionFound)
-        return semver.satisfies(minFoundVersion, versionRequired)
+        return semver.satisfies(yarnResolvedVersion, versionRequired)
       } else {
         return semver.satisfies(versionFound, versionRequired)
       }
@@ -47,11 +47,22 @@ export class PackageJson {
     return pkg
   }
 
+  private static async readAndParseYarnLock(yarnLockPath: string) {
+    const content = await readFile(yarnLockPath, 'utf8')
+    return parseYarnLock(content)
+  }
+
   content: PackageJsonInterface
+  yarnLock: ReturnType<typeof parseYarnLock>
   constructor(public packageJsonPath: string, private notifier?: any) {}
 
   public async init() {
     this.content = await readJson(this.packageJsonPath)
+    const yarnLockPath = join(dirname(this.packageJsonPath), 'yarn.lock')
+
+    if (await pathExists(yarnLockPath)) {
+      this.yarnLock = await PackageJson.readAndParseYarnLock(yarnLockPath)
+    }
   }
 
   get name() {
@@ -68,6 +79,12 @@ export class PackageJson {
 
   get devDependencies() {
     return this.content.devDependencies ?? {}
+  }
+
+  private getYarnResolvedVersion(depType: string, depName: string) {
+    const depVersionLocator = this.content[depType][depName]
+    const yarnDepLocator = `${depName}@${depVersionLocator}`
+    return this.yarnLock?.object?.[yarnDepLocator]
   }
 
   public flushChanges() {
@@ -90,7 +107,11 @@ export class PackageJson {
   ) {
     if (
       this.content[depType]?.[depName] != null &&
-      !PackageJson.versionSatisfiesWithUserPriority(depVersion, this.content[depType][depName])
+      !PackageJson.versionSatisfiesWithUserPriority(
+        depVersion,
+        this.content[depType][depName],
+        this.getYarnResolvedVersion(depType, depName)
+      )
     ) {
       this.notifier?.warn(`Changing ${depName} on ${depType} from ${this.content[depType][depName]} to ${depVersion}`)
       this.content[depType][depName] = depVersion
