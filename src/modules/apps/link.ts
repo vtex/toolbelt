@@ -1,5 +1,4 @@
 import * as retry from 'async-retry'
-import * as bluebird from 'bluebird'
 import chalk from 'chalk'
 import * as chokidar from 'chokidar'
 import * as debounce from 'debounce'
@@ -12,11 +11,12 @@ import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { ManifestEditor } from '../../lib/manifest'
+import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
-import { fixPinnedDependencies, formatNano, runYarnIfPathExists } from '../utils'
+import { formatNano, runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
 import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
@@ -240,9 +240,8 @@ export default async options => {
     await setup({ 'ignore-linked': false })
   }
   try {
-    const aux = await builder.getPinnedDependencies()
-    const pinnedDeps: Map<string, string> = new Map(Object.entries(aux))
-    await bluebird.map(buildersToRunLocalYarn, fixPinnedDependencies(pinnedDeps), { concurrency: 1 })
+    const pinnedDeps: PinnedDeps = await builder.getPinnedDependencies()
+    await fixPinnedDependencies(pinnedDeps, buildersToRunLocalYarn, manifest.builders)
   } catch (e) {
     log.info('Failed to check for pinned dependencies')
   }

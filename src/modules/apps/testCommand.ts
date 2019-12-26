@@ -4,11 +4,12 @@ import { concat, map, prop, toPairs } from 'ramda'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
+import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
-import { fixPinnedDependencies, PinnedDeps, runYarnIfPathExists } from '../utils'
+import { runYarnIfPathExists } from '../utils'
 import { createLinkConfig, getLinkedFiles, listLocalFiles } from './file'
 import { ProjectUploader } from './ProjectUploader'
 import { pathToFileObject, validateAppAction } from './utils'
@@ -102,7 +103,7 @@ export default async options => {
 
   try {
     const pinnedDeps: PinnedDeps = await builder.getPinnedDependencies()
-    fixPinnedDependencies(pinnedDeps, manifest.builders)
+    await fixPinnedDependencies(pinnedDeps, buildersToRunLocalYarn, manifest.builders)
   } catch (e) {
     log.info('Failed to check for pinned dependencies')
   }
