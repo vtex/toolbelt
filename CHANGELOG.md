@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add update method to builder hub's error requesting to update toolbelt
 - Add confirm prompt on `vtex publish`
 
+### Refactor
+- Refactor `vtex install` and `vtex uninstall`
+
 ## [2.81.4] - 2019-12-23
 ### Added
 - Add message regarding publish process changes when trying to publish
