@@ -321,6 +321,10 @@ export default async options => {
           )}) to be able to link apps`
         )
       }
+
+      if(data.code === 'bad_toolbelt_version') {
+        return log.error(`${data.message} To update just run ${chalk.bold.green('yarn global add vtex')}.`)
+      }
     }
     throw e
   }
