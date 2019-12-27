@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Refactor
 - Refactor `vtex add`
+- Refactor `vtex unlink`
+- Use `ManifestEditor` on `vtex link`
 
 ### Deprecate
 - Deprecate `vtex validate` command in favor of `vtex deploy`
