@@ -85,11 +85,12 @@ export class ManifestEditor {
     return writeJson(this.path, this.manifest, { spaces: 2 })
   }
 
-  public async writeSchema() {
-    const json = await readJson(this.path)
-    if (!json.$schema || json.$schema !== ManifestEditor.MANIFEST_SCHEMA) {
-      json.$schema = ManifestEditor.MANIFEST_SCHEMA
+  public async writeSchema(): Promise<void> {
+    if (!this.manifest.$schema || this.manifest.$schema !== ManifestEditor.MANIFEST_SCHEMA) {
+      this.manifest.$schema = ManifestEditor.MANIFEST_SCHEMA
     }
+
+    return this.flushChanges()
   }
 
   public addDependency(app: string, version: string): Promise<void> {
