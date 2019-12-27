@@ -19,9 +19,9 @@ export class ManifestEditor {
     return manifest
   }
 
-  public static isManifestReadable() {
+  public static async isManifestReadable() {
     try {
-      this.readAndParseManifest(this.manifestPath)
+      await this.readAndParseManifest(this.manifestPath)
       return true
     } catch (error) {
       return false
