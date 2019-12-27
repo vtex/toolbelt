@@ -153,9 +153,4 @@ declare global {
     hostname: string | undefined
     score: number
   }
-
-  interface LinkConfig {
-    metadata: Record<string, string>
-    graph: Record<string, string[]>
-  }
 }
