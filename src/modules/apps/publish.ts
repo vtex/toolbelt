@@ -6,6 +6,8 @@ import { isEmpty, map } from 'ramda'
 import * as conf from '../../conf'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
+import { pathToFileObject } from '../../lib/files/ProjectFilesManager'
+import { ManifestEditor } from '../../lib/manifest'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
@@ -15,8 +17,7 @@ import { promptConfirm } from '../prompts'
 import { runYarnIfPathExists, switchToPreviousAccount } from '../utils'
 import { listLocalFiles } from './file'
 import { ProjectUploader } from './ProjectUploader'
-import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
-import { ManifestEditor } from '../../lib/manifest'
+import { checkBuilderHubMessage, showBuilderHubMessage } from './utils'
 
 const root = getAppRoot()
 const buildersToRunLocalYarn = ['node', 'react']
