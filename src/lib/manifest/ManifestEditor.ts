@@ -68,6 +68,10 @@ export class ManifestEditor {
     return this.manifest.builders
   }
 
+  public get builderNames() {
+    return Object.keys(this.manifest.builders)
+  }
+
   public get appLocator() {
     const { vendor, name, version } = this.manifest
     return `${vendor}.${name}@${version}`

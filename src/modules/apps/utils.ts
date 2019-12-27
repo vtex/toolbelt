@@ -12,6 +12,7 @@ import { CommandError, UserCancelledError } from '../../errors'
 import { ManifestEditor } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
+import { ManifestEditor } from '../../lib/manifest'
 
 export const pathToFileObject = (root = process.cwd(), prefix: string = '') => (path: string): BatchStream => {
   const realAbsolutePath = join(root, path)
@@ -231,7 +232,7 @@ const promptConfirmName = (msg: string): Promise<string> =>
     })
     .then<string>(prop('appName'))
 
-export async function showBuilderHubMessage(message: string, showPrompt: boolean, manifest: Manifest) {
+export async function showBuilderHubMessage(message: string, showPrompt: boolean, manifest: ManifestEditor) {
   if (message) {
     if (showPrompt) {
       const confirmMsg = `Are you absolutely sure?\n${

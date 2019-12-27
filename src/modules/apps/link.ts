@@ -6,22 +6,21 @@ import * as debounce from 'debounce'
 import { readFileSync } from 'fs'
 import * as moment from 'moment'
 import { join, resolve as resolvePath, sep } from 'path'
-import { compose, concat, intersection, isEmpty, keys, map, not, pipe, prop, toPairs } from 'ramda'
+import { concat, intersection, isEmpty, map, pipe, prop, toPairs } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
-import { toAppLocator } from '../../locator'
-import log from '../../logger'
-import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
+import { ManifestEditor } from '../../lib/manifest'
+import { default as log, default as logger } from '../../logger'
+import { getAppRoot } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
 import { fixPinnedDependencies, formatNano, runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
 import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, listLocalFiles } from './file'
-import { ChangeToSend, ProjectSizeLimitError, ProjectUploader, ChangeSizeLimitError } from './ProjectUploader'
+import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
-import logger from '../../logger'
 
 const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
@@ -41,14 +40,10 @@ const RETRY_OPTS_DEBUGGER = {
   factor: 2,
 }
 
-const shouldStartDebugger = (manifest: Manifest) =>
-  compose<Manifest, any, string[], string[], boolean, boolean>(
-    not,
-    isEmpty,
-    intersection(buildersToStartDebugger),
-    keys,
-    prop('builders')
-  )(manifest)
+const shouldStartDebugger = (manifest: ManifestEditor) => {
+  const buildersThatWillUseDebugger = intersection(manifest.builderNames, buildersToStartDebugger)
+  return buildersThatWillUseDebugger.length > 0
+}
 
 const warnAndLinkFromStart = (
   projectUploader: ProjectUploader,
@@ -222,18 +217,15 @@ const performInitialLink = async (
 export default async options => {
   await validateAppAction('link')
   const unsafe = !!(options.unsafe || options.u)
-  const manifest = await getManifest()
-  try {
-    await writeManifestSchema()
-  } catch (e) {
-    log.debug('Failed to write schema on manifest.')
-  }
+  const manifest = await ManifestEditor.getManifestEditor()
+  await manifest.writeSchema()
+
   const builderHubMessage = await checkBuilderHubMessage('link')
   if (!isEmpty(builderHubMessage)) {
     await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
   }
 
-  const appId = toAppLocator(manifest)
+  const appId = manifest.appLocator
   const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
   const { builder } = createClients(context, { timeout: 60000 })
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
