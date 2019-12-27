@@ -88,10 +88,12 @@ export class ManifestEditor {
     }
   }
 
-  public addDependency(app: string, version: string) {
+  public addDependency(app: string, version: string): Promise<void> {
     this.manifest.dependencies = {
       ...this.manifest.dependencies,
       [app]: version,
     }
+
+    return this.flushChanges()
   }
 }
