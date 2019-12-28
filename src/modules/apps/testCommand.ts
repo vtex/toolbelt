@@ -4,7 +4,7 @@ import { concat, map, prop } from 'ramda'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
-import { pathToFileObject } from '../../lib/files/ProjectFilesManager'
+import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
 import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
 import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
 import { toAppLocator } from '../../locator'
@@ -36,7 +36,7 @@ const performTest = async (
   const testApp = async (bail: any, tryCount: number) => {
     const test = true
     const [localFiles, linkedFiles] = await Promise.all([
-      listLocalFiles(root, test).then(paths => map(pathToFileObject(root), paths)),
+      listLocalFiles(root, test).then(paths => map(createPathToFileObject(root), paths)),
       yarnFilesManager.getYarnLinkedFiles(),
     ])
     const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]

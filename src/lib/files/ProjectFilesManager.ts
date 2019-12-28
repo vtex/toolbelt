@@ -3,7 +3,7 @@ import * as glob from 'globby'
 import { join } from 'path'
 import { reject } from 'ramda'
 
-export const pathToFileObject = (root: string, prefix: string = '') => {
+export const createPathToFileObject = (root: string, prefix = '') => {
   return (path: string): BatchStream => {
     const realAbsolutePath = join(root, path)
     const stats = statSync(realAbsolutePath)
@@ -16,7 +16,7 @@ export const pathToFileObject = (root: string, prefix: string = '') => {
 }
 
 export class ProjectFilesManager {
-  public static DEFAULT_IGNORED_FILES = [
+  private static readonly DEFAULT_IGNORED_FILES = [
     '.DS_Store',
     'README.md',
     '.gitignore',
@@ -35,7 +35,7 @@ export class ProjectFilesManager {
     this.root = projectRoot
   }
 
-  private getIgnoredPaths(test: boolean = false): string[] {
+  private getIgnoredPaths(test = false): string[] {
     try {
       const filesToIgnore = readFileSync(join(this.root, '.vtexignore'))
         .toString()
@@ -50,7 +50,7 @@ export class ProjectFilesManager {
     }
   }
 
-  public async getLocalFiles(test: boolean = false): Promise<string[]> {
+  public async getLocalFiles(test = false): Promise<string[]> {
     const files: string[] = await glob(['manifest.json', 'policies.json', 'node/.*', 'react/.*'], {
       cwd: this.root,
       follow: true,
@@ -58,7 +58,7 @@ export class ProjectFilesManager {
       nodir: true,
     })
 
-    const filesStats = Promise.all(
+    const filesStats = await Promise.all(
       files.map(async file => {
         const stats = await lstat(join(this.root, file))
         return { file, stats }

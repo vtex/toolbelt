@@ -10,7 +10,7 @@ import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
-import { pathToFileObject } from '../../lib/files/ProjectFilesManager'
+import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
 import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
 import { ManifestEditor } from '../../lib/manifest'
 import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
@@ -158,7 +158,7 @@ const performInitialLink = async (
   const linkApp = async (bail: any, tryCount: number) => {
     // wrapper for builder.linkApp to be used with the retry function below.
     const [localFiles, linkedFiles] = await Promise.all([
-      listLocalFiles(root).then(paths => map(pathToFileObject(root), paths)),
+      listLocalFiles(root).then(paths => map(createPathToFileObject(root), paths)),
       yarnFilesManager.getYarnLinkedFiles(),
     ])
     const filesWithContent = concat(localFiles, linkedFiles) as BatchStream[]

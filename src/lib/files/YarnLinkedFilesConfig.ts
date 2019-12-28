@@ -12,6 +12,10 @@ const isLink = (_: string, stats: Stats) => {
   return stats != null && stats.isSymbolicLink()
 }
 
+const isScopedModule = (dirName: string) => {
+  return dirName.startsWith('@')
+}
+
 export class YarnSymlinkedModulesConfig {
   public static async createConfig(projectSrc: string) {
     const conf = new YarnSymlinkedModulesConfig(projectSrc)
@@ -51,7 +55,7 @@ export class YarnSymlinkedModulesConfig {
     this.stack.push(...allPackageJsonsFolders)
     while (this.stack.length > 0) {
       const moduleFolder = this.stack.pop()
-      const dependencies = await this.discoverDependencies(moduleFolder, this.projectSrc)
+      const dependencies = await this.discoverDependencies(moduleFolder)
       this.graph[moduleFolder] = dependencies
       this.addSubDependenciesToStack(dependencies)
     }
@@ -64,15 +68,16 @@ export class YarnSymlinkedModulesConfig {
     })
   }
 
-  private async discoverDependencies(currentModule: string, projectSrc: string): Promise<string[]> {
-    const path = currentModule in this._metadata ? this._metadata[currentModule] : join(projectSrc, currentModule)
+  private async discoverDependencies(currentModule: string): Promise<string[]> {
+    const path = currentModule in this._metadata ? this._metadata[currentModule] : join(this.projectSrc, currentModule)
     const depsRoot = join(path, 'node_modules')
     const submodules = await this.getAllLinkedModules(depsRoot)
     const realPaths = await Promise.all(
       submodules.map((submoduleName: string) => this.getModuleRealPath(submoduleName, depsRoot))
     )
 
-    return realPaths.map(this.addModuleMetadata)
+    this.addModulesMetadata(realPaths)
+    return realPaths.map(([moduleName]) => moduleName)
   }
 
   private async getModuleRealPath(moduleName: string, depsRoot: string): Promise<[string, string]> {
@@ -82,7 +87,7 @@ export class YarnSymlinkedModulesConfig {
   private async getAllLinkedModules(root: string): Promise<string[]> {
     try {
       const npmDirs = await this.getDirs(root, isScopedDirOrLink)
-      const [scopedDirectories, regularModules] = partition(dir => dir.startsWith('@'), npmDirs)
+      const [scopedDirectories, regularModules] = partition(isScopedModule, npmDirs)
       const modulesPerScope = await Promise.all(
         scopedDirectories.map((scopedDir: string) => this.getLinkedScopedModules(root, scopedDir))
       )
@@ -114,21 +119,23 @@ export class YarnSymlinkedModulesConfig {
   }
 
   private addSubDependenciesToStack(deps: string[]) {
-    for (const dep of deps) {
+    deps.forEach(dep => {
       if (dep in this.graph) {
-        continue
+        return
       }
+
       this.stack.push(dep)
       this.graph[dep] = []
-    }
+    })
   }
 
-  private addModuleMetadata = ([moduleName, path]): string => {
-    if (moduleName in this._metadata && this._metadata[moduleName] !== path) {
-      log.warn(`Found ${moduleName} from two sources as linked dependencies. Ignoring the one from ${path}`)
-    } else {
-      this._metadata[moduleName] = path
-    }
-    return moduleName
+  private addModulesMetadata(modulesRealPaths: [string, string][]) {
+    modulesRealPaths.forEach(([moduleName, path]) => {
+      if (moduleName in this._metadata && this._metadata[moduleName] !== path) {
+        log.warn(`Found ${moduleName} from two sources as linked dependencies. Ignoring the one from ${path}`)
+      } else {
+        this._metadata[moduleName] = path
+      }
+    })
   }
 }
