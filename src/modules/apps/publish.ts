@@ -124,6 +124,18 @@ const publisher = (workspace: string = 'master') => {
 export default async (path: string, options) => {
   log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
 
+  const manifest = await ManifestEditor.getManifestEditor()
+  const versionMsg = chalk.bold.yellow(manifest.version)
+  const appNameMsg = chalk.bold.yellow(`${manifest.vendor}.${manifest.name}`)
+  const confirmVersion = await promptConfirm(
+    `Are you sure that you want to release version ${chalk.bold(`${versionMsg} of ${appNameMsg}?`)}`,
+    false
+  )
+
+  if (!confirmVersion) {
+    process.exit(1)
+  }
+
   const response = await promptConfirm(
     chalk.yellow.bold(
       `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change here: https://vtex.io/docs/releases/2019-week-47-48-49-50-51/publish-command. Acknowledged?`
