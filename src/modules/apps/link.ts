@@ -322,7 +322,7 @@ export default async options => {
         )
       }
 
-      if(data.code === 'bad_toolbelt_version') {
+      if (data.code === 'bad_toolbelt_version') {
         return log.error(`${data.message} To update just run ${chalk.bold.green('yarn global add vtex')}.`)
       }
     }
