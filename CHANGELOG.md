@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add update method to builder hub's error requesting to update toolbelt
 - Add confirm prompt on `vtex publish`
+- Add URL to changelog on update notification
 
 ### Refactor
 - Refactor `vtex install` and `vtex uninstall`
