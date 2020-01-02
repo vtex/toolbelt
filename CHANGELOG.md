@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.82.1] - 2020-01-02
+### Fixed
+- Use url shortener for new publish process docs url
+
+### Added
+- Message after `vtex publish` regarding new `vtex validate` command
+
 ## [2.82.0] - 2019-12-30
 ### Added
 - Add update method to builder hub's error requesting to update toolbelt
