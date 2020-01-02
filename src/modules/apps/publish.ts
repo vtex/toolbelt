@@ -138,7 +138,7 @@ export default async (path: string, options) => {
 
   const response = await promptConfirm(
     chalk.yellow.bold(
-      `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change here: https://vtex.io/docs/releases/2019-week-47-48-49-50-51/publish-command. Acknowledged?`
+      `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change on the following link:\nhttp://bit.ly/2ZIJucc\nAcknowledged?`
     ),
     false
   )
