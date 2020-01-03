@@ -12,7 +12,7 @@ import { parseLocator, toAppLocator } from './../../locator'
 import { switchAccountMessage } from './utils'
 
 const switchToVendorMessage = (vendor: string): string => {
-  return `You are trying to validate this app in an account that differs from the indicated vendor. Do you want to valite in account ${chalk.blue(
+  return `You are trying to validate this app in an account that differs from the indicated vendor. Do you want to validate in account ${chalk.blue(
     vendor
   )}?`
 }
