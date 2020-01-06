@@ -1,34 +1,25 @@
-import { Region } from './conf'
+import { Region, getCluster } from './conf'
 
-export function endpoint(api: string): string {
-  switch (api.toLowerCase()) {
-    case 'apps':
-      return process.env.VTEX_APPS_ENDPOINT
-    case 'registry':
-      return process.env.VTEX_REGISTRY_ENDPOINT
-    case 'router':
-      return process.env.VTEX_ROUTER_ENDPOINT
-    case 'workspaces':
-      return process.env.VTEX_WORKSPACES_ENDPOINT
-    case 'colossus':
-      return process.env.VTEX_COLOSSUS_ENDPOINT || `http://colossus.${region()}.vtex.io`
-    default:
-      throw new Error('api argument is required')
-  }
+export function colossusEndpoint() {
+  return process.env.VTEX_COLOSSUS_ENDPOINT || `http://colossus.${region()}.vtex.io`
 }
 
 export function region(): string {
-  return process.env.VTEX_REGION || Region.Production
+  return process.env.VTEX_CLUSTER || Region.Production
+}
+
+export function cluster() {
+  return process.env.VTEX_CLUSTER || getCluster() || ''
 }
 
 export function publicEndpoint(): string {
-  return process.env.VTEX_REGION ? 'myvtexdev.com' : 'myvtex.com'
+  return region() === Region.Production ? 'myvtex.com' : 'myvtexdev.com'
 }
 
 export function clusterIdDomainInfix(): string {
-  return process.env.VTEX_REGION ? `.${process.env.VTEX_REGION}` : ''
+  return cluster() ? `.${process.env.VTEX_CLUSTER}` : ''
 }
 
 export function envCookies(): string {
-  return process.env.VTEX_REGION ? `VtexIoClusterId=${process.env.VTEX_REGION}` : ''
+  return cluster() ? `VtexIoClusterId=${process.env.VTEX_CLUSTER}` : ''
 }
