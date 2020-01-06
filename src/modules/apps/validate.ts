@@ -20,6 +20,7 @@ const switchToVendorMessage = (vendor: string): string => {
 const promptValidate = (app: string): Bluebird<boolean> => promptConfirm(`Are you sure you want to validate app ${app}`)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
+  process.stdout.write('\n')
   const currentAccount = getAccount()
   if (previousAccount !== currentAccount) {
     const canSwitchToPrevious = await promptConfirm(switchAccountMessage(previousAccount, currentAccount))
