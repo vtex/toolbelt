@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import 'any-promise/register/bluebird'
-import 'v8-compile-cache'
 import axios from 'axios'
 import * as Bluebird from 'bluebird'
 import chalk from 'chalk'
@@ -8,9 +7,9 @@ import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
 import * as os from 'os'
 import * as path from 'path'
-import { reject, without } from 'ramda'
-import { isFunction } from 'ramda-adjunct'
+import { without } from 'ramda'
 import * as semver from 'semver'
+import 'v8-compile-cache'
 import * as pkg from '../package.json'
 import * as conf from './conf'
 import { getToken } from './conf'
@@ -18,10 +17,10 @@ import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
+import { checkAndOpenNPSLink } from './nps'
 import { Token } from './Token.js'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
-import { checkAndOpenNPSLink } from './nps'
 
 const nodeVersion = process.version.replace('v', '')
 if (!semver.satisfies(nodeVersion, pkg.engines.node)) {
@@ -99,10 +98,10 @@ const main = async () => {
 }
 
 const onError = e => {
-  const status = e.response && e.response.status
-  const statusText = e.response && e.response.statusText
-  const data = e.response && e.response.data
-  const code = e.code || null
+  const status = e?.response?.status
+  const statusText = e?.response?.statusText
+  const data = e?.response?.data
+  const code = e?.code || null
 
   if (status) {
     if (status === 401) {
@@ -148,12 +147,10 @@ const onError = e => {
       default:
         log.error('Unhandled exception')
         log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
-        if (e.config && e.config.url && e.config.method) {
+        if (e.config?.url && e.config?.method) {
           log.error(`${e.config.method} ${e.config.url}`)
         }
-        if (isVerbose) {
-          console.log(e)
-        }
+        log.debug(e)
     }
   } else {
     switch (e.name) {
@@ -169,7 +166,7 @@ const onError = e => {
         }
         break
       case SSEConnectionError.name:
-        log.error('Connection to login server has failed')
+        log.error(e.message ?? 'Connection to login server has failed')
         break
       case UserCancelledError.name:
         log.debug('User Cancelled')
@@ -177,12 +174,10 @@ const onError = e => {
       default:
         log.error('Unhandled exception')
         log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
-        log.error(reject(isFunction, e))
-        if (isVerbose) {
-          console.log(e)
-        }
+        log.error(e)
     }
   }
+
   process.exit(1)
 }
 
