@@ -3,7 +3,7 @@ import { contains, values } from 'ramda'
 
 import { CommandError } from '../../errors'
 import log from '../../logger'
-import { Environment, saveEnvironment } from './../../conf'
+import { Environment, saveEnvironment, saveCluster } from './../../conf'
 
 const envValues = values(Environment)
 
@@ -16,7 +16,11 @@ export default (name: string, value: string) => {
       saveEnvironment(value as Environment)
       log.info(`Successfully set environment to "${value}"`)
       break
+    case 'cluster': 
+      saveCluster(value)
+      log.info(`Successfully set cluster to "${value}"`)
+      break
     default:
-      throw new CommandError(`The only supported configuration is ${chalk.blue('env')}`)
+      throw new CommandError(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`)
   }
 }
