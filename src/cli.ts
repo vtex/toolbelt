@@ -100,8 +100,13 @@ const main = async () => {
 const onError = e => {
   const status = e?.response?.status
   const statusText = e?.response?.statusText
+  const headers = e?.response?.headers
   const data = e?.response?.data
   const code = e?.code || null
+
+  if (headers) {
+    log.debug('Failed request headers:', headers)
+  }
 
   if (status) {
     if (status === 401) {
@@ -116,15 +121,15 @@ const onError = e => {
         return // Prevent multiple login attempts
       }
     }
+
     if (status >= 400) {
       const message = data ? data.message : null
       const source = e.config.url
       log.error('API:', status, statusText)
+      log.error('Source:', source)
       if (message) {
         log.error('Message:', message)
-        if (isVerbose) {
-          log.debug('Raw error:', data)
-        }
+        log.debug('Raw error:', data)
       } else {
         log.error('Raw error:', {
           data,
@@ -174,7 +179,7 @@ const onError = e => {
       default:
         log.error('Unhandled exception')
         log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
-        log.error(e)
+        log.error('Raw error:', e)
     }
   }
 
