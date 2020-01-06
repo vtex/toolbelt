@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.82.1] - 2020-01-02
 ### Fixed
 - Use url shortener for new publish process docs url
+- Fix promptConfirm overwriting last line on `vtex validate`
 
 ### Added
 - Message after `vtex publish` regarding new `vtex validate` command
