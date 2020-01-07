@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { compose, contains, forEach, path, pathOr } from 'ramda'
 import { getToken } from './conf'
-import { endpoint, envCookies, publicEndpoint } from './env'
+import { colossusEndpoint, envCookies, publicEndpoint, cluster } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
 import { removeVersion } from './locator'
@@ -25,14 +25,16 @@ const parseMessage = (msg: MessageJSON): Message => {
   }
 }
 
-const createEventSource = (source: string) =>
-  new EventSource(source, {
+const createEventSource = (source: string) => {
+  return new EventSource(source, {
     headers: {
       authorization: `bearer ${getToken()}`,
       cookie: envCookies(),
       'user-agent': userAgent,
+      ...(cluster() ? { 'x-vtex-upstream-target': cluster() } : null),
     },
   })
+}
 
 const parseKeyToQueryParameter = (keys: string[]): string => {
   let urlQueryParameters = ''
@@ -74,7 +76,7 @@ const onLog = (
   callback: (message: Message) => void,
   senders?: string[]
 ): Unlisten => {
-  const source = `${endpoint('colossus')}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
+  const source = `${colossusEndpoint()}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
   es.onopen = onOpen(`${logLevel} log`)
   es.onmessage = compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage)
@@ -89,7 +91,7 @@ export const onEvent = (
   keys: string[],
   callback: (message: Message) => void
 ): Unlisten => {
-  const source = `${endpoint('colossus')}/${ctx.account}/${
+  const source = `${colossusEndpoint()}/${ctx.account}/${
     ctx.workspace
   }/events?onUnsubscribe=link_interrupted&sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)

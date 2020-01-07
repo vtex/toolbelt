@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Log url for auth-sse
+- `VTEX_CLUSTER` env variable now specifies which cluster will be used
+- `vtex config set cluster` and `vtex config get cluster` are now available and specify the cluster to be used
+
+### Changed
+- Change Colossus endpoint used by SSE
+
 
 ## [2.82.1] - 2020-01-02
 ### Fixed

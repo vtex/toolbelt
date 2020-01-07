@@ -27,8 +27,13 @@ const context: IOContext = {
   platform: '',
 }
 
+const clusterHeader = env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null
+
 const options = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
+  headers: {
+    ...clusterHeader,
+  },
 }
 
 const interceptor = <T>(client): T =>
@@ -58,8 +63,8 @@ const [apps, router, workspaces, logger, events, billing, rewriter] = getToken()
       new Apps(context, options),
       new Router(context, options),
       new Workspaces(context, options),
-      new Logger(context),
-      new Events(context),
+      new Logger(context, { headers: clusterHeader }),
+      new Events(context, { headers: clusterHeader }),
       new Billing(context, options),
       new Rewriter(context, options),
     ]

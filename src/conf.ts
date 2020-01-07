@@ -66,16 +66,11 @@ export const saveNextFeedbackDate = (date: string) => conf.set('_nextFeedbackDat
 const envFromProcessEnv = {
   prod: Environment.Production,
 }
-let forcedEnv = null
-
-export const forceEnvironment = (env: Environment) => {
-  forcedEnv = env
-}
 
 export const getEnvironment = (): Environment => {
   const env = envFromProcessEnv[process.env.VTEX_ENV]
   const persisted = conf.get('env') || Environment.Production
-  return forcedEnv || env || persisted
+  return env || persisted
 }
 
 export const clear = (): void => conf.clear()
@@ -95,4 +90,12 @@ export const saveAccountToken = (account: string, token: string) => {
 
 export const getTokens = () => {
   return conf.get('tokens') || {}
+}
+
+export const saveCluster = (cluster: string) => {
+  conf.set('cluster', cluster)
+}
+
+export const getCluster = () => {
+  return conf.get('cluster') || ''
 }
