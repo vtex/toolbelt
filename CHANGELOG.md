@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.83.1] - 2020-01-07
+
+### Changed
+- Debug response headers on unhandled errors when available
+- Log request url and method on unhandled errors when `request.status` is available and is `4xx` or `5xx`
+
 ## [2.83.0] - 2020-01-07
 ### Fixed
 - Typo on message requesting to change account when validating
@@ -14,10 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Log url for auth-sse
 - `VTEX_CLUSTER` env variable now specifies which cluster will be used
 - `vtex config set cluster` and `vtex config get cluster` are now available and specify the cluster to be used
-
-### Changed
-- Change Colossus endpoint used by SSE
-
 
 ## [2.82.1] - 2020-01-02
 ### Fixed
