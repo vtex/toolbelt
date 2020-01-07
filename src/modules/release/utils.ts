@@ -185,10 +185,10 @@ export const postRelease = () => {
 }
 
 export const add = () => {
-  let gitAddCommand = `git add ${versionFile}`
+  let gitAddCommand = `git add "${versionFile}"`
   let successMessage = `File ${versionFile} added`
   if (existsSync(changelogPath)) {
-    gitAddCommand += ` ${changelogPath}`
+    gitAddCommand += ` "${changelogPath}"`
     successMessage = `Files ${versionFile} ${changelogPath} added`
   }
   return runCommand(gitAddCommand, successMessage, true)
