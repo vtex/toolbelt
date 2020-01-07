@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { compose, contains, forEach, path, pathOr } from 'ramda'
 import { getToken } from './conf'
-import { colossusEndpoint, envCookies, publicEndpoint } from './env'
+import { colossusEndpoint, envCookies, publicEndpoint, cluster } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
 import { removeVersion } from './locator'
@@ -25,14 +25,16 @@ const parseMessage = (msg: MessageJSON): Message => {
   }
 }
 
-const createEventSource = (source: string) =>
-  new EventSource(source, {
+const createEventSource = (source: string) => {
+  return new EventSource(source, {
     headers: {
       authorization: `bearer ${getToken()}`,
       cookie: envCookies(),
       'user-agent': userAgent,
+      ...(cluster() ? { 'x-vtex-upstream-target': cluster() } : null),
     },
   })
+}
 
 const parseKeyToQueryParameter = (keys: string[]): string => {
   let urlQueryParameters = ''
