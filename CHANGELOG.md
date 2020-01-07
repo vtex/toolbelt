@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.83.1] - 2020-01-07
+
 ### Changed
 - Debug response headers on unhandled errors when available
 - Log request url and method on unhandled errors when `request.status` is available and is `4xx` or `5xx`
