@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Spawn of `git add` on paths with special chars
 
 ## [2.83.1] - 2020-01-07
 
@@ -61,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ### Removed
-- Remove unnused client 
+- Remove unnused client
 
 ## [2.80.1] - 2019-12-16
 ### Fixed
@@ -94,7 +96,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New command to validate a published app
 
 ### Fixed
-- Use vtex/api on undeprecate request instead of axios 
+- Use vtex/api on undeprecate request instead of axios
 
 ## [2.78.6] - 2019-12-04
 ### Refactor
