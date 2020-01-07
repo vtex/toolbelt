@@ -127,6 +127,10 @@ const onError = e => {
       const source = e.config.url
       log.error('API:', status, statusText)
       log.error('Source:', source)
+      if (e.config?.method) {
+        log.error('Method:', e.config.method)
+      }
+
       if (message) {
         log.error('Message:', message)
         log.debug('Raw error:', data)
