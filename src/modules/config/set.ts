@@ -16,7 +16,7 @@ export default (name: string, value: string) => {
       saveEnvironment(value as Environment)
       log.info(`Successfully set environment to "${value}"`)
       break
-    case 'cluster': 
+    case 'cluster':
       saveCluster(value)
       log.info(`Successfully set cluster to "${value}"`)
       break

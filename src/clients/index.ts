@@ -32,8 +32,8 @@ const clusterHeader = env.cluster() ? { 'x-vtex-upstream-target': env.cluster() 
 const options = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
   headers: {
-    ...clusterHeader
-  }
+    ...clusterHeader,
+  },
 }
 
 const interceptor = <T>(client): T =>
@@ -79,4 +79,3 @@ const [apps, router, workspaces, logger, events, billing, rewriter] = getToken()
     ]
 
 export { apps, router, workspaces, logger, events, createClients, billing, rewriter }
-
