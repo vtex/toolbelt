@@ -41,15 +41,6 @@ export const versionPattern = '\\d+\\.\\d+\\.\\d+(-.*)?'
 export const wildVersionPattern = '\\d+\\.((\\d+\\.\\d+)|(\\d+\\.x)|x)(-.*)?'
 export const getManifestPath = () => path.resolve(getAppRoot(), MANIFEST_FILE_NAME)
 
-export const isManifestReadable = async (): Promise<boolean> => {
-  try {
-    await readFileUtf(getManifestPath())
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
 export const parseManifest = (content: string): Manifest => {
   try {
     return JSON.parse(content)
