@@ -51,9 +51,11 @@ export const parseArgs = (args: string[]): string[] => {
   return drop(1, args)
 }
 
-export const promptWorkspaceMaster = async () => {
+export const promptWorkspaceMaster = async account => {
   const confirm = await promptConfirm(
-    `Are you sure you want to force this operation on the ${chalk.green('master')} workspace?`,
+    `Are you sure you want to force this operation on the ${chalk.green(
+      'master'
+    )} workspace on the account ${chalk.blue(account)}?`,
     false
   )
   if (!confirm) {
@@ -70,7 +72,7 @@ export const validateAppAction = async (operation: string, app?) => {
     if (!contains(operation, workspaceMasterAllowedOperations)) {
       throw new CommandError(workspaceMasterMessage)
     } else {
-      await promptWorkspaceMaster()
+      await promptWorkspaceMaster(account)
     }
   }
 
