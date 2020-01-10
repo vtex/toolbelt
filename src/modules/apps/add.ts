@@ -18,26 +18,25 @@ const infraLatestVersion = async (app: string) => {
     const latest = pickLatestVersion(versions[region()])
     return wildVersionByMajor(latest)
   } catch (err) {
-    if (err.response && err.response.status === 404) {
-      throw new CommandError(`App ${chalk.green(app)} not found`)
+    if (err.response?.status === 404) {
+      throw new CommandError(`App ${chalk.green(`infra:${app}`)} not found`)
     }
 
     throw err
   }
 }
 
+const getVersion = (appName: string) => {
+  const isInfra = appName.startsWith('infra:')
+  const name = appName.includes(':') ? unprefixName(appName) : appName
+  return isInfra ? infraLatestVersion(name) : appLatestMajor(name)
+}
+
 const addApp = async (app: string, manifest: ManifestEditor) => {
-  const hasVersion = app.indexOf('@') > -1
-  if (hasVersion) {
-    const [appId, version] = app.split('@')
-    return manifest.addDependency(appId, version)
-  }
-
-  const isInfra = app.startsWith('infra:')
-  const appName = app.includes(':') ? unprefixName(app) : app
-  const version = await (isInfra ? infraLatestVersion(appName) : appLatestMajor(appName))
-
-  return manifest.addDependency(app, version)
+  const [appName, version] = app.split('@')
+  const sanitizedVersion = version ?? (await getVersion(appName))
+  await manifest.addDependency(appName, sanitizedVersion)
+  log.info(`Added ${chalk.green(`${appName}@${sanitizedVersion}`)}`)
 }
 
 const addApps = async (apps: string[], manifest: ManifestEditor) => {
@@ -62,7 +61,6 @@ export default async (app: string, options) => {
   log.debug('Adding app' + (apps.length > 1 ? 's' : '') + `: ${apps.join(', ')}`)
   try {
     await addApps(apps, manifest)
-    log.info('App' + (apps.length > 1 ? 's' : '') + ' added succesfully!')
   } catch (err) {
     if (err instanceof CommandError) {
       log.error(err.message)
