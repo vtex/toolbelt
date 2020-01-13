@@ -12,7 +12,6 @@ import { CommandError, UserCancelledError } from '../../errors'
 import { ManifestEditor } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
-import { ManifestEditor } from '../../lib/manifest'
 
 export const pathToFileObject = (root = process.cwd(), prefix: string = '') => (path: string): BatchStream => {
   const realAbsolutePath = join(root, path)

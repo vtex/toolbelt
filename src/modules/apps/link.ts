@@ -12,7 +12,7 @@ import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { ManifestEditor } from '../../lib/manifest'
-import { default as log, default as logger } from '../../logger'
+import log from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
@@ -86,7 +86,7 @@ const watchAndSendChanges = async (
       })
     } catch (err) {
       if (err instanceof ChangeSizeLimitError) {
-        logger.error(err.message)
+        log.error(err.message)
         process.exit(1)
       }
       onInitialLinkRequired(err)
