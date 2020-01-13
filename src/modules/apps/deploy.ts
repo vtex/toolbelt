@@ -4,11 +4,11 @@ import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import { ManifestValidator } from '../../lib/manifest'
+import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getManifest } from '../../manifest'
 import switchAccount from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { parseLocator, toAppLocator } from './../../locator'
 import { switchAccountMessage } from './utils'
 
 const switchToVendorMessage = (vendor: string): string => {
@@ -17,7 +17,7 @@ const switchToVendorMessage = (vendor: string): string => {
   )}?`
 }
 
-const promptValidate = (app: string): Bluebird<boolean> => promptConfirm(`Are you sure you want to deploy app ${app}`)
+const promptDeploy = (app: string): Bluebird<boolean> => promptConfirm(`Are you sure you want to deploy app ${app}`)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()
@@ -45,7 +45,7 @@ const deployRelease = async (app: string): Promise<void> => {
   return await registry.validateApp(`${vendor}.${name}`, version)
 }
 
-const prepareValidate = async (app, originalAccount, originalWorkspace: string): Promise<void> => {
+const prepareDeploy = async (app, originalAccount, originalWorkspace: string): Promise<void> => {
   app = await ManifestValidator.validateApp(app)
   try {
     log.debug('Starting to deploy app:', app)
@@ -71,9 +71,9 @@ export default async (optionalApp: string, options) => {
   const originalWorkspace = getWorkspace()
   const app = optionalApp || toAppLocator(await getManifest())
 
-  if (!preConfirm && !(await promptValidate(app))) {
+  if (!preConfirm && !(await promptDeploy(app))) {
     throw new UserCancelledError()
   }
   log.debug(`Deploying app ${app}`)
-  return prepareValidate(app, originalAccount, originalWorkspace)
+  return prepareDeploy(app, originalAccount, originalWorkspace)
 }
