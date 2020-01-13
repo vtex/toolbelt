@@ -108,7 +108,7 @@ const publisher = (workspace: string = 'master') => {
         )
       } else {
         spinner.succeed(`${appId} was published successfully!`)
-        log.info(`You can validate it with: ${chalk.blueBright(`vtex validate ${appId}`)}`)
+        log.info(`You can deploy it with: ${chalk.blueBright(`vtex deploy ${appId}`)}`)
       }
     } catch (e) {
       spinner.fail(`Failed to publish ${appId}`)
