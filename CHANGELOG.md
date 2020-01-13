@@ -5,21 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.84.0] - 2020-01-13
 ### Added
-- Displays account name when confirming actions on master workspace.
-- `vtex deploy` command
+- Display account name when confirming actions on master workspace.
+- `vtex deploy` command.
 
-### Refactor
-- Refactor `vtex add`
-- Refactor `vtex unlink`
-- Use `ManifestEditor` on `vtex link`
+### Deprecated
+- Deprecate `vtex validate` command in favor of `vtex deploy`.
 
-### Deprecate
-- Deprecate `vtex validate` command in favor of `vtex deploy`
+### Refactored
+- Refactor `vtex add`.
+- Refactor `vtex unlink`.
+- Use `ManifestEditor` class on `vtex link`.
 
 ## [2.83.2] - 2020-01-07
 ### Fixed
-- Spawn of `git add` on paths with special chars
+- Spawn of `git add` on paths with special chars.
 
 ## [2.83.1] - 2020-01-07
 
