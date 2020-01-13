@@ -30,8 +30,13 @@ export default {
     ],
   },
   validate: {
-    description: 'Validate a release of an app',
+    description: 'DEPRECATED',
     handler: './apps/validate',
+    optionalArgs: 'app',
+  },
+  deploy: {
+    description: 'Deploy a release of an app',
+    handler: './apps/deploy',
     optionalArgs: 'app',
   },
   deprecate: {
