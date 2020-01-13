@@ -86,7 +86,7 @@ export class ManifestEditor {
   }
 
   public async writeSchema(): Promise<void> {
-    if (!this.manifest.$schema || this.manifest.$schema !== ManifestEditor.MANIFEST_SCHEMA) {
+    if (this.manifest.$schema !== ManifestEditor.MANIFEST_SCHEMA) {
       this.manifest.$schema = ManifestEditor.MANIFEST_SCHEMA
     }
 
