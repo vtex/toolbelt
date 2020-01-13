@@ -231,7 +231,7 @@ const promptConfirmName = (msg: string): Promise<string> =>
     })
     .then<string>(prop('appName'))
 
-export async function showBuilderHubMessage(message: string, showPrompt: boolean, manifest: Manifest) {
+export async function showBuilderHubMessage(message: string, showPrompt: boolean, manifest: ManifestEditor) {
   if (message) {
     if (showPrompt) {
       const confirmMsg = `Are you absolutely sure?\n${

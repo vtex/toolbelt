@@ -1,9 +1,9 @@
 import * as streamToString from 'get-stream'
 import * as net from 'net'
 import * as WebSocket from 'ws'
-
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
+import { ManifestEditor } from '../../lib/manifest'
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
 
@@ -90,7 +90,7 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
 }
 
 export default function startDebuggerTunnel(
-  manifest: Manifest,
+  manifest: ManifestEditor,
   port: number = DEFAULT_DEBUGGER_PORT
 ): Promise<number | void> {
   const { name, vendor, version, builders } = manifest

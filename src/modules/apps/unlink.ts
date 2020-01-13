@@ -1,15 +1,12 @@
-import { path, prepend } from 'ramda'
-
 import { apps } from '../../clients'
+import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
-import { getManifest, validateApp } from '../../manifest'
-import { toMajorLocator } from './../../locator'
 import { parseArgs, validateAppAction } from './utils'
 
 const { unlink, unlinkAll, listLinks } = apps
 
 const unlinkApp = async (app: string) => {
-  validateApp(app)
+  ManifestValidator.validateApp(app)
 
   try {
     log.info('Starting to unlink app:', app)
@@ -21,7 +18,7 @@ const unlinkApp = async (app: string) => {
 Make sure you typed the right app vendor, name and version.`)
     } else {
       log.error(`Error unlinking ${app}.`, e.message)
-      if (path(['response', 'data', 'message'], e)) {
+      if (e?.response?.data?.message) {
         log.error(e.response.data.message)
       }
     }
@@ -30,7 +27,7 @@ Make sure you typed the right app vendor, name and version.`)
 
 const unlinkApps = async (appsList: string[]): Promise<void> => {
   await validateAppAction('unlink', appsList)
-  await Promise.map(appsList, unlinkApp)
+  await Promise.all(appsList.map(unlinkApp))
 }
 
 const unlinkAllApps = async (): Promise<void> => {
@@ -40,7 +37,7 @@ const unlinkAllApps = async (): Promise<void> => {
     log.info('Successfully unlinked all apps')
   } catch (e) {
     log.error('Error unlinking all apps.', e.message)
-    if (path(['response', 'data', 'message'], e)) {
+    if (e?.response?.data?.message) {
       log.error(e.response.data.message)
     }
   }
@@ -56,7 +53,7 @@ export default async (optionalApp: string, options) => {
     return unlinkAllApps()
   }
 
-  const app = optionalApp || toMajorLocator(await getManifest())
-  const appsList = prepend(app, parseArgs(options._))
+  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
+  const appsList = [app, ...parseArgs(options._)]
   return unlinkApps(appsList)
 }
