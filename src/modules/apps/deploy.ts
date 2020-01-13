@@ -52,7 +52,7 @@ const prepareValidate = async (app, originalAccount, originalWorkspace: string):
     await deployRelease(app)
     log.info('Successfully deployed', app)
   } catch (e) {
-    if (e.response && e.response.status && e.response.status === 404) {
+    if (e?.response?.status === 404) {
       log.error(`Error deploying ${app}. App not found or already deployed`)
     } else if (e.message && e.response.statusText) {
       log.error(`Error deploying ${app}. ${e.message}. ${e.response.statusText}`)
