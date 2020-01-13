@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Displays account name when confirming actions on master workspace.
+- `vtex deploy` command
 
 ### Refactor
 - Refactor `vtex add`
+
+### Deprecate
+- Deprecate `vtex validate` command in favor of `vtex validate`
 
 ## [2.83.2] - 2020-01-07
 ### Fixed
