@@ -49,17 +49,25 @@ const errorJsonReplacer = (key: any, value: any) => {
   return value
 }
 
+export const consoleLoggerLevel = () => {
+  return isVerbose ? 'debug' : 'info'
+}
+
+export const fileLoggerLevel = () => {
+  return 'debug'
+}
+
 const logger = createLogger({
   format: format.combine(addArgs(), format.timestamp({ format: 'HH:mm:ss.SSS' })),
   transports: [
     new transports.Console({
       format: format.combine(format.colorize(), messageFormatter),
-      level: isVerbose ? 'debug' : 'info',
+      level: consoleLoggerLevel(),
     }),
     new transports.File({
       filename: DEBUG_LOG_FILE_PATH,
       format: format.combine(format.json({ replacer: errorJsonReplacer, space: 2 })),
-      level: 'debug',
+      level: fileLoggerLevel(),
       maxsize: 5e6,
       maxFiles: 2,
     }),
@@ -89,5 +97,7 @@ logger.on('error', err => {
 logger.on('finish', info => {
   console.log(`Logging has finished: ${info}`)
 })
+
+
 
 export default logger
