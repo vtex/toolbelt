@@ -291,7 +291,7 @@ export default {
   },
   test: {
     description: 'Run your VTEX app unit tests',
-    handler: './apps/test',
+    handler: './apps/testCommand',
     options: [
       {
         description: 'Allow tests with Typescript errors',

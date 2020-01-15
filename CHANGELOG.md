@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Short circuit bad toolbelt version error when linking
 
+### Changed
+- Add dependencies pinned by builder-hub scoped by builder
+
 ## [2.84.1] - 2020-01-13
 ### Fixed
 - Post publish message now notifies about `vtex deploy` instead of `vtex validate`

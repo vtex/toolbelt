@@ -1,15 +1,15 @@
 import * as retry from 'async-retry'
-import * as bluebird from 'bluebird'
 import chalk from 'chalk'
 import { concat, map, prop, toPairs } from 'ramda'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
+import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { listenBuild } from '../build'
-import { fixPinnedDependencies, runYarnIfPathExists } from '../utils'
+import { runYarnIfPathExists } from '../utils'
 import { createLinkConfig, getLinkedFiles, listLocalFiles } from './file'
 import { ProjectUploader } from './ProjectUploader'
 import { pathToFileObject, validateAppAction } from './utils'
@@ -102,9 +102,8 @@ export default async options => {
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
   try {
-    const aux = await builder.getPinnedDependencies()
-    const pinnedDeps: Map<string, string> = new Map(Object.entries(aux))
-    await bluebird.map(buildersToRunLocalYarn, fixPinnedDependencies(pinnedDeps), { concurrency: 1 })
+    const pinnedDeps: PinnedDeps = await builder.getPinnedDependencies()
+    await fixPinnedDependencies(pinnedDeps, buildersToRunLocalYarn, manifest.builders)
   } catch (e) {
     log.info('Failed to check for pinned dependencies')
   }

@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
 import { diffArrays } from 'diff'
-import { existsSync, pathExists, readFile, writeFile } from 'fs-extra'
+import { existsSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import * as R from 'ramda'
 import { dummyLogger } from '../clients/dummyLogger'
@@ -149,46 +149,6 @@ export const runYarnIfPathExists = (relativePath: string) => {
     }
   }
 }
-
-const getEntryMapFromObject = (obj: object, field: string) => {
-  if (Object.prototype.hasOwnProperty.call(obj, field)) {
-    return new Map<string, string>(Object.entries(obj[field]))
-  } else {
-    return new Map<string, string>()
-  }
-}
-
-// For each entry in 'left', get all keys that exist but differ in 'right'
-const leftMapDifference = (left: Map<string, string>, right: Map<string, string>) => {
-  return R.filter(x => right.has(x) && left.get(x) !== right.get(x), [...left.keys()])
-}
-
-export const fixPinnedDependencies = R.curry(async (pinnedDeps: Map<string, string>, relativePath: string) => {
-  const jsonPath = resolvePath(getAppRoot(), `${relativePath}/package.json`)
-  if (!(await pathExists(jsonPath))) {
-    return
-  }
-  const packageJSON = JSON.parse((await readFile(jsonPath)).toString())
-  const dependencies = getEntryMapFromObject(packageJSON, 'dependencies')
-  const devDependencies = getEntryMapFromObject(packageJSON, 'devDependencies')
-  const outdatedDeps = leftMapDifference(dependencies, pinnedDeps)
-  const outdatedDevDeps = leftMapDifference(devDependencies, pinnedDeps)
-  const newPackageJSON = R.reduce(
-    (obj, dep) => {
-      log.warn(`${dep} is outdated. Upgrading to ${pinnedDeps.get(dep)}`)
-      if (Object.prototype.hasOwnProperty.call(obj, 'dependencies') && obj.dependencies[dep]) {
-        obj.dependencies[dep] = pinnedDeps.get(dep)
-      }
-      if (Object.prototype.hasOwnProperty.call(obj, 'devDependencies') && obj.devDependencies[dep]) {
-        obj.devDependencies[dep] = pinnedDeps.get(dep)
-      }
-      return obj
-    },
-    packageJSON,
-    [...outdatedDeps, ...outdatedDevDeps]
-  )
-  await writeFile(jsonPath, JSON.stringify(newPackageJSON, null, 2) + '\n')
-})
 
 const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()): string => {
   return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(
