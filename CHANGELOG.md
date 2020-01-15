@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.84.1] - 2020-01-13
 ### Fixed
+- Debug logs on linked apps now are printed on verbose mode
 - Post publish message now notifies about `vtex deploy` instead of `vtex validate`
 
 ## [2.84.0] - 2020-01-13
