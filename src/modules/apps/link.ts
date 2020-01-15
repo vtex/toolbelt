@@ -193,6 +193,12 @@ const performInitialLink = async (
         process.exit(1)
       }
 
+      const data = err?.response?.data
+      if (data?.code === 'bad_toolbelt_version') {
+        log.error(data.message)
+        process.exit(1)
+      }
+
       if (err.status) {
         const response = err.response
         const status = response.status
