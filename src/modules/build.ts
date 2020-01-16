@@ -1,6 +1,6 @@
 import { currentContext } from '../conf'
 import { BuildFailError } from '../errors'
-import log from '../logger'
+import log, { fileLoggerLevel } from '../logger'
 import { logAll, onEvent } from '../sse'
 
 interface ListeningOptions {
@@ -29,7 +29,7 @@ const onBuildEvent = (
   callback: (type: BuildEvent, message?: Message) => void,
   senders?: string[]
 ) => {
-  const unlistenLogs = logAll(ctx, log.level, appOrKey, senders)
+  const unlistenLogs = logAll(ctx, fileLoggerLevel(), appOrKey, senders)
   const unlistenBuild = onEvent(ctx, 'vtex.builder-hub', appOrKey, ['build.status'], message =>
     callback('build.status', message)
   )
