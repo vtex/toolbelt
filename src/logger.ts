@@ -98,6 +98,4 @@ logger.on('finish', info => {
   console.log(`Logging has finished: ${info}`)
 })
 
-
-
 export default logger
