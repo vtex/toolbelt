@@ -22,6 +22,11 @@ import { createLinkConfig, getIgnoredPaths, getLinkedDepsDirs, getLinkedFiles, l
 import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
 import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage, validateAppAction } from './utils'
 
+let nodeNotifier
+if (process.platform !== 'win32') {
+  nodeNotifier = require('node-notifier')
+}
+
 const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
@@ -56,6 +61,7 @@ const warnAndLinkFromStart = (
 }
 
 const watchAndSendChanges = async (
+  appId: string,
   projectUploader: ProjectUploader,
   extraData: { linkConfig: LinkConfig },
   unsafe: boolean
@@ -85,6 +91,11 @@ const watchAndSendChanges = async (
         tsErrorsAsWarnings: unsafe,
       })
     } catch (err) {
+      nodeNotifier?.notify({
+        title: appId,
+        message: 'Link died',
+      })
+
       if (err instanceof ChangeSizeLimitError) {
         log.error(err.message)
         process.exit(1)
@@ -336,5 +347,5 @@ export default async options => {
     process.exit()
   })
 
-  await watchAndSendChanges(projectUploader, extraData, unsafe)
+  await watchAndSendChanges(appId, projectUploader, extraData, unsafe)
 }
