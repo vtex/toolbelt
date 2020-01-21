@@ -498,4 +498,17 @@ export default {
       requiredArgs: 'edition',
     },
   },
+  exec: {
+    description: "Execute a command in your backend service's host",
+    handler: './apps/exec',
+    requiredArgs: 'command',
+    options: [
+      {
+        description: 'Pass stdin to the host',
+        long: 'interactive',
+        short: 'i',
+        type: 'boolean',
+      },
+    ],
+  },
 }
