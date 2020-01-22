@@ -61,8 +61,8 @@ export const getTag = (version: string): string => {
 }
 
 export const diffVersions = (a: string, b: string): [string, string] => {
-  const semverA = semver(a)
-  const semverB = semver(b)
+  const semverA = semver.parse(a)
+  const semverB = semver.parse(b)
   const [aMain, bMain] = diff(
     [semverA.major, semverA.minor, semverA.patch],
     [semverB.major, semverB.minor, semverB.patch]
