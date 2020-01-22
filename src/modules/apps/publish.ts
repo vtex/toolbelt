@@ -6,6 +6,8 @@ import { isEmpty, map } from 'ramda'
 import * as conf from '../../conf'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
+import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
+import { ManifestEditor } from '../../lib/manifest'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
@@ -15,15 +17,14 @@ import { promptConfirm } from '../prompts'
 import { runYarnIfPathExists, switchToPreviousAccount } from '../utils'
 import { listLocalFiles } from './file'
 import { ProjectUploader } from './ProjectUploader'
-import { checkBuilderHubMessage, pathToFileObject, showBuilderHubMessage } from './utils'
-import { ManifestEditor } from '../../lib/manifest'
+import { checkBuilderHubMessage, showBuilderHubMessage } from './utils'
 
 const root = getAppRoot()
 const buildersToRunLocalYarn = ['node', 'react']
 
 const automaticTag = (version: string): string => (version.indexOf('-') > 0 ? null : 'latest')
 
-const publisher = (workspace: string = 'master') => {
+const publisher = (workspace = 'master') => {
   const publishApp = async (
     appRoot: string,
     tag: string,
@@ -37,7 +38,7 @@ const publisher = (workspace: string = 'master') => {
       factor: 2,
     }
     const publish = async (_, tryCount) => {
-      const filesWithContent = map(pathToFileObject(appRoot), paths)
+      const filesWithContent = map(createPathToFileObject(appRoot), paths)
       if (tryCount === 1) {
         log.debug('Sending files:', '\n' + paths.join('\n'))
       }

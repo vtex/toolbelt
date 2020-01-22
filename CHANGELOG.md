@@ -5,21 +5,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Refactor
+- Yarn linked modules files sending.
 
 ## [2.85.0] - 2020-01-16
 ### Added
-- Create an OS notification when an link dies (except for windows systems)
+- Create an OS notification when an link dies (except for windows systems).
 
 ### Fixed
-- Short circuit bad toolbelt version error when linking
+- Short circuit bad toolbelt version error when linking.
 
 ### Changed
-- Add dependencies pinned by builder-hub scoped by builder
+- Add dependencies pinned by builder-hub scoped by builder.
 
 ## [2.84.1] - 2020-01-13
 ### Fixed
-- Debug logs on linked apps now are printed on verbose mode
-- Post publish message now notifies about `vtex deploy` instead of `vtex validate`
+- Debug logs on linked apps now are printed on verbose mode.
+- Post publish message now notifies about `vtex deploy` instead of `vtex validate`.
 
 ## [2.84.0] - 2020-01-13
 ### Added
