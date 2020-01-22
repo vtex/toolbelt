@@ -77,6 +77,10 @@ export class ManifestEditor {
     return `${vendor}.${name}@${version}`
   }
 
+  public get majorRange() {
+    return `${this.manifest.version.split('.', 2)[0]}.x`
+  }
+
   public flushChangesSync() {
     return writeJsonSync(this.path, this.manifest, { spaces: 2 })
   }
