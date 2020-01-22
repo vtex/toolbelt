@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Refactor
 - Yarn linked modules files sending.
 
+### Fixed
+- Fix `vtex infra install` creating `semver` object 
+
 ## [2.85.0] - 2020-01-16
 ### Added
 - Create an OS notification when an link dies (except for windows systems).
