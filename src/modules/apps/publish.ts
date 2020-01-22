@@ -129,22 +129,32 @@ export default async (path: string, options) => {
   const manifest = await ManifestEditor.getManifestEditor()
   const versionMsg = chalk.bold.yellow(manifest.version)
   const appNameMsg = chalk.bold.yellow(`${manifest.vendor}.${manifest.name}`)
-  const confirmVersion = await promptConfirm(
-    `Are you sure that you want to release version ${chalk.bold(`${versionMsg} of ${appNameMsg}?`)}`,
-    false
-  )
 
-  if (!confirmVersion) {
-    process.exit(1)
+  const yesFlag = options.y || options.yes
+
+  if (!yesFlag) {
+    const confirmVersion = await promptConfirm(
+      `Are you sure that you want to release version ${chalk.bold(`${versionMsg} of ${appNameMsg}?`)}`,
+      false
+    )
+
+    if (!confirmVersion) {
+      process.exit(1)
+    }
+
+    const response = await promptConfirm(
+      chalk.yellow.bold(
+        `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change on the following link:\nhttp://bit.ly/2ZIJucc\nAcknowledged?`
+      ),
+      false
+    )
+    if (!response) {
+      process.exit(1)
+    }
   }
 
-  const response = await promptConfirm(
-    chalk.yellow.bold(
-      `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change on the following link:\nhttp://bit.ly/2ZIJucc\nAcknowledged?`
-    ),
-    false
-  )
-  if (!response) {
+  if (yesFlag && manifest.vendor !== conf.getAccount()) {
+    log.error(`When using the 'yes' flag, you need to be logged in to the same account as your app’s vendor.`)
     process.exit(1)
   }
 

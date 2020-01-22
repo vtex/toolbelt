@@ -258,6 +258,12 @@ export default {
         short: 'f',
         type: 'boolean',
       },
+      {
+        description: 'Answer yes to confirmation prompts',
+        long: 'yes',
+        short: 'y',
+        type: 'boolean',
+      },
     ],
   },
   settings: {
