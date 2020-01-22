@@ -1,53 +1,54 @@
 import * as WebSocket from 'ws'
 import * as url from 'url'
 import { getAccount, getToken, getWorkspace } from '../../conf'
-import { getManifest } from '../../manifest'
-import { region } from '../../env'
-import { toMajorRange } from '../../locator'
+import { cluster, region } from '../../env'
+import { ManifestEditor } from '../../lib/manifest'
+
 const EOT = '\x04'
+
 export default async (command: string, options) => {
-  const manifest = await getManifest()
-  const { name, vendor, version, builders } = manifest
+  const manifest = await ManifestEditor.getManifestEditor()
+  const { name, vendor, builders } = manifest
   const { dotnet, node, 'service-js': serviceJs } = builders
   if (!dotnet && !node && !serviceJs) {
     return
   }
-  const majorRange = toMajorRange(version)
+
   const host = `${name}.${vendor}.${region()}.vtex.io`
   const path = `/${getAccount()}/${getWorkspace()}/_exec`
+  const clusterHeader = cluster() ? { 'x-vtex-upstream-target': cluster() } : null
+
   const clientOptions = {
     headers: {
       Authorization: getToken(),
       Host: host,
       'X-Vtex-Runtime-Api': 'true',
+      ...clusterHeader,
     },
   }
-  var urlObject = {
+  const interactive = options.i || options.interactive
+
+  const urlObject = {
     protocol: 'ws',
     hostname: host,
     pathname: path,
     query: {
-      __v: majorRange,
+      __v: manifest.majorRange,
       params: command?.split(' '),
-      interactive: options.i || options.interactive,
+      interactive,
     },
   }
   const formattedUrl = url.format(urlObject)
+
   const ws = new WebSocket(formattedUrl, clientOptions)
-  ws.on('open', function open() {
-    process.stdin.resume()
-    process.stdin.setEncoding('utf8')
-    process.stdin.on('data', function(chunk) {
-      ws.send(chunk)
+  const wsDuplexStream = (WebSocket as any).createWebSocketStream(ws, { encoding: 'utf8' })
+
+  if (interactive) {
+    process.stdin.pipe(wsDuplexStream, { end: false })
+    process.stdin.on('end', () => {
+      wsDuplexStream.end(EOT)
     })
-    process.stdin.on('end', function() {
-      ws.send(EOT)
-    })
-  })
-  ws.on('close', function close() {
-    process.exit(0)
-  })
-  ws.on('message', function incoming(data) {
-    process.stdout.write(data.toString())
-  })
+  }
+
+  wsDuplexStream.pipe(process.stdout)
 }
