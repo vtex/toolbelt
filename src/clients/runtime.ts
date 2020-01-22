@@ -19,7 +19,7 @@ export class Runtime {
     this.workspace = workspace
   }
 
-  public executeCommand = async (command: string, interactive: boolean) => {
+  public async executeCommand(command: string, interactive: boolean) {
     const manifest = await ManifestEditor.getManifestEditor()
     const { name, vendor, builders } = manifest
     const { dotnet, node, 'service-js': serviceJs } = builders
