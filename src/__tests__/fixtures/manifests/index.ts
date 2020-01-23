@@ -14,6 +14,7 @@ export const manifestSamples: Record<string, AppManifest> = {
     },
     dependencies: {
       'vtex.admin': '1.x',
+      'storecomponents.test': '1.x',
     },
     policies: [],
     $schema: 'https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema',

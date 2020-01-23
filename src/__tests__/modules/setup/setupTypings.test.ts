@@ -25,6 +25,7 @@ describe('React type dependencies are correctly inserted', () => {
     setAppsAvailableAppIDs({
       'vtex.admin': { '1.x': 'vtex.admin@1.18.0' },
       'vtex.render-runtime': { '8.x': 'vtex.render-runtime@8.1.0' },
+      'storecomponents.test': { '1.x': 'storecomponents.test@1.0.0' },
     })
 
     setPackageJsonByBuilder({
@@ -42,9 +43,11 @@ describe('React type dependencies are correctly inserted', () => {
       name: 'mock',
       devDependencies: {
         someApp: '^1.0.0',
-        'vtex.admin': 'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.admin@1.18.0/public/_types/react',
+        'storecomponents.test':
+          'http://storecomponents.vtexassets.com/_v/public/typings/v1/storecomponents.test@1.0.0/public/_types/react',
+        'vtex.admin': 'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.admin@1.18.0/public/_types/react',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -54,6 +57,7 @@ describe('React type dependencies are correctly inserted', () => {
     setAppsAvailableAppIDs({
       'vtex.admin': { '1.x': 'vtex.admin@1.18.0' },
       'vtex.render-runtime': { '8.x': 'vtex.render-runtime@8.1.0' },
+      'storecomponents.test': { '1.x': 'storecomponents.test@1.0.0' },
     })
 
     setPackageJsonByBuilder({
@@ -71,9 +75,11 @@ describe('React type dependencies are correctly inserted', () => {
       name: 'mock',
       devDependencies: {
         someApp: '^1.0.0',
-        'vtex.admin': 'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.admin@1.18.0/public/@types/vtex.admin',
+        'storecomponents.test':
+          'http://storecomponents.vtexassets.com/_v/public/typings/v1/storecomponents.test@1.0.0/public/@types/storecomponents.test',
+        'vtex.admin': 'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.admin@1.18.0/public/@types/vtex.admin',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -83,6 +89,7 @@ describe('React type dependencies are correctly inserted', () => {
     setAppsAvailableAppIDs({
       'vtex.admin': { '1.x': 'vtex.admin@1.18.0+build123' },
       'vtex.render-runtime': { '8.x': 'vtex.render-runtime@8.1.0' },
+      'storecomponents.test': { '1.x': 'storecomponents.test@1.0.0' },
     })
 
     setPackageJsonByBuilder({
@@ -100,10 +107,12 @@ describe('React type dependencies are correctly inserted', () => {
       name: 'mock',
       devDependencies: {
         someApp: '^1.0.0',
+        'storecomponents.test':
+          'http://storecomponents.vtexassets.com/_v/public/typings/v1/storecomponents.test@1.0.0/public/_types/react',
         'vtex.admin':
           'https://current-workspace--logged-account.public-endpoint/_v/private/typings/linked/v1/vtex.admin@1.18.0+build123/public/_types/react',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -113,6 +122,7 @@ describe('React type dependencies are correctly inserted', () => {
     setAppsAvailableAppIDs({
       'vtex.admin': { '1.x': 'vtex.admin@1.18.0+build123' },
       'vtex.render-runtime': { '8.x': 'vtex.render-runtime@8.1.0' },
+      'storecomponents.test': { '1.x': 'storecomponents.test@1.0.0' },
     })
 
     setPackageJsonByBuilder({
@@ -130,10 +140,12 @@ describe('React type dependencies are correctly inserted', () => {
       name: 'mock',
       devDependencies: {
         someApp: '^1.0.0',
+        'storecomponents.test':
+          'http://storecomponents.vtexassets.com/_v/public/typings/v1/storecomponents.test@1.0.0/public/@types/storecomponents.test',
         'vtex.admin':
           'https://current-workspace--logged-account.public-endpoint/_v/private/typings/linked/v1/vtex.admin@1.18.0+build123/public/@types/vtex.admin',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -143,11 +155,13 @@ describe('React type dependencies are correctly inserted', () => {
     setAppsAvailableAppIDs({
       'vtex.admin': { '1.x': 'vtex.admin@1.18.0+build123' },
       'vtex.render-runtime': { '8.x': 'vtex.render-runtime@8.1.0' },
+      'storecomponents.test': { '1.x': 'storecomponents.test@1.0.0' },
     })
 
     setRegistryAvailableAppIDs({
       'vtex.admin': { '1.x': 'vtex.admin@1.15.0' },
       'vtex.render-runtime': { '8.x': 'vtex.render-runtime@8.1.0' },
+      'storecomponents.test': { '1.x': 'storecomponents.test@1.0.0' },
     })
 
     setPackageJsonByBuilder({
@@ -167,9 +181,11 @@ describe('React type dependencies are correctly inserted', () => {
       name: 'mock',
       devDependencies: {
         someApp: '^1.0.0',
-        'vtex.admin': 'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.admin@1.15.0/public/@types/vtex.admin',
+        'storecomponents.test':
+          'http://storecomponents.vtexassets.com/_v/public/typings/v1/storecomponents.test@1.0.0/public/@types/storecomponents.test',
+        'vtex.admin': 'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.admin@1.15.0/public/@types/vtex.admin',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -184,6 +200,7 @@ test('If yarn fails, package.json is reset to its initial state', async () => {
   setAppsAvailableAppIDs({
     'vtex.admin': { '1.x': 'vtex.admin@1.18.0' },
     'vtex.render-runtime': { '8.x': 'vtex.render-runtime@8.1.0' },
+    'storecomponents.test': { '1.x': 'storecomponents.test@1.0.0' },
   })
 
   setPackageJsonByBuilder({
