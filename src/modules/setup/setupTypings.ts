@@ -25,7 +25,7 @@ const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLin
   const base =
     linked && !ignoreLinked
       ? `https://${getWorkspace()}--${getAccount()}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/public`
-      : `http://vtex.vtexassets.com/_v/public/typings/v1/${appId}/public`
+      : `http://${vendor}.vtexassets.com/_v/public/typings/v1/${appId}/public`
 
   log.info(`Checking if ${chalk.bold(appId)} has new types format`)
   try {
