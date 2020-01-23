@@ -46,8 +46,8 @@ export class Runtime {
       pathname: path,
       query: {
         __v: manifest.majorRange,
-        params: command?.split(' '),
-        interactive,
+        cmd: command?.split(' '),
+        stdin: interactive,
       },
     }
     const formattedUrl = url.format(urlObject)
