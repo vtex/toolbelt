@@ -42,9 +42,9 @@ describe('React type dependencies are correctly inserted', () => {
       name: 'mock',
       devDependencies: {
         someApp: '^1.0.0',
-        'vtex.admin': 'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.admin@1.18.0/public/_types/react',
+        'vtex.admin': 'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.admin@1.18.0/public/_types/react',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -71,9 +71,9 @@ describe('React type dependencies are correctly inserted', () => {
       name: 'mock',
       devDependencies: {
         someApp: '^1.0.0',
-        'vtex.admin': 'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.admin@1.18.0/public/@types/vtex.admin',
+        'vtex.admin': 'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.admin@1.18.0/public/@types/vtex.admin',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -103,7 +103,7 @@ describe('React type dependencies are correctly inserted', () => {
         'vtex.admin':
           'https://current-workspace--logged-account.public-endpoint/_v/private/typings/linked/v1/vtex.admin@1.18.0+build123/public/_types/react',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -133,7 +133,7 @@ describe('React type dependencies are correctly inserted', () => {
         'vtex.admin':
           'https://current-workspace--logged-account.public-endpoint/_v/private/typings/linked/v1/vtex.admin@1.18.0+build123/public/@types/vtex.admin',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
@@ -167,9 +167,9 @@ describe('React type dependencies are correctly inserted', () => {
       name: 'mock',
       devDependencies: {
         someApp: '^1.0.0',
-        'vtex.admin': 'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.admin@1.15.0/public/@types/vtex.admin',
+        'vtex.admin': 'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.admin@1.15.0/public/@types/vtex.admin',
         'vtex.render-runtime':
-          'http://vtex.vteximg.com.br/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
+          'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
       },
     })
     expect(runYarn).toBeCalledTimes(1)
