@@ -105,6 +105,6 @@ export class YarnFilesManager {
       }
     }
 
-    return absolutePath
+    return path
   }
 }
