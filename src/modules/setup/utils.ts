@@ -1,16 +1,27 @@
-import axios from 'axios'
-import { outputJsonSync, readJsonSync, readFileSync, outputFileSync } from 'fs-extra'
-import * as path from 'path'
-import { pipeline } from 'stream'
-import * as tar from 'tar'
 import * as util from 'util'
+import { pipeline } from 'stream'
+
+import axios from 'axios'
+import * as tar from 'tar'
+
 import { getToken } from '../../conf'
-import { getAppRoot } from '../../manifest'
+import log from '../../logger'
+import { FileReaderWriter } from './includes/FileReaderWriter'
+
+export const packageJsonEditor = new FileReaderWriter('packageJson')
+export const eslintrcEditor = new FileReaderWriter('eslintrc')
+export const tsconfigEditor = new FileReaderWriter('tsconfig')
+export const eslintIgnoreEditor = new FileReaderWriter('eslintIgnore', false)
+export const prettierrcEditor = new FileReaderWriter('prettierrc')
 
 export const checkIfTarGzIsEmpty = (url: string) => {
+  // eslint-disable-next-line no-async-promise-executor
   return new Promise(async (resolve, reject) => {
     try {
-      const res = await axios.get(url, { responseType: 'stream', headers: { Authorization: getToken() } })
+      const res = await axios.get(url, {
+        responseType: 'stream',
+        headers: { Authorization: getToken() },
+      })
       let fileCount = 0
       const fileEmitter = tar.list()
       fileEmitter.on('entry', () => (fileCount += 1))
@@ -22,42 +33,28 @@ export const checkIfTarGzIsEmpty = (url: string) => {
   })
 }
 
-type Files = 'tsconfig' | 'esLintrc' | 'packageJson' | 'eslintIgnore' | 'prettierrc'
-
-const paths: Record<Files, (builder: string) => string> = {
-  tsconfig: (builder: string) => path.join(getAppRoot(), builder, 'tsconfig.json'),
-  esLintrc: (builder: string) => path.join(getAppRoot(), builder, '.eslintrc.json'),
-  packageJson: (builder: string) => path.join(getAppRoot(), builder, 'package.json'),
-  eslintIgnore: (builder: string) => path.join(getAppRoot(), builder, '.eslintignore'),
-  prettierrc: (builder: string) => path.join(getAppRoot(), builder, '.prettierrc'),
+/**
+ * Reads and parses the root package.json file
+ *
+ * @export
+ * @returns {PackageJSON}
+ */
+export function getRootPackageJson() {
+  try {
+    return packageJsonEditor.read('.') as PackageJSON
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      log.error(err)
+    }
+  }
+  return null
 }
 
-class FileReaderWriter {
-  constructor(private file: Files, private isJSON = true) {}
-
-  public path = (builder: string) => {
-    return paths[this.file](builder)
-  }
-
-  public read = (builder: string) => {
-    if (this.isJSON) {
-      return readJsonSync(this.path(builder))
-    }
-
-    return readFileSync(this.path(builder))
-  }
-
-  public write = (builder: string, data: any) => {
-    if (this.isJSON) {
-      return outputJsonSync(this.path(builder), data, { spaces: 2 })
-    }
-
-    return outputFileSync(this.path(builder), data)
-  }
+/**
+ * Checks if every dev dependency of a dependency map is installed in a package.json
+ * @param {{ deps: Record<string, string>; pkg: PackageJSON }} { deps, pkg }
+ * @returns {boolean}
+ */
+export function hasDevDependenciesInstalled({ deps, pkg }: { deps: Record<string, string>; pkg: PackageJSON }) {
+  return Object.keys(deps).every(p => p in pkg.devDependencies)
 }
-
-export const packageJsonEditor = new FileReaderWriter('packageJson')
-export const esLintrcEditor = new FileReaderWriter('esLintrc')
-export const tsconfigEditor = new FileReaderWriter('tsconfig')
-export const eslintIgnoreEditor = new FileReaderWriter('eslintIgnore', false)
-export const prettierrcEditor = new FileReaderWriter('prettierrc')

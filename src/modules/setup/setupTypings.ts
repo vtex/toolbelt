@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import * as R from 'ramda'
+
 import { createClients } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { publicEndpoint } from '../../env'
@@ -8,6 +9,7 @@ import log from '../../logger'
 import { isLinked, resolveAppId, appIdFromRegistry } from '../apps/utils'
 import { runYarn } from '../utils'
 import { checkIfTarGzIsEmpty, packageJsonEditor } from './utils'
+import { BUILDERS_WITH_TYPES } from './consts'
 
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/
@@ -97,13 +99,13 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLi
   }
 }
 
-export const setupTypings = async (manifest: Manifest, ignoreLinked: boolean, buildersToAddTypes: string[]) => {
+export const setupTypings = async (manifest: Manifest, ignoreLinked: boolean) => {
   const appName = manifest.vendor + '.' + manifest.name
   const appMajor = toMajorRange(manifest.version)
 
   const { builder: builderClient } = createClients({}, { retries: 2, timeout: 2000 })
   const builders = R.keys(R.prop('builders', manifest) || {})
-  const filteredBuilders = R.intersection(builders, buildersToAddTypes)
+  const filteredBuilders = R.intersection(builders, BUILDERS_WITH_TYPES)
 
   log.info('Fetching names of dependencies injected by BuilderHub')
   const typingsData = await builderClient.typingsInfo()
