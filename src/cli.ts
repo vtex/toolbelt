@@ -172,10 +172,9 @@ Bluebird.config({
 process.on('unhandledRejection', onError)
 
 CLIPrechecker.runChecks().then(() => {
+  // Show update notification if newer version is available
+  notify()
   try {
-    // Show update notification if newer version is available
-    notify()
-
     main().catch(onError)
   } catch (e) {
     onError(e)
