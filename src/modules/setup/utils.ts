@@ -37,11 +37,11 @@ export const checkIfTarGzIsEmpty = (url: string) => {
  * Reads and parses the root package.json file
  *
  * @export
- * @returns {PackageJSON}
+ * @returns The package.json object
  */
-export function getRootPackageJson() {
+export function getRootPackageJson(): Record<string, any> {
   try {
-    return packageJsonEditor.read('.') as PackageJSON
+    return packageJsonEditor.read('.')
   } catch (err) {
     if (err.code !== 'ENOENT') {
       log.error(err)
@@ -55,6 +55,6 @@ export function getRootPackageJson() {
  * @param {{ deps: Record<string, string>; pkg: PackageJSON }} { deps, pkg }
  * @returns {boolean}
  */
-export function hasDevDependenciesInstalled({ deps, pkg }: { deps: Record<string, string>; pkg: PackageJSON }) {
+export function hasDevDependenciesInstalled({ deps, pkg }: { deps: Record<string, string>; pkg: Record<string, any> }) {
   return Object.keys(deps).every(p => p in pkg.devDependencies)
 }

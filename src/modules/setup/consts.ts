@@ -4,7 +4,9 @@ export const BUILDERS_WITH_TYPES = ['react', 'node']
 // Builders that demand tooling installation
 export const BUILDERS_WITH_TOOLING = ['react', 'node']
 
+// Map of dependencies for the whole project and for each builder
 export const DEPENDENCIES = {
+  // Common dependencies between projects
   common: {
     '@vtex/prettier-config': '^0.1.3',
     eslint: '^6.8.0',
