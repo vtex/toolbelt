@@ -93,8 +93,8 @@ function setupCommonTools() {
 
   if (!hasCommonDeps) {
     const depList = Object.keys(DEPENDENCIES.common)
-      .map(name => `- ${chalk.blue(name)}`)
-      .join('\n')
+      .map(name => chalk.blue(name))
+      .join(', ')
     log.info(`Adding common dependencies to root:\n${depList}`)
 
     installDeps(DEPENDENCIES.common)
@@ -129,8 +129,8 @@ function setupBuilderTools(builders: string[]) {
       if (hasDepsInstalled) continue
 
       const depList = Object.keys(DEPENDENCIES[builder])
-        .map(name => `- ${chalk.blue(name)}`)
-        .join('\n')
+        .map(name => chalk.blue(name))
+        .join(', ')
       log.info(`Adding "${chalk.yellow(builder)}" builder dependencies to root:\n${depList}`)
 
       installDeps(DEPENDENCIES[builder])
