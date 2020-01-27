@@ -2,7 +2,7 @@ import { execSync } from 'child_process'
 import { resolve } from 'path'
 
 import chalk from 'chalk'
-import { mergeDeepRight } from 'Ramda'
+import { mergeDeepRight } from 'ramda'
 
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
@@ -95,7 +95,7 @@ function setupCommonTools() {
     const depList = Object.keys(DEPENDENCIES.common)
       .map(name => chalk.blue(name))
       .join(', ')
-    log.info(`Adding common dependencies to root:\n${depList}`)
+    log.info(`Adding common dependencies to root: ${depList}`)
 
     installDeps(DEPENDENCIES.common)
   }
@@ -131,7 +131,7 @@ function setupBuilderTools(builders: string[]) {
       const depList = Object.keys(DEPENDENCIES[builder])
         .map(name => chalk.blue(name))
         .join(', ')
-      log.info(`Adding "${chalk.yellow(builder)}" builder dependencies to root:\n${depList}`)
+      log.info(`Adding "${chalk.yellow(builder)}" builder dependencies to root: ${depList}`)
 
       installDeps(DEPENDENCIES[builder])
     }
