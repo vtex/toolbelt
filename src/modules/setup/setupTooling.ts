@@ -144,9 +144,9 @@ function setupBuilderTools(builders: string[]) {
   }
 }
 
-export function setupTooling(manifest: Manifest) {
+export function setupTooling(manifest: Manifest, buildersWithTooling = BUILDERS_WITH_TOOLING) {
   const builders = Object.keys(manifest.builders || {})
-  const needTooling = builders.some(b => BUILDERS_WITH_TOOLING.includes(b))
+  const needTooling = builders.some(b => buildersWithTooling.includes(b))
 
   if (!needTooling) return
 

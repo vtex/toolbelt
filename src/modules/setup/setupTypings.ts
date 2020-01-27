@@ -99,13 +99,17 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLi
   }
 }
 
-export const setupTypings = async (manifest: Manifest, ignoreLinked: boolean) => {
+export const setupTypings = async (
+  manifest: Manifest,
+  ignoreLinked: boolean,
+  buildersWithTypes = BUILDERS_WITH_TYPES
+) => {
   const appName = manifest.vendor + '.' + manifest.name
   const appMajor = toMajorRange(manifest.version)
 
   const { builder: builderClient } = createClients({}, { retries: 2, timeout: 2000 })
   const builders = R.keys(R.prop('builders', manifest) || {})
-  const filteredBuilders = R.intersection(builders, BUILDERS_WITH_TYPES)
+  const filteredBuilders = R.intersection(builders, buildersWithTypes)
 
   log.info('Fetching names of dependencies injected by BuilderHub')
   const typingsData = await builderClient.typingsInfo()
