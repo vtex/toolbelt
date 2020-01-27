@@ -8,11 +8,10 @@ import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun
 import * as os from 'os'
 import * as path from 'path'
 import { without } from 'ramda'
-import * as semver from 'semver'
 import 'v8-compile-cache'
 import * as pkg from '../package.json'
+import { CLIPrechecker } from './CLIPrechecker.js'
 import * as conf from './conf'
-import { getToken } from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
@@ -22,51 +21,19 @@ import { Token } from './Token.js'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
 
-const nodeVersion = process.version.replace('v', '')
-if (!semver.satisfies(nodeVersion, pkg.engines.node)) {
-  const minMajor = pkg.engines.node.replace('>=', '')
-  console.error(
-    chalk.bold(`Incompatible with node < v${minMajor}. Please upgrade node to major ${minMajor} or higher.`)
-  )
-  process.exit(1)
-}
-
-axios.interceptors.request.use(config => {
-  if (envCookies()) {
-    config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
-  }
-  return config
-})
-
-global.Promise = Bluebird
-Bluebird.config({
-  cancellation: true,
-})
-
 const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
-
-const loginCmd = tree.login
-let loginPending = false
-
-if (process.env.NODE_ENV === 'development') {
-  try {
-    require('longjohn') // tslint:disable-line
-  } catch (e) {
-    log.debug("Couldn't require longjohn. If you want long stack traces, run: npm install -g longjohn")
-  }
-}
-
-// Show update notification if newer version is available
-notify()
 
 const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
+const loginCmd = tree.login
+let loginPending = false
+
 const checkLogin = args => {
   const first = args[0]
   const whitelist = [undefined, 'config', 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version', 'release']
-  const token = new Token(getToken())
+  const token = new Token(conf.getToken())
   if (!token.isValid() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
     return run({ command: loginCmd })
@@ -190,10 +157,27 @@ const onError = e => {
   process.exit(1)
 }
 
-try {
-  main().catch(onError)
-} catch (e) {
-  onError(e)
-}
+axios.interceptors.request.use(config => {
+  if (envCookies()) {
+    config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
+  }
+  return config
+})
+
+global.Promise = Bluebird
+Bluebird.config({
+  cancellation: true,
+})
 
 process.on('unhandledRejection', onError)
+
+CLIPrechecker.runChecks().then(() => {
+  try {
+    // Show update notification if newer version is available
+    notify()
+
+    main().catch(onError)
+  } catch (e) {
+    onError(e)
+  }
+})
