@@ -187,7 +187,7 @@ const performInitialLink = async (
 
       const data = err?.response?.data
       if (data?.code === 'bad_toolbelt_version') {
-        log.error(data.message)
+        log.error(`${data.message} To update just run ${chalk.bold.green('yarn global add vtex')}.`)
         process.exit(1)
       }
 
