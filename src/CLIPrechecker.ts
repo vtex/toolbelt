@@ -20,9 +20,11 @@ export class CLIPrechecker {
     const { deprecated } = await NpmClient.getPackageMetadata(pkg.name, pkg.version)
     if (deprecated != null) {
       console.error(
-        `This version ${pkg.version} was deprecated. Please update to the latest version: ${chalk.green(
-          'yarn global add vtex'
-        )}.`
+        chalk.bold(
+          `This version ${pkg.version} was deprecated. Please update to the latest version: ${chalk.green(
+            'yarn global add vtex'
+          )}.`
+        )
       )
 
       process.exit(1)
