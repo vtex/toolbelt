@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Invalid URLs when `cluster` variable is set.
+- [vtex link] Fix `bad_toolbelt_version` error message.
 
 ## [2.86.1] - 2020-01-24
 ### Fixed
