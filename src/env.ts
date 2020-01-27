@@ -4,22 +4,24 @@ export function colossusEndpoint() {
   return process.env.VTEX_COLOSSUS_ENDPOINT || `https://infra.io.vtex.com/colossus/v0`
 }
 
-export function region(): string {
-  return process.env.VTEX_CLUSTER || Region.Production
-}
-
 export function cluster() {
   return process.env.VTEX_CLUSTER || getCluster() || ''
 }
 
+export function region(): string {
+  return cluster() || Region.Production
+}
+
 export function publicEndpoint(): string {
-  return region() === Region.Production ? 'myvtex.com' : 'myvtexdev.com'
+  return cluster() ? 'myvtexdev.com' : 'myvtex.com'
 }
 
 export function clusterIdDomainInfix(): string {
-  return cluster() ? `.${process.env.VTEX_CLUSTER}` : ''
+  const upstreamCluster = cluster()
+  return upstreamCluster ? `.${upstreamCluster}` : ''
 }
 
 export function envCookies(): string {
-  return cluster() ? `VtexIoClusterId=${process.env.VTEX_CLUSTER}` : ''
+  const upstreamCluster = cluster()
+  return upstreamCluster ? `VtexIoClusterId=${upstreamCluster}` : ''
 }
