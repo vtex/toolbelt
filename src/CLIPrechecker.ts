@@ -5,7 +5,7 @@ import { NpmClient } from './clients/npmClient.js'
 
 export class CLIPrechecker {
   private static ensureCompatibleNode() {
-    const nodeVersion = process.version.replace('v', '')
+    const nodeVersion = process.version
     if (!semver.satisfies(nodeVersion, pkg.engines.node)) {
       const minMajor = pkg.engines.node.replace('>=', '')
       console.error(
