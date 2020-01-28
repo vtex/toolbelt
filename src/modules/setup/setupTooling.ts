@@ -44,7 +44,7 @@ function getBasePackageJson(appName: string) {
       },
     },
     'lint-staged': {
-      '*.{ts,js}': ['eslint --fix', 'prettier --write'],
+      '*.{ts,js,tsx,jsx}': ['eslint --fix', 'prettier --write'],
       '*.json': ['prettier --write'],
     },
     devDependencies: {},
