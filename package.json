@@ -93,7 +93,6 @@
     "ws": "~7.2.0",
     "yarn": "~1.21.0"
   },
-  "preferGlobal": true,
   "devDependencies": {
     "@types/async-retry": "1.4.1",
     "@types/bluebird": "3.5.24",
