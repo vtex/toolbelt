@@ -1,9 +1,9 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
-import * as Bluebird from 'bluebird'
+import Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as ora from 'ora'
-import * as pad from 'pad'
-import * as semver from 'semver'
+import ora from 'ora'
+import pad from 'pad'
+import semver from 'semver'
 
 import { router } from '../../clients'
 import { Region } from '../../conf'

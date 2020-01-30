@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Add deprecation precheck
+- Add deprecation precheck.
+
+### Changed
+- Use `esModuleInterop` compiler option.
 
 ## [2.87.0] - 2020-01-30
 ### Added

@@ -1,6 +1,6 @@
-import * as enquirer from 'enquirer'
-import * as moment from 'moment'
-import * as opn from 'opn'
+import enquirer from 'enquirer'
+import moment from 'moment'
+import opn from 'opn'
 
 import { getNextFeedbackDate, saveNextFeedbackDate } from './conf'
 import { promptConfirm } from './modules/prompts'

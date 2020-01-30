@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 import 'any-promise/register/bluebird'
 import axios from 'axios'
-import * as Bluebird from 'bluebird'
+import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
-import * as os from 'os'
-import * as path from 'path'
+import os from 'os'
+
+import path from 'path'
 import { without } from 'ramda'
 import 'v8-compile-cache'
 import * as pkg from '../package.json'

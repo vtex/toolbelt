@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import * as updateNotifier from 'update-notifier'
+import updateNotifier from 'update-notifier'
 
 import * as pkg from '../package.json'
 

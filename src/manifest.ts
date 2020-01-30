@@ -1,6 +1,6 @@
 import { accessSync } from 'fs'
 import { readFile, writeFile } from 'fs-extra'
-import * as path from 'path'
+import path from 'path'
 import { memoize } from 'ramda'
 
 import { CommandError } from './errors'

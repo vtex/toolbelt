@@ -18,6 +18,7 @@
     "module": "commonjs",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "esModuleInterop": true,
     "typeRoots": ["node_modules/@types"],
     "skipLibCheck": true
   },

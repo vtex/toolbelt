@@ -1,6 +1,6 @@
 import { Housekeeper, HousekeeperStatesAndUpdates } from '@vtex/api'
 import chalk from 'chalk'
-import * as ora from 'ora'
+import ora from 'ora'
 import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, prop, props, union } from 'ramda'
 
 import { toMajorRange } from '../../locator'

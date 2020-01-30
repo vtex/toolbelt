@@ -1,7 +1,7 @@
 import { copy, emptyDir, ensureDir, remove } from 'fs-extra'
-import * as pipeStreams from 'pipe-streams-to-promise'
-import * as request from 'request'
-import * as unzip from 'unzip-stream'
+import pipeStreams from 'pipe-streams-to-promise'
+import request from 'request'
+import unzip from 'unzip-stream'
 
 const urlForRepo = (repo: string) => `https://github.com/vtex-apps/${repo}/archive/master.zip`
 

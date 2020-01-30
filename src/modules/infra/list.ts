@@ -1,7 +1,7 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
-import * as Bluebird from 'bluebird'
+import Bluebird from 'bluebird'
 import chalk from 'chalk'
-import * as semver from 'semver'
+import semver from 'semver'
 
 import { createTable } from '../../table'
 import { router } from '../../clients'
