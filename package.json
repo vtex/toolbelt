@@ -19,6 +19,9 @@
   "engines": {
     "node": ">=10"
   },
+  "files": [
+    "lib/"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/vtex/toolbelt.git"
