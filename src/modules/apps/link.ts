@@ -52,100 +52,6 @@ const shouldStartDebugger = (manifest: ManifestEditor) => {
   return buildersThatWillUseDebugger.length > 0
 }
 
-const warnAndLinkFromStart = (
-  projectUploader: ProjectUploader,
-  unsafe: boolean,
-  extraData: { yarnFilesManager: YarnFilesManager } = { yarnFilesManager: null }
-) => {
-  log.warn('Initial link requested by builder')
-  performInitialLink(projectUploader, extraData, unsafe)
-  return null
-}
-
-const watchAndSendChanges = async (
-  appId: string,
-  projectUploader: ProjectUploader,
-  { yarnFilesManager }: { yarnFilesManager: YarnFilesManager },
-  unsafe: boolean
-): Promise<any> => {
-  const changeQueue: ChangeToSend[] = []
-
-  const onInitialLinkRequired = e => {
-    const data = e.response && e.response.data
-    if (data && data.code && data.code === 'initial_link_required') {
-      return warnAndLinkFromStart(projectUploader, unsafe, { yarnFilesManager })
-    }
-    throw e
-  }
-
-  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
-  const linkedDepsPatterns = map(path => join(path, '**'), yarnFilesManager.symlinkedDepsDirs)
-
-  const queueChange = (path: string, remove?: boolean) => {
-    console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
-    changeQueue.push(pathToChange(path, remove))
-    sendChanges()
-  }
-
-  const sendChanges = debounce(async () => {
-    try {
-      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), {
-        tsErrorsAsWarnings: unsafe,
-      })
-    } catch (err) {
-      nodeNotifier?.notify({
-        title: appId,
-        message: 'Link died',
-      })
-
-      if (err instanceof ChangeSizeLimitError) {
-        log.error(err.message)
-        process.exit(1)
-      }
-      onInitialLinkRequired(err)
-    }
-  }, 1000)
-
-  const pathToChange = (path: string, remove?: boolean): ChangeToSend => {
-    const content = remove ? null : readFileSync(resolvePath(root, path)).toString('base64')
-    const byteSize = remove ? 0 : Buffer.byteLength(content)
-    return {
-      content,
-      byteSize,
-      path: pathModifier(path),
-    }
-  }
-
-  const pathModifier = pipe(
-    (path: string) => yarnFilesManager.maybeMapLocalYarnLinkedPathToProjectPath(path, root),
-    path => path.split(sep).join('/')
-  )
-
-  const addIgnoreNodeModulesRule = (paths: Array<string | ((path: string) => boolean)>) =>
-    paths.concat((path: string) => path.includes('node_modules'))
-
-  const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
-    atomic: stabilityThreshold,
-    awaitWriteFinish: {
-      stabilityThreshold,
-    },
-    cwd: root,
-    ignoreInitial: true,
-    ignored: addIgnoreNodeModulesRule(getIgnoredPaths(root)),
-    persistent: true,
-    usePolling: process.platform === 'win32',
-  })
-
-  return new Promise((resolve, reject) => {
-    watcher
-      .on('add', file => queueChange(file))
-      .on('change', file => queueChange(file))
-      .on('unlink', file => queueChange(file, true))
-      .on('error', reject)
-      .on('ready', resolve)
-  })
-}
-
 const performInitialLink = async (
   projectUploader: ProjectUploader,
   extraData: { yarnFilesManager: YarnFilesManager },
@@ -212,6 +118,100 @@ const performInitialLink = async (
   await retry(linkApp, RETRY_OPTS_INITIAL_LINK)
 }
 
+const warnAndLinkFromStart = (
+  projectUploader: ProjectUploader,
+  unsafe: boolean,
+  extraData: { yarnFilesManager: YarnFilesManager } = { yarnFilesManager: null }
+) => {
+  log.warn('Initial link requested by builder')
+  performInitialLink(projectUploader, extraData, unsafe)
+  return null
+}
+
+const watchAndSendChanges = async (
+  appId: string,
+  projectUploader: ProjectUploader,
+  { yarnFilesManager }: { yarnFilesManager: YarnFilesManager },
+  unsafe: boolean
+): Promise<any> => {
+  const changeQueue: ChangeToSend[] = []
+
+  const onInitialLinkRequired = e => {
+    const data = e.response && e.response.data
+    if (data && data.code && data.code === 'initial_link_required') {
+      return warnAndLinkFromStart(projectUploader, unsafe, { yarnFilesManager })
+    }
+    throw e
+  }
+
+  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
+  const linkedDepsPatterns = map(path => join(path, '**'), yarnFilesManager.symlinkedDepsDirs)
+
+  const pathModifier = pipe(
+    (path: string) => yarnFilesManager.maybeMapLocalYarnLinkedPathToProjectPath(path, root),
+    path => path.split(sep).join('/')
+  )
+
+  const pathToChange = (path: string, remove?: boolean): ChangeToSend => {
+    const content = remove ? null : readFileSync(resolvePath(root, path)).toString('base64')
+    const byteSize = remove ? 0 : Buffer.byteLength(content)
+    return {
+      content,
+      byteSize,
+      path: pathModifier(path),
+    }
+  }
+
+  const sendChanges = debounce(async () => {
+    try {
+      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), {
+        tsErrorsAsWarnings: unsafe,
+      })
+    } catch (err) {
+      nodeNotifier?.notify({
+        title: appId,
+        message: 'Link died',
+      })
+
+      if (err instanceof ChangeSizeLimitError) {
+        log.error(err.message)
+        process.exit(1)
+      }
+      onInitialLinkRequired(err)
+    }
+  }, 1000)
+
+  const queueChange = (path: string, remove?: boolean) => {
+    console.log(`${chalk.gray(moment().format('HH:mm:ss:SSS'))} - ${remove ? DELETE_SIGN : UPDATE_SIGN} ${path}`)
+    changeQueue.push(pathToChange(path, remove))
+    sendChanges()
+  }
+
+  const addIgnoreNodeModulesRule = (paths: Array<string | ((path: string) => boolean)>) =>
+    paths.concat((path: string) => path.includes('node_modules'))
+
+  const watcher = chokidar.watch([...defaultPatterns, ...linkedDepsPatterns], {
+    atomic: stabilityThreshold,
+    awaitWriteFinish: {
+      stabilityThreshold,
+    },
+    cwd: root,
+    ignoreInitial: true,
+    ignored: addIgnoreNodeModulesRule(getIgnoredPaths(root)),
+    persistent: true,
+    usePolling: process.platform === 'win32',
+  })
+
+  return new Promise((resolve, reject) => {
+    watcher
+      .on('add', file => queueChange(file))
+      .on('change', file => queueChange(file))
+      .on('unlink', file => queueChange(file, true))
+      .on('error', reject)
+      .on('ready', resolve)
+  })
+}
+
 export default async options => {
   await validateAppAction('link')
   const unsafe = !!(options.unsafe || options.u)
@@ -248,9 +248,11 @@ export default async options => {
   }
 
   const onError = {
+    // eslint-disable-next-line @typescript-eslint/camelcase
     build_failed: () => {
       log.error(`App build failed. Waiting for changes...`)
     },
+    // eslint-disable-next-line @typescript-eslint/camelcase
     initial_link_required: () => warnAndLinkFromStart(projectUploader, unsafe),
   }
 
@@ -269,6 +271,7 @@ export default async options => {
     if (shouldStartDebugger(manifest)) {
       try {
         const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
+        // eslint-disable-next-line require-atomic-updates
         debuggerStarted = true
         log.info(
           `Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue(
@@ -298,7 +301,7 @@ export default async options => {
   } catch (e) {
     if (e.response) {
       const { data } = e.response
-      if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
+      if (data.code === 'routing_error' && /app_not_found.*vtex\.builder-hub/.test(data.message)) {
         return log.error(
           'Please install vtex.builder-hub in your account to enable app linking (vtex install vtex.builder-hub)'
         )

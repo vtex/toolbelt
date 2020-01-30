@@ -31,7 +31,7 @@ const templates = {
 const getTemplates = () =>
   // Return all templates if user's e-mail is `...@vtex...`.
   // Otherwise filter the VTEX internal templates.
-  test(/\@vtex\./, getLogin()) ? keys(templates) : reject(x => VTEXInternalTemplates.indexOf(x) >= 0, keys(templates))
+  test(/@vtex\./, getLogin()) ? keys(templates) : reject(x => VTEXInternalTemplates.indexOf(x) >= 0, keys(templates))
 
 const promptTemplates = async (): Promise<string> => {
   const cancel = 'Cancel'

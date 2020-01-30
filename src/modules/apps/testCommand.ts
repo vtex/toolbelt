@@ -101,6 +101,7 @@ export default async options => {
   map(runYarnIfPathExists, buildersToRunLocalYarn)
 
   const onError = {
+    // eslint-disable-next-line @typescript-eslint/camelcase
     build_failed: () => {
       log.error(`App build failed. Waiting for changes...`)
     },
@@ -120,7 +121,7 @@ export default async options => {
   } catch (e) {
     if (e.response) {
       const { data } = e.response
-      if (data.code === 'routing_error' && /app_not_found.*vtex\.builder\-hub/.test(data.message)) {
+      if (data.code === 'routing_error' && /app_not_found.*vtex\.builder-hub/.test(data.message)) {
         return log.error(
           'Please install vtex.builder-hub in your account to enable app testing (vtex install vtex.builder-hub)'
         )

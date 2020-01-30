@@ -17,9 +17,9 @@ const toMajorLocator = (appId: string) => {
   return `${appName}@${toMajorRange(appVersion)}`
 }
 
-const sourceFilter = (source: string) => filter((obj: { source: string }) => includes(prop('source', obj), [source]))
-
 const includes = (k: string, list: string[]) => list.indexOf(k) >= 0
+
+const sourceFilter = (source: string) => filter((obj: { source: string }) => includes(prop('source', obj), [source]))
 
 const printAppsDiff = (
   resolvedUpdates: HousekeeperStatesAndUpdates,

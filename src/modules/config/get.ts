@@ -6,8 +6,7 @@ import { getEnvironment, getCluster } from './../../conf'
 export default (name: string) => {
   switch (name) {
     case 'env':
-      const value = getEnvironment() || ''
-      console.log(value)
+      console.log(getEnvironment() || '')
       break
     case 'cluster':
       console.log(getCluster())
