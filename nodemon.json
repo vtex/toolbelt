@@ -1,0 +1,10 @@
+{
+    "ignore": ["**/*.test.ts", ".git", "node_modules", "lib"],
+    "watch": ["src", "package.json"],
+    "exec": "yarn build",
+    "ext": "ts",
+    "events": {
+      "crash": "yarn notify -t 'toolbelt: nodemon' -m 'build failed'"
+    }
+  }
+  
