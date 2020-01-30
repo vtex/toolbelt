@@ -8,27 +8,26 @@ export class CLIPrechecker {
     const nodeVersion = process.version
     if (!semver.satisfies(nodeVersion, pkg.engines.node)) {
       const minMajor = pkg.engines.node.replace('>=', '')
-      console.error(
-        chalk.bold(`Incompatible with node < v${minMajor}. Please upgrade node to major ${minMajor} or higher.`)
+      const errMsg = chalk.bold(
+        `Incompatible with node < v${minMajor}. Please upgrade node to major ${minMajor} or higher.`
       )
 
+      console.error(errMsg)
       process.exit(1)
     }
   }
 
   private static async ensureNotDeprecated() {
     const { deprecated } = await NpmClient.getPackageMetadata(pkg.name, pkg.version)
-    if (deprecated != null) {
-      console.error(
-        chalk.bold(
-          `This version ${pkg.version} was deprecated. Please update to the latest version: ${chalk.green(
-            'yarn global add vtex'
-          )}.`
-        )
-      )
+    if (deprecated == null) return
+    const errMsg = chalk.bold(
+      `This version ${pkg.version} was deprecated. Please update to the latest version: ${chalk.green(
+        'yarn global add vtex'
+      )}.`
+    )
 
-      process.exit(1)
-    }
+    console.error(errMsg)
+    process.exit(1)
   }
 
   public static async runChecks() {
