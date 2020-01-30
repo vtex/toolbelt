@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import * as moment from 'moment'
-import * as numbro from 'numbro'
-import * as R from 'ramda'
+import moment from 'moment'
+import numbro from 'numbro'
+import R from 'ramda'
 
 import { getAccount } from '../../../conf'
 import log from '../../../logger'

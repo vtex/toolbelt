@@ -1,4 +1,4 @@
-import * as clipboardy from 'clipboardy'
+import clipboardy from 'clipboardy'
 
 export const copyToClipboard = (str: string) => {
   if (process.platform === 'linux' && !process.env.DISPLAY) {

@@ -1,4 +1,4 @@
-import * as CliTable from 'cli-table'
+import CliTable from 'cli-table'
 
 interface TableOptions {
   head?: string[]

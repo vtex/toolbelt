@@ -1,6 +1,6 @@
 import chalk from 'chalk'
-import * as R from 'ramda'
-import * as semver from 'semver'
+import R from 'ramda'
+import semver from 'semver'
 
 const EMPTY_STRING = ''
 

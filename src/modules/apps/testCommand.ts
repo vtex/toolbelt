@@ -1,4 +1,4 @@
-import * as retry from 'async-retry'
+import retry from 'async-retry'
 import chalk from 'chalk'
 import { concat, map, prop } from 'ramda'
 import { createClients } from '../../clients'

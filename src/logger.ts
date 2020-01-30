@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { join } from 'path'
-import * as util from 'util'
+import util from 'util'
 import { createLogger, format, transports } from 'winston'
 import { configDir } from './conf'
 

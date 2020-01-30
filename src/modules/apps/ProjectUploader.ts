@@ -1,6 +1,6 @@
-import * as archiver from 'archiver'
+import archiver from 'archiver'
 import chalk from 'chalk'
-import * as getStream from 'get-stream'
+import getStream from 'get-stream'
 import { Readable } from 'stream'
 import { ZlibOptions } from 'zlib'
 import { createClients } from '../../clients'

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import * as semver from 'semver'
+import semver from 'semver'
 import * as pkg from '../package.json'
 import { NpmClient } from './clients/npmClient.js'
 

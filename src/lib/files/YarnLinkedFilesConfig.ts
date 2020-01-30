@@ -1,5 +1,5 @@
 import { lstat, readdir, realpath, Stats } from 'fs-extra'
-import * as glob from 'globby'
+import glob from 'globby'
 import { dirname, join } from 'path'
 import { partition, unnest } from 'ramda'
 import log from '../../logger'

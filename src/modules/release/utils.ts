@@ -13,7 +13,7 @@ import {
 import { safeLoad } from 'js-yaml'
 import { resolve } from 'path'
 import { find, path } from 'ramda'
-import * as semver from 'semver'
+import semver from 'semver'
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { promptConfirm } from '../prompts'

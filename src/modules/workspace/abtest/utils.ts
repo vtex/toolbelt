@@ -1,7 +1,7 @@
 import { AppManifest, Apps } from '@vtex/api'
 import chalk from 'chalk'
-import * as enquirer from 'enquirer'
-import * as numbro from 'numbro'
+import enquirer from 'enquirer'
+import numbro from 'numbro'
 import { compose, filter, map, prop } from 'ramda'
 
 import { workspaces } from '../../../clients'

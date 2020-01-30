@@ -1,8 +1,8 @@
-import * as util from 'util'
+import util from 'util'
 import { pipeline } from 'stream'
 
 import axios from 'axios'
-import * as tar from 'tar'
+import tar from 'tar'
 
 import { getToken } from '../../conf'
 import log from '../../logger'

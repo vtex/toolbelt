@@ -1,5 +1,5 @@
-import * as retry from 'async-retry'
-import * as moment from 'moment'
+import retry from 'async-retry'
+import moment from 'moment'
 import { map, reduce } from 'ramda'
 import { Builder } from './clients/Builder'
 import { getStickyHost, hasStickyHost, saveStickyHost } from './conf'

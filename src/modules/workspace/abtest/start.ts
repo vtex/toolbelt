@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import * as enquirer from 'enquirer'
+import enquirer from 'enquirer'
 import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 'ramda'
-import * as semver from 'semver'
+import semver from 'semver'
 
 import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'

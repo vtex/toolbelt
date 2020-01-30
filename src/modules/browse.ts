@@ -1,7 +1,7 @@
 import axios from 'axios'
-import * as jwt from 'jsonwebtoken'
-import * as opn from 'opn'
-import * as R from 'ramda'
+import jwt from 'jsonwebtoken'
+import opn from 'opn'
+import R from 'ramda'
 import * as conf from '../conf'
 import { clusterIdDomainInfix, publicEndpoint } from '../env'
 // Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯

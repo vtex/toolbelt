@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import * as R from 'ramda'
+import R from 'ramda'
 import { Sponsor } from '../../clients/sponsor'
 import * as conf from '../../conf'
 import { UserCancelledError } from '../../errors'
