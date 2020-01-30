@@ -3,9 +3,12 @@ import { builderHubTsConfigMock } from './fixtures/builderHubTSConfig'
 import { mockCreateClients, mockSetupUtils } from './mocks'
 
 const { setBuilderHubTsConfig } = mockCreateClients()
-const { setTSConfigByBuilder, tsconfigEditorMock } = mockSetupUtils()
+const { setTSConfigByBuilder, tsconfigEditorMock, setPackageJsonByBuilder } = mockSetupUtils()
 
 const { setupTSConfig } = require('../../../modules/setup/setupTSConfig')
+
+const pkg = { devDependencies: {} }
+setPackageJsonByBuilder({ root: pkg })
 
 beforeEach(() => {
   jest.clearAllMocks()

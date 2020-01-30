@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- [vtex setup] `lint-staged` and `husky` configurations.
+
+### Changed
+- [vtex setup] tooling step with updated dependencies.
+
 ### Fixed
 - Invalid URLs when `cluster` variable is set.
 - [vtex link] Fix `bad_toolbelt_version` error message.
@@ -24,7 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Yarn linked modules files sending.
 
 ### Fixed
-- Fix `vtex infra install` creating `semver` object 
+- Fix `vtex infra install` creating `semver` object
 
 ## [2.85.0] - 2020-01-16
 ### Added
