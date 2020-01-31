@@ -4,7 +4,7 @@
     "exec": "yarn build",
     "ext": "ts",
     "events": {
-      "crash": "yarn notify -t 'toolbelt: nodemon' -m 'build failed'"
+      "crash": "yarn notify -t 'toolbelt: dev-watch' -m 'build failed'"
     }
   }
   
