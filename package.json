@@ -20,6 +20,7 @@
     "node": ">=10"
   },
   "files": [
+    "scripts/closeChrome.scpt",
     "lib/"
   ],
   "repository": {
