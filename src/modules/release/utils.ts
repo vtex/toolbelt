@@ -105,6 +105,24 @@ export const push = (tagName: string) => {
   return runCommand(`git push && git push origin ${tagName}`, 'Pushed commit and tags', true, 2)
 }
 
+export const gitStatus = () => {
+  return runCommand('git status', '', true)
+}
+
+export const checkNothingToCommit = () => {
+  const response = gitStatus()
+  return /nothing to commit/.test(response)
+}
+
+export const checkIfGitPushWorks = () => {
+  try {
+    runCommand('git push', '', true, 2, true)
+  } catch (e) {
+    log.error(`Failed pushing to remote.`)
+    throw e
+  }
+}
+
 export const preRelease = () => {
   const msg = 'Pre release'
   if (!checkNothingToCommit()) {
@@ -157,24 +175,6 @@ Please run ${chalk.bold(`vtex release`)} from inside a git repo.`)
   }
 }
 
-export const checkIfGitPushWorks = () => {
-  try {
-    runCommand('git push', '', true, 2, true)
-  } catch (e) {
-    log.error(`Failed pushing to remote.`)
-    throw e
-  }
-}
-
-export const gitStatus = () => {
-  return runCommand('git status', '', true)
-}
-
-export const checkNothingToCommit = () => {
-  const response = gitStatus()
-  return /nothing to commit/.test(response)
-}
-
 export const postRelease = () => {
   const msg = 'Post release'
   if (getScript('postrelease')) {
@@ -205,7 +205,7 @@ export const updateChangelog = (changelogVersion: any) => {
     if (data.indexOf(unreleased) < 0) {
       log.info(
         chalk.red.bold(
-          `I can\'t update your CHANGELOG. :( \n
+          `I can't update your CHANGELOG. :( \n
         Make your CHANGELOG great again and follow the CHANGELOG format
         http://keepachangelog.com/en/1.0.0/`
         )

@@ -3,7 +3,7 @@ import { contains, values } from 'ramda'
 
 import { CommandError } from '../../errors'
 import log from '../../logger'
-import { Environment, saveEnvironment, saveCluster } from './../../conf'
+import { Environment, saveEnvironment, saveCluster } from '../../conf'
 
 const envValues = values(Environment)
 

@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 
-import { workspaces } from '../../clients'
-import { createClients } from '../../clients'
+import { workspaces, createClients } from '../../clients'
+
 import { getAccount } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'

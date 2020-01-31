@@ -39,3 +39,7 @@ export default {
 ```
 
 For advanced usage information, see [findhelp](https://github.com/vtex/findhelp), the library used to parse commands in the toolbelt.
+
+### Local development
+
+Developing locally was made easy with the `yarn watch` command. When this command is run it will create a symlink named `vtex-test` with which you can test your code as you develop. To be able to use it you'll have to add `$HOME/.vtex/dev/bin` to your `PATH` environment variable.  

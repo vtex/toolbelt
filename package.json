@@ -5,26 +5,23 @@
   "main": "lib/index.js",
   "bin": "lib/cli.js",
   "scripts": {
-    "ts": "tsc",
-    "ts-watch": "tsc --watch",
-    "clean": "rimraf lib/",
     "exe": "node scripts/make-executable.js",
-    "mkdir": "mkdirp lib/",
-    "build": "run-s clean ts exe",
-    "watch": "run-s clean mkdir exe ts-watch",
-    "lint": "tsc --noEmit && eslint src/**/*.ts",
+    "watch": "bash ./scripts/symlink.sh && yarn nodemon",
     "format": "prettier --config ./.prettierrc --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "test-jest": "jest --coverage",
-    "test": "run-s format lint build test-jest",
-    "test-watch": "run-p ts-watch test-jest",
-    "prepublish": "run-s clean test",
-    "prereleasy": "npm run prepublish",
-    "postreleasy": "npm publish"
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "format-lint": "yarn format && yarn lint",
+    "build": "rm -rf lib && tsc && yarn exe",
+    "test": "jest",
+    "ci:test": "yarn test --ci",
+    "ci:prettier-check": "prettier --check --config ./.prettierrc \"src/**/*.ts\" \"src/**/*.js\""
   },
   "engineStrict": true,
   "engines": {
     "node": ">=10"
   },
+  "files": [
+    "lib/"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/vtex/toolbelt.git"
@@ -99,7 +96,6 @@
     "ws": "~7.2.0",
     "yarn": "~1.21.0"
   },
-  "preferGlobal": true,
   "devDependencies": {
     "@types/async-retry": "1.4.1",
     "@types/bluebird": "3.5.24",
@@ -117,11 +113,10 @@
     "eslint": "^6.7.2",
     "eslint-config-vtex": "^11.2.0",
     "jest": "24.9.0",
-    "mkdirp": "0.5.1",
-    "npm-run-all": "4.1.5",
+    "nodemon": "^2.0.2",
+    "nodemon-notifier-cli": "https://github.com/Slessi/nodemon-notifier-cli.git",
     "prettier": "^1.19.1",
-    "rimraf": "2.6.1",
     "ts-jest": "24.2.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   }
 }

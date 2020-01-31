@@ -29,7 +29,7 @@ const safeFolder = folder => {
 
 const isTestOrMockPath = (p: string) => /.*(test|mock|snapshot).*/.test(p.toLowerCase())
 
-export const getIgnoredPaths = (root: string, test: boolean = false): string[] => {
+export const getIgnoredPaths = (root: string, test = false): string[] => {
   try {
     const filesToIgnore = readFileSync(join(root, '.vtexignore'))
       .toString()
@@ -44,7 +44,7 @@ export const getIgnoredPaths = (root: string, test: boolean = false): string[] =
   }
 }
 
-export const listLocalFiles = (root: string, test: boolean = false, folder?: string): Promise<string[]> =>
+export const listLocalFiles = (root: string, test = false, folder?: string): Promise<string[]> =>
   Promise.resolve(
     glob(['manifest.json', 'policies.json', 'node/.*', 'react/.*', `${safeFolder(folder)}`], {
       cwd: root,
