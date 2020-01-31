@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - Add deprecation precheck.
+- [vtex deploy] Print a newline before prompting to go back to original account, avoiding the successful message to be overwritten.
 
 ### Changed
 - Use `esModuleInterop` compiler option.
+- [vtex deploy] Improved error messages.
 
 ## [2.87.0] - 2020-01-30
 ### Added
