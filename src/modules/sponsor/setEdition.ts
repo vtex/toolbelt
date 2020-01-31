@@ -6,8 +6,7 @@ import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { default as switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { switchToPreviousAccount } from '../utils'
-import { getIOContext, IOClientOptions } from '../utils'
+import { switchToPreviousAccount, getIOContext, IOClientOptions } from '../utils'
 
 const promptSwitchToAccount = async (account: string, initial: boolean) => {
   const reason = initial

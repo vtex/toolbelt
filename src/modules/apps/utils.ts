@@ -49,7 +49,7 @@ export const promptWorkspaceMaster = async account => {
   if (!confirm) {
     throw new UserCancelledError()
   }
-  log.warn(`Using ${chalk.green('master')} workspace. I hope you know what you\'re doing. 💥`)
+  log.warn(`Using ${chalk.green('master')} workspace. I hope you know what you're doing. 💥`)
 }
 
 export const validateAppAction = async (operation: string, app?) => {
@@ -100,16 +100,16 @@ export const handleError = curry((app: string, err: any) => {
   return Promise.reject(err)
 })
 
-export const appLatestMajor = (app: string): Promise<string | never> => {
-  return appLatestVersion(app).then<string>(wildVersionByMajor)
-}
-
 export const appLatestVersion = (app: string, version = 'x'): Promise<string | never> => {
   return createClients()
     .registry.getAppManifest(app, version)
     .then<string>(prop('id'))
     .then<string>(extractVersionFromId)
     .catch(handleError(app))
+}
+
+export const appLatestMajor = (app: string): Promise<string | never> => {
+  return appLatestVersion(app).then<string>(wildVersionByMajor)
 }
 
 export const appIdFromRegistry = (app: string, majorLocator: string) => {

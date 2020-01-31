@@ -10,6 +10,16 @@ import { optionsFormatter, parseArgs, validateAppAction } from './utils'
 const { installApp } = billing
 const { installApp: legacyInstallApp } = apps
 
+const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
+const isForbiddenError = isError(403)
+const isNotFoundError = isError(404)
+const hasErrorMessage = path(['response', 'data', 'message'])
+
+const logGraphQLErrorMessage = e => {
+  log.error('Installation failed!')
+  log.error(e.message)
+}
+
 const promptPolicies = async () => {
   return promptConfirm('Do you accept all the Terms?')
 }
@@ -93,16 +103,6 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
       log.warn(`The following app was not installed: ${app}`)
     }
   }
-}
-
-const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
-const isForbiddenError = isError(403)
-const isNotFoundError = isError(404)
-const hasErrorMessage = path(['response', 'data', 'message'])
-
-const logGraphQLErrorMessage = e => {
-  log.error('Installation failed!')
-  log.error(e.message)
 }
 
 export default async (optionalApp: string, options) => {

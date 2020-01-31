@@ -7,8 +7,7 @@ import { toMajorRange } from '../../locator'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
 import { promptConfirm } from '../prompts'
-import { matchedDepsDiffTable } from '../utils'
-import { getIOContext, IOClientOptions } from '../utils'
+import { matchedDepsDiffTable, getIOContext, IOClientOptions } from '../utils'
 
 const promptUpdate = (): Promise<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
 
@@ -17,9 +16,9 @@ const toMajorLocator = (appId: string) => {
   return `${appName}@${toMajorRange(appVersion)}`
 }
 
-const sourceFilter = (source: string) => filter((obj: { source: string }) => includes(prop('source', obj), [source]))
-
 const includes = (k: string, list: string[]) => list.indexOf(k) >= 0
+
+const sourceFilter = (source: string) => filter((obj: { source: string }) => includes(prop('source', obj), [source]))
 
 const printAppsDiff = (
   resolvedUpdates: HousekeeperStatesAndUpdates,

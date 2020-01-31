@@ -12,7 +12,7 @@ const MB = 1000000
 
 export interface FileToSend {
   path: string
-  content: String | Readable | Buffer | NodeJS.ReadableStream
+  content: string | Readable | Buffer | NodeJS.ReadableStream
   byteSize: number
 }
 

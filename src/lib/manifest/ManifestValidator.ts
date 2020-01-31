@@ -43,7 +43,7 @@ export class ManifestValidator {
     }
   }
 
-  public static validateApp(app: string, skipVersion: boolean = false) {
+  public static validateApp(app: string, skipVersion = false) {
     const regex = skipVersion ? ManifestValidator.appID : ManifestValidator.appLocator
     if (!regex.test(app)) {
       throw new CommandError(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`)

@@ -14,6 +14,9 @@ export enum Environment {
 export const saveAll = (config: any): void => {
   conf.all = config
 }
+
+export const getAccount = (): string => conf.get('account')
+
 export const saveAccount = (account: string): void => {
   const lastUsedAccount = getAccount()
   if (lastUsedAccount !== account) {
@@ -26,6 +29,8 @@ export const saveAccount = (account: string): void => {
 export const saveLogin = (login: string): void => conf.set('login', login)
 
 export const saveToken = (token: string): void => conf.set('token', token)
+
+export const getWorkspace = (): string => conf.get('workspace')
 
 export const saveWorkspace = (workspace = 'master') => {
   const lastUsedWorkspace = getWorkspace()
@@ -42,13 +47,9 @@ export const saveStickyHost = (appName: string, stickyHost: string) =>
 
 export const getAll = (): any => conf.all
 
-export const getAccount = (): string => conf.get('account')
-
 export const getLogin = (): string => conf.get('login')
 
 export const getToken = (): string => conf.get('token')
-
-export const getWorkspace = (): string => conf.get('workspace')
 
 export const getStickyHost = (appName: string): { stickyHost: string; lastUpdated: Date } =>
   conf.get(`apps.${appName}.sticky-host`)
