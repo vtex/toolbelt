@@ -22,6 +22,7 @@ const promptDeploy = (app: string): Bluebird<boolean> => promptConfirm(`Are you 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()
   if (previousAccount !== currentAccount) {
+    console.log('')
     const canSwitchToPrevious = await promptConfirm(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
       return await switchAccount(previousAccount, { workspace: previousWorkspace })
