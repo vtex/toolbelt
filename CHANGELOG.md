@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Use `esModuleInterop` compiler option.
+- [vtex deploy] Improved error messages.
 
 ## [2.87.0] - 2020-01-30
 ### Added
