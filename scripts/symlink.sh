@@ -13,7 +13,7 @@ display_info() {
 }
 
 CREATE=true
-while getopts "hrc" OPT; do
+while getopts "hr" OPT; do
   case "$OPT" in
     "r") CREATE=false;;
     "h") display_info;;
