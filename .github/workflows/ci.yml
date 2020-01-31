@@ -13,7 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
+        with:
+            node-version: 12
       - run: yarn install --ignore-scripts
+      - run: yarn run ci:prettier-check
       - run: yarn run lint
 
   test:
@@ -31,5 +34,4 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: yarn install --ignore-scripts
-      - run: yarn run ci:prettier-check
       - run: yarn run ci:test
