@@ -55,13 +55,18 @@ export class Runtime {
     const ws = new WebSocket(formattedUrl, clientOptions)
     const wsDuplexStream = (WebSocket as any).createWebSocketStream(ws, { encoding: 'utf8' })
 
+    wsDuplexStream.on('error', () => {
+      console.log('Connection closed')
+      process.exit(0)
+    })
+
+    wsDuplexStream.pipe(process.stdout)
+
     if (interactive) {
       process.stdin.pipe(wsDuplexStream, { end: false })
       process.stdin.on('end', () => {
         wsDuplexStream.end(EOT)
       })
     }
-
-    wsDuplexStream.pipe(process.stdout)
   }
 }
