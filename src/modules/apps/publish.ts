@@ -141,16 +141,6 @@ export default async (path: string, options) => {
     if (!confirmVersion) {
       process.exit(1)
     }
-
-    const response = await promptConfirm(
-      chalk.yellow.bold(
-        `Starting January 2, 2020, the 'vtex publish' command will change its behavior and more steps will be added to the publishing process. Read more about this change on the following link:\nhttp://bit.ly/2ZIJucc\nAcknowledged?`
-      ),
-      false
-    )
-    if (!response) {
-      process.exit(1)
-    }
   }
 
   if (yesFlag && manifest.vendor !== conf.getAccount()) {
