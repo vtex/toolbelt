@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-import 'any-promise/register/bluebird'
 import axios from 'axios'
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
@@ -164,11 +162,6 @@ axios.interceptors.request.use(config => {
     config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
   }
   return config
-})
-
-global.Promise = Bluebird
-Bluebird.config({
-  cancellation: true,
 })
 
 process.on('unhandledRejection', onError)
