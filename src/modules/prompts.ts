@@ -1,12 +1,24 @@
-import Confirm from 'prompt-confirm'
+import prompts from 'prompts'
 
-// Prompt definitions that are used in many modules of this project.
+interface PromptState {
+  aborted: boolean
+}
+
+const enableTerminalCursor = () => {
+  process.stdout.write('\x1B[?25h')
+}
+
+const onState = (state: PromptState) => {
+  if (state.aborted) {
+    // If we don't re-enable the terminal cursor before exiting
+    // the program, the cursor will remain hidden
+    enableTerminalCursor()
+    process.stdout.write('\n')
+    process.exit(1)
+  }
+}
 
 export const promptConfirm = async (message: string, initial = true): Promise<boolean> => {
-  const initialMode = process.stdin.isRaw
-  const isStdinTTY = process.stdin.isTTY
-  if (isStdinTTY) process.stdin.setRawMode(true)
-  const ret = await new Confirm({ message, default: initial }).run()
-  if (isStdinTTY) process.stdin.setRawMode(initialMode)
-  return ret
+  const { response } = await prompts([{ message, initial, type: 'confirm', name: 'response', onState }])
+  return response
 }
