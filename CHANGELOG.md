@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Use `prompts` package for confirmation prompts.
 - Answering confirmation prompts now only need the confirmation character (or just enter). No need to type the character and enter. 
+- [vtex deploy] Improved error messages.
 
 ### Removed
 - [vtex publish] Removed new deployment process announcement.
@@ -18,7 +19,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Use `esModuleInterop` compiler option.
-- [vtex deploy] Improved error messages.
 
 ## [2.87.0] - 2020-01-30
 ### Added
