@@ -21,7 +21,7 @@ export default async (optionalApp: string, options) => {
     if (appsList.length === 0) {
       currentDeps = await updateDependencies()
     } else {
-      await Promise.mapSeries(appsList, async (locator: string) => {
+      for (const locator of appsList) {
         const { vendor, name, version } = parseLocator(locator)
         if (!name || !version) {
           log.error(`App ${locator} has an invalid app format, please use <vendor>.<name>@<version>`)
@@ -36,7 +36,8 @@ export default async (optionalApp: string, options) => {
             }
           }
         }
-      })
+      }
+
       currentDeps = await getDependencies()
     }
     const [cleanPrevDeps, cleanCurrDeps] = map(cleanDeps, [previousDeps, currentDeps])
