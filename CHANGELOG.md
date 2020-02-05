@@ -5,12 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Removed
-- [vtex settings, vtex infra] Remove `bluebird` utilities from all subcommands.
-- Remove `bluebird` utilities from cli entrypoint. 
+### Changed
+- Update `clear-module` dependency to major 4.
 
 ### Fixed
 - [vtex settings unset] Fix argument parsing.
+
+### Removed
+- Remove `bluebird` package:
+    - [vtex settings, vtex infra, vtex redirects] Remove `bluebird` utilities from all subcommands.
+    - Remove `bluebird` from cli entrypoint.
+    - Remove `bluebird` from build listener.
+
 
 ## [2.87.2] - 2020-02-05
 ### Changed

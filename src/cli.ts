@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-import 'any-promise/register/bluebird'
 import axios from 'axios'
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
@@ -82,9 +80,10 @@ const onError = e => {
         log.error('There was an authentication error. Please login again')
         // Try to login and re-issue the command.
         loginPending = true
-        return run({ command: loginCmd })
-          .tap(clearCachedModules)
-          .then(main) // TODO: catch with different handler for second error
+        return run({ command: loginCmd }).then(() => {
+          clearCachedModules()
+          main()
+        }) // TODO: catch with different handler for second error
       } else {
         return // Prevent multiple login attempts
       }
@@ -163,11 +162,6 @@ axios.interceptors.request.use(config => {
     config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
   }
   return config
-})
-
-global.Promise = Bluebird
-Bluebird.config({
-  cancellation: true,
 })
 
 process.on('unhandledRejection', onError)

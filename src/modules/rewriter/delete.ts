@@ -64,7 +64,7 @@ const handleDelete = async (csvPath: string) => {
     process.exit()
   })
 
-  await Promise.each(separatedPaths.splice(counter), async (paths: string[]) => {
+  for (const paths of separatedPaths.splice(counter)) {
     try {
       await rewriter.deleteRedirects(paths)
     } catch (e) {
@@ -74,7 +74,8 @@ const handleDelete = async (csvPath: string) => {
     }
     counter++
     bar.tick()
-  })
+  }
+
   log.info('Finished!\n')
   listener.close()
   deleteMetainfo(metainfo, DELETES, fileHash)

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "types": ["node", "bluebird", "bluebird-global", "jest"],
+    "types": ["node", "jest"],
     "target": "es2018",
     "lib": ["es2018"],
     "outDir": "lib",
