@@ -25,9 +25,6 @@ export interface AvailabilityResponse {
   score: number
 }
 
-const SECOND = 1000
-const builderHubTimeout = 2 * SECOND
-
 const builderBaseRoute = `/_v/builder/0`
 const routes = {
   tsConfig: `${builderBaseRoute}/tsconfig`,
@@ -117,11 +114,11 @@ export class Builder extends AppClient {
   }
 
   public builderHubTsConfig = () => {
-    return this.http.get(routes.tsConfig, { timeout: builderHubTimeout })
+    return this.http.get(routes.tsConfig)
   }
 
   public typingsInfo = async () => {
-    const res = await this.http.get(routes.typings, { timeout: builderHubTimeout })
+    const res = await this.http.get(routes.typings)
     return res.typingsInfo
   }
 

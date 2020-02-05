@@ -107,7 +107,7 @@ export const setupTypings = async (
   const appName = manifest.vendor + '.' + manifest.name
   const appMajor = toMajorRange(manifest.version)
 
-  const { builder: builderClient } = createClients({}, { retries: 2, timeout: 2000 })
+  const { builder: builderClient } = createClients({}, { retries: 2, timeout: 10000 })
   const builders = R.keys(R.prop('builders', manifest) || {})
   const filteredBuilders = R.intersection(builders, buildersWithTypes)
 

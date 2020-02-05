@@ -12,10 +12,23 @@ const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: str
   return null
 }
 
+const getTSConfig = async () => {
+  try {
+    const { builder: builderClient } = createClients({}, { retries: 2, timeout: 10000 })
+    log.info(`Fetching BuilderHub tsconfig`)
+    return await builderClient.builderHubTsConfig()
+  } catch (err) {
+    log.warn('Failed to get BuilderHub tsconfig')
+    log.debug(err)
+  }
+}
+
 export const setupTSConfig = async (manifest: Manifest) => {
-  const { builder: builderClient } = createClients({}, { retries: 2 })
-  log.info(`Fetching BuilderHub tsconfig`)
-  const tsconfigsFromBuilder = await builderClient.builderHubTsConfig()
+  const tsconfigsFromBuilder = await getTSConfig()
+  if (!tsconfigsFromBuilder) {
+    return
+  }
+
   const buildersWithBaseTSConfig = R.compose(
     R.reject(R.isNil),
     R.mapObjIndexed(R.curry(selectTSConfig)(tsconfigsFromBuilder)),
