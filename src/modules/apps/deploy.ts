@@ -52,16 +52,18 @@ const prepareDeploy = async (app, originalAccount, originalWorkspace: string): P
     await deployRelease(app)
     log.info('Successfully deployed', app)
   } catch (e) {
-    if (e?.response?.status === 404) {
-      log.error(`Error deploying ${app}. App not found or already deployed`)
-    } else if (e.message && e.response.statusText) {
-      log.error(`Error deploying ${app}. ${e.message}. ${e.response.statusText}`)
-      return await switchToPreviousAccount(originalAccount, originalWorkspace)
+    const data = e.response?.data
+    const code = data?.code
+    if (code === 'app_is_not_rc') {
+      log.error(`App ${app} was already deployed.`)
+    } else if (data?.message) {
+      log.error(data.message)
     } else {
       await switchToPreviousAccount(originalAccount, originalWorkspace)
       throw e
     }
   }
+
   await switchToPreviousAccount(originalAccount, originalWorkspace)
 }
 
