@@ -22,7 +22,7 @@ import { Token } from './Token.js'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
 
-const run = command => Bluebird.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
+const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
 const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
