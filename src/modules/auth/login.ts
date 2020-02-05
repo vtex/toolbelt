@@ -1,5 +1,4 @@
 import axios from 'axios'
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import childProcess from 'child_process'
 import enquirer from 'enquirer'
@@ -56,8 +55,7 @@ const startUserAuth = async (account: string, workspace: string): Promise<string
   return onAuth(account, workspace, state, fullReturnUrl)
 }
 
-const promptUsePrevious = (): Bluebird<boolean> =>
-  promptConfirm(`Do you want to use the previous login details? (${details})`)
+const promptUsePrevious = () => promptConfirm(`Do you want to use the previous login details? (${details})`)
 
 const promptAccount = async promptPreviousAcc => {
   if (promptPreviousAcc) {

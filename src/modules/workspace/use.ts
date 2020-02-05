@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
@@ -9,13 +8,12 @@ import { promptConfirm } from '../prompts'
 import createCmd from './create'
 import resetWks from './reset'
 
-const promptWorkspaceCreation = (name: string): Bluebird<boolean> => {
+const promptWorkspaceCreation = (name: string) => {
   console.log(chalk.blue('!'), `Workspace ${chalk.green(name)} doesn't exist`)
   return promptConfirm('Do you wish to create it?')
 }
 
-const promptWorkspaceProductionFlag = (): Bluebird<boolean> =>
-  promptConfirm('Should the workspace be in production mode?', false)
+const promptWorkspaceProductionFlag = () => promptConfirm('Should the workspace be in production mode?', false)
 
 const shouldPromptProduction = (production: boolean): boolean => {
   return production === undefined || production === null

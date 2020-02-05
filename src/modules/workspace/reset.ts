@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
@@ -6,7 +5,7 @@ import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 
-const promptWorkspaceReset = (name: string, account: string): Bluebird<void> =>
+const promptWorkspaceReset = (name: string, account: string) =>
   promptConfirm(
     `Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`
   ).then(answer => {

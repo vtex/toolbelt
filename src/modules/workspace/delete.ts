@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { contains, flatten, head, prepend, tail } from 'ramda'
 
@@ -13,7 +12,7 @@ import workspaceUse from './use'
 const account = getAccount()
 const workspace = getWorkspace()
 
-const promptWorkspaceDeletion = (names: string[]): Bluebird<boolean> =>
+const promptWorkspaceDeletion = (names: string[]) =>
   promptConfirm(
     `Are you sure you want to delete workspace` + (names.length > 1 ? 's' : '') + ` ${chalk.green(names.join(', '))}?`,
     true

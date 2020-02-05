@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
@@ -19,14 +18,14 @@ const switchToVendorMessage = (vendor: string): string => {
   )}?`
 }
 
-const promptDeprecate = (appsList: string[]): Bluebird<boolean> =>
+const promptDeprecate = (appsList: string[]) =>
   promptConfirm(
     `Are you sure you want to deprecate app` +
       (appsList.length > 1 ? 's' : '') +
       ` ${chalk.green(appsList.join(', '))}?`
   )
 
-const promptDeprecateOnVendor = (msg: string): Bluebird<boolean> => promptConfirm(msg)
+const promptDeprecateOnVendor = (msg: string) => promptConfirm(msg)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()

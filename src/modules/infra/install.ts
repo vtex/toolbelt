@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import ora from 'ora'
 import { curry, path } from 'ramda'
@@ -12,7 +11,7 @@ import { diffVersions, getTag } from './utils'
 
 const { getAvailableVersions, listInstalledServices, installService } = router
 
-const promptInstall = (): Bluebird<boolean> => Promise.resolve(promptConfirm('Continue with the installation?'))
+const promptInstall = () => Promise.resolve(promptConfirm('Continue with the installation?'))
 
 const findVersion = (pool: string[], predicate: (version: string) => boolean): string =>
   pool
@@ -68,45 +67,47 @@ const logInstall = curry<string, [string, string], void>(
 const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolean =>
   !!(newVersion && newVersion !== installedVersion)
 
-const getInstalledVersion = (service: string): Bluebird<string> =>
+const getInstalledVersion = (service: string) =>
   listInstalledServices()
     .then(data => data.find(({ name }) => name === service))
     .then(s => s && s.version)
 
-export default (name: string) => {
+export default async (name: string) => {
   const [service, suffix] = name.split('@')
   const spinner = ora('Getting versions').start()
   // We force getting versions from the Production region as currently all
   // regions use the same ECR on us-east-1 region. This API is old and weird,
   // as it shouldn't return the regions in the response if I'm already querying
   // a single region. Only change to use `env.region()` when router fixed.
-  return Promise.all([
-    getInstalledVersion(service),
-    getAvailableVersions(service).then(path(['versions', Region.Production])),
-  ])
-    .tap(() => spinner.stop())
-    .spread(getNewVersion(suffix))
-    .tap(logInstall(service))
-    .then((versions: [string, string]) => {
-      return hasNewVersion(versions)
-        ? Promise.resolve(console.log(''))
-            .then(promptInstall)
-            .then(confirm => {
-              if (!confirm) {
-                return
-              }
-              spinner.text = 'Installing'
-              spinner.start()
-              return installService(service, versions[1])
-            })
-            .then(() => {
-              spinner.stop()
-              log.info('Installation complete')
-            })
-        : null
-    })
-    .catch(err => {
-      spinner.stop()
-      throw err
-    })
+  try {
+    const allVersions = (await Promise.all([
+      getInstalledVersion(service),
+      getAvailableVersions(service).then(path(['versions', Region.Production])),
+    ])) as [string, string[]]
+
+    spinner.stop()
+    const newVersions: [string, string] = getNewVersion(suffix)(...allVersions)
+    logInstall(service)(newVersions)
+    if (!hasNewVersion(newVersions)) {
+      return null
+    }
+
+    await Promise.resolve(console.log(''))
+      .then(promptInstall)
+      .then(confirm => {
+        if (!confirm) {
+          return
+        }
+        spinner.text = 'Installing'
+        spinner.start()
+        return installService(service, newVersions[1])
+      })
+      .then(() => {
+        spinner.stop()
+        log.info('Installation complete')
+      })
+  } catch (err) {
+    spinner.stop()
+    throw err
+  }
 }

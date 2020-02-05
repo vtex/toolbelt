@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
@@ -17,7 +16,7 @@ const isMaster = Promise.method((workspace: string) => {
   }
 })
 
-const isPromotable = (workspace: string): Bluebird<never | void> =>
+const isPromotable = (workspace: string) =>
   isMaster(workspace).then(async () => {
     const meta = await get(account, currentWorkspace)
     if (!meta.production) {

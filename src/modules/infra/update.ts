@@ -1,5 +1,4 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import ora from 'ora'
 import pad from 'pad'
@@ -13,7 +12,7 @@ import { diffVersions, getTag } from './utils'
 
 const { listAvailableServices, listInstalledServices, installService } = router
 
-const promptUpdate = (): Bluebird<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
+const promptUpdate = () => Promise.resolve(promptConfirm('Apply version updates?'))
 
 const calculateColSize = (names: string[]): number => Math.max(...names.map(n => n.length))
 
@@ -55,33 +54,36 @@ const createVersionMap = (availableRes: AvailableServices, installedRes: Install
 
 const hasUpdate = (update: InfraUpdate): boolean => Object.keys(update).length > 0
 
-const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
-  Bluebird.all(Object.keys(update).map(name => installService(name, update[name].latest)))
+const installUpdates = (update: InfraUpdate) =>
+  Promise.all(Object.keys(update).map(name => installService(name, update[name].latest)))
 
-export default () => {
+export default async () => {
   const spinner = ora('Getting available updates').start()
-  return Promise.all([listAvailableServices(), listInstalledServices()])
-    .tap(() => spinner.stop())
-    .spread(createVersionMap)
-    .tap(logVersionMap)
-    .then(({ update }) => {
-      console.log('')
-      return hasUpdate(update)
-        ? promptUpdate()
-            .then(confirm => {
-              if (!confirm) {
-                return
-              }
-              spinner.text = 'Installing'
-              spinner.start()
-              return installUpdates(update)
-            })
-            .then(() => spinner.stop())
-            .then(() => log.info('All updates were installed'))
-        : log.info('All up to date!')
-    })
-    .catch(err => {
-      spinner.stop()
-      throw err
-    })
+  try {
+    const versions = await Promise.all([listAvailableServices(), listInstalledServices()])
+    spinner.stop()
+    const versionMap = createVersionMap(...versions)
+    logVersionMap(versionMap)
+    console.log('')
+
+    if (!hasUpdate(versionMap.update)) {
+      log.info('All up to date!')
+      return
+    }
+
+    await promptUpdate()
+      .then(confirm => {
+        if (!confirm) {
+          return
+        }
+        spinner.text = 'Installing'
+        spinner.start()
+        return installUpdates(versionMap.update)
+      })
+      .then(() => spinner.stop())
+      .then(() => log.info('All updates were installed'))
+  } catch (err) {
+    spinner.stop()
+    throw err
+  }
 }

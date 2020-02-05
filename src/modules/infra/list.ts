@@ -1,5 +1,4 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import semver from 'semver'
 
@@ -12,7 +11,7 @@ import { getLastStableAndPrerelease } from './utils'
 const [account, workspace] = [getAccount(), getWorkspace()]
 const { listAvailableServices, listInstalledServices, getAvailableVersions } = router
 
-const printAvailableServices = (): Bluebird<void> =>
+const printAvailableServices = () =>
   listAvailableServices()
     .then((availableRes: AvailableServices) => {
       const table = createTable({ head: ['Name', 'Last stable', 'Last prerelease'] })
@@ -27,7 +26,7 @@ const printAvailableServices = (): Bluebird<void> =>
       console.log(table.toString())
     })
 
-const printAvailableServiceVersions = (name: string, filter: string): Bluebird<void> =>
+const printAvailableServiceVersions = (name: string, filter: string) =>
   getAvailableVersions(name).then(({ versions }: InfraResourceVersions) => {
     const region = Object.keys(versions)[0]
     return versions[region]
@@ -46,7 +45,7 @@ const printAvailableServiceVersions = (name: string, filter: string): Bluebird<v
       })
   })
 
-const printInstalledServices = (): Bluebird<void> =>
+const printInstalledServices = () =>
   listInstalledServices()
     .then((installedRes: InstalledService[]) => {
       const table = createTable()
