@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import ora from 'ora'
 import { curry, path } from 'ramda'
@@ -12,7 +11,7 @@ import { diffVersions, getTag } from './utils'
 
 const { getAvailableVersions, listInstalledServices, installService } = router
 
-const promptInstall = (): Bluebird<boolean> => Promise.resolve(promptConfirm('Continue with the installation?'))
+const promptInstall = () => Promise.resolve(promptConfirm('Continue with the installation?'))
 
 const findVersion = (pool: string[], predicate: (version: string) => boolean): string =>
   pool
@@ -68,7 +67,7 @@ const logInstall = curry<string, [string, string], void>(
 const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolean =>
   !!(newVersion && newVersion !== installedVersion)
 
-const getInstalledVersion = (service: string): Bluebird<string> =>
+const getInstalledVersion = (service: string) =>
   listInstalledServices()
     .then(data => data.find(({ name }) => name === service))
     .then(s => s && s.version)

@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chokidar from 'chokidar'
 import { createReadStream, lstat, readFileSync } from 'fs-extra'
 import glob from 'globby'
@@ -77,7 +76,7 @@ const sendSaveChanges = (file: string, sendChanges: AnyFunction): void =>
 const sendRemoveChanges = (file: string, sendChanges: AnyFunction): void =>
   sendChanges(addChangeContent([{ path: file, action: 'remove' }]))
 
-export const watch = (root: string, sendChanges: AnyFunction, folder?: string): Bluebird<string | void> => {
+export const watch = (root: string, sendChanges: AnyFunction, folder?: string) => {
   const watcher = chokidar.watch([`${safeFolder(folder)}`, '*.json'], {
     atomic: true,
     awaitWriteFinish: {
@@ -98,5 +97,5 @@ export const watch = (root: string, sendChanges: AnyFunction, folder?: string): 
       .on('unlink', file => sendRemoveChanges(file, sendChanges))
       .on('error', reject)
       .on('ready', resolve)
-  }) as Bluebird<string | void>
+  })
 }

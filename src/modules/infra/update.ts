@@ -13,7 +13,7 @@ import { diffVersions, getTag } from './utils'
 
 const { listAvailableServices, listInstalledServices, installService } = router
 
-const promptUpdate = (): Bluebird<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
+const promptUpdate = () => Promise.resolve(promptConfirm('Apply version updates?'))
 
 const calculateColSize = (names: string[]): number => Math.max(...names.map(n => n.length))
 
@@ -55,7 +55,7 @@ const createVersionMap = (availableRes: AvailableServices, installedRes: Install
 
 const hasUpdate = (update: InfraUpdate): boolean => Object.keys(update).length > 0
 
-const installUpdates = (update: InfraUpdate): Bluebird<void[]> =>
+const installUpdates = (update: InfraUpdate) =>
   Bluebird.all(Object.keys(update).map(name => installService(name, update[name].latest)))
 
 export default () => {

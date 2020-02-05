@@ -1,4 +1,3 @@
-import Bluebird from 'bluebird'
 import chalk from 'chalk'
 import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
@@ -17,7 +16,7 @@ const switchToVendorMessage = (vendor: string): string => {
   )}?`
 }
 
-const promptDeploy = (app: string): Bluebird<boolean> => promptConfirm(`Are you sure you want to deploy app ${app}`)
+const promptDeploy = (app: string) => promptConfirm(`Are you sure you want to deploy app ${app}`)
 
 const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
   const currentAccount = getAccount()
