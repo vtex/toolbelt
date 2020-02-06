@@ -46,7 +46,8 @@ export class CustomEventSource {
   public esOnError: OnErrorHandler
   public esOnMessage: OnMessageHandler
   public esOnOpen: OnOpenHandler
-
+  public esOnClose: () => void
+  
   private configuration: EventSource.EventSourceInitDict
   private events: EventListeners[]
   private eventSource: EventSource
@@ -89,6 +90,14 @@ export class CustomEventSource {
     }
   }
 
+  set onclose(newOnClose) {
+    this.esOnClose = newOnClose
+    this.esOnClose = this.esOnClose.bind(this)
+    if (this.eventSource) {
+      this.eventSource.onclose = this.esOnClose
+    }
+  }
+
   set onmessage(newOnMessage: OnMessageHandler) {
     this.esOnMessage = newOnMessage
     this.esOnMessage = this.esOnMessage.bind(this)
@@ -117,6 +126,9 @@ export class CustomEventSource {
     this.closeEventSource()
     this.clearTimers()
     this.isClosed = true
+    if (typeof this.esOnClose === 'function') {
+      this.esOnClose()
+    }
   }
 
   public handleError(err: any) {
