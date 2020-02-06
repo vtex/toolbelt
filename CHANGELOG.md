@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.87.4] - 2020-02-06
+### Changed
+- [vtex publish] Only allow the workspace flag when logged in the vendor account.
+
 ## [2.87.3] - 2020-02-05
 ### Changed
 - Update `clear-module` dependency to major 4.

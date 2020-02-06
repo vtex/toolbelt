@@ -126,6 +126,7 @@ const publisher = (workspace = 'master') => {
 export default async (path: string, options) => {
   log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
 
+  const account = conf.getAccount()
   const manifest = await ManifestEditor.getManifestEditor()
   const versionMsg = chalk.bold.yellow(manifest.version)
   const appNameMsg = chalk.bold.yellow(`${manifest.vendor}.${manifest.name}`)
@@ -143,13 +144,19 @@ export default async (path: string, options) => {
     }
   }
 
-  if (yesFlag && manifest.vendor !== conf.getAccount()) {
+  if (yesFlag && manifest.vendor !== account) {
     log.error(`When using the 'yes' flag, you need to be logged in to the same account as your app’s vendor.`)
     process.exit(1)
   }
 
-  path = path || root
   const workspace = options.w || options.workspace
+
+  if (workspace && manifest.vendor !== account) {
+    log.error(`When using the 'workspace' flag, you need to be logged in to the same account as your app’s vendor.`)
+    process.exit(1)
+  }
+
+  path = path || root
   const force = options.f || options.force
 
   // Always run yarn locally for some builders
