@@ -16,7 +16,7 @@ import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import log from './logger'
 import tree from './modules/tree'
 import { checkAndOpenNPSLink } from './nps'
-import { Token } from './Token.js'
+import { Token } from './lib/auth/Token'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
 
