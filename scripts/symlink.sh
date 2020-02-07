@@ -34,17 +34,13 @@ VTEX_BIN_TEST="$VTEX_BIN-test"
 BINARY_PATH=$PWD/lib/cli.js 
 LINK_PATH=$GLOBAL_BIN_PATH/$VTEX_BIN_TEST
 
-mkdir -p $GLOBAL_BIN_PATH
+mkdir -p "$GLOBAL_BIN_PATH"
 
 if [ "$CREATE" == "true" ]; then
-    echo "Creating symlink: $LINK_PATH -> $BINARY_PATH"
-    
-    if [[ -f $LINK_PATH ]]; then
-      rm $LINK_PATH
-    fi
-    
-    ln -s $BINARY_PATH $LINK_PATH
+    echo "Creating symlink: \"$LINK_PATH\" -> \"$BINARY_PATH\""
+    rm -f "$LINK_PATH"
+    ln -s "$BINARY_PATH" "$LINK_PATH"
     echo "You can now run the dev version of your cli running: '$VTEX_BIN_TEST'"
 else
-    rm  $LINK_PATH
+    rm  "$LINK_PATH"
 fi
