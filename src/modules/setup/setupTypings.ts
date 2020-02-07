@@ -8,7 +8,7 @@ import { toMajorRange } from '../../locator'
 import log from '../../logger'
 import { isLinked, resolveAppId, appIdFromRegistry } from '../apps/utils'
 import { runYarn } from '../utils'
-import { checkIfTarGzIsEmpty, packageJsonEditor } from './utils'
+import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
 import { BUILDERS_WITH_TYPES } from './consts'
 
 const getVendor = (appId: string) => appId.split('.')[0]
@@ -88,7 +88,7 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLi
     const cleanOldDevDeps = R.reject(R.test(typingsURLRegex), oldDevDeps)
     packageJsonEditor.write(builder, {
       ...packageJson,
-      ...{ devDependencies: { ...cleanOldDevDeps, ...newTypingsEntries } },
+      ...{ devDependencies: sortObject({ ...cleanOldDevDeps, ...newTypingsEntries }) },
     })
     try {
       runYarn(builder, true)

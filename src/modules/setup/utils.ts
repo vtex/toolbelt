@@ -58,3 +58,12 @@ export function getRootPackageJson(): Record<string, any> {
 export function hasDevDependenciesInstalled({ deps, pkg }: { deps: Record<string, string>; pkg: Record<string, any> }) {
   return Object.keys(deps).every(p => p in pkg.devDependencies)
 }
+
+/**
+ * Sort the given object. Useful for sorting the `package.json` dependencies
+ */
+export function sortObject<T extends object>(obj: T): T {
+  return Object.keys(obj)
+    .sort()
+    .reduce((sortedObject, key) => ({ ...sortedObject, [key]: obj[key] }), {}) as T
+}
