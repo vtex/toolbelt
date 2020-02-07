@@ -43,7 +43,7 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "@vtex/api": "3.67.1",
+    "@vtex/api": "3.71.1",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "~6.10.2",
     "archiver": "^3.1.1",
@@ -73,7 +73,7 @@
     "moment": "~2.24.0",
     "node-notifier": "^6.0.0",
     "numbro": "2.1.0",
-    "opn": "~5.2.0",
+    "open": "^7.0.2",
     "ora": "~3.0.0",
     "pad": "~2.0.3",
     "pipe-streams-to-promise": "~0.2.0",
@@ -106,6 +106,7 @@
     "@types/node-notifier": "^5.4.0",
     "@types/prompts": "^2.0.3",
     "@types/ramda": "types/npm-ramda#dist",
+    "@types/randomstring": "^1.1.6",
     "@types/semver-diff": "2.1.1",
     "@types/tar": "4.0.3",
     "@types/yarnpkg__lockfile": "^1.1.3",
