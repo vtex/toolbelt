@@ -27,9 +27,9 @@ export class SessionManager {
     return SessionManager.sessionManagerSingleton
   }
 
-  private curAccount: string
-  private curToken: Token
-  private curWorkspace: string
+  private currAccount: string
+  private currToken: Token
+  private currWorkspace: string
 
   private sessionPersister: SessionManagerArguments['sessionsPersister']
   private authProviders: SessionManagerArguments['authProviders']
@@ -40,19 +40,26 @@ export class SessionManager {
   }
 
   get account() {
-    return this.curAccount
+    return this.currAccount
   }
 
   get token() {
-    return this.curToken.token
+    return this.currToken.token
   }
 
   get workspace() {
-    return this.curWorkspace
+    return this.currWorkspace
   }
 
   get userLogged() {
-    return this.curToken.login
+    return this.currToken.login
+  }
+
+  private saveCredentials() {
+    this.sessionPersister.saveAccount(this.account)
+    this.sessionPersister.saveWorkspace(this.workspace)
+    this.sessionPersister.saveLogin(this.currToken.login)
+    this.sessionPersister.saveToken(this.currToken.token)
   }
 
   public async login(
@@ -61,21 +68,19 @@ export class SessionManager {
   ) {
     const currentToken = new Token(this.sessionPersister.getAccountToken(newAccount))
     if (useCachedToken && currentToken.isValid()) {
-      this.curAccount = newAccount
-      this.curWorkspace = targetWorkspace
-      this.curToken = currentToken
+      this.currAccount = newAccount
+      this.currWorkspace = targetWorkspace
+      this.currToken = currentToken
+      this.saveCredentials()
       return
     }
 
-    const { token, login } = await this.authProviders[authMethod].login(newAccount, targetWorkspace)
-    this.sessionPersister.saveAccount(newAccount)
-    this.sessionPersister.saveWorkspace(targetWorkspace)
-    this.sessionPersister.saveLogin(login)
-    this.sessionPersister.saveToken(token)
-    this.sessionPersister.saveAccountToken(newAccount, token)
-    this.curAccount = newAccount
-    this.curWorkspace = targetWorkspace
-    this.curToken = new Token(token)
+    const { token } = await this.authProviders[authMethod].login(newAccount, targetWorkspace)
+    this.currAccount = newAccount
+    this.currWorkspace = targetWorkspace
+    this.currToken = new Token(token)
+    this.saveCredentials()
+    this.sessionPersister.saveAccountToken(newAccount, this.currToken.token)
   }
 
   public logout() {
@@ -83,6 +88,7 @@ export class SessionManager {
   }
 
   public switchWorkspace(newWorkspace: string) {
-    this.curWorkspace = newWorkspace
+    this.currWorkspace = newWorkspace
+    this.sessionPersister.saveWorkspace(this.currWorkspace)
   }
 }
