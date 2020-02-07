@@ -43,7 +43,6 @@ export default async options => {
   const workspace = optionWorkspace || (usePrevious && cachedWorkspace) || 'master'
 
   const sessionManager = SessionManager.getSessionManager()
-  console.log(sessionManager)
   try {
     await sessionManager.login(account, { targetWorkspace: workspace, useCachedToken: false })
     log.debug('Login successful', sessionManager.userLogged, account, sessionManager.token, workspace)
