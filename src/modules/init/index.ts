@@ -14,10 +14,12 @@ const VTEXInternalTemplates = [
   'service-example',
   'react-guide',
   'masterdata-graphql-guide',
+  'payment-provider-example',
 ]
 
 const templates = {
   'graphql-example': 'graphql-example',
+  'payment-provider-example': 'payment-provider-example',
   'admin-example': 'admin-example',
   'store-theme': 'store-theme',
   'delivery-theme': 'delivery-theme',
