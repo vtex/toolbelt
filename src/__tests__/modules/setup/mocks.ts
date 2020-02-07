@@ -74,6 +74,7 @@ export const mockAppsUtils = () => {
 export const mockSetupUtils = () => {
   jest.doMock('../../../modules/setup/utils', () => {
     return {
+      ...jest.requireActual('../../../modules/setup/utils'),
       checkIfTarGzIsEmpty: jest.fn(),
       tsconfigEditor: { read: jest.fn(), write: jest.fn(), path: jest.fn() },
       packageJsonEditor: { read: jest.fn(), write: jest.fn(), path: jest.fn() },
