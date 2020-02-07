@@ -1,6 +1,6 @@
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
-import opn from 'opn'
+import opn from 'open'
 import R from 'ramda'
 import * as conf from '../conf'
 import { clusterIdDomainInfix, publicEndpoint } from '../env'
