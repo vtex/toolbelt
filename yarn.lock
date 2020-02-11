@@ -657,6 +657,11 @@
   version "0.25.0"
   resolved "https://codeload.github.com/types/npm-ramda/tar.gz/9529aa3c8ff70ff84afcbc0be83443c00f30ea90"
 
+"@types/randomstring@^1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@types/randomstring/-/randomstring-1.1.6.tgz#45cdc060a6f043d610bcd46503a6887db2a209c3"
+  integrity sha512-XRIZIMTxjcUukqQcYBdpFWGbcRDyNBXrvTEtTYgFMIbBNUVt+9mCKsU+jUUDLeFO/RXopUgR5OLiBqbY18vSHQ==
+
 "@types/range-parser@*":
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.3.tgz#7ee330ba7caafb98090bece86a5ee44115904c2c"
@@ -761,10 +766,10 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
-"@vtex/api@3.67.1":
-  version "3.67.1"
-  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.67.1.tgz#3b91bf33d3fe970e887e5563106304c57fd4e20f"
-  integrity sha512-7oNOCZ5ClhhdFj/hO4IisLHOtJwjg9WFbr8KXeYayD5HU6P8jgbjLyB68cMbrigPxfr2AOBHD358Ql+9GcWaSQ==
+"@vtex/api@3.71.1":
+  version "3.71.1"
+  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.71.1.tgz#996a9148cceadb8cd68939f47ce739b88b6bad97"
+  integrity sha512-CurrRU1U/svHbbyvhsICD8/IqtSQplH/AzS9q0iQ0OC6AH4H8hLUvaNuFMIDW4jSMInqepqKkcS3BQsw9wBxBQ==
   dependencies:
     "@types/koa" "^2.0.48"
     "@types/koa-compose" "^3.2.3"
@@ -3663,6 +3668,11 @@ is-descriptor@^1.0.0, is-descriptor@^1.0.2:
     is-data-descriptor "^1.0.0"
     kind-of "^6.0.2"
 
+is-docker@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/is-docker/-/is-docker-2.0.0.tgz#2cb0df0e75e2d064fe1864c37cdeacb7b2dcf25b"
+  integrity sha512-pJEdRugimx4fBMra5z2/5iRdZ63OhYV0vr0Dwm5+xtW4D1FvRkB8hamMIhnWfyJeDdyr/aa7BDyNbtG38VxgoQ==
+
 is-extendable@^0.1.0, is-extendable@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/is-extendable/-/is-extendable-0.1.1.tgz#62b110e289a471418e3ec36a617d472e301dfc89"
@@ -5266,12 +5276,13 @@ onetime@^5.1.0:
   dependencies:
     mimic-fn "^2.1.0"
 
-opn@~5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/opn/-/opn-5.2.0.tgz#71fdf934d6827d676cecbea1531f95d354641225"
-  integrity sha512-Jd/GpzPyHF4P2/aNOVmS3lfMSWV9J7cOhCG1s08XCEAsPkB7lp6ddiU0J7XzyQRDUh8BqJ7PchfINjR8jyofRQ==
+open@^7.0.2:
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/open/-/open-7.0.2.tgz#fb3681f11f157f2361d2392307548ca1792960e8"
+  integrity sha512-70E/pFTPr7nZ9nLDPNTcj3IVqnNvKuP4VsBmoKV9YGTnChe0mlS3C4qM7qKarhZ8rGaHKLfo+vBTHXDp6ZSyLQ==
   dependencies:
-    is-wsl "^1.1.0"
+    is-docker "^2.0.0"
+    is-wsl "^2.1.1"
 
 optimist@^0.6.1:
   version "0.6.1"

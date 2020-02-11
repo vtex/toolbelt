@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Sort `package.json` dependencies when adding with `vtex setup`.
+- Use `open` package instead of `opn`.
+- Update `@vtex/api` from `v3.67.1` to `v3.71.1`
+
+### Refactored
+- Create `AuthProviders` classes to concentrate authentication logic.
+- Create `SessionManager` class to manager session specific data.
+- [vtex login, vtex logout, vtex switch] Use `SessionManager` class. 
 
 ## [2.87.4] - 2020-02-06
 ### Changed
