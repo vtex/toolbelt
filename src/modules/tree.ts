@@ -29,11 +29,6 @@ export default {
       },
     ],
   },
-  validate: {
-    description: 'DEPRECATED',
-    handler: './apps/validate',
-    optionalArgs: 'app',
-  },
   deploy: {
     description: 'Deploy a release of an app',
     handler: './apps/deploy',
@@ -226,11 +221,6 @@ export default {
       type: 'boolean',
     },
   ],
-  production: {
-    description: "Set this workspace's production mode to true or false (deprecated)",
-    handler: './workspace/production',
-    optionalArgs: 'production',
-  },
   promote: {
     description: 'Promote this workspace to master',
     handler: './workspace/promote',
