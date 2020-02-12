@@ -5,6 +5,8 @@ import * as conf from '../../conf'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
+import boxen from 'boxen'
+import emojic from 'emojic'
 
 const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
 const details =
@@ -33,6 +35,24 @@ const promptAccount = async promptPreviousAcc => {
   return account
 }
 
+const notifyRelease = () => {
+  const msg = [
+    `Are you up-to-date with the VTEX IO lastest news?`,
+    `${emojic.memo} Don’t forget to check out our ${chalk.bold.green(`January 2020 Release Notes:`)}`,
+    `${chalk.blueBright(`https://bit.ly/37iCFjy`)}`,
+  ].join('\n')
+
+  const boxOptions: boxen.Options = {
+    padding: 1,
+    margin: 1,
+    borderStyle: boxen.BorderStyle.Round,
+    borderColor: 'yellow',
+    align: 'center',
+  }
+
+  console.log(boxen(msg, boxOptions))
+}
+
 export default async options => {
   const defaultArgumentAccount = options && options._ && options._[0]
   const optionAccount = options ? options.a || options.account || defaultArgumentAccount : null
@@ -51,6 +71,7 @@ export default async options => {
         workspace
       )}`
     )
+    notifyRelease()
   } catch (err) {
     if (err.statusCode === 404) {
       log.error('Account/Workspace not found')
