@@ -37,7 +37,7 @@ const promptAccount = async promptPreviousAcc => {
 
 const notifyRelease = () => {
   const msg = [
-    `Are you up-to-date with the VTEX IO lastest news?`,
+    `Are you up-to-date with the VTEX IO latest news?`,
     `${emojic.memo} Don’t forget to check out our ${chalk.bold.green(`January 2020 Release Notes:`)}`,
     `${chalk.blueBright(`https://bit.ly/37iCFjy`)}`,
   ].join('\n')
