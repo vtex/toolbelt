@@ -62,6 +62,10 @@ const templates: Record<string, Template> = {
     repository: 'masterdata-graphql-guide',
     organization: VTEX_APPS,
   },
+  'edition app': {
+    repository: 'edition-hello',
+    organization: VTEX_APPS,
+  },
   'support app': {
     repository: 'hello-support',
     organization: VTEX_APPS,
