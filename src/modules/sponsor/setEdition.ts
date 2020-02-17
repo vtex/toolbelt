@@ -2,8 +2,9 @@ import chalk from 'chalk'
 import R from 'ramda'
 import { Sponsor } from '../../clients/sponsor'
 import * as conf from '../../conf'
-import { UserCancelledError } from '../../errors'
+import { CommandError, UserCancelledError } from '../../errors'
 import log from '../../logger'
+import { promptWorkspaceMaster } from '../apps/utils'
 import { default as switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
 import { switchToPreviousAccount, getIOContext, IOClientOptions } from '../utils'
@@ -25,11 +26,17 @@ export default async (edition: string) => {
 
   const sponsorClient = new Sponsor(getIOContext(), IOClientOptions)
   const data = await sponsorClient.getSponsorAccount()
-
   const sponsorAccount = R.prop('sponsorAccount', data)
+
   if (!sponsorAccount) {
+    if (previousWorkspace !== 'master') {
+      throw new CommandError('Can only set initial edition in master workspace')
+    }
     await promptSwitchToAccount('vtex', true)
   } else {
+    if (previousWorkspace === 'master') {
+      await promptWorkspaceMaster(previousAccount)
+    }
     await promptSwitchToAccount(sponsorAccount, false)
   }
 
