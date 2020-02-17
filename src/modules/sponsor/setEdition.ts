@@ -21,17 +21,20 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
 
 export default async (edition: string) => {
   const previousConf = conf.getAll()
-  const previousAccount = previousConf.account
+  const previousAccount = previousConf.account, previousWorkspace = previousConf.workspace
+
   const sponsorClient = new Sponsor(getIOContext(), IOClientOptions)
   const data = await sponsorClient.getSponsorAccount()
+
   const sponsorAccount = R.prop('sponsorAccount', data)
   if (!sponsorAccount) {
     await promptSwitchToAccount('vtex', true)
-  } else if (previousAccount !== sponsorAccount) {
+  } else {
     await promptSwitchToAccount(sponsorAccount, false)
   }
+
   const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
-  await sponsorClientForSponsorAccount.setEdition(previousAccount, edition)
+  await sponsorClientForSponsorAccount.setEdition(previousAccount, previousWorkspace, edition)
   log.info(`Successfully set new edition in account ${chalk.blue(previousAccount)}.`)
   await switchToPreviousAccount(previousConf)
 }

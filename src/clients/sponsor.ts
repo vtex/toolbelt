@@ -20,11 +20,11 @@ export class Sponsor extends IOClient {
 
   public getEdition = async () => this.http.get(this.routes.getEdition, { metric: 'get-edition' })
 
-  public setEdition = async (account: string, editionApp: string) => {
+  public setEdition = async (account: string, workspace, editionApp: string) => {
     const [edition, version] = editionApp.split('@')
     const [sponsor, editionName] = edition.split('.')
     return this.http.post(
-      this.routes.setEdition(account),
+      this.routes.setEdition(account, workspace),
       { sponsor, edition: editionName, version },
       { metric: 'set-edition' }
     )
@@ -36,8 +36,8 @@ export class Sponsor extends IOClient {
     return {
       getSponsorAccount: `http://kube-router.${this.region}.vtex.io/_account/${this.account}`,
       getEdition: `http://apps.${this.region}.vtex.io/${this.account}/${this.workspace}/edition`,
-      setEdition: (account: string) =>
-        `http://tenant-provisioner.vtex.${this.region}.vtex.io/${this.account}/master/tenants/${account}/migrate`,
+      setEdition: (account: string, workspace: string) =>
+        `http://tenant-provisioner.vtex.${this.region}.vtex.io/${this.account}/master/tenants/${account}/migrate?tenantWorkspace=${workspace}`,
       runHouseKeeper: `http://housekeeper.${this.region}.vtex.io/${this.account}/master/_housekeeping/perform`,
     }
   }
