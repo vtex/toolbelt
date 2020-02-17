@@ -42,6 +42,9 @@ export default async (edition: string) => {
 
   const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
   await sponsorClientForSponsorAccount.setEdition(previousAccount, previousWorkspace, edition)
-  log.info(`Successfully set new edition in account ${chalk.blue(previousAccount)}.`)
+
+  const workspaceNotice = previousWorkspace === 'master' ? '' : `in workspace ${chalk.blue(previousWorkspace)} `
+  log.info(`Successfully set edition ${workspaceNotice}of account ${chalk.blue(previousAccount)}.`)
+
   await switchToPreviousAccount(previousConf)
 }
