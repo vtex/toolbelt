@@ -22,7 +22,8 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
 
 export default async (edition: string) => {
   const previousConf = conf.getAll()
-  const previousAccount = previousConf.account, previousWorkspace = previousConf.workspace
+  const previousAccount = previousConf.account
+  const previousWorkspace = previousConf.workspace
 
   const sponsorClient = new Sponsor(getIOContext(), IOClientOptions)
   const data = await sponsorClient.getSponsorAccount()
