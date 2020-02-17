@@ -1,33 +1,36 @@
-import { getAccount, getWorkspace, getToken } from '../../conf'
-import { parseLocator, toAppLocator } from '../../locator'
+import { getAccount, getToken } from '../../conf'
 import { getManifest } from '../../manifest'
 import CustomEventSource from '../../eventsource'
 import userAgent from '../../user-agent'
 import log from '../../logger'
+import { AuthType } from '@vtex/api'
 
-export default async (optionalApp: string, options) => {
+export default async (vendor: string, app: string, options) => {
   const account = getAccount()
-  const workspace = getWorkspace()
-  const skidderMajor = 0
-  
+  const workspace = 'master'
+  const skidderMajor = 1
+
   const conf = {
     headers: {
-      Authorization: `bearer ${getToken()}`,
-      'user-agent': userAgent
+      Authorization: `${AuthType.bearer} ${getToken()}`,
+      'user-agent': userAgent,
     },
   }
 
-  let appFilter = ''
+  vendor = vendor || account
 
-  if (!options.all) {
-    const app = optionalApp || toAppLocator(await getManifest())
-    const { vendor, name } = parseLocator(app)
-    appFilter = `${vendor}.${name}`
+  if (!vendor || (!options.all && !app)) {
+    const manifest = await getManifest()
+    vendor = vendor || manifest.vendor
+    app = app || manifest.name
   }
 
-  const uri = `http://infra.io.vtex.com/skidder/v${skidderMajor}/${account}/${workspace}/logs/stream/${account}/${appFilter}`
+  let uri = `http://infra.io.vtex.com/skidder/v${skidderMajor}/${vendor}/${workspace}/logs/stream`
+  if (app) {
+    uri += `/${app}`
+  }
 
-  log.info(`listening logs from ${uri}`)
+  log.info(`Listening logs from ${uri}`)
 
   function createEventSource() {
     const es = new CustomEventSource(uri, conf)
@@ -42,17 +45,11 @@ export default async (optionalApp: string, options) => {
     }
 
     es.addEventListener('message', msg => {
-      log.log(msg.data)
+      console.log(JSON.parse(msg.data).data)
     })
   }
-  
+
   createEventSource()
 
   console.log('Press CTRL+C to abort')
-
-  function wait() {
-    setTimeout(wait, 1000)
-  }
-  
-  wait()
 }
