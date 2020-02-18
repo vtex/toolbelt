@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fix `Unhandled Exception` when publish fails.
 
+### Removed
+- Spinner on `vtex publish`.
+
 ### Refactored
 - Remove `ramda` usage on `vtex publish` command.
 
