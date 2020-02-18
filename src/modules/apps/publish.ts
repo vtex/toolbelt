@@ -1,8 +1,6 @@
 import { BuildResult } from '@vtex/api'
 import retry from 'async-retry'
 import chalk from 'chalk'
-import ora from 'ora'
-import { isEmpty, map } from 'ramda'
 import * as conf from '../../conf'
 import { region } from '../../env'
 import { UserCancelledError } from '../../errors'
@@ -38,7 +36,7 @@ const publisher = (workspace = 'master') => {
       factor: 2,
     }
     const publish = async (_, tryCount) => {
-      const filesWithContent = map(createPathToFileObject(appRoot), paths)
+      const filesWithContent = paths.map(createPathToFileObject(appRoot))
       if (tryCount === 1) {
         log.debug('Sending files:', '\n' + paths.join('\n'))
       }
@@ -74,7 +72,7 @@ const publisher = (workspace = 'master') => {
     const account = conf.getAccount()
 
     const builderHubMessage = await checkBuilderHubMessage('publish')
-    if (!isEmpty(builderHubMessage)) {
+    if (builderHubMessage != null) {
       await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
     }
 
@@ -94,25 +92,18 @@ const publisher = (workspace = 'master') => {
     const context = { account: manifest.vendor, workspace, region: region(), authToken: conf.getToken() }
     const projectUploader = ProjectUploader.getProjectUploader(appId, context)
 
-    const oraMessage = ora(`Publishing ${appId} ...`)
-    const spinner = log.level === 'debug' ? oraMessage.info() : oraMessage.start()
     try {
       const senders = ['vtex.builder-hub', 'apps']
-      const { response } = await listenBuild(appId, () => publishApp(path, pubTag, force, projectUploader), {
+      await listenBuild(appId, () => publishApp(path, pubTag, force, projectUploader), {
         waitCompletion: true,
         context,
         senders,
       })
-      if (response.code !== 'build.accepted') {
-        spinner.warn(
-          `${appId} was published successfully, but you should update your builder hub to the latest version.`
-        )
-      } else {
-        spinner.succeed(`${appId} was published successfully!`)
-        log.info(`You can deploy it with: ${chalk.blueBright(`vtex deploy ${appId}`)}`)
-      }
+
+      log.info(`${appId} was published successfully!`)
+      log.info(`You can deploy it with: ${chalk.blueBright(`vtex deploy ${appId}`)}`)
     } catch (e) {
-      spinner.fail(`Failed to publish ${appId}`)
+      log.error(`Failed to publish ${appId}`)
     }
 
     await switchToPreviousAccount(previousConf)
@@ -160,7 +151,7 @@ export default async (path: string, options) => {
   const force = options.f || options.force
 
   // Always run yarn locally for some builders
-  map(runYarnIfPathExists, buildersToRunLocalYarn)
+  buildersToRunLocalYarn.map(runYarnIfPathExists)
 
   const { publishApps } = publisher(workspace)
   await publishApps(path, options.tag, force)
