@@ -26,6 +26,7 @@ const templates = {
   'masterdata-graphql-guide': 'masterdata-graphql-guide',
   'support app': 'hello-support',
   'react-guide': 'react-app-template',
+  'checkout-ui-settings': 'checkout-ui-settings',
 }
 
 const getTemplates = () =>
