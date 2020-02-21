@@ -5,7 +5,7 @@ import semver from 'semver'
 import { CLIPrecheckerStore, ICLIPrecheckerStore } from './CLIPrecheckerStore'
 
 export class CLIPrechecker {
-  private static readonly DEPRECATION_CHECK_INTERVAL = 4 * 3600
+  private static readonly DEPRECATION_CHECK_INTERVAL = 4 * 3600 * 1000
 
   public static getCLIPrechecker(pkgJson: any) {
     const store = new CLIPrecheckerStore(`${pkgJson.name}-prechecker-store`)
@@ -29,7 +29,6 @@ export class CLIPrechecker {
 
   private ensureNotDeprecated() {
     const deprecated = this.store.getDeprecated()
-
     if (Date.now() - this.store.getLastDeprecationCheck() >= CLIPrechecker.DEPRECATION_CHECK_INTERVAL) {
       spawn(
         process.execPath,
