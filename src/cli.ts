@@ -13,6 +13,7 @@ import * as conf from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import { Token } from './lib/auth/Token'
+import { TelemetryCollector } from './lib/telemetry/TelemetryCollector.js'
 import log from './logger'
 import tree from './modules/tree'
 import { checkAndOpenNPSLink } from './nps'
@@ -152,7 +153,16 @@ const onError = async (e: any) => {
     }
   }
 
-  process.exit(1)
+  process.removeListener('unhandledRejection', onError)
+
+  try {
+    TelemetryCollector.getCollector().registerError(e)
+  } catch (err) {
+    console.log(err)
+  } finally {
+    TelemetryCollector.getCollector().flush()
+    process.exit(1)
+  }
 }
 
 axios.interceptors.request.use(config => {
@@ -172,6 +182,7 @@ const start = async () => {
 
   try {
     await main()
+    TelemetryCollector.getCollector().flush()
   } catch (err) {
     await onError(err)
   }
