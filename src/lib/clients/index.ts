@@ -1,5 +1,6 @@
 import { InstanceOptions, IOContext, Workspaces } from '@vtex/api'
 import { dummyLogger } from '../../clients/dummyLogger'
+import { TelemetryClient } from '../../clients/telemetryClient'
 import * as env from '../../env'
 import envTimeout from '../../timeout'
 
@@ -55,4 +56,8 @@ const mergeCustomOptionsWithDefault = (customOptions: InstanceOptions) => {
 
 export const createWorkspaceClient = (ctx: IOContext, customOptions: InstanceOptions = {}) => {
   return new Workspaces(ctx, mergeCustomOptionsWithDefault(customOptions))
+}
+
+export const createTelemetryClient = (ctx: IOContext, customOptions: InstanceOptions = {}) => {
+  return new TelemetryClient(ctx, mergeCustomOptionsWithDefault(customOptions))
 }
