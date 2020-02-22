@@ -14,6 +14,7 @@
     "build-incremental": "tsc --incremental && yarn exe",
     "build": "yarn build-clean && tsc && yarn exe",
     "test": "jest",
+    "prepublishOnly": "bash ./scripts/publishLock.sh",
     "ci:test": "yarn test --ci",
     "ci:prettier-check": "prettier --check --config ./.prettierrc \"src/**/*.ts\" \"src/**/*.js\""
   },
