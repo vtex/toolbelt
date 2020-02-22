@@ -10,8 +10,10 @@
     "no-console": "off",
     "import/order": "off",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "_+" }],
     "@typescript-eslint/explicit-member-accessibility": "off",
+    "default-case": "off",
+    "global-require": "off",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "_+" }],
     "@typescript-eslint/interface-name-prefix": "off"
   },
   "overrides": [
@@ -31,12 +33,6 @@
       "files": ["./src/logger.ts"],
       "rules": {
         "@typescript-eslint/ban-ts-ignore": "off"
-      }
-    },
-    {
-      "files": ["./src/modules/apps/deprecate.ts", "./src/modules/apps/undeprecate.ts"],
-      "rules": {
-        "no-await-in-loop": "off"
       }
     }
   ]
