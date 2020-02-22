@@ -8,7 +8,7 @@
     "exe": "node scripts/make-executable.js",
     "watch": "bash ./scripts/symlink.sh && yarn build-clean && yarn nodemon",
     "format": "prettier --config ./.prettierrc --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "eslint . --ext .ts --config .eslintrc",
+    "lint": "eslint ./src --ext .ts --config .eslintrc",
     "format-lint": "yarn format && yarn lint",
     "build-clean": "rm -rf lib",
     "build-incremental": "tsc --incremental && yarn exe",
