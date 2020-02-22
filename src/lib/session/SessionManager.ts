@@ -37,6 +37,9 @@ export class SessionManager {
   constructor({ sessionsPersister, authProviders }: SessionManagerArguments) {
     this.sessionPersister = sessionsPersister
     this.authProviders = authProviders
+    this.currAccount = this.sessionPersister.getAccount()
+    this.currWorkspace = this.sessionPersister.getWorkspace()
+    this.currToken = new Token(this.sessionPersister.getToken())
   }
 
   get account() {
