@@ -25,6 +25,7 @@ interface ErrorEnv {
   toolbeltVersion: string
   nodeVersion: string
   platform: string
+  command: string
 }
 
 interface RequestErrorDetails {
@@ -63,6 +64,7 @@ export class ErrorReport extends Error {
         toolbeltVersion: pkg.version,
         nodeVersion: process.version,
         platform: process.platform,
+        command: process.argv.slice(2).join(' '),
       },
     })
   }
