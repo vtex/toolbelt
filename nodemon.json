@@ -1,6 +1,6 @@
 {
     "ignore": ["**/*.test.ts", ".git", "node_modules", "lib"],
-    "watch": ["src", "package.json"],
+    "watch": ["src", "package.json", "tsconfig.json"],
     "exec": "yarn build-incremental",
     "ext": "ts",
     "events": {
