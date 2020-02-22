@@ -14,7 +14,7 @@ const getWorkspaceState = async (): Promise<string> => {
   try {
     const meta = await workspaces.get(account, workspace)
 
-    return workspaceState(meta) + ' '
+    return `${workspaceState(meta)} `
   } catch (err) {
     log.debug(`Unable to fetch workspace state`)
     log.debug(err.message)

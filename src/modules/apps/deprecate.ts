@@ -20,9 +20,7 @@ const switchToVendorMessage = (vendor: string): string => {
 
 const promptDeprecate = (appsList: string[]) =>
   promptConfirm(
-    `Are you sure you want to deprecate app` +
-      (appsList.length > 1 ? 's' : '') +
-      ` ${chalk.green(appsList.join(', '))}?`
+    `Are you sure you want to deprecate app${appsList.length > 1 ? 's' : ''} ${chalk.green(appsList.join(', '))}?`
   )
 
 const promptDeprecateOnVendor = (msg: string) => promptConfirm(msg)
@@ -35,7 +33,6 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
       return await switchAccount(previousAccount, { workspace: previousWorkspace })
     }
   }
-  return
 }
 
 const deprecateApp = async (app: string): Promise<void> => {
@@ -88,6 +85,6 @@ export default async (optionalApp: string, options) => {
     throw new UserCancelledError()
   }
 
-  log.debug('Deprecating app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
+  log.debug(`Deprecating app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return prepareAndDeprecateApps(appsList)
 }

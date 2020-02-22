@@ -38,7 +38,7 @@ const publisher = (workspace = 'master') => {
     const publish = async (_, tryCount) => {
       const filesWithContent = paths.map(createPathToFileObject(appRoot))
       if (tryCount === 1) {
-        log.debug('Sending files:', '\n' + paths.join('\n'))
+        log.debug('Sending files:', `\n${paths.join('\n')}`)
       }
       if (tryCount > 1) {
         log.info(`Retrying...${tryCount - 1}`)
@@ -47,10 +47,10 @@ const publisher = (workspace = 'master') => {
       try {
         return await projectUploader.sendToPublish(filesWithContent, tag, { skipSemVerEnsure: force })
       } catch (err) {
-        const response = err.response
-        const status = response.status
-        const data = response && response.data
-        const message = data.message
+        const { response } = err
+        const { status } = response
+        const data = response?.data
+        const { message } = data
         const statusMessage = status ? `: Status ${status}` : ''
         log.error(`Error publishing app${statusMessage} (try: ${tryCount})`)
         if (message) {

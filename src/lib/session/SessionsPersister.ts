@@ -24,6 +24,7 @@ export class SessionsPersister extends SessionsPersisterBase {
   public static getSessionsPersister() {
     return new SessionsPersister(new Configstore(pkgName))
   }
+
   constructor(private configstore: Configstore) {
     super()
   }

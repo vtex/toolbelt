@@ -50,7 +50,7 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
       await addApp(app, manifest)
     }
   } catch (err) {
-    log.warn(`The following app` + (apps.length > 1 ? 's were' : ' was') + ` not added: ${apps.join(', ')}`)
+    log.warn(`The following app${apps.length > 1 ? 's were' : ' was'} not added: ${apps.join(', ')}`)
     throw err
   }
 }
@@ -58,7 +58,7 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
 export default async (app: string, options) => {
   const apps = [app, ...parseArgs(options._)]
   const manifest = await ManifestEditor.getManifestEditor()
-  log.debug('Adding app' + (apps.length > 1 ? 's' : '') + `: ${apps.join(', ')}`)
+  log.debug(`Adding app${apps.length > 1 ? 's' : ''}: ${apps.join(', ')}`)
   try {
     await addApps(apps, manifest)
   } catch (err) {

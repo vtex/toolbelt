@@ -81,7 +81,7 @@ levels.forEach(level => {
       msg += ' '
     }
 
-    if (typeof msg != 'string') {
+    if (typeof msg !== 'string') {
       return logger.log(level, '', msg, ...remains)
     }
 

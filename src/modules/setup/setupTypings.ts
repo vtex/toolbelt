@@ -104,7 +104,7 @@ export const setupTypings = async (
   ignoreLinked: boolean,
   buildersWithTypes = BUILDERS_WITH_TYPES
 ) => {
-  const appName = manifest.vendor + '.' + manifest.name
+  const appName = `${manifest.vendor}.${manifest.name}`
   const appMajor = toMajorRange(manifest.version)
 
   const { builder: builderClient } = createClients({}, { retries: 2, timeout: 10000 })

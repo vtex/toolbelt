@@ -26,7 +26,6 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
       return await switchAccount(previousAccount, { workspace: previousWorkspace })
     }
   }
-  return
 }
 
 const deployRelease = async (app: string): Promise<void> => {

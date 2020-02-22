@@ -179,7 +179,8 @@ export const postRelease = () => {
   const msg = 'Post release'
   if (getScript('postrelease')) {
     return runScript('postrelease', msg)
-  } else if (getScript('postreleasy')) {
+  }
+  if (getScript('postreleasy')) {
     return runScript('postreleasy', msg)
   }
 }

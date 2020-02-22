@@ -33,10 +33,10 @@ export class ManifestEditor {
       return readJson(path)
     } catch (e) {
       if (e.code === 'ENOENT') {
-        throw new Error('Missing manifest.json on app root. ' + e)
+        throw new Error(`Missing manifest.json on app root. ${e}`)
       }
 
-      throw new CommandError('Malformed manifest.json file. ' + e)
+      throw new CommandError(`Malformed manifest.json file. ${e}`)
     }
   }
 

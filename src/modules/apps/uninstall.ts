@@ -44,6 +44,6 @@ export default async (optionalApp: string, options) => {
     await promptAppUninstall(appsList)
   }
 
-  log.debug('Uninstalling app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
+  log.debug(`Uninstalling app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return uninstallApps(appsList)
 }

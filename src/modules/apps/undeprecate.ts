@@ -20,9 +20,7 @@ const switchToVendorMessage = (vendor: string): string => {
 
 const promptUndeprecate = (appsList: string[]) =>
   promptConfirm(
-    `Are you sure you want to undeprecate app` +
-      (appsList.length > 1 ? 's' : '') +
-      ` ${chalk.green(appsList.join(', '))}?`
+    `Are you sure you want to undeprecate app${appsList.length > 1 ? 's' : ''} ${chalk.green(appsList.join(', '))}?`
   )
 
 const promptUndeprecateOnVendor = (msg: string) => promptConfirm(msg)
@@ -33,10 +31,8 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
     const canSwitchToPrevious = await promptUndeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
       await switchAccount(previousAccount, { workspace: previousWorkspace })
-      return
     }
   }
-  return
 }
 
 const undeprecateApp = async (app: string): Promise<void> => {

@@ -110,6 +110,6 @@ export default async (optionalApp: string, options) => {
   await validateAppAction('install', optionalApp)
   const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
   const appsList = [app, ...parseArgs(options._)]
-  log.debug('Installing app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
+  log.debug(`Installing app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return prepareInstall(appsList, force)
 }

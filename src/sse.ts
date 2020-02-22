@@ -120,10 +120,9 @@ const filterAndMaybeLogVTEXLogs = (message: string) => {
               console.log(obj)
             }
             return ''
-          } else {
-            // Not a log object, just return original string
-            return m
           }
+          // Not a log object, just return original string
+          return m
         } catch (e) {
           // Not an object, just return original string
           return m
@@ -147,7 +146,7 @@ export const logAll = (context: Context, logLevel: string, id: string, senders?:
       return
     }
 
-    const suffix = sender.startsWith(id) ? '' : ' ' + chalk.gray(sender)
+    const suffix = sender.startsWith(id) ? '' : ` ${chalk.gray(sender)}`
     const formatted = (message || code || '').replace(/\n\s*$/, '') + suffix
     if (previous !== formatted) {
       previous = formatted
@@ -176,7 +175,7 @@ export const onAuth = (
 
     es.onerror = event => {
       es.close()
-      const errMessage = 'Connection to login server has failed' + (event.status ? ` with status ${event.status}` : '')
+      const errMessage = `Connection to login server has failed${event.status ? ` with status ${event.status}` : ''}`
       reject(new SSEConnectionError(errMessage, event.status))
     }
   })

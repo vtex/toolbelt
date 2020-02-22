@@ -9,7 +9,7 @@ const isScopedDirOrLink = (path: string, stats: Stats) => {
 }
 
 const isLink = (_: string, stats: Stats) => {
-  return stats != null && stats.isSymbolicLink()
+  return stats?.isSymbolicLink()
 }
 
 const isScopedModule = (dirName: string) => {
@@ -129,7 +129,7 @@ export class YarnSymlinkedModulesConfig {
     })
   }
 
-  private addModulesMetadata(modulesRealPaths: [string, string][]) {
+  private addModulesMetadata(modulesRealPaths: Array<[string, string]>) {
     modulesRealPaths.forEach(([moduleName, path]) => {
       if (moduleName in this._metadata && this._metadata[moduleName] !== path) {
         log.warn(`Found ${moduleName} from two sources as linked dependencies. Ignoring the one from ${path}`)

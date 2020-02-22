@@ -45,7 +45,7 @@ export const parseManifest = (content: string): Manifest => {
   try {
     return JSON.parse(content)
   } catch (e) {
-    throw new CommandError('Malformed manifest.json file. ' + e)
+    throw new CommandError(`Malformed manifest.json file. ${e}`)
   }
 }
 
