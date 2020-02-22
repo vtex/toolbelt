@@ -32,6 +32,12 @@
       "rules": {
         "@typescript-eslint/ban-ts-ignore": "off"
       }
+    },
+    {
+      "files": ["./src/modules/apps/deprecate.ts", "./src/modules/apps/undeprecate.ts"],
+      "rules": {
+        "no-await-in-loop": "off"
+      }
     }
   ]
 }
