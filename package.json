@@ -122,6 +122,6 @@
     "nodemon-notifier-cli": "https://github.com/Slessi/nodemon-notifier-cli.git",
     "prettier": "^1.19.1",
     "ts-jest": "24.2.0",
-    "typescript": "^3.7.4"
+    "typescript": "^3.8.2"
   }
 }
