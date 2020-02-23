@@ -62,7 +62,7 @@ const publisher = (workspace = 'master') => {
         throw err
       }
     }
-    return await retry(publish, retryOpts)
+    return retry(publish, retryOpts)
   }
 
   const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {

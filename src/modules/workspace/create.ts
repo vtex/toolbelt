@@ -13,7 +13,7 @@ const warmUpRouteMap = async (workspace: string) => {
     const { builder } = createClients({ workspace })
     await builder.availability('vtex.builder-hub@0.x', null)
     log.debug('Warmed up route map')
-  } catch (err) {}
+  } catch (err) {} // eslint-disable-line no-empty
 }
 
 export default async (name: string, options: any) => {

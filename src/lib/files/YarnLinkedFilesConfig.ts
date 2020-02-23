@@ -55,6 +55,7 @@ export class YarnSymlinkedModulesConfig {
     this.stack.push(...allPackageJsonsFolders)
     while (this.stack.length > 0) {
       const moduleFolder = this.stack.pop()
+      // eslint-disable-next-line no-await-in-loop
       const dependencies = await this.discoverDependencies(moduleFolder)
       this.graph[moduleFolder] = dependencies
       this.addSubDependenciesToStack(dependencies)

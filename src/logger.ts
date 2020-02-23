@@ -36,8 +36,8 @@ const errorJsonReplacer = (key: any, value: any) => {
     value.args = value.args.map((arg: any) => {
       if (arg instanceof Error) {
         const error = {}
-        Object.getOwnPropertyNames(arg).forEach(key => {
-          error[key] = arg[key]
+        Object.getOwnPropertyNames(arg).forEach(objKey => {
+          error[objKey] = arg[objKey]
         })
         return error
       }
@@ -78,7 +78,7 @@ const levels = ['debug', 'info', 'error', 'warn', 'verbose', 'silly']
 levels.forEach(level => {
   logger[level] = (msg: any, ...remains: any[]) => {
     if (remains.length > 0 && isObject(remains[0]) && remains[0].message) {
-      msg += ' '
+      msg = `${msg} `
     }
 
     if (typeof msg !== 'string') {

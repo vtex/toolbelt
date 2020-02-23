@@ -83,7 +83,7 @@ export const promptProductionWorkspace = async (promptMessage: string): Promise<
       filter(({ name, production }) => production === true && name !== 'master')
     )
   )
-  return await enquirer
+  return enquirer
     .prompt({
       name: 'workspace',
       message: promptMessage,

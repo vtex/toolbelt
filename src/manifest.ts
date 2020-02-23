@@ -5,8 +5,8 @@ import { memoize } from 'ramda'
 
 import { CommandError } from './errors'
 
-const readFileUtf = async (file: string): Promise<string> => {
-  return await readFile(file, 'utf8')
+const readFileUtf = (file: string): Promise<string> => {
+  return readFile(file, 'utf8')
 }
 
 const MANIFEST_SCHEMA = 'https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema'

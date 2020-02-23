@@ -129,12 +129,12 @@ export class ProjectUploader {
       stickyHint,
     }
 
-    if (operation == 'link') {
-      return await this.builderHubClient.linkApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
-    } if (operation == 'publish') {
-      return await this.builderHubClient.publishApp(this.appName, zipFile, { ...builderHubResolvingOpts, tag: publishTag }, requestParams)
+    if (operation === 'link') {
+      return this.builderHubClient.linkApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
+    } if (operation === 'publish') {
+      return this.builderHubClient.publishApp(this.appName, zipFile, { ...builderHubResolvingOpts, tag: publishTag }, requestParams)
     } 
-      return await this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
+      return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
     
   }
 

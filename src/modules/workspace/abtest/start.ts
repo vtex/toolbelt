@@ -24,7 +24,7 @@ const promptSignificanceLevel = async (): Promise<string> => {
     )(SIGNIFICANCE_LEVELS)
   )
   const significanceTimePreviewMap = fromPairs(zip(keys(SIGNIFICANCE_LEVELS), significanceTimePreviews))
-  return await enquirer
+  return enquirer
     .prompt({
       name: 'level',
       message: 'Choose the significance level:',

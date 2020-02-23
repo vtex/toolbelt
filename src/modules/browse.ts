@@ -31,8 +31,9 @@ const prepareSupportBrowser = async (account: string, workspace: string): Promis
   return response.data.oneTimeToken
 }
 
-export default async (endpoint = '', { q, qr }) => {
+export default async (endpointInput, { q, qr }) => {
   const { account, workspace } = conf.currentContext
+  let endpoint = endpointInput ?? ''
   if (isSupportSession()) {
     const token = await prepareSupportBrowser(account, workspace)
     endpoint = `_v/private/support-login/login?token=${token}&returnUrl=/${endpoint}`

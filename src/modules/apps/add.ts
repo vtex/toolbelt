@@ -47,6 +47,7 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
       if (!ManifestValidator.dependencyName.test(app)) {
         throw new CommandError(invalidAppMessage)
       }
+      // eslint-disable-next-line no-await-in-loop
       await addApp(app, manifest)
     }
   } catch (err) {

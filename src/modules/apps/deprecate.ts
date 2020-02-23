@@ -30,7 +30,7 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
   if (previousAccount !== currentAccount) {
     const canSwitchToPrevious = await promptDeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
-      return await switchAccount(previousAccount, { workspace: previousWorkspace })
+      return switchAccount(previousAccount, { workspace: previousWorkspace })
     }
   }
 }
@@ -47,7 +47,7 @@ const deprecateApp = async (app: string): Promise<void> => {
   }
   const context = { account: vendor, workspace: 'master', authToken: getToken() }
   const { registry } = createClients(context)
-  return await registry.deprecateApp(`${vendor}.${name}`, version)
+  return registry.deprecateApp(`${vendor}.${name}`, version)
 }
 
 const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
@@ -56,6 +56,7 @@ const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
     log.debug('Starting to deprecate app:', app)
 
     try {
+      // eslint-disable-next-line no-await-in-loop
       await deprecateApp(app)
       log.info('Successfully deprecated', app)
     } catch (e) {
@@ -63,8 +64,9 @@ const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
         log.error(`Error deprecating ${app}. App not found`)
       } else if (e.message && e.response.statusText) {
         log.error(`Error deprecating ${app}. ${e.message}. ${e.response.statusText}`)
-        return await switchToPreviousAccount(originalAccount, originalWorkspace)
+        return switchToPreviousAccount(originalAccount, originalWorkspace)
       } else {
+        // eslint-disable-next-line no-await-in-loop
         await switchToPreviousAccount(originalAccount, originalWorkspace)
         throw e
       }

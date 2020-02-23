@@ -10,7 +10,7 @@ const castValue = value => {
     parsedValue = value
   }
   const numberCast = Number(value)
-  return isNaN(numberCast) ? parsedValue : numberCast
+  return Number.isNaN(numberCast) ? parsedValue : numberCast
 }
 
 const transformCommandsToObj = commandSettings => {

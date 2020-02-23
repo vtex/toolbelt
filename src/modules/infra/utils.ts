@@ -26,6 +26,7 @@ const diff = (a: string | string[], b: string | string[]): string[] => {
   let fromFormatter = x => x
   let toFormatter = x => x
   R.compose(
+    // eslint-disable-next-line array-callback-return
     R.map(([aDigit, bDigit]) => {
       if (aDigit !== bDigit) {
         fromFormatter = x => chalk.red(x)

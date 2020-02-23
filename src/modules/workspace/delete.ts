@@ -58,6 +58,6 @@ export default async (name: string, options) => {
   const deleted = await deleteWorkspaces(names)
   if (contains(workspace, deleted)) {
     log.warn(`The workspace you were using was deleted`)
-    return await workspaceUse('master')
+    return workspaceUse('master')
   }
 }

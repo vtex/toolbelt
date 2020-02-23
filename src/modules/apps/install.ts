@@ -46,8 +46,10 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
     try {
       log.debug('Starting to install app', app)
       if (app === 'vtex.billing' || head(app.split('@')) === 'vtex.billing') {
+        // eslint-disable-next-line no-await-in-loop
         await legacyInstallApp(app)
       } else {
+        // eslint-disable-next-line no-await-in-loop
         const { code, billingOptions } = await installApp(app, false, force)
         switch (code) {
           case 'installed_from_own_registry':
@@ -66,6 +68,7 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
             if (!billingOptions) {
               throw new Error('Failed to get billing options')
             }
+            // eslint-disable-next-line no-await-in-loop
             await checkBillingOptions(app, JSON.parse(billingOptions), force)
         }
       }

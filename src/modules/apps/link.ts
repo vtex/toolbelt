@@ -26,6 +26,7 @@ import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from
 
 let nodeNotifier
 if (process.platform !== 'win32') {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   nodeNotifier = require('node-notifier')
 }
 
@@ -100,7 +101,6 @@ const performInitialLink = async (
       if (err.status) {
         const { response } = err
         const { status } = response
-        const data = response?.data
         const { message } = data
         const statusMessage = status ? `: Status ${status}` : ''
         log.error(`Error linking app${statusMessage} (try: ${tryCount})`)

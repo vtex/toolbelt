@@ -202,7 +202,7 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
         R.filter((k: any) => !!k.removed || !!k.added)
       )(depsDiff)
     ),
-  ].sort()
+  ].sort((strA, strB) => strA.localeCompare(strB))
   const produceStartValues = () => R.map(_ => [])(depNames) as any
   // Each of the following objects will start as a { `depName`: [] }, ... }-like.
   const addedDeps = R.zipObj(depNames, produceStartValues())
@@ -211,6 +211,7 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
   // Custom function to set the objects values.
   const setObjectValues = (obj, formatter, filterFunction) => {
     R.compose<void, any[], any[], any[], any[]>(
+      // eslint-disable-next-line array-callback-return
       R.map(k => {
         const index = R.head(R.split('@', k))
         obj[index].push(formatter(k))

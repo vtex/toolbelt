@@ -1,5 +1,5 @@
 import { readJson, writeJson, writeJsonSync } from 'fs-extra'
-import path from 'path'
+import { resolve } from 'path'
 import { CommandError } from '../../errors'
 import { getAppRoot } from '../../manifest'
 import { ManifestValidator } from './ManifestValidator'
@@ -10,7 +10,7 @@ export class ManifestEditor {
     'https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema'
 
   public static get manifestPath() {
-    return path.resolve(getAppRoot(), this.MANIFEST_FILE_NAME)
+    return resolve(getAppRoot(), this.MANIFEST_FILE_NAME)
   }
 
   public static async getManifestEditor(path = ManifestEditor.manifestPath) {
