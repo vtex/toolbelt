@@ -24,12 +24,6 @@
       }
     },
     {
-      "files": ["*.test.ts"],
-      "rules": {
-        "@typescript-eslint/no-var-requires": "off"
-      }
-    },
-    {
       "files": ["./src/logger.ts"],
       "rules": {
         "@typescript-eslint/ban-ts-ignore": "off"
