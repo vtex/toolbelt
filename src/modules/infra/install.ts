@@ -30,6 +30,7 @@ const getNewVersion = curry<string, string, string[], [string, string]>(
     if (hasSuffixAndValidSuffix && hasSuffixOnAvailable) {
       return [installedVersion, suffix]
     }
+
     if (hasSuffixAndValidSuffix && !hasSuffixOnAvailable) {
       return [installedVersion, null]
     }
@@ -54,15 +55,18 @@ const logInstall = curry<string, [string, string], void>(
       log.error(`No suitable version for ${name}`)
       return
     }
+
     if (newVersion === installedVersion) {
       console.log(`${name}  ${chalk.yellow(installedVersion)}`)
       log.info('Service is up to date.')
       return
     }
+
     if (installedVersion) {
       const [from, to] = diffVersions(installedVersion, newVersion)
       return console.log(`${name}  ${from} ${chalk.gray('->')} ${to}`)
     }
+
     return console.log(`${name}  ${chalk.green(newVersion)}`)
   }
 )

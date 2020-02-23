@@ -28,9 +28,11 @@ const getSizeString = (byteSize: number, colored = true, megaBytesintensityScale
   if (mbSize < megaBytesintensityScale[0]) {
     return `${chalk.bold.green(`${mbSizeString}MB`)}`
   }
+
   if (mbSize < megaBytesintensityScale[1]) {
     return `${chalk.bold.yellow(`${mbSizeString}MB`)}`
   }
+
   return `${chalk.bold.red(`${mbSizeString}MB`)}`
 }
 
@@ -131,11 +133,13 @@ export class ProjectUploader {
 
     if (operation === 'link') {
       return this.builderHubClient.linkApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
-    } if (operation === 'publish') {
+    } 
+    
+    if (operation === 'publish') {
       return this.builderHubClient.publishApp(this.appName, zipFile, { ...builderHubResolvingOpts, tag: publishTag }, requestParams)
     } 
-      return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
-    
+      
+    return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
   }
 
   private checkForManifest(files: FileToSend[]) {

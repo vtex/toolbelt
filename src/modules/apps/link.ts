@@ -138,7 +138,7 @@ const watchAndSendChanges = async (
 
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
-    if (data?.code && data.code === 'initial_link_required') {
+    if (data?.code === 'initial_link_required') {
       return warnAndLinkFromStart(projectUploader, unsafe, { yarnFilesManager })
     }
     throw e
