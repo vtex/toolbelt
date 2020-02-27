@@ -98,7 +98,7 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
       }
     }
     const unlisten = onBuildEvent(context, appOrKey, callback, senders)
-    const unlistenAll = () => unlisten(...allEvents)
+    unlistenAll = () => unlisten(...allEvents)
     if (!waitCompletion) {
       resolve(unlistenAll)
     }

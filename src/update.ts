@@ -9,7 +9,7 @@ export default function notify() {
     const oldVersion = notifier.update.current
     const latestVersion = notifier.update.latest
     const changelog = `https://github.com/vtex/toolbelt/blob/master/CHANGELOG.md`
-    let type = notifier.update.type
+    let { type } = notifier.update
 
     switch (type) {
       case 'major':

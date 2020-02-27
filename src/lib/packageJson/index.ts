@@ -27,12 +27,10 @@ export class PackageJson {
     if (isRangeVersion(versionRequired)) {
       if (isRangeVersion(versionFound)) {
         return semver.satisfies(yarnResolvedVersion, versionRequired)
-      } else {
-        return semver.satisfies(versionFound, versionRequired)
       }
-    } else {
-      return versionRequired === versionFound
+      return semver.satisfies(versionFound, versionRequired)
     }
+    return versionRequired === versionFound
   }
 
   static async getBuilderPackageJsonIfExists(

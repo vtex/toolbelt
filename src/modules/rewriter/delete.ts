@@ -66,8 +66,10 @@ const handleDelete = async (csvPath: string) => {
 
   for (const paths of separatedPaths.splice(counter)) {
     try {
+      // eslint-disable-next-line no-await-in-loop
       await rewriter.deleteRedirects(paths)
     } catch (e) {
+      // eslint-disable-next-line no-await-in-loop
       await saveMetainfo(metainfo, 'deletes', fileHash, counter)
       listener.close()
       throw e

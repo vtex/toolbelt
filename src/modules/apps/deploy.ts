@@ -23,10 +23,9 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
   if (previousAccount !== currentAccount) {
     const canSwitchToPrevious = await promptConfirm(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
-      return await switchAccount(previousAccount, { workspace: previousWorkspace })
+      return switchAccount(previousAccount, { workspace: previousWorkspace })
     }
   }
-  return
 }
 
 const deployRelease = async (app: string): Promise<void> => {
@@ -41,7 +40,7 @@ const deployRelease = async (app: string): Promise<void> => {
   }
   const context = { account: vendor, workspace: 'master', authToken: getToken() }
   const { registry } = createClients(context)
-  return await registry.validateApp(`${vendor}.${name}`, version)
+  return registry.validateApp(`${vendor}.${name}`, version)
 }
 
 const prepareDeploy = async (app, originalAccount, originalWorkspace: string): Promise<void> => {

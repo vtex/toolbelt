@@ -65,7 +65,7 @@ const printAppsDiff = (
     return
   }
   console.log(`The following ${message}`)
-  console.log(diffTable.toString() + `\n`)
+  console.log(`${diffTable.toString()}\n`)
 }
 
 const printEditionAppsDiff = (resolvedUpdates: any) => {
@@ -79,7 +79,7 @@ const printEditionAppsDiff = (resolvedUpdates: any) => {
     return
   }
   console.log(`The following apps will be uninstalled/installed due to changes to current edition:`)
-  console.log(diffTable.toString() + '\n')
+  console.log(`${diffTable.toString()}\n`)
 }
 
 const hasAvailableUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {

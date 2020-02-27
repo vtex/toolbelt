@@ -82,9 +82,8 @@ const onError = async (e: any) => {
         clearCachedModules()
         main()
       }) // TODO: catch with different handler for second error
-    } else {
-      return // Prevent multiple login attempts
     }
+    return // Prevent multiple login attempts
   }
 
   if (status) {

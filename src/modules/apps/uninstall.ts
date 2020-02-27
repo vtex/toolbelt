@@ -25,6 +25,7 @@ const uninstallApps = async (appsList: string[]): Promise<void> => {
     const appName = ManifestValidator.validateApp(app.split('@')[0], true)
     try {
       log.debug('Starting to uninstall app', appName)
+      // eslint-disable-next-line no-await-in-loop
       await uninstallApp(appName)
       log.info(`Uninstalled app ${appName} successfully`)
     } catch (e) {
@@ -44,6 +45,6 @@ export default async (optionalApp: string, options) => {
     await promptAppUninstall(appsList)
   }
 
-  log.debug('Uninstalling app' + (appsList.length > 1 ? 's' : '') + `: ${appsList.join(', ')}`)
+  log.debug(`Uninstalling app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return uninstallApps(appsList)
 }

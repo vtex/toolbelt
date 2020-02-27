@@ -14,7 +14,7 @@ const workspace = getWorkspace()
 
 const promptWorkspaceDeletion = (names: string[]) =>
   promptConfirm(
-    `Are you sure you want to delete workspace` + (names.length > 1 ? 's' : '') + ` ${chalk.green(names.join(', '))}?`,
+    `Are you sure you want to delete workspace${names.length > 1 ? 's' : ''} ${chalk.green(names.join(', '))}?`,
     true
   )
 
@@ -43,7 +43,7 @@ export default async (name: string, options) => {
   const names = prepend(name, parseArgs(options._))
   const preConfirm = options.y || options.yes
   const force = options.f || options.force
-  log.debug('Deleting workspace' + (names.length > 1 ? 's' : '') + ':', names.join(', '))
+  log.debug(`Deleting workspace${names.length > 1 ? 's' : ''}:`, names.join(', '))
 
   if (!force && contains(workspace, names)) {
     return log.error(
@@ -58,6 +58,6 @@ export default async (name: string, options) => {
   const deleted = await deleteWorkspaces(names)
   if (contains(workspace, deleted)) {
     log.warn(`The workspace you were using was deleted`)
-    return await workspaceUse('master')
+    return workspaceUse('master')
   }
 }

@@ -58,10 +58,10 @@ const performTest = async (
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
     } catch (err) {
-      const response = err.response
-      const status = response.status
-      const data = response && response.data
-      const message = data.message
+      const { response } = err
+      const { status } = response
+      const data = response?.data
+      const { message } = data
       const statusMessage = status ? `: Status ${status}` : ''
       log.error(`Error testing app${statusMessage} (try: ${tryCount})`)
       if (message) {

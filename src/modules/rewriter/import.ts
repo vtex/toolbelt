@@ -80,8 +80,10 @@ const handleImport = async (csvPath: string) => {
 
   for (const redirects of routesList.splice(counter)) {
     try {
+      // eslint-disable-next-line no-await-in-loop
       await rewriter.importRedirects(redirects as RedirectInput[])
     } catch (e) {
+      // eslint-disable-next-line no-await-in-loop
       await saveMetainfo(metainfo, IMPORTS, fileHash, counter)
       listener.close()
       throw e

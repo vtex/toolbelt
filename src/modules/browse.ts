@@ -7,7 +7,7 @@ import { clusterIdDomainInfix, publicEndpoint } from '../env'
 // Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯
 const QRCode = require('qrcode-terminal') // eslint-disable-line @typescript-eslint/no-var-requires
 
-const isSupportRole = (role: string): boolean => role && role.startsWith('vtex.support-authority')
+const isSupportRole = (role: string): boolean => role?.startsWith('vtex.support-authority')
 
 const isSupportSession = (): boolean => {
   const token = conf.getToken()
@@ -31,8 +31,9 @@ const prepareSupportBrowser = async (account: string, workspace: string): Promis
   return response.data.oneTimeToken
 }
 
-export default async (endpoint = '', { q, qr }) => {
+export default async (endpointInput, { q, qr }) => {
   const { account, workspace } = conf.currentContext
+  let endpoint = endpointInput ?? ''
   if (isSupportSession()) {
     const token = await prepareSupportBrowser(account, workspace)
     endpoint = `_v/private/support-login/login?token=${token}&returnUrl=/${endpoint}`

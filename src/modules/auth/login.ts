@@ -54,7 +54,7 @@ const notifyRelease = () => {
 }
 
 export default async options => {
-  const defaultArgumentAccount = options && options._ && options._[0]
+  const defaultArgumentAccount = options?._?.[0]
   const optionAccount = options ? options.a || options.account || defaultArgumentAccount : null
   const optionWorkspace = options ? options.w || options.workspace : null
   const usePrevious = !(optionAccount || optionWorkspace) && details && (await promptUsePrevious())

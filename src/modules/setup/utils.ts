@@ -64,6 +64,6 @@ export function hasDevDependenciesInstalled({ deps, pkg }: { deps: Record<string
  */
 export function sortObject<T extends object>(obj: T): T {
   return Object.keys(obj)
-    .sort()
+    .sort((strA, strB) => strA.localeCompare(strB))
     .reduce((sortedObject, key) => ({ ...sortedObject, [key]: obj[key] }), {}) as T
 }

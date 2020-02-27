@@ -28,6 +28,7 @@ export default async (optionalApp: string, options) => {
         } else {
           try {
             log.debug(`Starting to update ${locator}`)
+            // eslint-disable-next-line no-await-in-loop
             await updateDependency(`${vendor}.${name}`, version, vendor)
           } catch (e) {
             log.error(e.message)

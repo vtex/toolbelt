@@ -29,7 +29,9 @@ const getNewVersion = curry<string, string, string[], [string, string]>(
 
     if (hasSuffixAndValidSuffix && hasSuffixOnAvailable) {
       return [installedVersion, suffix]
-    } else if (hasSuffixAndValidSuffix && !hasSuffixOnAvailable) {
+    }
+
+    if (hasSuffixAndValidSuffix && !hasSuffixOnAvailable) {
       return [installedVersion, null]
     }
 
@@ -52,14 +54,19 @@ const logInstall = curry<string, [string, string], void>(
     if (!newVersion) {
       log.error(`No suitable version for ${name}`)
       return
-    } else if (newVersion === installedVersion) {
+    }
+
+    if (newVersion === installedVersion) {
       console.log(`${name}  ${chalk.yellow(installedVersion)}`)
       log.info('Service is up to date.')
       return
-    } else if (installedVersion) {
+    }
+
+    if (installedVersion) {
       const [from, to] = diffVersions(installedVersion, newVersion)
       return console.log(`${name}  ${from} ${chalk.gray('->')} ${to}`)
     }
+
     return console.log(`${name}  ${chalk.green(newVersion)}`)
   }
 )
@@ -70,7 +77,7 @@ const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolea
 const getInstalledVersion = (service: string) =>
   listInstalledServices()
     .then(data => data.find(({ name }) => name === service))
-    .then(s => s && s.version)
+    .then(s => s?.version)
 
 export default async (name: string) => {
   const [service, suffix] = name.split('@')

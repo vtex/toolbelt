@@ -23,7 +23,7 @@ const safeFolder = folder => {
   if (folder && services.indexOf(folder) === -1) {
     log.warn('Using unknown service', folder)
   }
-  return folder ? './' + folder + '/**' : '*/**'
+  return folder ? `./${folder}/**` : '*/**'
 }
 
 const isTestOrMockPath = (p: string) => /.*(test|mock|snapshot).*/.test(p.toLowerCase())

@@ -15,8 +15,8 @@ export default () => {
     .then((workspaceArray: WorkspaceResponse[]) =>
       workspaceArray.forEach(workspace => {
         const name = workspace.name === currentWorkspace ? chalk.green(`* ${workspace.name}`) : workspace.name
-        const weight = workspace.weight
-        const production = workspace.production
+        const { weight } = workspace
+        const { production } = workspace
         table.push([name, weight, production])
       })
     )

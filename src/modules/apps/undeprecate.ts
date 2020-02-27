@@ -20,9 +20,7 @@ const switchToVendorMessage = (vendor: string): string => {
 
 const promptUndeprecate = (appsList: string[]) =>
   promptConfirm(
-    `Are you sure you want to undeprecate app` +
-      (appsList.length > 1 ? 's' : '') +
-      ` ${chalk.green(appsList.join(', '))}?`
+    `Are you sure you want to undeprecate app${appsList.length > 1 ? 's' : ''} ${chalk.green(appsList.join(', '))}?`
   )
 
 const promptUndeprecateOnVendor = (msg: string) => promptConfirm(msg)
@@ -33,10 +31,8 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
     const canSwitchToPrevious = await promptUndeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
     if (canSwitchToPrevious) {
       await switchAccount(previousAccount, { workspace: previousWorkspace })
-      return
     }
   }
-  return
 }
 
 const undeprecateApp = async (app: string): Promise<void> => {
@@ -52,7 +48,7 @@ const undeprecateApp = async (app: string): Promise<void> => {
 
   const context = { account: vendor, workspace: 'master', authToken: getToken() }
   const { registry } = createClients(context)
-  return await registry.undeprecateApp(`${vendor}.${name}`, version)
+  return registry.undeprecateApp(`${vendor}.${name}`, version)
 }
 
 const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
@@ -60,6 +56,7 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
     ManifestValidator.validateApp(app)
     try {
       log.debug('Starting to undeprecate app:', app)
+      // eslint-disable-next-line no-await-in-loop
       await undeprecateApp(app)
       log.info('Successfully undeprecated', app)
     } catch (e) {
@@ -67,9 +64,11 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
         log.error(`Error undeprecating ${app}. App not found`)
       } else if (e.message && e.response.statusText) {
         log.error(`Error undeprecating ${app}. ${e.message}. ${e.response.statusText}`)
+        // eslint-disable-next-line no-await-in-loop
         await switchToPreviousAccount(originalAccount, originalWorkspace)
         return
       } else {
+        // eslint-disable-next-line no-await-in-loop
         await switchToPreviousAccount(originalAccount, originalWorkspace)
         throw e
       }

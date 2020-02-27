@@ -64,6 +64,7 @@ const handleExport = async (csvPath: string) => {
   for (const [from, to] of listOfRanges.splice(counter)) {
     let result: any
     try {
+      // eslint-disable-next-line no-await-in-loop
       result = await rewriter.exportRedirects(from, to)
     } catch (e) {
       saveMetainfo(metainfo, EXPORTS, indexHash, counter, listOfRoutes)

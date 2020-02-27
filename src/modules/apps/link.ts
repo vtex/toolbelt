@@ -26,6 +26,7 @@ import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from
 
 let nodeNotifier
 if (process.platform !== 'win32') {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   nodeNotifier = require('node-notifier')
 }
 
@@ -98,10 +99,9 @@ const performInitialLink = async (
       }
 
       if (err.status) {
-        const response = err.response
-        const status = response.status
-        const data = response && response.data
-        const message = data.message
+        const { response } = err
+        const { status } = response
+        const { message } = data
         const statusMessage = status ? `: Status ${status}` : ''
         log.error(`Error linking app${statusMessage} (try: ${tryCount})`)
         if (message) {
@@ -138,7 +138,7 @@ const watchAndSendChanges = async (
 
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
-    if (data && data.code && data.code === 'initial_link_required') {
+    if (data?.code === 'initial_link_required') {
       return warnAndLinkFromStart(projectUploader, unsafe, { yarnFilesManager })
     }
     throw e

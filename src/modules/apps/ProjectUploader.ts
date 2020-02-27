@@ -27,11 +27,13 @@ const getSizeString = (byteSize: number, colored = true, megaBytesintensityScale
 
   if (mbSize < megaBytesintensityScale[0]) {
     return `${chalk.bold.green(`${mbSizeString}MB`)}`
-  } else if (mbSize < megaBytesintensityScale[1]) {
-    return `${chalk.bold.yellow(`${mbSizeString}MB`)}`
-  } else {
-    return `${chalk.bold.red(`${mbSizeString}MB`)}`
   }
+
+  if (mbSize < megaBytesintensityScale[1]) {
+    return `${chalk.bold.yellow(`${mbSizeString}MB`)}`
+  }
+
+  return `${chalk.bold.red(`${mbSizeString}MB`)}`
 }
 
 export class ProjectSizeLimitError extends Error {
@@ -129,13 +131,15 @@ export class ProjectUploader {
       stickyHint,
     }
 
-    if (operation == 'link') {
-      return await this.builderHubClient.linkApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
-    } else if (operation == 'publish') {
-      return await this.builderHubClient.publishApp(this.appName, zipFile, { ...builderHubResolvingOpts, tag: publishTag }, requestParams)
-    } else {
-      return await this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
-    }
+    if (operation === 'link') {
+      return this.builderHubClient.linkApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
+    } 
+    
+    if (operation === 'publish') {
+      return this.builderHubClient.publishApp(this.appName, zipFile, { ...builderHubResolvingOpts, tag: publishTag }, requestParams)
+    } 
+      
+    return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
   }
 
   private checkForManifest(files: FileToSend[]) {

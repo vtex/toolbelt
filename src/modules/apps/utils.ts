@@ -222,9 +222,8 @@ const promptConfirmName = (msg: string): Promise<string> =>
 export async function showBuilderHubMessage(message: string, showPrompt: boolean, manifest: ManifestEditor) {
   if (message) {
     if (showPrompt) {
-      const confirmMsg = `Are you absolutely sure?\n${
-        message ? message : ''
-      }\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
+      const confirmMsg = `Are you absolutely sure?\n${message ||
+        ''}\nPlease type in the name of the app to confirm (ex: vtex.getting-started):`
       const appNameInput = await promptConfirmName(confirmMsg)
       const AppName = `${manifest.vendor}.${manifest.name}`
       if (appNameInput !== AppName) {
@@ -242,7 +241,7 @@ export const switchAccountMessage = (previousAccount: string, currentAccount: st
   )} account?`
 }
 
-export const resolveAppId = async (appName: string, appVersion: string): Promise<string> =>
-  await apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
+export const resolveAppId = (appName: string, appVersion: string): Promise<string> =>
+  apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
 
 export const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')

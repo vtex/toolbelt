@@ -10,12 +10,10 @@ const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 
 const warmUpRouteMap = async (workspace: string) => {
   try {
-    const { builder } = createClients({ workspace: workspace })
+    const { builder } = createClients({ workspace })
     await builder.availability('vtex.builder-hub@0.x', null)
     log.debug('Warmed up route map')
-  } catch (err) {
-    return
-  }
+  } catch (err) {} // eslint-disable-line no-empty
 }
 
 export default async (name: string, options: any) => {
