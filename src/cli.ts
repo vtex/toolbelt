@@ -4,19 +4,18 @@ import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
 import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
 import os from 'os'
-
 import path from 'path'
 import { without } from 'ramda'
 import 'v8-compile-cache'
 import * as pkg from '../package.json'
-import { CLIPrechecker } from './CLIPrechecker.js'
+import { CLIPrechecker } from './CLIPreChecker/CLIPrechecker.js'
 import * as conf from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
+import { Token } from './lib/auth/Token'
 import log from './logger'
 import tree from './modules/tree'
 import { checkAndOpenNPSLink } from './nps'
-import { Token } from './lib/auth/Token'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
 
@@ -63,7 +62,7 @@ const main = async () => {
   await run(command)
 }
 
-const onError = e => {
+const onError = async (e: any) => {
   const status = e?.response?.status
   const statusText = e?.response?.statusText
   const headers = e?.response?.headers
@@ -74,21 +73,21 @@ const onError = e => {
     log.debug('Failed request headers:', headers)
   }
 
-  if (status) {
-    if (status === 401) {
-      if (!loginPending) {
-        log.error('There was an authentication error. Please login again')
-        // Try to login and re-issue the command.
-        loginPending = true
-        return run({ command: loginCmd }).then(() => {
-          clearCachedModules()
-          main()
-        }) // TODO: catch with different handler for second error
-      } else {
-        return // Prevent multiple login attempts
-      }
+  if (status === 401) {
+    if (!loginPending) {
+      log.error('There was an authentication error. Please login again')
+      // Try to login and re-issue the command.
+      loginPending = true
+      return run({ command: loginCmd }).then(() => {
+        clearCachedModules()
+        main()
+      }) // TODO: catch with different handler for second error
+    } else {
+      return // Prevent multiple login attempts
     }
+  }
 
+  if (status) {
     if (status >= 400) {
       const message = data ? data.message : null
       const source = e.config.url
@@ -166,12 +165,17 @@ axios.interceptors.request.use(config => {
 
 process.on('unhandledRejection', onError)
 
-CLIPrechecker.runChecks().then(() => {
+const start = async () => {
+  CLIPrechecker.getCLIPrechecker(pkg).runChecks()
+
   // Show update notification if newer version is available
   notify()
+
   try {
-    main().catch(onError)
-  } catch (e) {
-    onError(e)
+    await main()
+  } catch (err) {
+    await onError(err)
   }
-})
+}
+
+start()
