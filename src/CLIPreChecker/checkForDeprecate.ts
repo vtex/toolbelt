@@ -1,4 +1,5 @@
 import { NpmClient } from '../clients/npmClient'
+import logger from '../logger'
 import { CLIPrecheckerStore, ICLIPrecheckerStore } from './CLIPrecheckerStore'
 
 export const checkForDeprecate = async (store: ICLIPrecheckerStore, pkgName: string, pkgVersion: string) => {
@@ -8,7 +9,7 @@ export const checkForDeprecate = async (store: ICLIPrecheckerStore, pkgName: str
     store.setLastDeprecationCheck(Date.now())
     process.exit()
   } catch (err) {
-    console.log(err)
+    logger.error(err)
     process.exit(1)
   }
 }
