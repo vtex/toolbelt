@@ -17,6 +17,7 @@ export class TelemetryLocalStore implements ITelemetryLocalStore {
     this.storeName = storeName
     this.store = new Configstore(storeName)
   }
+
   public getErrors() {
     return this.store.get('errors') || []
   }

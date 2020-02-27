@@ -133,6 +133,7 @@ export class ErrorReport extends Error {
       env: this.env,
     }
   }
+
   public stringify(pretty = false) {
     if (pretty) {
       return JSON.stringify(this.toObject(), null, 2)

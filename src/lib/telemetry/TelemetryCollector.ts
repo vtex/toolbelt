@@ -39,9 +39,7 @@ export class TelemetryCollector {
     )
   }
 
-  public registerMetric() {
-    return
-  }
+  public registerMetric() {}
 
   public flush(forceRemoteFlush = false) {
     const shouldForceRemoteFlush = forceRemoteFlush || this.errors.length > 0
