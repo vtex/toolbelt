@@ -156,14 +156,10 @@ const onError = async (e: any) => {
 
   process.removeListener('unhandledRejection', onError)
 
-  try {
-    TelemetryCollector.getCollector().registerError(e)
-  } catch (err) {
-    console.log(err)
-  } finally {
-    TelemetryCollector.getCollector().flush()
-    process.exit(1)
-  }
+  const errorReport = TelemetryCollector.getCollector().registerError(e)
+  log.error(`ErrorID: ${errorReport.errorId}`)
+  TelemetryCollector.getCollector().flush()
+  process.exit(1)
 }
 
 axios.interceptors.request.use(config => {

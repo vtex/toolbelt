@@ -23,20 +23,22 @@ export class TelemetryCollector {
     this.metrics = this.store.getMetrics()
   }
 
-  public registerError(error: ErrorReport | Error | any) {
+  public registerError(error: ErrorReport | Error | any): ErrorReport {
     if (error instanceof ErrorReport) {
-      return this.errors.push(error)
+      this.errors.push(error)
+      return error
     }
 
     const code = ErrorReport.createGenericCode(error)
-    return this.errors.push(
-      ErrorReport.create({
-        code,
-        message: error.message,
-        originalError: error,
-        tryToParseError: true,
-      })
-    )
+    const errorReport = ErrorReport.create({
+      code,
+      message: error.message,
+      originalError: error,
+      tryToParseError: true,
+    })
+
+    this.errors.push(errorReport)
+    return errorReport
   }
 
   public registerMetric() {}
