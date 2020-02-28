@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import 'v8-compile-cache'
+
 import axios from 'axios'
 import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
@@ -6,13 +8,13 @@ import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun
 import os from 'os'
 import path from 'path'
 import { without } from 'ramda'
-import 'v8-compile-cache'
 import * as pkg from '../package.json'
-import { CLIPrechecker } from './CLIPreChecker/CLIPrechecker.js'
+import { CLIPrechecker } from './CLIPreChecker/CLIPrechecker'
 import * as conf from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import { Token } from './lib/auth/Token'
+import { TelemetryCollector } from './lib/telemetry/TelemetryCollector'
 import log from './logger'
 import tree from './modules/tree'
 import { checkAndOpenNPSLink } from './nps'
@@ -152,6 +154,11 @@ const onError = async (e: any) => {
     }
   }
 
+  process.removeListener('unhandledRejection', onError)
+
+  const errorReport = TelemetryCollector.getCollector().registerError(e)
+  log.error(`ErrorID: ${errorReport.errorId}`)
+  TelemetryCollector.getCollector().flush()
   process.exit(1)
 }
 
@@ -172,6 +179,7 @@ const start = async () => {
 
   try {
     await main()
+    TelemetryCollector.getCollector().flush()
   } catch (err) {
     await onError(err)
   }
