@@ -44,24 +44,24 @@ export class TelemetryCollector {
   public registerMetric() {}
 
   public flush(forceRemoteFlush = false) {
-    const shouldForceRemoteFlush = forceRemoteFlush || this.errors.length > 0
-
-    if (shouldForceRemoteFlush) {
-      this.store.setErrors([])
-      this.store.setMetrics({})
-
-      const obj = {
-        errors: this.errors.map(err => err.toObject()),
-        metrics: this.metrics,
-      }
-
-      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, JSON.stringify(obj)], {
-        detached: true,
-        stdio: 'ignore',
-      }).unref()
-    } else {
+    const shouldRemoteFlush = forceRemoteFlush || this.errors.length > 0
+    if (!shouldRemoteFlush) {
       this.store.setErrors(this.errors)
       this.store.setMetrics(this.metrics)
+      return
     }
+
+    this.store.setErrors([])
+    this.store.setMetrics({})
+
+    const obj = {
+      errors: this.errors.map(err => err.toObject()),
+      metrics: this.metrics,
+    }
+
+    spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, JSON.stringify(obj)], {
+      detached: true,
+      stdio: 'ignore',
+    }).unref()
   }
 }
