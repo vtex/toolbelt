@@ -74,10 +74,9 @@ export class ErrorReport extends Error {
       return null
     }
 
-    const { url, method, headers: requestHeaders, params, data: requestData, timeout: requestTimeout } =
-      err?.config || {}
+    const { url, method, headers: requestHeaders, params, data: requestData, timeout: requestTimeout } = err.config
 
-    const { status, statusText, headers: responseHeaders, data: responseData } = err?.response || {}
+    const { status, statusText, headers: responseHeaders, data: responseData } = err.response
 
     return {
       requestConfig: {
@@ -114,8 +113,8 @@ export class ErrorReport extends Error {
 
     this.errorDetails = ErrorReport.getRequestErrorMetadata(this.originalError as AxiosError)
     if (tryToParseError) {
-      if (this.errorDetails?.response.data.message) {
-        this.message = this.errorDetails?.response.data.message
+      if (this.errorDetails?.response.data?.message) {
+        this.message = this.errorDetails.response.data.message
       } else {
         this.message = this.originalError.message
       }
