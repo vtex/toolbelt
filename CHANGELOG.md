@@ -6,15 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- [vtex init] Include `payment-provider-example`.
 - Automatically report errors.
 
 ### Changed
 - [vtex setup] Update `eslint-config` packages version.
-
-### Added
-- Including `payment-provider-example` on `vtex init`.
-
-### Changed
 - Update `typescript` to `3.8.2`
 - Update `eslint` and `eslint-config-vtex`.
 - Fixed `eslint` errors.
