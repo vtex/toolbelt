@@ -26,7 +26,7 @@ const templates = {
   'graphql-example': 'graphql-example',
   'payment-provider-example': 'payment-provider-example',
   'admin-example': 'admin-example',
-  'store': 'store-framework-template',
+  store: 'store-framework-template',
   'delivery-theme': 'delivery-theme',
   'service-example': 'service-example',
   'render-guide': 'render-guide',
