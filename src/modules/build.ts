@@ -60,7 +60,6 @@ const runErrorAction = (code, message, errorActions) => {
 }
 
 const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlisten> => {
-  let unlistenAll
   const listenPromise = new Promise((resolve, reject) => {
     const { waitCompletion, onError = {}, onBuild = false, context = currentContext, senders = null } = options
     const callback = (eventType, eventData) => {
@@ -97,17 +96,13 @@ const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlis
         )
       }
     }
+
     const unlisten = onBuildEvent(context, appOrKey, callback, senders)
-    unlistenAll = () => unlisten(...allEvents)
+    const unlistenAll = () => unlisten(...allEvents)
     if (!waitCompletion) {
       resolve(unlistenAll)
     }
-  }).finally(() => {
-    unlistenAll?.()
   }) as Promise<Unlisten>
-
-  listenPromise.catch(() => {}) // eslint-disable-line @typescript-eslint/no-empty-function
-
   return listenPromise
 }
 
