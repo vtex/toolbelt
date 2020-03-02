@@ -11,17 +11,22 @@ import * as git from './git'
 const VTEXInternalTemplates = [
   // Only show these templates for VTEX e-mail users.
   'graphql-example',
-  'service-example',
-  'react-guide',
-  'masterdata-graphql-guide',
   'payment-provider-example',
+  'admin-example',
+  'delivery-theme',
+  'service-example',
+  'render-guide',
+  'masterdata-graphql-guide',
+  'support app',
+  'react-guide',
+  'checkout-ui-settings',
 ]
 
 const templates = {
   'graphql-example': 'graphql-example',
   'payment-provider-example': 'payment-provider-example',
   'admin-example': 'admin-example',
-  'store-theme': 'store-theme',
+  'store': 'store-framework-template',
   'delivery-theme': 'delivery-theme',
   'service-example': 'service-example',
   'render-guide': 'render-guide',
