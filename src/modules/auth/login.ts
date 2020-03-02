@@ -36,10 +36,13 @@ const promptAccount = async promptPreviousAcc => {
 }
 
 const notifyRelease = () => {
+  const RELEASE_NOTES_DATE = 'January 2020'
+  const RELEASE_NOTES_URL = 'https://bit.ly/32GuM6U'
+
   const msg = [
     `Are you up-to-date with the VTEX IO latest news?`,
-    `${emojic.memo} Don’t forget to check out our ${chalk.bold.green(`January 2020 Release Notes:`)}`,
-    `${chalk.blueBright(`https://bit.ly/37iCFjy`)}`,
+    `${emojic.memo} Don’t forget to check out our ${chalk.bold.green(`${RELEASE_NOTES_DATE} Release Notes:`)}`,
+    `${chalk.blueBright(RELEASE_NOTES_URL)}`,
   ].join('\n')
 
   const boxOptions: boxen.Options = {
