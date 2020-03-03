@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Release notes URL.
 ### Changed
 - [vtex init] Keep only store template for non VTEX users and change template repository.
+- [vtex init] Allow to select template organization.
 
 ## [2.90.0] - 2020-03-02
 ### Added
