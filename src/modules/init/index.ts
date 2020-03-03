@@ -26,54 +26,54 @@ const VTEXInternalTemplates = [
 ]
 
 interface Template {
-  repository: string,
+  repository: string
   organization: string
 }
 
 const templates: Record<string, Template> = {
   'graphql-example': {
     repository: 'graphql-example',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   'payment-provider-example': {
     repository: 'payment-provider-example',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   'admin-example': {
     repository: 'admin-example',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   store: {
     repository: 'store-framework-template',
-    organization: VTEX_TRAININGS
+    organization: VTEX_TRAININGS,
   },
   'delivery-theme': {
     repository: 'delivery-theme',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   'service-example': {
     repository: 'service-example',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   'render-guide': {
     repository: 'render-guide',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   'masterdata-graphql-guide': {
     repository: 'masterdata-graphql-guide',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   'support app': {
     repository: 'hello-support',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   'react-guide': {
     repository: 'react-app-template',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
   'checkout-ui-settings': {
     repository: 'checkout-ui-settings',
-    organization: VTEX_APPS
+    organization: VTEX_APPS,
   },
 }
 
