@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.91.1] - 2020-03-03
+### Changed
+- [vtex init] Use better template for `store`.
+
 ## [2.91.0] - 2020-03-03
 ### Fixed
 - Release notes URL.
