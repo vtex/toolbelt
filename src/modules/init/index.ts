@@ -9,7 +9,6 @@ import { promptConfirm } from '../prompts'
 import * as git from './git'
 
 const VTEX_APPS = 'vtex-apps'
-const VTEX_TRAININGS = 'vtex-trainings'
 
 const VTEXInternalTemplates = [
   // Only show these templates for VTEX e-mail users.
@@ -44,8 +43,8 @@ const templates: Record<string, Template> = {
     organization: VTEX_APPS,
   },
   store: {
-    repository: 'store-framework-template',
-    organization: VTEX_TRAININGS,
+    repository: 'minimum-boilerplate-theme',
+    organization: VTEX_APPS,
   },
   'delivery-theme': {
     repository: 'delivery-theme',
