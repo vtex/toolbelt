@@ -8,27 +8,73 @@ import { promptConfirm } from '../prompts'
 
 import * as git from './git'
 
+const VTEX_APPS = 'vtex-apps'
+const VTEX_TRAININGS = 'vtex-trainings'
+
 const VTEXInternalTemplates = [
   // Only show these templates for VTEX e-mail users.
   'graphql-example',
-  'service-example',
-  'react-guide',
-  'masterdata-graphql-guide',
   'payment-provider-example',
+  'admin-example',
+  'delivery-theme',
+  'service-example',
+  'render-guide',
+  'masterdata-graphql-guide',
+  'support app',
+  'react-guide',
+  'checkout-ui-settings',
 ]
 
-const templates = {
-  'graphql-example': 'graphql-example',
-  'payment-provider-example': 'payment-provider-example',
-  'admin-example': 'admin-example',
-  'store-theme': 'store-theme',
-  'delivery-theme': 'delivery-theme',
-  'service-example': 'service-example',
-  'render-guide': 'render-guide',
-  'masterdata-graphql-guide': 'masterdata-graphql-guide',
-  'support app': 'hello-support',
-  'react-guide': 'react-app-template',
-  'checkout-ui-settings': 'checkout-ui-settings',
+interface Template {
+  repository: string
+  organization: string
+}
+
+const templates: Record<string, Template> = {
+  'graphql-example': {
+    repository: 'graphql-example',
+    organization: VTEX_APPS,
+  },
+  'payment-provider-example': {
+    repository: 'payment-provider-example',
+    organization: VTEX_APPS,
+  },
+  'admin-example': {
+    repository: 'admin-example',
+    organization: VTEX_APPS,
+  },
+  store: {
+    repository: 'store-framework-template',
+    organization: VTEX_TRAININGS,
+  },
+  'delivery-theme': {
+    repository: 'delivery-theme',
+    organization: VTEX_APPS,
+  },
+  'service-example': {
+    repository: 'service-example',
+    organization: VTEX_APPS,
+  },
+  'render-guide': {
+    repository: 'render-guide',
+    organization: VTEX_APPS,
+  },
+  'masterdata-graphql-guide': {
+    repository: 'masterdata-graphql-guide',
+    organization: VTEX_APPS,
+  },
+  'support app': {
+    repository: 'hello-support',
+    organization: VTEX_APPS,
+  },
+  'react-guide': {
+    repository: 'react-app-template',
+    organization: VTEX_APPS,
+  },
+  'checkout-ui-settings': {
+    repository: 'checkout-ui-settings',
+    organization: VTEX_APPS,
+  },
 }
 
 const getTemplates = () =>
@@ -68,10 +114,10 @@ export default async () => {
   log.debug('Prompting for app info')
   log.info('Hello! I will help you generate basic files and folders for your app.')
   try {
-    const repo = templates[await promptTemplates()]
+    const { repository: repo, organization: org } = templates[await promptTemplates()]
     await promptContinue(repo)
-    log.info(`Cloning https://vtex-apps/${repo}.git`)
-    await git.clone(repo)
+    log.info(`Cloning ${chalk.bold.cyan(repo)} from ${chalk.bold.cyan(org)}.`)
+    await git.clone(repo, org)
     log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
   } catch (err) {
     log.error(err.message)
