@@ -116,7 +116,7 @@ export default async () => {
   try {
     const { repository: repo, organization: org } = templates[await promptTemplates()]
     await promptContinue(repo)
-    log.info(`Cloning https://${org}/${repo}.git`)
+    log.info(`Cloning ${chalk.bold.cyan(repo)} from ${chalk.bold.cyan(org)}.`)
     await git.clone(repo, org)
     log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
   } catch (err) {
