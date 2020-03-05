@@ -41,11 +41,13 @@ export default async (edition: string) => {
     await promptSwitchToAccount(sponsorAccount, false)
   }
 
-  const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
-  await sponsorClientForSponsorAccount.setEdition(previousAccount, previousWorkspace, edition)
+  try {
+    const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
+    await sponsorClientForSponsorAccount.setEdition(previousAccount, previousWorkspace, edition)
 
-  const workspaceNotice = previousWorkspace === 'master' ? '' : `in workspace ${chalk.blue(previousWorkspace)} `
-  log.info(`Successfully set edition ${workspaceNotice}of account ${chalk.blue(previousAccount)}.`)
-
-  await switchToPreviousAccount(previousConf)
+    const workspaceNotice = previousWorkspace === 'master' ? '' : `in workspace ${chalk.blue(previousWorkspace)} `
+    log.info(`Successfully set edition ${workspaceNotice}of account ${chalk.blue(previousAccount)}.`)
+  } finally {
+    await switchToPreviousAccount(previousConf)
+  }
 }
