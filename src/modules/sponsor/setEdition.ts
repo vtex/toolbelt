@@ -48,7 +48,10 @@ export default async (edition: string) => {
     const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
     await sponsorClientForSponsorAccount.setEdition(previousAccount, previousWorkspace, edition)
 
-    log.info(`Successfully set edition${workspaceNotice} of account ${chalk.blue(previousAccount)}.`)
+    log.info(`Successfully changed edition${workspaceNotice} of account ${chalk.blue(previousAccount)}.`)
+  } catch (ex) {
+    log.error(`Failed to change edition of account ${chalk.blue(previousAccount)}.`)
+    throw ex
   } finally {
     await switchToPreviousAccount(previousConf)
   }
