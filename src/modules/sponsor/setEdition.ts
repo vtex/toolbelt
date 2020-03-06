@@ -25,6 +25,9 @@ export default async (edition: string) => {
   const previousAccount = previousConf.account
   const previousWorkspace = previousConf.workspace
 
+  const workspaceNotice = previousWorkspace === 'master' ? '' : ` in workspace ${chalk.blue(previousWorkspace)}`
+  log.info(`Changing edition of account ${chalk.blue(previousAccount)}${workspaceNotice}.`)
+
   const sponsorClient = new Sponsor(getIOContext(), IOClientOptions)
   const data = await sponsorClient.getSponsorAccount()
   const sponsorAccount = R.prop('sponsorAccount', data)
@@ -45,8 +48,7 @@ export default async (edition: string) => {
     const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
     await sponsorClientForSponsorAccount.setEdition(previousAccount, previousWorkspace, edition)
 
-    const workspaceNotice = previousWorkspace === 'master' ? '' : `in workspace ${chalk.blue(previousWorkspace)} `
-    log.info(`Successfully set edition ${workspaceNotice}of account ${chalk.blue(previousAccount)}.`)
+    log.info(`Successfully set edition${workspaceNotice} of account ${chalk.blue(previousAccount)}.`)
   } finally {
     await switchToPreviousAccount(previousConf)
   }
