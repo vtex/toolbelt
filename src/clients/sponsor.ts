@@ -20,7 +20,7 @@ export class Sponsor extends IOClient {
 
   public getEdition = async () => this.http.get(this.routes.getEdition, { metric: 'get-edition' })
 
-  public setEdition = async (account: string, workspace, editionApp: string) => {
+  public setEdition = async (account: string, workspace: string, editionApp: string) => {
     const [edition, version] = editionApp.split('@')
     const [sponsor, editionName] = edition.split('.')
     return this.http.post(
