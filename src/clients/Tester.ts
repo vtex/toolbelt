@@ -76,17 +76,17 @@ export default class Tester extends AppClient {
   public report = (testId: string) =>
     this.http.get<TestReport>(`/_v/report/${testId}?__v=0.x`, {
       headers: {
-        ['Authorization']: this.context.authToken,
+        Authorization: this.context.authToken,
       },
       inflightKey: inflightURL,
       metric: 'tester-report',
       cacheable: 0,
     })
 
-  public test = (options: TestOptions, appId: string = '') =>
+  public test = (options: TestOptions, appId = '') =>
     this.http.post<TestRequest>(`/_v/test/${appId}`, options, {
       headers: {
-        ['Authorization']: this.context.authToken,
+        Authorization: this.context.authToken,
       },
       inflightKey: inflightURL,
       metric: 'tester-test',
