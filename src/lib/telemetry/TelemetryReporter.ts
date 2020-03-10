@@ -7,6 +7,7 @@ import userAgent from '../../user-agent'
 import { createIOContext, createTelemetryClient } from '../clients'
 import { SessionManager } from '../session/SessionManager'
 import { TelemetryLocalStore } from './TelemetryStore'
+import { ErrorReport } from '../error/ErrorReport'
 
 export class TelemetryReporter {
   private static readonly RETRIES = 3
@@ -47,8 +48,18 @@ const start = async () => {
     process.exit()
   } catch (err) {
     const errorFilePath = `${TelemetryReporter.ERRORS_DIR}-${randomBytes(8).toString()}.json`
+    let errorReport = err
+    if (!(err instanceof ErrorReport)) {
+      const code = ErrorReport.createGenericCode(err)
+      errorReport = ErrorReport.create({
+        code,
+        message: err.message,
+        originalError: err,
+        tryToParseError: true,
+      })
+    }
     await ensureFile(errorFilePath)
-    await writeJson(errorFilePath, err)
+    await writeJson(errorFilePath, errorReport)
     process.exit(1)
   }
 }
