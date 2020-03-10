@@ -49,7 +49,10 @@ export class TelemetryCollector {
   public registerMetric() {}
 
   public async flush(forceRemoteFlush = false) {
-    const shouldRemoteFlush = forceRemoteFlush || this.errors.length > 0 || (Date.now() - this.store.getLastRemoteFlush() >= TelemetryCollector.REMOTE_FLUSH_INTERVAL)
+    const shouldRemoteFlush =
+      forceRemoteFlush ||
+      this.errors.length > 0 ||
+      Date.now() - this.store.getLastRemoteFlush() >= TelemetryCollector.REMOTE_FLUSH_INTERVAL
     if (!shouldRemoteFlush) {
       this.store.setErrors(this.errors)
       this.store.setMetrics(this.metrics)
