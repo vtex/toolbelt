@@ -1,10 +1,15 @@
+import { randomBytes } from 'crypto'
+import { writeJson, ensureFile } from 'fs-extra'
 import { spawn } from 'child_process'
 import { join } from 'path'
+
 import * as pkgJson from '../../../package.json'
 import { ErrorReport } from '../error/ErrorReport'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 
 export class TelemetryCollector {
+  private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
+  private static readonly telemetryObjFilePathPrefix = '~/.config/configstore/vtex/telemetry'
   private static telemetryCollectorSingleton: TelemetryCollector
 
   public static getCollector() {
@@ -43,8 +48,8 @@ export class TelemetryCollector {
 
   public registerMetric() {}
 
-  public flush(forceRemoteFlush = false) {
-    const shouldRemoteFlush = forceRemoteFlush || this.errors.length > 0
+  public async flush(forceRemoteFlush = false) {
+    const shouldRemoteFlush = forceRemoteFlush || this.errors.length > 0 || (Date.now() - this.store.getLastRemoteFlush() >= TelemetryCollector.REMOTE_FLUSH_INTERVAL)
     if (!shouldRemoteFlush) {
       this.store.setErrors(this.errors)
       this.store.setMetrics(this.metrics)
@@ -58,8 +63,15 @@ export class TelemetryCollector {
       errors: this.errors.map(err => err.toObject()),
       metrics: this.metrics,
     }
+    const objFilePath = `${TelemetryCollector.telemetryObjFilePathPrefix}-${randomBytes(8).toString()}.json`
+    try {
+      await ensureFile(objFilePath)
+      await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
+    } catch (e) {
+      console.log('Error writing telemetry file. Error: ', e)
+    }
 
-    spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, JSON.stringify(obj)], {
+    spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
       detached: true,
       stdio: 'ignore',
     }).unref()

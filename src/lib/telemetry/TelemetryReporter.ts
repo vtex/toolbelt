@@ -1,3 +1,5 @@
+import { readJson, remove } from 'fs-extra'
+
 import { TelemetryClient } from '../../clients/telemetryClient'
 import { region } from '../../env'
 import userAgent from '../../user-agent'
@@ -34,13 +36,15 @@ export class TelemetryReporter {
 const start = async () => {
   try {
     const store = new TelemetryLocalStore(process.argv[2])
-    const telemetryObj = JSON.parse(process.argv[3])
+    const telemetryObjFilePath = process.argv[3]
+    const telemetryObj = await readJson(telemetryObjFilePath)
+    await remove(telemetryObjFilePath)
     const reporter = TelemetryReporter.getTelemetryReporter()
     await reporter.reportErrors(telemetryObj.errors)
     store.setLastRemoteFlush(Date.now())
     process.exit()
   } catch (err) {
-    console.log(err)
+    // Here we should write a file with the error in TelemetryReporter, since it cannot write in stdio
     process.exit(1)
   }
 }
