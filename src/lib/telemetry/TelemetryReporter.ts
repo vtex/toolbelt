@@ -1,4 +1,5 @@
-import { readJson, remove } from 'fs-extra'
+import { readJson, remove, ensureFile, writeJson } from 'fs-extra'
+import { randomBytes } from 'crypto'
 
 import { TelemetryClient } from '../../clients/telemetryClient'
 import { region } from '../../env'
@@ -10,6 +11,7 @@ import { TelemetryLocalStore } from './TelemetryStore'
 export class TelemetryReporter {
   private static readonly RETRIES = 3
   private static readonly TIMEOUT = 30 * 1000
+  public static readonly ERRORS_DIR = '~/.config/configstore/vtex/errors'
   public static getTelemetryReporter() {
     const { account, workspace, token } = SessionManager.getSessionManager()
     const telemetryClient = createTelemetryClient(
@@ -44,7 +46,9 @@ const start = async () => {
     store.setLastRemoteFlush(Date.now())
     process.exit()
   } catch (err) {
-    // Here we should write a file with the error in TelemetryReporter, since it cannot write in stdio
+    const errorFilePath = `${TelemetryReporter.ERRORS_DIR}-${randomBytes(8).toString()}.json`
+    await ensureFile(errorFilePath)
+    await writeJson(errorFilePath, err)
     process.exit(1)
   }
 }
