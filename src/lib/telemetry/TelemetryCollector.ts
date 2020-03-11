@@ -66,7 +66,7 @@ export class TelemetryCollector {
       errors: this.errors.map(err => err.toObject()),
       metrics: this.metrics,
     }
-    const objFilePath = `${TelemetryCollector.telemetryObjFilePathPrefix}-${randomBytes(8).toString()}.json`
+    const objFilePath = `${TelemetryCollector.telemetryObjFilePathPrefix}-${randomBytes(8).toString('hex')}.json`
     try {
       await ensureFile(objFilePath)
       await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
