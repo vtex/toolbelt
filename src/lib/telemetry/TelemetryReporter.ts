@@ -63,12 +63,11 @@ const start = async () => {
     await ensureDir(TelemetryReporter.ERRORS_DIR)
     await lockfilePromisified(lockfilePath, {})
     const metaErrorsFiles = (await readdir(TelemetryReporter.ERRORS_DIR)).filter(fileName => {
-      fileName !== lockfileName
+      return fileName !== lockfileName
     })
     await Promise.all(
       metaErrorsFiles.map(async metaErrorsFile => {
         const metaErrorsObject = await readJson(join(TelemetryReporter.ERRORS_DIR, metaErrorsFile))
-        const reporter = TelemetryReporter.getTelemetryReporter()
         await reporter.reportErrors(metaErrorsObject)
         await remove(metaErrorsFile)
       })
