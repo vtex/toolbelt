@@ -40,7 +40,7 @@ export class TelemetryReporter {
 
 const lockfilePromisified = (lockName, options) => {
   return new Promise((resolve, reject) => {
-    lockfile.lock(lockName, options, (err) => {
+    lockfile.lock(lockName, options, err => {
       err ? reject(err) : resolve()
     })
   })
@@ -62,13 +62,17 @@ const start = async () => {
     const lockfilePath = join(TelemetryReporter.ERRORS_DIR, lockfileName)
     await ensureDir(TelemetryReporter.ERRORS_DIR)
     await lockfilePromisified(lockfilePath, {})
-    const metaErrorsFiles = (await readdir(TelemetryReporter.ERRORS_DIR)).filter((fileName) => {fileName !== lockfileName})
-    await Promise.all(metaErrorsFiles.map(async (metaErrorsFile) => {
-      const metaErrorsObject = await readJson(join(TelemetryReporter.ERRORS_DIR, metaErrorsFile))
-      const reporter = TelemetryReporter.getTelemetryReporter()
-      await reporter.reportErrors(metaErrorsObject)
-      await remove(metaErrorsFile)
-    }))
+    const metaErrorsFiles = (await readdir(TelemetryReporter.ERRORS_DIR)).filter(fileName => {
+      fileName !== lockfileName
+    })
+    await Promise.all(
+      metaErrorsFiles.map(async metaErrorsFile => {
+        const metaErrorsObject = await readJson(join(TelemetryReporter.ERRORS_DIR, metaErrorsFile))
+        const reporter = TelemetryReporter.getTelemetryReporter()
+        await reporter.reportErrors(metaErrorsObject)
+        await remove(metaErrorsFile)
+      })
+    )
     lockfile.unlock(lockfilePath)
 
     store.setLastRemoteFlush(Date.now())
