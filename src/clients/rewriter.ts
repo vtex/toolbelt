@@ -38,6 +38,11 @@ export enum RedirectTypes {
   TEMPORARY = 'TEMPORARY',
 }
 
+export interface ExportResponse {
+  routes: Redirect[]
+  next: string
+}
+
 export class Rewriter extends AppGraphQLClient {
   constructor(context: IOContext, options: InstanceOptions) {
     super('vtex.rewriter@1.x', context, {
@@ -95,29 +100,32 @@ export class Rewriter extends AppGraphQLClient {
       )
       .then(path(['data', 'redirect', 'index'])) as Promise<RouteIndexEntry[]>
 
-  public exportRedirects = (from: number, to: number): Promise<Redirect[]> =>
+  public exportRedirects = (next?: string): Promise<ExportResponse> =>
     this.graphql
-      .query<Redirect[], { from: number; to: number }>(
+      .query<ExportResponse, { next: string }>(
         {
           query: `
-      query ListRedirects($from: Int!, $to: Int!) {
+      query ListRedirects($next: String) {
         redirect {
-          list(from: $from, to: $to) {
-            from
-            to
-            type
-            endDate
+          listRedirects(next: $next) {
+            next
+            routes {
+              from
+              to
+              type
+              endDate
+            }
           }
         }
       }
       `,
-          variables: { from, to },
+          variables: { next },
         },
         {
           metric: 'rewriter-get-redirects',
         }
       )
-      .then(path(['data', 'redirect', 'list'])) as Promise<Redirect[]>
+      .then(path(['data', 'redirect', 'listRedirects'])) as Promise<ExportResponse>
 
   public importRedirects = (routes: RedirectInput[]): Promise<boolean> =>
     this.graphql
