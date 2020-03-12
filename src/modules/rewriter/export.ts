@@ -23,10 +23,11 @@ import {
 const EXPORTS = 'exports'
 const [account, workspace] = accountAndWorkspace
 
+const COLORS = ['cyan', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'gray']
 const FIELDS = ['from', 'to', 'type', 'endDate']
 
 const handleExport = async (csvPath: string) => {
-  const spinner = ora('Exporting redirects').start();
+  const spinner = ora('Exporting redirects....').start();
 
   // TODO: Add fallback in case there are problems
   // TODO: CHanges spinner colour according to the number of routes exported
@@ -38,11 +39,16 @@ const handleExport = async (csvPath: string) => {
 
   let listOfRoutes = [] // exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
   let next: string
+  let count = 2
   do {
     try {
       const result = await rewriter.exportRedirects(next)
       listOfRoutes = concat(listOfRoutes, result.routes)
+      
+      spinner.color = COLORS[count % COLORS.length] as any
+      spinner.text = `Exporting redirects....\t\t${listOfRoutes.length} Done`
       next = result.next
+      count++
     } catch (e) {
       // saveMetainfo(metainfo, EXPORTS, indexHash, counter, listOfRoutes)
       // listener.close()
