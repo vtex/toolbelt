@@ -84,7 +84,7 @@ export class TelemetryReporter {
     await this.dataPendingLock.lock()
 
     const pendingDataFiles = await this.pendingFilesPaths()
-    let errors = []
+    const errors = []
     await Promise.all(
       pendingDataFiles.map(async pendingDataFile => {
         try {
@@ -128,7 +128,7 @@ export class TelemetryReporter {
       return fileName !== this.dataPendingLock.lockName
     })
 
-    return pendingDataFiles.map((pendingDataFile) => join(TelemetryReporter.PENDING_DATA_DIR, pendingDataFile))
+    return pendingDataFiles.map(pendingDataFile => join(TelemetryReporter.PENDING_DATA_DIR, pendingDataFile))
   }
 }
 
