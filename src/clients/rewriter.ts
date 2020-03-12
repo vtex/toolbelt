@@ -1,21 +1,6 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
 import { path } from 'ramda'
 
-export interface RouteIndexFiles {
-  lastChangeDate: string
-  routeIndexFiles: RouteIndexFileEntry[]
-}
-
-export interface RouteIndexFileEntry {
-  fileName: string
-  fileSize: string
-}
-
-export interface RouteIndexEntry {
-  id: string
-  lastChangeDate: string
-}
-
 export interface RedirectInput {
   id: string
   from: string
@@ -52,53 +37,6 @@ export class Rewriter extends AppGraphQLClient {
       timeout: 10000,
     })
   }
-
-  public routesIndexFiles = (): Promise<RouteIndexFiles> =>
-    this.graphql
-      .query<string[], {}>(
-        {
-          query: `
-      query RoutesIndexFiles {
-        redirect {
-          indexFiles {
-            lastChangeDate
-            routeIndexFiles {
-              fileName
-              fileSize
-            }
-          }
-        }
-      }
-      `,
-          variables: {},
-        },
-        {
-          metric: 'rewriter-get-redirects-index-files',
-        }
-      )
-      .then(path(['data', 'redirect', 'indexFiles'])) as Promise<RouteIndexFiles>
-
-  public routesIndex = (fileName: string): Promise<RouteIndexEntry[]> =>
-    this.graphql
-      .query<string[], { fileName: string }>(
-        {
-          query: `
-      query RoutesIndex($fileName: String!) {
-        redirect {
-          index(fileName: $fileName) {
-            id
-            lastChangeDate
-          }
-        }
-      }
-      `,
-          variables: { fileName },
-        },
-        {
-          metric: 'rewriter-get-redirects-index',
-        }
-      )
-      .then(path(['data', 'redirect', 'index'])) as Promise<RouteIndexEntry[]>
 
   public exportRedirects = (next?: string): Promise<ExportResponse> =>
     this.graphql

@@ -102,17 +102,6 @@ let retryCount = 0
 export default async (csvPath: string, options: any) => {
   const reset = options ? options.r || options.reset : undefined
   let indexedRoutes
-  if (reset) {
-    const indexFiles = await rewriter.routesIndexFiles().then(prop('routeIndexFiles'))
-    const indexFileNames = pluck('fileName', indexFiles) || []
-
-    const arr = []
-    for (const name of indexFileNames) {
-      arr.push(rewriter.routesIndex(name))
-    }
-
-    indexedRoutes = compose<any, any, any>(pluck('id'), reduce(concat, []))(arr)
-  }
 
   let importedRoutes
   try {
