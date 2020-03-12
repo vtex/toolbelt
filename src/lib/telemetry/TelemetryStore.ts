@@ -5,7 +5,8 @@ export interface ITelemetryLocalStore {
   storeName: string
   getErrors: () => ErrorReport[]
   getMetrics: () => any
-  getLastRemoteFlush: () => any
+  getLastRemoteFlush: () => void
+  setLastRemoteFlush: (date: number) => void
   setErrors: (errors: ErrorReport[]) => void
   setMetrics: (metrics: any) => void
   clear: () => void
@@ -28,7 +29,7 @@ export class TelemetryLocalStore implements ITelemetryLocalStore {
   }
 
   public getLastRemoteFlush() {
-    return this.store.get('lastRemoteFlush') ?? 0
+    this.store.get('lastRemoteFlush') ?? 0
   }
 
   public setErrors(errors: ErrorReport[]) {
