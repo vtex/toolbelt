@@ -6,10 +6,11 @@ import { join } from 'path'
 import * as pkgJson from '../../../package.json'
 import { ErrorReport } from '../error/ErrorReport'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
+import { configDir } from '../../conf'
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
-  private static readonly telemetryObjFilePathPrefix = '~/.config/configstore/vtex/telemetry'
+  private static readonly TELEMETRY_LOCAL_DIR = join(configDir, 'vtex', 'telemetry')
   private static telemetryCollectorSingleton: TelemetryCollector
 
   public static getCollector() {
@@ -66,7 +67,7 @@ export class TelemetryCollector {
       errors: this.errors.map(err => err.toObject()),
       metrics: this.metrics,
     }
-    const objFilePath = `${TelemetryCollector.telemetryObjFilePathPrefix}-${randomBytes(8).toString('hex')}.json`
+    const objFilePath = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${randomBytes(8).toString('hex')}.json`)
     try {
       await ensureFile(objFilePath)
       await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
