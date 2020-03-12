@@ -5,7 +5,7 @@ export interface ITelemetryLocalStore {
   storeName: string
   getErrors: () => ErrorReport[]
   getMetrics: () => any
-  getLastRemoteFlush: () => void
+  getLastRemoteFlush: () => any
   setLastRemoteFlush: (date: number) => void
   setErrors: (errors: ErrorReport[]) => void
   setMetrics: (metrics: any) => void
