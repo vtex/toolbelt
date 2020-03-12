@@ -7,6 +7,7 @@ import * as pkgJson from '../../../package.json'
 import { ErrorReport } from '../error/ErrorReport'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 import { configDir } from '../../conf'
+import { logger } from '../../clients'
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
@@ -72,7 +73,7 @@ export class TelemetryCollector {
       await ensureFile(objFilePath)
       await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
     } catch (e) {
-      console.log('Error writing telemetry file. Error: ', e)
+      logger.error('Error writing telemetry file. Error: ', e)
     }
 
     spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
