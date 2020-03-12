@@ -11,7 +11,7 @@ import { logger } from '../../clients'
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
-  private static readonly TELEMETRY_LOCAL_DIR = join(configDir, 'vtex', 'telemetry')
+  public static readonly TELEMETRY_LOCAL_DIR = join(configDir, 'vtex', 'telemetry')
   private static telemetryCollectorSingleton: TelemetryCollector
 
   public static getCollector() {

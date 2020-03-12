@@ -1,6 +1,8 @@
-import { readdir, readJson, remove, writeJson, ensureDir, ensureFile } from 'fs-extra'
+import { readdir, readJson, remove, writeJson, ensureDir, ensureFile, move } from 'fs-extra'
 import { randomBytes } from 'crypto'
+import { isArray } from 'util'
 import * as lockfile from 'lockfile'
+import { join, basename } from 'path'
 
 import { TelemetryClient } from '../../clients/telemetryClient'
 import { region } from '../../env'
@@ -9,12 +11,37 @@ import { createIOContext, createTelemetryClient } from '../clients'
 import { SessionManager } from '../session/SessionManager'
 import { TelemetryLocalStore } from './TelemetryStore'
 import { ErrorReport } from '../error/ErrorReport'
-import { join, resolve } from 'path'
+import { TelemetryCollector } from './TelemetryCollector'
+import { ErrorCodes } from '../error/ErrorCodes'
+
+class FileLock {
+  public readonly lockName: string
+  constructor(private lockPath: string, private options: any) {
+    this.lockName = basename(lockPath)
+  }
+
+  public async lock() {
+    await ensureDir(TelemetryReporter.PENDING_DATA_DIR)
+    return new Promise((resolve, reject) => {
+      lockfile.lock(this.lockPath, this.options, err => {
+        err ? reject(err) : resolve()
+      })
+    })
+  }
+
+  public unlock() {
+    try {
+      lockfile.unlock(this.lockPath)
+    } catch (err) {
+      return null
+    }
+  }
+}
 
 export class TelemetryReporter {
   private static readonly RETRIES = 3
   private static readonly TIMEOUT = 30 * 1000
-  public static readonly ERRORS_DIR = resolve('~/.config/configstore/vtex/errors')
+  public static readonly PENDING_DATA_DIR = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, 'pendingData')
   public static getTelemetryReporter() {
     const { account, workspace, token } = SessionManager.getSessionManager()
     const telemetryClient = createTelemetryClient(
@@ -28,70 +55,92 @@ export class TelemetryReporter {
       { retries: TelemetryReporter.RETRIES, timeout: TelemetryReporter.TIMEOUT }
     )
 
-    return new TelemetryReporter(telemetryClient)
+    return new TelemetryReporter(telemetryClient, TelemetryReporter.PENDING_DATA_DIR)
   }
 
-  constructor(private telemetryClient: TelemetryClient) {}
+  private dataPendingLock: FileLock
+  constructor(private telemetryClient: TelemetryClient, private pendingDataDir: string) {
+    const dataPendingLockName = 'reporter.lock'
+    const dataPendingLockPath = join(TelemetryReporter.PENDING_DATA_DIR, dataPendingLockName)
+    this.dataPendingLock = new FileLock(dataPendingLockPath, {})
+  }
+
+  public async reportTelemetryFile(telemetryObjFilePath: string) {
+    // Send general toolbelt telemetry
+    try {
+      const telemetryObj = await readJson(telemetryObjFilePath)
+      await this.reportErrors(telemetryObj.errors)
+      await remove(telemetryObjFilePath)
+    } catch (err) {
+      await this.dataPendingLock.lock()
+      await move(telemetryObjFilePath, TelemetryReporter.PENDING_DATA_DIR)
+      await this.createTelemetryReporterMetaError(err)
+      this.dataPendingLock.unlock()
+    }
+  }
+
+  public async sendPendingData() {
+    // Send pending data
+    await this.dataPendingLock.lock()
+
+    const pendingDataFiles = await this.pendingFilesPaths()
+    let errors = []
+    await Promise.all(
+      pendingDataFiles.map(async pendingDataFile => {
+        try {
+          const pendingDataObject = await readJson(pendingDataFile)
+          await this.reportErrors(pendingDataObject)
+          await remove(pendingDataFile)
+        } catch (err) {
+          errors.push(err)
+        }
+      })
+    )
+
+    await this.createTelemetryReporterMetaError(errors)
+    this.dataPendingLock.unlock()
+  }
 
   public reportErrors(errors: any[]) {
     return this.telemetryClient.reportErrors(errors)
   }
-}
 
-const lockfilePromisified = (lockName, options) => {
-  return new Promise((resolve, reject) => {
-    lockfile.lock(lockName, options, err => {
-      err ? reject(err) : resolve()
+  public async createTelemetryReporterMetaError(errors: any) {
+    const errorArray = isArray(errors) ? errors : [errors]
+    const metaErrorFilePath = join(this.pendingDataDir, `${randomBytes(8).toString('hex')}.json`)
+    const errorsReport = errorArray.map(error => {
+      if (!(error instanceof ErrorReport)) {
+        return ErrorReport.create({
+          code: ErrorCodes.TELEMETRY_REPORTER_ERROR,
+          message: errors.message,
+          originalError: errors,
+          tryToParseError: true,
+        })
+      }
+      return error
     })
-  })
+    await ensureFile(metaErrorFilePath)
+    await writeJson(metaErrorFilePath, { errors: errorsReport })
+  }
+
+  private async pendingFilesPaths() {
+    const pendingDataFiles = (await readdir(TelemetryReporter.PENDING_DATA_DIR)).filter(fileName => {
+      return fileName !== this.dataPendingLock.lockName
+    })
+
+    return pendingDataFiles.map((pendingDataFile) => join(TelemetryReporter.PENDING_DATA_DIR, pendingDataFile))
+  }
 }
 
 const start = async () => {
-  try {
-    const store = new TelemetryLocalStore(process.argv[2])
+  const store = new TelemetryLocalStore(process.argv[2])
+  const telemetryObjFilePath = process.argv[3]
+  const reporter = TelemetryReporter.getTelemetryReporter()
 
-    // Send general toolbelt errors
-    const telemetryObjFilePath = process.argv[3]
-    const telemetryObj = await readJson(telemetryObjFilePath)
-    const reporter = TelemetryReporter.getTelemetryReporter()
-    await reporter.reportErrors(telemetryObj.errors)
-    await remove(telemetryObjFilePath)
+  await reporter.reportTelemetryFile(telemetryObjFilePath)
 
-    // Send TelemetryReport errors
-    const lockfileName = 'reporter.lock'
-    const lockfilePath = join(TelemetryReporter.ERRORS_DIR, lockfileName)
-    await ensureDir(TelemetryReporter.ERRORS_DIR)
-    await lockfilePromisified(lockfilePath, {})
-    const metaErrorsFiles = (await readdir(TelemetryReporter.ERRORS_DIR)).filter(fileName => {
-      return fileName !== lockfileName
-    })
-    await Promise.all(
-      metaErrorsFiles.map(async metaErrorsFile => {
-        const metaErrorsObject = await readJson(join(TelemetryReporter.ERRORS_DIR, metaErrorsFile))
-        await reporter.reportErrors(metaErrorsObject)
-        await remove(metaErrorsFile)
-      })
-    )
-    lockfile.unlock(lockfilePath)
-
-    store.setLastRemoteFlush(Date.now())
-    process.exit()
-  } catch (err) {
-    const errorFilePath = `${TelemetryReporter.ERRORS_DIR}/${randomBytes(8).toString('hex')}.json`
-    let errorReport = err
-    if (!(err instanceof ErrorReport)) {
-      const code = ErrorReport.createGenericCode(err)
-      errorReport = ErrorReport.create({
-        code,
-        message: err.message,
-        originalError: err,
-        tryToParseError: true,
-      })
-    }
-    await ensureFile(errorFilePath)
-    await writeJson(errorFilePath, errorReport)
-    process.exit(1)
-  }
+  store.setLastRemoteFlush(Date.now())
+  process.exit()
 }
 
 if (require.main === module) {
