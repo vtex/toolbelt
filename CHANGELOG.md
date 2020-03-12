@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
  - Add "edition app" to vtex init.
  - Allow testing editions in non-master workspaces.
  - Improvements in telemetry.
-  - Add an interval to remote flush telemetry.
-  - Use a file to write telemetry object argument for `TelemetryReporter`.
-  - Send `TelemetryReporter` meta errors to `toolbelt-telemetry`.
+    - Add an interval to remote flush telemetry.
+    - Use a file to write telemetry object argument for `TelemetryReporter`.
+    - Send `TelemetryReporter` meta errors to `toolbelt-telemetry`.
 
 ## [2.91.1] - 2020-03-03
 ### Changed
