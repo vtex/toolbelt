@@ -35,17 +35,21 @@ const handleExport = async (csvPath: string) => {
   const exportMetainfo = metainfo[EXPORTS] || {}
 
   const spinner = ora('Exporting redirects....').start()
+
+  let { listOfRoutes, next } = exportMetainfo[indexHash]
+    ? exportMetainfo[indexHash].data
+    : { listOfRoutes: [], next: undefined }
+  let count = 2
+
   const listener = createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
-    saveMetainfo(metainfo, EXPORTS, indexHash, 0, next)
+    saveMetainfo(metainfo, EXPORTS, indexHash, 0, { next, listOfRoutes })
     console.log('\n')
     process.exit()
   })
 
-  let listOfRoutes = [] // exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
-  let next: string = exportMetainfo.data
-  let count = 2
   do {
     try {
+      // eslint-disable-next-line no-await-in-loop
       const result = await rewriter.exportRedirects(next)
       listOfRoutes = concat(listOfRoutes, result.routes)
 
@@ -54,7 +58,7 @@ const handleExport = async (csvPath: string) => {
       next = result.next
       count++
     } catch (e) {
-      saveMetainfo(metainfo, EXPORTS, indexHash, 0, next)
+      saveMetainfo(metainfo, EXPORTS, indexHash, 0, { next, listOfRoutes })
       listener.close()
       throw e
     }
