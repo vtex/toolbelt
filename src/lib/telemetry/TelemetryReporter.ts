@@ -29,12 +29,12 @@ class FileLock {
     })
   }
 
-  public unlock() {
-    try {
-      lockfile.unlock(this.lockPath)
-    } catch (err) {
-      return null
-    }
+  public async unlock() {
+    return new Promise((resolve, reject) => {
+      lockfile.unlock(this.lockPath, err => {
+        err ? reject(err) : resolve()
+      })
+    })
   }
 }
 
@@ -74,7 +74,7 @@ export class TelemetryReporter {
       await this.dataPendingLock.lock()
       await move(telemetryObjFilePath, join(TelemetryReporter.PENDING_DATA_DIR, basename(telemetryObjFilePath)))
       await this.createTelemetryReporterMetaError(err)
-      this.dataPendingLock.unlock()
+      await this.dataPendingLock.unlock()
     }
   }
 
@@ -96,7 +96,7 @@ export class TelemetryReporter {
     )
 
     errors.length > 0 ?? (await this.createTelemetryReporterMetaError(errors))
-    this.dataPendingLock.unlock()
+    await this.dataPendingLock.unlock()
   }
 
   public reportErrors(errors: any[]) {
