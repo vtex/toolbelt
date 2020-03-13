@@ -10,7 +10,7 @@ import { configDir } from '../../conf'
 import { logger } from '../../clients'
 
 export class TelemetryCollector {
-  private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
+  private static readonly REMOTE_FLUSH_INTERVAL = 0//1000 * 60 * 10 // Ten minutes
   public static readonly TELEMETRY_LOCAL_DIR = join(configDir, 'vtex', 'telemetry')
   private static telemetryCollectorSingleton: TelemetryCollector
 
@@ -70,13 +70,20 @@ export class TelemetryCollector {
     }
     const objFilePath = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${randomBytes(8).toString('hex')}.json`)
     try {
+      console.log({obj, objFilePath})
+      console.log('Antes')
       await ensureFile(objFilePath)
+      console.log('Meio')
       await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
-      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
-        detached: true,
-        stdio: 'ignore',
-      }).unref()
+      console.log('Depois')
+      const cp = spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
+        // detached: true,
+        // stdio: 'ignore',
+      })//.unref()
+      cp.stderr.pipe(process.stderr)
+      cp.stdout.pipe(process.stdout)
     } catch (e) {
+      console.log(e)
       logger.error('Error writing telemetry file. Error: ', e)
     }
   }

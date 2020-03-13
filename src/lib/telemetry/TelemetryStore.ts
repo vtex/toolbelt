@@ -29,7 +29,7 @@ export class TelemetryLocalStore implements ITelemetryLocalStore {
   }
 
   public getLastRemoteFlush() {
-    this.store.get('lastRemoteFlush') ?? 0
+    return this.store.get('lastRemoteFlush') ?? 0
   }
 
   public setErrors(errors: ErrorReport[]) {

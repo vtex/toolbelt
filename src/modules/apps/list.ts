@@ -46,6 +46,8 @@ const renderTable = ({
 export default async () => {
   const account = getAccount()
   const workspace = getWorkspace()
+  console.log('Vou bugar')
+  throw new Error('Error em ls')
   log.debug('Starting to list apps')
   const appArray = await listApps().then(prop('data'))
   renderTable({
