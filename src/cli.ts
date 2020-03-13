@@ -158,7 +158,7 @@ const onError = async (e: any) => {
 
   const errorReport = TelemetryCollector.getCollector().registerError(e)
   log.error(`ErrorID: ${errorReport.errorId}`)
-  TelemetryCollector.getCollector().flush()
+  await TelemetryCollector.getCollector().flush()
   process.exit(1)
 }
 
