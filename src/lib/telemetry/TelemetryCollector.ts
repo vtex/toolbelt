@@ -7,7 +7,7 @@ import * as pkgJson from '../../../package.json'
 import { ErrorReport } from '../error/ErrorReport'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 import { configDir } from '../../conf'
-import { logger } from '../../clients'
+import logger from '../../logger'
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
