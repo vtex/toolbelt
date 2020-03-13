@@ -34,7 +34,7 @@ const handleExport = async (csvPath: string) => {
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const exportMetainfo = metainfo[EXPORTS] || {}
 
-  const spinner = ora('Exporting redirects....').start();
+  const spinner = ora('Exporting redirects....').start()
   const listener = createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
     saveMetainfo(metainfo, EXPORTS, indexHash, 0, next)
     console.log('\n')
@@ -48,7 +48,7 @@ const handleExport = async (csvPath: string) => {
     try {
       const result = await rewriter.exportRedirects(next)
       listOfRoutes = concat(listOfRoutes, result.routes)
-      
+
       spinner.color = COLORS[count % COLORS.length] as any
       spinner.text = `Exporting redirects....\t\t${listOfRoutes.length} Done`
       next = result.next
