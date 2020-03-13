@@ -68,11 +68,9 @@ export class TelemetryReporter {
   public async reportTelemetryFile(telemetryObjFilePath: string) {
     try {
       const telemetryObj = await readJson(telemetryObjFilePath)
-      throw new Error('Estou tendo um erro no Telemetry Report!!! :scared:')
       await this.reportErrors(telemetryObj.errors)
       await remove(telemetryObjFilePath)
     } catch (err) {
-      console.log('Entrei no catch. Err: ', err)
       await this.dataPendingLock.lock()
       await move(telemetryObjFilePath, join(TelemetryReporter.PENDING_DATA_DIR, basename(telemetryObjFilePath)))
       await this.createTelemetryReporterMetaError(err)
@@ -89,7 +87,6 @@ export class TelemetryReporter {
       pendingDataFiles.map(async pendingDataFile => {
         try {
           const pendingDataObject = await readJson(pendingDataFile)
-          console.log({pendingDataFile, pendingDataObject})
           await this.reportErrors(pendingDataObject.errors)
           await remove(pendingDataFile)
         } catch (err) {
@@ -120,7 +117,6 @@ export class TelemetryReporter {
       }
       return error
     })
-    console.log({metaErrors: errorsReport})
     await ensureFile(metaErrorFilePath)
     await writeJson(metaErrorFilePath, {errors: errorsReport})
   }
@@ -135,7 +131,6 @@ export class TelemetryReporter {
 }
 
 const start = async () => {
-  console.log('START!!!')
   const store = new TelemetryLocalStore(process.argv[2])
   const telemetryObjFilePath = process.argv[3]
   const reporter = TelemetryReporter.getTelemetryReporter()

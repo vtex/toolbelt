@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import { writeJson, ensureFile } from 'fs-extra'
+import { ensureFile, writeJson } from 'fs-extra'
 import { spawn } from 'child_process'
 import { join } from 'path'
 
@@ -70,20 +70,13 @@ export class TelemetryCollector {
     }
     const objFilePath = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${randomBytes(8).toString('hex')}.json`)
     try {
-      console.log({obj, objFilePath})
-      console.log('Antes')
       await ensureFile(objFilePath)
-      console.log('Meio')
       await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
-      console.log('Depois')
-      const cp = spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
-        // detached: true,
-        // stdio: 'ignore',
-      })//.unref()
-      cp.stderr.pipe(process.stderr)
-      cp.stdout.pipe(process.stdout)
+      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
+        detached: true,
+        stdio: 'ignore',
+      }).unref()
     } catch (e) {
-      console.log(e)
       logger.error('Error writing telemetry file. Error: ', e)
     }
   }
