@@ -179,7 +179,7 @@ const start = async () => {
 
   try {
     await main()
-    TelemetryCollector.getCollector().flush()
+    await TelemetryCollector.getCollector().flush()
   } catch (err) {
     await onError(err)
   }
