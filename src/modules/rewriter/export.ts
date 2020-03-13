@@ -35,7 +35,6 @@ const handleExport = async (csvPath: string) => {
   const exportMetainfo = metainfo[EXPORTS] || {}
 
   const spinner = ora('Exporting redirects....').start();
-  // Just need to save the 'next' that had a problem and the listOfRoutes
   const listener = createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
     saveMetainfo(metainfo, EXPORTS, indexHash, 0, next)
     console.log('\n')
