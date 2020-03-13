@@ -95,7 +95,7 @@ export class TelemetryReporter {
       })
     )
 
-    errors.length > 0 ?? await this.createTelemetryReporterMetaError(errors)
+    errors.length > 0 ?? (await this.createTelemetryReporterMetaError(errors))
     this.dataPendingLock.unlock()
   }
 
@@ -118,7 +118,7 @@ export class TelemetryReporter {
       return error
     })
     await ensureFile(metaErrorFilePath)
-    await writeJson(metaErrorFilePath, {errors: errorsReport})
+    await writeJson(metaErrorFilePath, { errors: errorsReport })
   }
 
   private async pendingFilesPaths() {
