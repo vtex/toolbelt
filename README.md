@@ -1,8 +1,30 @@
-# VTEX Toolbelt
+<p align="center">
+  <a href="" rel="noopener">
+ <img width=250px src=".github/logo/vtex_logo.png" alt="VTEX Logo"></a>
+</p>
 
-[![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt) [![npm version](https://img.shields.io/npm/v/vtex.svg?style=flat)](https://www.npmjs.com/package/vtex) [![Greenkeeper badge](https://badges.greenkeeper.io/vtex/toolbelt.svg)](https://greenkeeper.io/)
+<h1 align="center">
+  VTEX Toolbelt
+</h1>
 
-All you need to start using the VTEX platform.
+<div align="center">
+
+[![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt) 
+[![npm version](https://img.shields.io/npm/v/vtex.svg?style=flat)](https://www.npmjs.com/package/vtex) 
+![GitHub issues](https://img.shields.io/github/issues-raw/vtex/toolbelt)
+![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/vtex/toolbelt)
+![David](https://img.shields.io/david/vtex/toolbelt)
+[![Greenkeeper badge](https://badges.greenkeeper.io/vtex/toolbelt.svg)](https://greenkeeper.io/)
+
+</div>
+
+<p align="center">
+  All you need to start using the VTEX platform.<br>
+  <a href="#getting-started">Getting Started</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#frequently-asked-questions">Frequently Asked Questions</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="https://github.com/vtex/toolbelt/blob/master/CONTRIBUTING.md">How to contribute</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#license">License</a>
+</p>
 
 ### What is this?
 
