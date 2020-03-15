@@ -1,6 +1,6 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=250px src=".github/logo/vtex_logo.png" alt="VTEX Logo"></a>
+ <img width=250px src=".github/logo/vtex_logo.svg" alt="VTEX Logo"></a>
 </p>
 
 <h1 align="center">
