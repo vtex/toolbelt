@@ -12,7 +12,7 @@ import { SessionManager } from '../session/SessionManager'
 import { TelemetryLocalStore } from './TelemetryStore'
 import { ErrorReport } from '../error/ErrorReport'
 import { TelemetryCollector } from './TelemetryCollector'
-import { ErrorCodes } from '../error/ErrorCodes'
+import { ErrorKinds } from '../error/ErrorKinds'
 
 class FileLock {
   public readonly lockName: string
@@ -111,10 +111,8 @@ export class TelemetryReporter {
     const errorsReport = errorArray.map(error => {
       if (!(error instanceof ErrorReport)) {
         return ErrorReport.create({
-          code: ErrorCodes.TELEMETRY_REPORTER_ERROR,
-          message: error.message,
+          kind: ErrorKinds.TELEMETRY_REPORTER_ERROR,
           originalError: error,
-          tryToParseError: true,
         }).toObject()
       }
       return error
