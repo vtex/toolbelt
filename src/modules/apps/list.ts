@@ -44,7 +44,6 @@ const renderTable = ({
 }
 
 export default async () => {
-  throw new Error('Erro no list')
   const account = getAccount()
   const workspace = getWorkspace()
   log.debug('Starting to list apps')

@@ -1,4 +1,4 @@
-import { readdir, readJson, remove, writeJson, ensureDir, ensureFile, move } from 'fs-extra'
+import { readdir, readJson, remove, ensureDir, ensureFile, move, writeJson } from 'fs-extra'
 import { randomBytes } from 'crypto'
 import { isArray } from 'util'
 import * as lockfile from 'lockfile'
@@ -68,7 +68,6 @@ export class TelemetryReporter {
   public async reportTelemetryFile(telemetryObjFilePath: string) {
     try {
       const telemetryObj = await readJson(telemetryObjFilePath)
-      throw new Error('Error in reportErrors')
       await this.reportErrors(telemetryObj.errors)
       await remove(telemetryObjFilePath)
     } catch (err) {
@@ -89,7 +88,7 @@ export class TelemetryReporter {
         try {
           const pendingDataObject = await readJson(pendingDataFile)
           await this.reportErrors(pendingDataObject.errors)
-          // await remove(pendingDataFile)
+          await remove(pendingDataFile)
         } catch (err) {
           errors.push(err)
         }
@@ -108,7 +107,6 @@ export class TelemetryReporter {
 
   public async createTelemetryReporterMetaError(errors: any) {
     const errorArray = isArray(errors) ? errors : [errors]
-    console.log('errorArray', errorArray)
     const metaErrorFilePath = join(this.pendingDataDir, `${randomBytes(8).toString('hex')}.json`)
     const errorsReport = errorArray.map(error => {
       if (!(error instanceof ErrorReport)) {
@@ -117,7 +115,7 @@ export class TelemetryReporter {
           message: error.message,
           originalError: error,
           tryToParseError: true,
-        })
+        }).toObject()
       }
       return error
     })
@@ -135,7 +133,6 @@ export class TelemetryReporter {
 }
 
 const start = async () => {
-  console.log('TCHAU')
   const store = new TelemetryLocalStore(process.argv[2])
   const telemetryObjFilePath = process.argv[3]
   const reporter = TelemetryReporter.getTelemetryReporter()
