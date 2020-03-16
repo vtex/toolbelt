@@ -2,20 +2,20 @@ import { AxiosError } from 'axios'
 import { randomBytes } from 'crypto'
 import * as pkg from '../../../package.json'
 import { SessionManager } from '../session/SessionManager'
-import { ErrorCodes } from './ErrorCodes'
+import { ErrorKinds } from './ErrorKinds'
 
 interface ErrorCreationArguments {
-  code: string
-  message: string
+  kind?: string
+  message?: string
   originalError: Error | null
   tryToParseError?: boolean
 }
 
-interface ErrorReportArguments extends ErrorCreationArguments {
-  code: string
+interface ErrorReportArguments {
+  kind: string
   message: string
   originalError: Error | null
-  tryToParseError?: boolean
+  tryToParseError: boolean
   env: ErrorEnv
 }
 
@@ -46,18 +46,25 @@ interface RequestErrorDetails {
 }
 
 export class ErrorReport extends Error {
-  public static createGenericCode(error: AxiosError | Error | any) {
+  public static createGenericErrorKind(error: AxiosError | Error | any) {
     if (error.config) {
-      return ErrorCodes.REQUEST_ERROR
+      return ErrorKinds.REQUEST_ERROR
     }
 
-    return ErrorCodes.GENERIC_ERROR
+    return ErrorKinds.GENERIC_ERROR
   }
 
   public static create(args: ErrorCreationArguments) {
+    const kind = args.kind ?? this.createGenericErrorKind(args.originalError)
+    const message = args.message ?? args.originalError.message
+    const tryToParseError = args.tryToParseError ?? true
+
     const { workspace, account } = SessionManager.getSessionManager()
     return new ErrorReport({
-      ...args,
+      kind,
+      message,
+      tryToParseError,
+      originalError: args.originalError,
       env: {
         account,
         workspace,
@@ -75,8 +82,7 @@ export class ErrorReport extends Error {
     }
 
     const { url, method, headers: requestHeaders, params, data: requestData, timeout: requestTimeout } = err.config
-
-    const { status, statusText, headers: responseHeaders, data: responseData } = err.response
+    const { status, statusText, headers: responseHeaders, data: responseData } = err.response || {}
 
     return {
       requestConfig: {
@@ -87,33 +93,36 @@ export class ErrorReport extends Error {
         data: requestData,
         timeout: requestTimeout,
       },
-      response: {
-        status,
-        statusText,
-        headers: responseHeaders,
-        data: responseData,
-      },
+      response: err.response
+        ? {
+            status,
+            statusText,
+            headers: responseHeaders,
+            data: responseData,
+          }
+        : undefined,
     }
   }
 
-  public readonly code: string
-  public readonly originalError: Error
+  public readonly kind: string
+  public readonly originalError: Error | any
   public readonly errorDetails: any
   public readonly timestamp: string
   public readonly errorId: string
   public readonly env: ErrorEnv
 
-  constructor({ code, message, originalError, tryToParseError = false, env }: ErrorReportArguments) {
+  constructor({ kind, message, originalError, tryToParseError = false, env }: ErrorReportArguments) {
     super(message)
     this.timestamp = new Date().toISOString()
-    this.code = code
+    this.kind = kind
     this.originalError = originalError
     this.errorId = randomBytes(8).toString('hex')
+    this.stack = originalError.stack
     this.env = env
 
     this.errorDetails = ErrorReport.getRequestErrorMetadata(this.originalError as AxiosError)
     if (tryToParseError) {
-      if (this.errorDetails?.response.data?.message) {
+      if (this.errorDetails?.response?.data?.message) {
         this.message = this.errorDetails.response.data.message
       } else {
         this.message = this.originalError.message
@@ -125,11 +134,12 @@ export class ErrorReport extends Error {
     return {
       errorId: this.errorId,
       timestamp: this.timestamp,
-      code: this.code,
+      kind: this.kind,
       message: this.message,
       errorDetails: this.errorDetails,
       stack: this.stack,
       env: this.env,
+      ...(this.originalError.code ? { code: this.originalError.code } : null),
     }
   }
 
