@@ -36,8 +36,8 @@ const promptAccount = async promptPreviousAcc => {
 }
 
 const notifyRelease = () => {
-  const RELEASE_NOTES_DATE = 'January 2020'
-  const RELEASE_NOTES_URL = 'https://bit.ly/32GuM6U'
+  const RELEASE_NOTES_DATE = 'February 2020'
+  const RELEASE_NOTES_URL = 'https://bit.ly/2IQ2rSP'
 
   const msg = [
     `Are you up-to-date with the VTEX IO latest news?`,
