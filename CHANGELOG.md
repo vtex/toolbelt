@@ -5,15 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Improvements in telemetry.
+  - Add an interval to remote flush telemetry.
+  - Use a file to write telemetry object argument for `TelemetryReporter`.
+  - Send `TelemetryReporter` meta errors to `toolbelt-telemetry`.
+
+### Fixed
+- `ErrorReport` class throwing `UnhandledException`.
 
 ## [2.92.0] - 2020-03-09
 ### Added
- - Add "edition app" to vtex init.
- - Allow testing editions in non-master workspaces.
- - Improvements in telemetry.
-    - Add an interval to remote flush telemetry.
-    - Use a file to write telemetry object argument for `TelemetryReporter`.
-    - Send `TelemetryReporter` meta errors to `toolbelt-telemetry`.
+- Add "edition app" to vtex init.
+- Allow testing editions in non-master workspaces.
 
 ## [2.91.1] - 2020-03-03
 ### Changed

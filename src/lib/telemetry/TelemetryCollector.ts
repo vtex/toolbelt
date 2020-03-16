@@ -36,14 +36,7 @@ export class TelemetryCollector {
       return error
     }
 
-    const code = ErrorReport.createGenericCode(error)
-    const errorReport = ErrorReport.create({
-      code,
-      message: error.message,
-      originalError: error,
-      tryToParseError: true,
-    })
-
+    const errorReport = ErrorReport.create({ originalError: error })
     this.errors.push(errorReport)
     return errorReport
   }
