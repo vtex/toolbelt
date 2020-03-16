@@ -30,10 +30,12 @@ export default async (vendor: string, app: string, options) => {
     uri += `/${app}`
   }
 
-  log.info(`Listening logs from ${uri}`)
-
   function createEventSource() {
     const es = new CustomEventSource(uri, conf)
+
+    es.onopen = () => {
+      log.info(`Listening ${vendor}${app ? `.${app}` : ''} logs`)
+    }
 
     es.onerror = err => {
       log.error(`Error reading logs: ${err.message}`)
