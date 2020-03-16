@@ -2,7 +2,7 @@ import { readdir, readJson, remove, writeJson, ensureDir, ensureFile, move } fro
 import { randomBytes } from 'crypto'
 import { isArray } from 'util'
 import * as lockfile from 'lockfile'
-import { join, basename } from 'path'
+import { join, basename, dirname } from 'path'
 
 import { TelemetryClient } from '../../clients/telemetryClient'
 import { region } from '../../env'
@@ -21,7 +21,7 @@ class FileLock {
   }
 
   public async lock() {
-    await ensureDir(TelemetryReporter.PENDING_DATA_DIR)
+    await ensureDir(dirname(this.lockPath))
     return new Promise((resolve, reject) => {
       lockfile.lock(this.lockPath, this.options, err => {
         err ? reject(err) : resolve()
@@ -61,7 +61,7 @@ export class TelemetryReporter {
   private dataPendingLock: FileLock
   constructor(private telemetryClient: TelemetryClient, private pendingDataDir: string) {
     const dataPendingLockName = 'reporter.lock'
-    const dataPendingLockPath = join(TelemetryReporter.PENDING_DATA_DIR, dataPendingLockName)
+    const dataPendingLockPath = join(pendingDataDir, dataPendingLockName)
     this.dataPendingLock = new FileLock(dataPendingLockPath, {})
   }
 
