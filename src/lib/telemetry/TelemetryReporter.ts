@@ -95,7 +95,9 @@ export class TelemetryReporter {
       })
     )
 
-    errors.length > 0 ?? (await this.createTelemetryReporterMetaError(errors))
+    if (errors.length > 0) {
+      await this.createTelemetryReporterMetaError(errors)
+    }
     await this.dataPendingLock.unlock()
   }
 
