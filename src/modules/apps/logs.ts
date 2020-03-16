@@ -13,16 +13,16 @@ export default async (vendor: string, app: string, options) => {
   const conf = {
     headers: {
       Authorization: `${AuthType.bearer} ${getToken()}`,
-      'user-agent': userAgent,
+      'user-agent': `${userAgent}${options.ghost ? `#${Math.random()}` : ''}`,
     },
   }
 
-  vendor = vendor || account
-
-  if (!vendor || (!options.all && !app)) {
+  try {
     const manifest = await getManifest()
-    vendor = vendor || manifest.vendor
+    vendor = vendor || account || manifest.vendor
     app = app || manifest.name
+  } catch (err) {
+    if (!vendor || (!options.all && !app)) throw err
   }
 
   let uri = `http://infra.io.vtex.com/skidder/v${skidderMajor}/${vendor}/${workspace}/logs/stream`
@@ -47,7 +47,7 @@ export default async (vendor: string, app: string, options) => {
     }
 
     es.addEventListener('message', msg => {
-      console.log(JSON.parse(msg.data).data)
+      console.log(JSON.stringify(JSON.parse(msg.data).data, null, 2))
     })
   }
 

@@ -551,6 +551,12 @@ export default {
         short: 'a',
         type: 'boolean',
       },
+      {
+        description: "Show all available logs and don't commit the new consume state",
+        long: 'ghost',
+        short: 's',
+        type: 'boolean',
+      },
     ],
   },
 }
