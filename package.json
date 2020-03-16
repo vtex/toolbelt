@@ -75,6 +75,7 @@
     "json-array-split": "~1.0.0",
     "json2csv": "~4.5.4",
     "jsonwebtoken": "~8.5.1",
+    "lockfile": "^1.0.4",
     "moment": "~2.24.0",
     "node-notifier": "^6.0.0",
     "numbro": "2.1.0",
