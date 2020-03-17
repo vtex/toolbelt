@@ -1,4 +1,4 @@
-import { SessionManager } from "../session/SessionManager"
+import { SessionManager } from '../session/SessionManager'
 import * as pkg from '../../../package.json'
 
 export interface Metric {
