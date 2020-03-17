@@ -74,7 +74,7 @@ export class TelemetryCollector {
       const cp = spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
         // detached: true,
         // stdio: 'ignore',
-      })//.unref()
+      }) // .unref()
       cp.stderr.pipe(process.stderr)
       cp.stdout.pipe(process.stdout)
     } catch (e) {
