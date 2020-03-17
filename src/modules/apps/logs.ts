@@ -17,12 +17,19 @@ export default async (vendor: string, app: string, options) => {
     },
   }
 
+  let manifest = undefined
   try {
-    const manifest = await getManifest()
-    vendor = vendor || account || manifest.vendor
+    manifest = await getManifest()
+    vendor = vendor || manifest.vendor
     app = app || manifest.name
-  } catch (err) {
-    if (!vendor || (!options.all && !app)) throw err
+
+  } catch (err) { // manifest file was not found
+    vendor = vendor || account
+    
+    if (!vendor || (!options.all && !app)) {
+      console.error('vendor or app could not be specified')
+      throw err
+    }
   }
 
   let uri = `http://infra.io.vtex.com/skidder/v${skidderMajor}/${vendor}/${workspace}/logs/stream`
@@ -32,9 +39,10 @@ export default async (vendor: string, app: string, options) => {
 
   function createEventSource() {
     const es = new CustomEventSource(uri, conf)
+    console.info(`Listening ${vendor}${app ? `.${app}` : ''} logs`)
 
     es.onopen = () => {
-      log.info(`Listening ${vendor}${app ? `.${app}` : ''} logs`)
+      log.info(`Open with ${uri} is open`)
     }
 
     es.onerror = err => {
