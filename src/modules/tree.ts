@@ -494,5 +494,5 @@ export default {
       handler: './debug/dotnet',
       requiredArgs: 'debugInst',
     },
-  }
+  },
 }
