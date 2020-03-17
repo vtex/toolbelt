@@ -98,7 +98,7 @@
     "v8-compile-cache": "^2.1.0",
     "winston": "~3.2.1",
     "winston-transport": "~4.3.0",
-    "ws": "~7.2.0",
+    "ws": "^7.2.3",
     "yarn": "~1.21.0"
   },
   "devDependencies": {
