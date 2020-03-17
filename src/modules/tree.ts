@@ -488,4 +488,11 @@ export default {
       requiredArgs: 'edition',
     },
   },
+  debug: {
+    dotnet: {
+      description: '.Net debugger',
+      handler: './debug/dotnet',
+      requiredArgs: 'debugInst',
+    },
+  }
 }
