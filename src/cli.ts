@@ -20,6 +20,7 @@ import tree from './modules/tree'
 import { checkAndOpenNPSLink } from './nps'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
+import { Metric } from './lib/metrics/MetricReport'
 
 const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
@@ -61,7 +62,12 @@ const main = async () => {
 
   await checkAndOpenNPSLink()
 
+  const commandStartTime = process.hrtime()
   await run(command)
+  const commandLatency = process.hrtime(commandStartTime)
+
+  const metric: Metric = { latency: 1000*commandLatency[0] + commandLatency[1]/1000000 }
+  TelemetryCollector.getCollector().registerMetric(metric)
 }
 
 const onError = async (e: any) => {
