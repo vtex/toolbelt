@@ -1,10 +1,11 @@
 import Configstore from 'configstore'
 import { ErrorReport } from '../error/ErrorReport'
+import { MetricReport } from '../metrics/MetricReport'
 
 export interface ITelemetryLocalStore {
   storeName: string
   getErrors: () => ErrorReport[]
-  getMetrics: () => any
+  getMetrics: () => MetricReport[]
   getLastRemoteFlush: () => any
   setLastRemoteFlush: (date: number) => void
   setErrors: (errors: ErrorReport[]) => void
@@ -25,7 +26,7 @@ export class TelemetryLocalStore implements ITelemetryLocalStore {
   }
 
   public getMetrics() {
-    return this.store.get('metrics') || {}
+    return this.store.get('metrics') || []
   }
 
   public getLastRemoteFlush() {
@@ -36,7 +37,7 @@ export class TelemetryLocalStore implements ITelemetryLocalStore {
     this.store.set('errors', errors)
   }
 
-  public setMetrics(metrics: any) {
+  public setMetrics(metrics: MetricReport[]) {
     this.store.set('metrics', metrics)
   }
 
