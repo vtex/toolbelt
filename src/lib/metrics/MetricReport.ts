@@ -2,11 +2,11 @@ import { SessionManager } from '../session/SessionManager'
 import * as pkg from '../../../package.json'
 
 export interface Metric {
+  command: string
   [metricName: string]: number | string | MetricEnv
 }
 
 interface MetricEnv {
-  command: string
   account: string
   workspace: string
   toolbeltVersion: string
@@ -23,7 +23,6 @@ export function metricToMetricReport(metric: Metric): MetricReport {
   return {
     ...metric,
     env: {
-      command: process.argv.slice(2).join(' '),
       account,
       workspace,
       toolbeltVersion: pkg.version,
