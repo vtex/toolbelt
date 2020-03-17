@@ -66,7 +66,6 @@ export class TelemetryCollector {
       errors: this.errors.map(err => err.toObject()),
       metrics: this.metrics,
     }
-    console.log('Telemetry object: \n', obj)
     const objFilePath = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${randomBytes(8).toString('hex')}.json`)
     try {
       await ensureFile(objFilePath)
