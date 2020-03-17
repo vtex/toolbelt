@@ -13,6 +13,7 @@ import { TelemetryLocalStore } from './TelemetryStore'
 import { ErrorReport } from '../error/ErrorReport'
 import { TelemetryCollector } from './TelemetryCollector'
 import { ErrorKinds } from '../error/ErrorKinds'
+import { MetricReport } from '../metrics/MetricReport'
 
 class FileLock {
   public readonly lockName: string
@@ -69,6 +70,7 @@ export class TelemetryReporter {
     try {
       const telemetryObj = await readJson(telemetryObjFilePath)
       await this.reportErrors(telemetryObj.errors)
+      await this.reportMetrics(telemetryObj.metrics)
       await remove(telemetryObjFilePath)
     } catch (err) {
       await this.dataPendingLock.lock()
@@ -103,6 +105,10 @@ export class TelemetryReporter {
 
   public reportErrors(errors: any[]) {
     return this.telemetryClient.reportErrors(errors)
+  }
+
+  public reportMetrics(metrics: MetricReport[]) {
+    return this.telemetryClient.reportMetrics(metrics)
   }
 
   public async createTelemetryReporterMetaError(errors: any) {
