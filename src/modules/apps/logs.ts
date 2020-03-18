@@ -17,19 +17,27 @@ export default async (vendor: string, app: string, options) => {
     },
   }
 
-  let manifest = undefined
   try {
-    manifest = await getManifest()
+    const manifest = await getManifest()
     vendor = vendor || manifest.vendor
     app = app || manifest.name
-
-  } catch (err) { // manifest file was not found
+  } catch (err) {
+    // manifest file was not found
     vendor = vendor || account
-    
-    if (!vendor || (!options.all && !app)) {
-      console.error('vendor or app could not be specified')
+
+    if (!vendor) {
+      console.error('vendor could not be specified, are you logged in?')
       throw err
     }
+
+    if (!options.all && !app) {
+      console.error('app could not be specified. Did you forget --all?')
+      throw err
+    }
+  }
+
+  if (options.all) {
+    app = ''
   }
 
   let uri = `http://infra.io.vtex.com/skidder/v${skidderMajor}/${vendor}/${workspace}/logs/stream`
