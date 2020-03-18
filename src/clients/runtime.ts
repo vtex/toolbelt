@@ -22,8 +22,8 @@ export class Runtime {
   public async debugDotnetApp(debugInst: string) {
     const manifest = await ManifestEditor.getManifestEditor()
     const { name, vendor, builders } = manifest
-    const { dotnet, node, 'service-js': serviceJs } = builders
-    if (!dotnet && !node && !serviceJs) {
+    const { dotnet } = builders
+    if (!dotnet) {
       return
     }
 
