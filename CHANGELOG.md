@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - [vtex rewriter] Use rewriter new redirects API with single binding support.
 
+### Changed
+- Update release notes message.
+
 ## [2.96.0] - 2020-04-06
 ### Added
 - [vtex test e2e] Show test's logs.
