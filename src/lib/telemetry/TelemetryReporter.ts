@@ -113,7 +113,7 @@ export class TelemetryReporter {
   public async reportErrors(errors: any[]) {
     try {
       await this.telemetryClient.reportErrors(errors)
-    } catch(err) {
+    } catch (err) {
       await this.dataPendingLock.lock()
       await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, 'errors'))
       await writeJson(join(TelemetryReporter.PENDING_DATA_DIR, 'errors', randomBytes(8).toString('hex')), errors)
@@ -125,7 +125,7 @@ export class TelemetryReporter {
   public async reportMetrics(metrics: MetricReport[]) {
     try {
       await this.telemetryClient.reportMetrics(metrics)
-    } catch(err) {
+    } catch (err) {
       await this.dataPendingLock.lock()
       await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, 'metrics'))
       await writeJson(join(TelemetryReporter.PENDING_DATA_DIR, 'metrics', randomBytes(8).toString('hex')), metrics)
