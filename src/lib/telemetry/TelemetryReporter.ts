@@ -1,4 +1,4 @@
-import { readdir, readJson, remove, ensureDir, ensureFile, move, writeJson } from 'fs-extra'
+import { readdir, readJson, ensureDir, ensureFile, writeJson, remove } from 'fs-extra'
 import { randomBytes } from 'crypto'
 import { isArray } from 'util'
 import * as lockfile from 'lockfile'
@@ -67,30 +67,36 @@ export class TelemetryReporter {
   }
 
   public async reportTelemetryFile(telemetryObjFilePath: string) {
-    try {
-      const telemetryObj = await readJson(telemetryObjFilePath)
-      await this.reportErrors(telemetryObj.errors)
-      await this.reportMetrics(telemetryObj.metrics)
-      await remove(telemetryObjFilePath)
-    } catch (err) {
-      await this.dataPendingLock.lock()
-      await move(telemetryObjFilePath, join(TelemetryReporter.PENDING_DATA_DIR, basename(telemetryObjFilePath)))
-      await this.createTelemetryReporterMetaError(err)
-      await this.dataPendingLock.unlock()
-    }
+    const telemetryObj = await readJson(telemetryObjFilePath)
+    await this.reportErrors(telemetryObj.errors)
+    await this.reportMetrics(telemetryObj.metrics)
+    await remove(telemetryObjFilePath)
   }
 
   public async sendPendingData() {
     await this.dataPendingLock.lock()
 
-    const pendingDataFiles = await this.pendingFilesPaths()
     const errors = []
+
+    const pendingErrorsFiles = await this.pendingErrorsFilesPaths()
+    const pendingMetricsFiles = await this.pendingMetricsFilesPaths()
     await Promise.all(
-      pendingDataFiles.map(async pendingDataFile => {
+      pendingErrorsFiles.map(async pendingErrosFile => {
         try {
-          const pendingDataObject = await readJson(pendingDataFile)
-          await this.reportErrors(pendingDataObject.errors)
-          await remove(pendingDataFile)
+          const pendingErrorsObject = await readJson(pendingErrosFile)
+          await this.reportErrors(pendingErrorsObject)
+          await remove(pendingErrosFile)
+        } catch (err) {
+          errors.push(err)
+        }
+      })
+    )
+    await Promise.all(
+      pendingMetricsFiles.map(async pendingMetricsFile => {
+        try {
+          const pendingMetricsObject = await readJson(pendingMetricsFile)
+          await this.reportMetrics(pendingMetricsObject)
+          await remove(pendingMetricsFile)
         } catch (err) {
           errors.push(err)
         }
@@ -100,20 +106,37 @@ export class TelemetryReporter {
     if (errors.length > 0) {
       await this.createTelemetryReporterMetaError(errors)
     }
+
     await this.dataPendingLock.unlock()
   }
 
-  public reportErrors(errors: any[]) {
-    return this.telemetryClient.reportErrors(errors)
+  public async reportErrors(errors: any[]) {
+    try {
+      await this.telemetryClient.reportErrors(errors)
+    } catch(err) {
+      await this.dataPendingLock.lock()
+      await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, 'errors'))
+      await writeJson(join(TelemetryReporter.PENDING_DATA_DIR, 'errors', randomBytes(8).toString('hex')), errors)
+      await this.createTelemetryReporterMetaError(err)
+      await this.dataPendingLock.unlock()
+    }
   }
 
-  public reportMetrics(metrics: MetricReport[]) {
-    return this.telemetryClient.reportMetrics(metrics)
+  public async reportMetrics(metrics: MetricReport[]) {
+    try {
+      await this.telemetryClient.reportMetrics(metrics)
+    } catch(err) {
+      await this.dataPendingLock.lock()
+      await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, 'metrics'))
+      await writeJson(join(TelemetryReporter.PENDING_DATA_DIR, 'metrics', randomBytes(8).toString('hex')), metrics)
+      await this.createTelemetryReporterMetaError(err)
+      await this.dataPendingLock.unlock()
+    }
   }
 
   public async createTelemetryReporterMetaError(errors: any) {
     const errorArray = isArray(errors) ? errors : [errors]
-    const metaErrorFilePath = join(this.pendingDataDir, `${randomBytes(8).toString('hex')}.json`)
+    const metaErrorFilePath = join(this.pendingDataDir, 'errors', randomBytes(8).toString('hex'))
     const errorsReport = errorArray.map(error => {
       if (!(error instanceof ErrorReport)) {
         return ErrorReport.create({
@@ -123,16 +146,23 @@ export class TelemetryReporter {
       }
       return error
     })
+    await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, 'errors'))
     await ensureFile(metaErrorFilePath)
     await writeJson(metaErrorFilePath, { errors: errorsReport })
   }
 
-  private async pendingFilesPaths() {
-    const pendingDataFiles = (await readdir(TelemetryReporter.PENDING_DATA_DIR)).filter(fileName => {
-      return fileName !== this.dataPendingLock.lockName
-    })
+  private async pendingErrorsFilesPaths() {
+    const pendingDataErrorsDir = join(TelemetryReporter.PENDING_DATA_DIR, 'errors')
+    await ensureDir(pendingDataErrorsDir)
+    const pendingErrorsFiles = await readdir(pendingDataErrorsDir)
+    return pendingErrorsFiles.map(pendingErrorFile => join(pendingDataErrorsDir, pendingErrorFile))
+  }
 
-    return pendingDataFiles.map(pendingDataFile => join(TelemetryReporter.PENDING_DATA_DIR, pendingDataFile))
+  private async pendingMetricsFilesPaths() {
+    const pendingDataMetricsDir = join(TelemetryReporter.PENDING_DATA_DIR, 'metrics')
+    await ensureDir(pendingDataMetricsDir)
+    const pendingMetricsFiles = await readdir(pendingDataMetricsDir)
+    return pendingMetricsFiles.map(pendingMetricsFile => join(pendingDataMetricsDir, pendingMetricsFile))
   }
 }
 
