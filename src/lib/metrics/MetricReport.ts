@@ -14,20 +14,38 @@ interface MetricEnv {
   platform: string
 }
 
-export interface MetricReport extends Metric {
+interface MetricReportArguments {
+  metric: Metric,
   env: MetricEnv
 }
 
-export function metricToMetricReport(metric: Metric): MetricReport {
-  const { workspace, account } = SessionManager.getSessionManager()
-  return {
-    ...metric,
-    env: {
-      account,
-      workspace,
-      toolbeltVersion: pkg.version,
-      nodeVersion: process.version,
-      platform: process.platform,
-    },
+export class MetricReport {
+  public readonly metric: Metric
+  public readonly env: MetricEnv
+
+  constructor({ metric, env }: MetricReportArguments) {
+    this.metric = metric
+    this.env = env
+  }
+
+  public static create(metric: Metric) {
+    const { workspace, account } = SessionManager.getSessionManager()
+    return new MetricReport({
+      metric,
+      env: {
+        account,
+        workspace,
+        toolbeltVersion: pkg.version,
+        nodeVersion: process.version,
+        platform: process.platform,
+      },
+    })
+  }
+
+  public toObject() {
+    return {
+      ...this.metric,
+      env: this.env
+    }
   }
 }
