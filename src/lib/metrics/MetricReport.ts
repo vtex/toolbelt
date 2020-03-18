@@ -15,7 +15,7 @@ interface MetricEnv {
 }
 
 interface MetricReportArguments {
-  metric: Metric,
+  metric: Metric
   env: MetricEnv
 }
 
@@ -45,7 +45,7 @@ export class MetricReport {
   public toObject() {
     return {
       ...this.metric,
-      env: this.env
+      env: this.env,
     }
   }
 }
