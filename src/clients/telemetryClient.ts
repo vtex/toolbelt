@@ -17,6 +17,6 @@ export class TelemetryClient extends AppClient {
   }
 
   public reportMetrics(metrics: MetricReport[]) {
-    console.log('Metrics send to toolbelt-telemetry', metrics)
+    return this.http.post('/metricsRegister', metrics)
   }
 }

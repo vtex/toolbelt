@@ -75,12 +75,10 @@ export class TelemetryCollector {
     try {
       await ensureFile(objFilePath)
       await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
-      const cp = spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
-        // detached: true,
-        // stdio: 'ignore',
-      }) // .unref()
-      cp.stderr.pipe(process.stderr)
-      cp.stdout.pipe(process.stdout)
+      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
+        detached: true,
+        stdio: 'ignore',
+      }).unref()
     } catch (e) {
       logger.error('Error writing telemetry file. Error: ', e)
     }
