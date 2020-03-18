@@ -8,7 +8,7 @@ import { ErrorReport } from '../error/ErrorReport'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 import { configDir } from '../../conf'
 import logger from '../../logger'
-import { Metric, MetricReport, metricToMetricReport } from '../metrics/MetricReport'
+import { Metric, MetricReport } from '../metrics/MetricReport'
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
@@ -43,7 +43,12 @@ export class TelemetryCollector {
   }
 
   public registerMetric(metric: Metric): MetricReport {
-    const metricReport = metricToMetricReport(metric)
+    if (metric instanceof MetricReport) {
+      this.metrics.push(metric)
+      return metric
+    }
+
+    const metricReport = MetricReport.create(metric)
     this.metrics.push(metricReport)
     return metricReport
   }
@@ -64,7 +69,7 @@ export class TelemetryCollector {
 
     const obj = {
       errors: this.errors.map(err => err.toObject()),
-      metrics: this.metrics,
+      metrics: this.metrics.map(metric => metric.toObject()),
     }
     const objFilePath = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${randomBytes(8).toString('hex')}.json`)
     try {
