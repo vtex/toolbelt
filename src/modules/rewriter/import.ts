@@ -1,6 +1,6 @@
 import { createHash } from 'crypto'
 import { readFile, readJson, remove, writeFile } from 'fs-extra'
-import { compose, concat, difference, isEmpty, length, map, pluck, reduce, prop } from 'ramda'
+import { difference, isEmpty, length, map, pluck } from 'ramda'
 import { createInterface } from 'readline'
 import { Parser } from 'json2csv'
 
