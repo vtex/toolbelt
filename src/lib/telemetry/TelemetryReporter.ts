@@ -148,7 +148,7 @@ export class TelemetryReporter {
     })
     await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, 'errors'))
     await ensureFile(metaErrorFilePath)
-    await writeJson(metaErrorFilePath, { errors: errorsReport })
+    await writeJson(metaErrorFilePath, errorsReport)
   }
 
   private async pendingErrorsFilesPaths() {
