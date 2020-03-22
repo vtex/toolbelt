@@ -1,4 +1,4 @@
-import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient, IOContext, InstanceOptions } from '@vtex/api'
 import getStream from 'get-stream'
 import archiver from 'archiver'
 import { ZlibOptions } from 'zlib'
@@ -19,8 +19,7 @@ export class TelemetryClient extends AppClient {
   }
 
   private async maybeCompressData(dataToCompress: any[]) {
-    const dataToCompressAsString = dataToCompress.toString()
-    const bytesSize = Buffer.byteLength(dataToCompressAsString)
+    const bytesSize = JSON.stringify(dataToCompress).length
     if (bytesSize > TelemetryClient.OBJECT_SIZE_LIMIT) {
       const compressedObject = await this.compressDataOnMemory(dataToCompress)
       return compressedObject
@@ -35,6 +34,6 @@ export class TelemetryClient extends AppClient {
   public async reportErrors(errors: any[]) {
     const maybeCompressedErrors = await this.maybeCompressData(errors)
 
-    return this.http.post('/errorReport', maybeCompressedErrors)
+    return await this.http.post('/errorReport', maybeCompressedErrors)
   }
 }
