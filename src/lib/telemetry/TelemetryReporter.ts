@@ -1,4 +1,4 @@
-import { readdir, readJson, remove, ensureDir, ensureFile, move, writeJson } from 'fs-extra'
+import { readdir, readJson, ensureDir, ensureFile, move, writeJson, remove } from 'fs-extra'
 import { randomBytes } from 'crypto'
 import { isArray } from 'util'
 import * as lockfile from 'lockfile'
@@ -38,6 +38,15 @@ class FileLock {
   }
 }
 
+class EntityTooLargeError extends Error {
+  private static readonly originalErrorSizeToCrop = 200
+  constructor(public originalErrorMessage: string) {
+    super(
+      `First ${EntityTooLargeError.originalErrorSizeToCrop} characters from original error: ${originalErrorMessage.substring(0, EntityTooLargeError.originalErrorSizeToCrop)}`
+    )
+  }
+}
+
 export class TelemetryReporter {
   private static readonly RETRIES = 3
   private static readonly TIMEOUT = 30 * 1000
@@ -66,14 +75,21 @@ export class TelemetryReporter {
   }
 
   public async reportTelemetryFile(telemetryObjFilePath: string) {
+    let telemetryObj
     try {
-      const telemetryObj = await readJson(telemetryObjFilePath)
+      telemetryObj = await readJson(telemetryObjFilePath)
       await this.reportErrors(telemetryObj.errors)
       await remove(telemetryObjFilePath)
     } catch (err) {
       await this.dataPendingLock.lock()
-      await move(telemetryObjFilePath, join(TelemetryReporter.PENDING_DATA_DIR, basename(telemetryObjFilePath)))
-      await this.createTelemetryReporterMetaError(err)
+      if (err.response?.status == 413) {
+        await remove(telemetryObjFilePath)
+        const entityTooLargeError = new EntityTooLargeError(typeof(err.config?.data) === 'string' ? err.config.data : '')
+        await this.createTelemetryReporterMetaError(entityTooLargeError)
+      } else {
+        await move(telemetryObjFilePath, join(TelemetryReporter.PENDING_DATA_DIR, basename(telemetryObjFilePath)))
+        await this.createTelemetryReporterMetaError(err)
+      }
       await this.dataPendingLock.unlock()
     }
   }
