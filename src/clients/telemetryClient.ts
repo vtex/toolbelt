@@ -4,7 +4,7 @@ import archiver from 'archiver'
 import { ZlibOptions } from 'zlib'
 
 export class TelemetryClient extends AppClient {
-  private static readonly OBJECT_SIZE_LIMIT = 100000 //1Kb
+  private static readonly OBJECT_SIZE_LIMIT = 100000 // 1Kb
 
   private compressDataOnMemory = async (errorOrMetricArray: any[], zlibOptions: ZlibOptions = {}) => {
     const zip = archiver('zip', { zlib: zlibOptions })

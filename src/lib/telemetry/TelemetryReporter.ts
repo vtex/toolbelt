@@ -42,7 +42,12 @@ class EntityTooLargeError extends Error {
   private static readonly originalErrorSizeToCrop = 200
   constructor(public originalErrorMessage: string) {
     super(
-      `First ${EntityTooLargeError.originalErrorSizeToCrop} characters from original error: ${originalErrorMessage.substring(0, EntityTooLargeError.originalErrorSizeToCrop)}`
+      `First ${
+        EntityTooLargeError.originalErrorSizeToCrop
+      } characters from original error: ${originalErrorMessage.substring(
+        0,
+        EntityTooLargeError.originalErrorSizeToCrop
+      )}`
     )
   }
 }
@@ -84,7 +89,7 @@ export class TelemetryReporter {
       await this.dataPendingLock.lock()
       if (err.response?.status == 413) {
         await remove(telemetryObjFilePath)
-        const entityTooLargeError = new EntityTooLargeError(typeof(err.config?.data) === 'string' ? err.config.data : '')
+        const entityTooLargeError = new EntityTooLargeError(typeof err.config?.data === 'string' ? err.config.data : '')
         await this.createTelemetryReporterMetaError(entityTooLargeError)
       } else {
         await move(telemetryObjFilePath, join(TelemetryReporter.PENDING_DATA_DIR, basename(telemetryObjFilePath)))
