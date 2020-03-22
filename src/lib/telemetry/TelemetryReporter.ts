@@ -87,7 +87,7 @@ export class TelemetryReporter {
       await remove(telemetryObjFilePath)
     } catch (err) {
       await this.dataPendingLock.lock()
-      if (err.response?.status == 413) {
+      if (err.response?.status === 413) {
         await remove(telemetryObjFilePath)
         const entityTooLargeError = new EntityTooLargeError(typeof err.config?.data === 'string' ? err.config.data : '')
         await this.createTelemetryReporterMetaError(entityTooLargeError)

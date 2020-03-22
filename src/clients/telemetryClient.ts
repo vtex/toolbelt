@@ -34,6 +34,6 @@ export class TelemetryClient extends AppClient {
   public async reportErrors(errors: any[]) {
     const maybeCompressedErrors = await this.maybeCompressData(errors)
 
-    return await this.http.post('/errorReport', maybeCompressedErrors)
+    return this.http.post('/errorReport', maybeCompressedErrors)
   }
 }
