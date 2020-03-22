@@ -6,22 +6,23 @@ import { ZlibOptions } from 'zlib'
 export class TelemetryClient extends AppClient {
   private static readonly OBJECT_SIZE_LIMIT = 100000 // 1Kb
 
-  private compressDataOnMemory = async (errorOrMetricArray: any[], zlibOptions: ZlibOptions = {}) => {
+  private compressDataOnMemory = async (errorOrMetric: string, zlibOptions: ZlibOptions = {}) => {
     const zip = archiver('zip', { zlib: zlibOptions })
 
     zip.on('error', (err: any) => {
       throw err
     })
-    zip.append(errorOrMetricArray.toString(), { name: 'TelemetryData' })
+    zip.append(errorOrMetric, { name: 'TelemetryData' })
 
     const [zipContent] = await Promise.all([getStream.buffer(zip), zip.finalize()])
     return zipContent as Buffer
   }
 
   private async maybeCompressData(dataToCompress: any[]) {
-    const bytesSize = JSON.stringify(dataToCompress).length
+    const stringfiedDataToCompress = JSON.stringify(dataToCompress)
+    const bytesSize = stringfiedDataToCompress.length
     if (bytesSize > TelemetryClient.OBJECT_SIZE_LIMIT) {
-      const compressedObject = await this.compressDataOnMemory(dataToCompress)
+      const compressedObject = await this.compressDataOnMemory(stringfiedDataToCompress)
       return compressedObject
     }
     return dataToCompress
