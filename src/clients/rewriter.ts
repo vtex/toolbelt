@@ -1,5 +1,4 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
-import { path } from 'ramda'
 
 export interface RedirectInput {
   id: string
@@ -40,7 +39,7 @@ export class Rewriter extends AppGraphQLClient {
 
   public exportRedirects = (next?: string): Promise<ExportResponse> =>
     this.graphql
-      .query<ExportResponse, { next: string }>(
+      .query<{ redirect: { listRedirects: ExportResponse } }, { next: string }>(
         {
           query: `
       query ListRedirects($next: String) {
@@ -63,11 +62,11 @@ export class Rewriter extends AppGraphQLClient {
           metric: 'rewriter-get-redirects',
         }
       )
-      .then(path(['data', 'redirect', 'listRedirects'])) as Promise<ExportResponse>
+      .then(res => res.data?.redirect?.listRedirects) as Promise<ExportResponse>
 
   public importRedirects = (routes: RedirectInput[]): Promise<boolean> =>
     this.graphql
-      .mutate<boolean, { routes: RedirectInput[] }>(
+      .mutate<{ redirect: { saveMany: boolean } }, { routes: RedirectInput[] }>(
         {
           mutate: `
       mutation SaveMany($routes: [RedirectInput!]!) {
@@ -82,11 +81,11 @@ export class Rewriter extends AppGraphQLClient {
           metric: 'rewriter-import-redirects',
         }
       )
-      .then(path(['data', 'redirect', 'saveMany'])) as Promise<boolean>
+      .then(res => res.data?.redirect?.saveMany) as Promise<boolean>
 
   public deleteRedirects = (paths: string[]): Promise<boolean> =>
     this.graphql
-      .mutate<boolean, { paths: string[] }>(
+      .mutate<{ redirect: { deleteMany: boolean } }, { paths: string[] }>(
         {
           mutate: `
       mutation DeleteMany($paths: [String!]!) {
@@ -101,5 +100,5 @@ export class Rewriter extends AppGraphQLClient {
           metric: 'rewriter-delete-redirects',
         }
       )
-      .then(path(['data', 'redirect', 'deleteMany'])) as Promise<boolean>
+      .then(res => res.data?.redirect?.deleteMany) as Promise<boolean>
 }

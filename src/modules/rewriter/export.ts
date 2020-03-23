@@ -3,7 +3,6 @@ import { writeFile, readJson } from 'fs-extra'
 import ora from 'ora'
 
 import { Parser } from 'json2csv'
-import { concat } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
@@ -28,7 +27,7 @@ const COLORS = ['cyan', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'c
 const FIELDS = ['from', 'to', 'type', 'endDate']
 
 const handleExport = async (csvPath: string) => {
-  const indexHash = await createHash('md5')
+  const indexHash = createHash('md5')
     .update(`${account}_${workspace}_${csvPath}`)
     .digest('hex')
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
@@ -51,7 +50,7 @@ const handleExport = async (csvPath: string) => {
     try {
       // eslint-disable-next-line no-await-in-loop
       const result = await rewriter.exportRedirects(next)
-      listOfRoutes = concat(listOfRoutes, result.routes)
+      listOfRoutes = listOfRoutes.concat(result.routes)
 
       spinner.color = COLORS[count % COLORS.length] as any
       spinner.text = `Exporting redirects....\t\t${listOfRoutes.length} Done`
@@ -60,6 +59,7 @@ const handleExport = async (csvPath: string) => {
     } catch (e) {
       saveMetainfo(metainfo, EXPORTS, indexHash, 0, { next, listOfRoutes })
       listener.close()
+      spinner.stop()
       throw e
     }
   } while (next)
