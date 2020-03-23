@@ -2,7 +2,7 @@ import { DeprecationChecker } from './DeprecationChecker'
 import { IDeprecationCheckerStore, VersionDeprecationInfo } from './DeprecationCheckerStore'
 
 class DeprecationCheckerStoreMock implements IDeprecationCheckerStore {
-  public storeFilePath = 'mockFIlePath'
+  public storeFilePath = 'mockFilePath'
   private versionDeprecationInfo: VersionDeprecationInfo
   private lastDeprecationCheck: number
 
