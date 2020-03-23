@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Uses new list api for exporting redirects
+- Use new list api for exporting redirects.
+- Deprecation checking.
 
 ## [2.92.1] - 2020-03-17
 ### Changed
