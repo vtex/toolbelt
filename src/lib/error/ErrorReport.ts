@@ -46,6 +46,10 @@ interface RequestErrorDetails {
 }
 
 export class ErrorReport extends Error {
+  private static readonly MAX_ERROR_STRING_LENGTH = process.env.MAX_ERROR_STRING_LENGTH
+    ? parseInt(process.env.MAX_ERROR_STRING_LENGTH, 10)
+    : 1024
+
   public static createGenericErrorKind(error: AxiosError | Error | any) {
     if (error.config) {
       return ErrorKinds.REQUEST_ERROR
@@ -131,16 +135,25 @@ export class ErrorReport extends Error {
   }
 
   public toObject() {
-    return {
+    const r = {
       errorId: this.errorId,
       timestamp: this.timestamp,
       kind: this.kind,
-      message: this.message,
+      message: this.maybeTruncateField(this.message),
       errorDetails: this.errorDetails,
-      stack: this.stack,
+      stack: this.maybeTruncateField(this.stack),
       env: this.env,
       ...(this.originalError.code ? { code: this.originalError.code } : null),
     }
+    console.log(r)
+    return r
+  }
+
+  private maybeTruncateField(field: string) {
+    if (field.length > ErrorReport.MAX_ERROR_STRING_LENGTH) {
+      return `${field.substr(0, ErrorReport.MAX_ERROR_STRING_LENGTH)}[...TRUNCATED]`
+    }
+    return field
   }
 
   public stringify(pretty = false) {
