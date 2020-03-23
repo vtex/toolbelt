@@ -68,27 +68,23 @@ export interface TestRequest {
   requestedAt: number
 }
 
-export default class Tester extends AppClient {
+export class Tester extends AppClient {
   constructor(context: IOContext, options?: InstanceOptions) {
     super('vtex.tester-hub', context, options)
   }
 
-  public report = (testId: string) =>
-    this.http.get<TestReport>(`/_v/report/${testId}?__v=0.x`, {
-      headers: {
-        Authorization: this.context.authToken,
-      },
+  public report(testId: string) {
+    return this.http.get<TestReport>(`/_v/report/${testId}?__v=0.x`, {
       inflightKey: inflightURL,
       metric: 'tester-report',
       cacheable: 0,
     })
+  }
 
-  public test = (options: TestOptions, appId = '') =>
-    this.http.post<TestRequest>(`/_v/test/${appId}`, options, {
-      headers: {
-        Authorization: this.context.authToken,
-      },
+  public test(options: TestOptions, appId = ''){
+    return this.http.post<TestRequest>(`/_v/test/${appId}`, options, {
       inflightKey: inflightURL,
       metric: 'tester-test',
     })
+  }
 }

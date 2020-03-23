@@ -7,7 +7,7 @@ import Billing from './billingClient'
 import { Builder } from './Builder'
 import { dummyLogger } from './dummyLogger'
 import { Rewriter } from './rewriter'
-import Tester from './Tester'
+import { Tester } from './Tester'
 
 const DEFAULT_TIMEOUT = 15000
 const context: IOContext = {

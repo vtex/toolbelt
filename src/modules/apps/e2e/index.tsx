@@ -59,7 +59,7 @@ export default async options => {
           .then(({ data: appList }) => appList.map(({ app }) => app).find(app => app.startsWith(cleanAppId)))
 
   if (appId === undefined) {
-    throw new Error('nao achou no workspace!')
+    throw new Error('Workspace was not found!')
   }
 
   const testRequest = options.report
