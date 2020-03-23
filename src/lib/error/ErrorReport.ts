@@ -148,16 +148,16 @@ export class ErrorReport extends Error {
   }
 
   private truncateStringsFromObject(element: any, maxStrSize: number = ErrorReport.MAX_ERROR_STRING_LENGTH) {
-    if(element === null || element === undefined) {
+    if (element === null || element === undefined) {
       return element
     }
-    if(typeof element === 'object') {
-      Object.keys(element).forEach((key) => {
+    if (typeof element === 'object') {
+      Object.keys(element).forEach(key => {
         element[key] = this.truncateStringsFromObject(element[key], maxStrSize)
       })
       return element
     }
-    if(typeof element === 'string' && element.length > maxStrSize) {
+    if (typeof element === 'string' && element.length > maxStrSize) {
       return `${element.substr(0, maxStrSize)}[...TRUNCATED]`
     }
     return element
