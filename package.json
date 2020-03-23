@@ -80,7 +80,7 @@
     "node-notifier": "^6.0.0",
     "numbro": "2.1.0",
     "open": "^7.0.2",
-    "ora": "~3.0.0",
+    "ora": "^4.0.3",
     "pad": "~2.0.3",
     "pipe-streams-to-promise": "~0.2.0",
     "progress": "~2.0.3",

@@ -1,8 +1,8 @@
 import { createHash } from 'crypto'
 import { writeFile, readJson } from 'fs-extra'
+import ora from 'ora'
 
 import { Parser } from 'json2csv'
-import { compose, concat, length, map, range, pluck, prop, sum } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
@@ -11,10 +11,8 @@ import { isVerbose } from '../../utils'
 import {
   accountAndWorkspace,
   deleteMetainfo,
-  MAX_ENTRIES_PER_REQUEST,
   MAX_RETRIES,
   METAINFO_FILE,
-  progressBar,
   saveMetainfo,
   sleep,
   RETRY_INTERVAL_S,
@@ -22,59 +20,50 @@ import {
 } from './utils'
 
 const EXPORTS = 'exports'
+
 const [account, workspace] = accountAndWorkspace
 
+const COLORS = ['cyan', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'gray']
 const FIELDS = ['from', 'to', 'type', 'endDate']
 
-const generateListOfRanges = (indexLength: number) =>
-  map(
-    (n: number) => [n * MAX_ENTRIES_PER_REQUEST, Math.min((n + 1) * MAX_ENTRIES_PER_REQUEST - 1, indexLength)],
-    range(0, Math.ceil(indexLength / MAX_ENTRIES_PER_REQUEST))
-  )
-
 const handleExport = async (csvPath: string) => {
-  const rawRoutesIndexFiles = await rewriter.routesIndexFiles()
-  if (!rawRoutesIndexFiles) {
-    log.info('No data to be exported.')
-    return
-  }
-  const routesIndexFiles = prop('routeIndexFiles', rawRoutesIndexFiles)
-  const indexHash = await createHash('md5')
-    .update(`${account}_${workspace}_${JSON.stringify(rawRoutesIndexFiles)}`)
+  const indexHash = createHash('md5')
+    .update(`${account}_${workspace}_${csvPath}`)
     .digest('hex')
-  const numberOfFiles = sum(compose<any, any, any>(map(Number), pluck('fileSize'))(routesIndexFiles))
-  if (numberOfFiles === 0) {
-    log.info('No data to be exported.')
-    return
-  }
   const metainfo = await readJson(METAINFO_FILE).catch(() => ({}))
   const exportMetainfo = metainfo[EXPORTS] || {}
-  const listOfRanges = generateListOfRanges(numberOfFiles)
-  let counter = exportMetainfo[indexHash] ? exportMetainfo[indexHash].counter : 0
-  let listOfRoutes = exportMetainfo[indexHash] ? exportMetainfo[indexHash].data : []
 
-  const bar = progressBar('Exporting routes...', counter, length(listOfRanges))
+  const spinner = ora('Exporting redirects....').start()
+
+  let { listOfRoutes, next } = exportMetainfo[indexHash]
+    ? exportMetainfo[indexHash].data
+    : { listOfRoutes: [], next: undefined }
+  let count = 2
 
   const listener = createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
-    saveMetainfo(metainfo, EXPORTS, indexHash, counter, listOfRoutes)
+    saveMetainfo(metainfo, EXPORTS, indexHash, 0, { next, listOfRoutes })
     console.log('\n')
     process.exit()
   })
 
-  for (const [from, to] of listOfRanges.splice(counter)) {
-    let result: any
+  do {
     try {
       // eslint-disable-next-line no-await-in-loop
-      result = await rewriter.exportRedirects(from, to)
+      const result = await rewriter.exportRedirects(next)
+      listOfRoutes = listOfRoutes.concat(result.routes)
+
+      spinner.color = COLORS[count % COLORS.length] as any
+      spinner.text = `Exporting redirects....\t\t${listOfRoutes.length} Done`
+      next = result.next
+      count++
     } catch (e) {
-      saveMetainfo(metainfo, EXPORTS, indexHash, counter, listOfRoutes)
+      saveMetainfo(metainfo, EXPORTS, indexHash, 0, { next, listOfRoutes })
       listener.close()
+      spinner.stop()
       throw e
     }
-    listOfRoutes = concat(listOfRoutes, result)
-    counter++
-    bar.tick()
-  }
+  } while (next)
+  spinner.stop()
 
   const json2csvParser = new Parser({ fields: FIELDS, delimiter: ';', quote: '' })
   const csv = json2csvParser.parse(listOfRoutes)
