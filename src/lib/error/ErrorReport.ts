@@ -4,7 +4,7 @@ import { randomBytes } from 'crypto'
 import * as pkg from '../../../package.json'
 import { SessionManager } from '../session/SessionManager'
 import { ErrorKinds } from './ErrorKinds'
-import { truncateStringsFromObject } from './util'
+import { truncateStringsFromObject } from './utils'
 
 interface ErrorCreationArguments {
   kind?: string
