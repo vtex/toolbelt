@@ -81,7 +81,7 @@ export class Tester extends AppClient {
     })
   }
 
-  public test(options: TestOptions, appId = ''){
+  public test(options: TestOptions, appId = '') {
     return this.http.post<TestRequest>(`/_v/test/${appId}`, options, {
       inflightKey: inflightURL,
       metric: 'tester-test',
