@@ -4,7 +4,7 @@ import { all, difference, groupBy, toPairs, values, countBy, sum, pathOr, path }
 import { parseAppId } from '@vtex/api'
 
 import { SpecReport, AppReport, TestReport, SpecTestReport, Screenshot } from '../../../clients/Tester'
-import useInterval from './useInterval'
+import { useInterval } from './useInterval'
 
 type AppIdProps = {
   appId: string
@@ -229,7 +229,7 @@ const parseReport = (report: TestReport): ReportProps => {
   return { completed, running }
 }
 
-const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
+export const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
   testId,
   poll,
   interval,
@@ -268,5 +268,3 @@ const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
     </Box>
   )
 }
-
-export default RealTimeReport
