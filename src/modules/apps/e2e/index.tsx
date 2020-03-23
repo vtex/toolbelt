@@ -5,7 +5,7 @@ import log from '../../../logger'
 import { apps, tester } from '../../../clients'
 import { getManifest, writeManifestSchema } from '../../../manifest'
 import { toAppLocator } from '../../../locator'
-import RealTimeReport from './report'
+import { RealTimeReport } from './report'
 import { getToken } from '../../../conf'
 
 class ErrorBoundary extends React.Component<{}, { error: any }> {
