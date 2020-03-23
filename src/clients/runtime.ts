@@ -1,5 +1,4 @@
 import { IOContext } from '@vtex/api'
-import { ManifestEditor } from '../lib/manifest'
 import { cluster } from '../env'
 import * as url from 'url'
 import WebSocket from 'ws'
@@ -20,15 +19,8 @@ export class Runtime {
     this.workspace = workspace
   }
 
-  public async debugDotnetApp(debugInst: string) {
-    const manifest = await ManifestEditor.getManifestEditor()
-    const { name, vendor, builders } = manifest
-    const { dotnet } = builders
-    if (!dotnet) {
-      return
-    }
-
-    const host = `${name}.${vendor}.${this.region}.vtex.io`
+  public async debugDotnetApp(appName: string, appVendor: string, appMajorRange: string, debugInst: string) {
+    const host = `${appName}.${appVendor}.${this.region}.vtex.io`
     const path = `/${this.account}/${this.workspace}/_debug/dotnet`
     const clusterHeader = cluster() ? { 'x-vtex-upstream-target': cluster() } : null
 
@@ -46,7 +38,7 @@ export class Runtime {
       hostname: host,
       pathname: path,
       query: {
-        __v: manifest.majorRange,
+        __v: appMajorRange,
         inst: debugInst.split(' '),
       },
     }
