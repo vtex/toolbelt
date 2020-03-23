@@ -1,8 +1,10 @@
 import { AxiosError } from 'axios'
 import { randomBytes } from 'crypto'
+
 import * as pkg from '../../../package.json'
 import { SessionManager } from '../session/SessionManager'
 import { ErrorKinds } from './ErrorKinds'
+import { truncateStringsFromObject } from './utils'
 
 interface ErrorCreationArguments {
   kind?: string
@@ -46,6 +48,10 @@ interface RequestErrorDetails {
 }
 
 export class ErrorReport extends Error {
+  private static readonly MAX_ERROR_STRING_LENGTH = process.env.MAX_ERROR_STRING_LENGTH
+    ? parseInt(process.env.MAX_ERROR_STRING_LENGTH, 10)
+    : 1024
+
   public static createGenericErrorKind(error: AxiosError | Error | any) {
     if (error.config) {
       return ErrorKinds.REQUEST_ERROR
@@ -131,16 +137,19 @@ export class ErrorReport extends Error {
   }
 
   public toObject() {
-    return {
-      errorId: this.errorId,
-      timestamp: this.timestamp,
-      kind: this.kind,
-      message: this.message,
-      errorDetails: this.errorDetails,
-      stack: this.stack,
-      env: this.env,
-      ...(this.originalError.code ? { code: this.originalError.code } : null),
-    }
+    return truncateStringsFromObject(
+      {
+        errorId: this.errorId,
+        timestamp: this.timestamp,
+        kind: this.kind,
+        message: this.message,
+        errorDetails: this.errorDetails,
+        stack: this.stack,
+        env: this.env,
+        ...(this.originalError.code ? { code: this.originalError.code } : null),
+      },
+      ErrorReport.MAX_ERROR_STRING_LENGTH
+    )
   }
 
   public stringify(pretty = false) {
