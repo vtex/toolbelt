@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Support for debugging .Net Core apps
+- Support for debugging .Net Core apps.
 
 ## [2.92.2] - 2020-03-23
 ### Fixed
