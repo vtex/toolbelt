@@ -1,8 +1,10 @@
 import { AxiosError } from 'axios'
 import { randomBytes } from 'crypto'
+
 import * as pkg from '../../../package.json'
 import { SessionManager } from '../session/SessionManager'
 import { ErrorKinds } from './ErrorKinds'
+import { truncateStringsFromObject } from './util'
 
 interface ErrorCreationArguments {
   kind?: string
@@ -135,7 +137,7 @@ export class ErrorReport extends Error {
   }
 
   public toObject() {
-    return this.truncateStringsFromObject({
+    return truncateStringsFromObject({
       errorId: this.errorId,
       timestamp: this.timestamp,
       kind: this.kind,
@@ -144,23 +146,7 @@ export class ErrorReport extends Error {
       stack: this.stack,
       env: this.env,
       ...(this.originalError.code ? { code: this.originalError.code } : null),
-    })
-  }
-
-  private truncateStringsFromObject(element: any, maxStrSize: number = ErrorReport.MAX_ERROR_STRING_LENGTH) {
-    if (element === null || element === undefined) {
-      return element
-    }
-    if (typeof element === 'object') {
-      Object.keys(element).forEach(key => {
-        element[key] = this.truncateStringsFromObject(element[key], maxStrSize)
-      })
-      return element
-    }
-    if (typeof element === 'string' && element.length > maxStrSize) {
-      return `${element.substr(0, maxStrSize)}[...TRUNCATED]`
-    }
-    return element
+    }, ErrorReport.MAX_ERROR_STRING_LENGTH)
   }
 
   public stringify(pretty = false) {
