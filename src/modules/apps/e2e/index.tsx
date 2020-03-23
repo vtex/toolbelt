@@ -1,12 +1,10 @@
 import * as React from 'react'
 import { Color, render } from 'ink'
 
-import log from '../../../logger'
 import { apps, tester } from '../../../clients'
-import { getManifest, writeManifestSchema } from '../../../manifest'
-import { toAppLocator } from '../../../locator'
 import { RealTimeReport } from './report'
 import { getToken } from '../../../conf'
+import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
 
 class ErrorBoundary extends React.Component<{}, { error: any }> {
   constructor(props) {
@@ -38,17 +36,10 @@ const TEST_WORKSPACE = ''
 
 const resolveAppLocator = async options => {
   if (options.workspace) return TEST_WORKSPACE
-  const manifest = await getManifest()
-  try {
-    await writeManifestSchema()
-  } catch (e) {
-    log.debug('Failed to write schema on manifest.')
-  }
-  return toAppLocator(manifest)
+  return (await ManifestEditor.getManifestEditor()).appLocator
 }
 
 export default async options => {
-  // await validateAppAction('e2e')
   const cleanAppId = await resolveAppLocator(options)
 
   const appId =
