@@ -137,16 +137,19 @@ export class ErrorReport extends Error {
   }
 
   public toObject() {
-    return truncateStringsFromObject({
-      errorId: this.errorId,
-      timestamp: this.timestamp,
-      kind: this.kind,
-      message: this.message,
-      errorDetails: this.errorDetails,
-      stack: this.stack,
-      env: this.env,
-      ...(this.originalError.code ? { code: this.originalError.code } : null),
-    }, ErrorReport.MAX_ERROR_STRING_LENGTH)
+    return truncateStringsFromObject(
+      {
+        errorId: this.errorId,
+        timestamp: this.timestamp,
+        kind: this.kind,
+        message: this.message,
+        errorDetails: this.errorDetails,
+        stack: this.stack,
+        env: this.env,
+        ...(this.originalError.code ? { code: this.originalError.code } : null),
+      },
+      ErrorReport.MAX_ERROR_STRING_LENGTH
+    )
   }
 
   public stringify(pretty = false) {
