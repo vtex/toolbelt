@@ -70,11 +70,11 @@ export interface TestRequest {
 
 export class Tester extends AppClient {
   constructor(context: IOContext, options?: InstanceOptions) {
-    super('vtex.tester-hub', context, options)
+    super('vtex.tester-hub@0.x', context, options)
   }
 
   public report(testId: string) {
-    return this.http.get<TestReport>(`/_v/report/${testId}?__v=0.x`, {
+    return this.http.get<TestReport>(`/_v/report/${testId}`, {
       inflightKey: inflightURL,
       metric: 'tester-report',
       cacheable: 0,
