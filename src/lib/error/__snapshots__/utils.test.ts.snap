@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Works on testcase 0 -  1`] = `
+Array [
+  "12345[...TRUNCATED]",
+  "12345",
+  "1234",
+]
+`;
+
+exports[`Works on testcase 1 -  1`] = `
+Object {
+  "a": "12345[...TRUNCATED]",
+  "b": "12345",
+  "c": Array [
+    "12345[...TRUNCATED]",
+    Object {
+      "a": "12345[...TRUNCATED]",
+    },
+  ],
+}
+`;
+
+exports[`Works on testcase 2 -  1`] = `undefined`;
+
+exports[`Works on testcase 3 -  1`] = `null`;
+
+exports[`Works on testcase 4 -  1`] = `
+Object {
+  "a": undefined,
+  "b": null,
+}
+`;
+
+exports[`Works on testcase 5 -  1`] = `
+Object {
+  "a": Array [
+    Object {
+      "aa": "123456",
+    },
+    Object {
+      "ab": "1234",
+    },
+    Object {
+      "ac": "12345",
+    },
+  ],
+  "b": Object {
+    "ba": undefined,
+    "bb": null,
+    "bc": "123456",
+    "bd": Object {
+      "bca": "123456",
+      "bcb": "1234567",
+    },
+  },
+}
+`;
