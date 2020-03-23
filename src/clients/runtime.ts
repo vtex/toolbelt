@@ -4,6 +4,7 @@ import { cluster } from '../env'
 import * as url from 'url'
 import WebSocket from 'ws'
 import { getToken } from '../conf'
+import logger from '../logger'
 
 const EOT = '\x04'
 
@@ -46,7 +47,7 @@ export class Runtime {
       pathname: path,
       query: {
         __v: manifest.majorRange,
-        inst: debugInst?.split(' '),
+        inst: debugInst.split(' '),
       },
     }
     const formattedUrl = url.format(urlObject)
@@ -55,7 +56,7 @@ export class Runtime {
     const wsDuplexStream = (WebSocket as any).createWebSocketStream(ws, { encoding: 'utf8' })
 
     wsDuplexStream.on('error', () => {
-      console.log('Connection closed')
+      logger.debug('Connection closed')
       process.exit(0)
     })
 
