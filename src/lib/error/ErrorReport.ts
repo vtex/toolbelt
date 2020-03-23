@@ -135,25 +135,38 @@ export class ErrorReport extends Error {
   }
 
   public toObject() {
-    const r = {
+    return this.truncateStringsFromObject({
       errorId: this.errorId,
       timestamp: this.timestamp,
       kind: this.kind,
-      message: this.maybeTruncateField(this.message),
+      message: this.message,
       errorDetails: this.errorDetails,
-      stack: this.maybeTruncateField(this.stack),
+      stack: this.stack,
       env: this.env,
       ...(this.originalError.code ? { code: this.originalError.code } : null),
-    }
-    console.log(r)
-    return r
+    })
   }
 
-  private maybeTruncateField(field: string) {
-    if (field.length > ErrorReport.MAX_ERROR_STRING_LENGTH) {
-      return `${field.substr(0, ErrorReport.MAX_ERROR_STRING_LENGTH)}[...TRUNCATED]`
+  private truncateStringsFromObject(element: any, maxStrSize: number = ErrorReport.MAX_ERROR_STRING_LENGTH) {
+    if(element === null || element === undefined) {
+      return element
     }
-    return field
+    if(typeof element === 'object') {
+      Object.keys(element).forEach((key) => {
+        element[key] = this.truncateStringsFromObject(element[key], maxStrSize)
+      })
+      return element
+    }
+    if(Array.isArray(element)) {
+      element.forEach((elementFromArray, index) => {
+        element[index] = this.truncateStringsFromObject(elementFromArray, maxStrSize)
+      })
+      return element
+    }
+    if(typeof element === 'string' && element.length > maxStrSize) {
+      return `${element.substr(0, maxStrSize)}[...TRUNCATED]`
+    }
+    return element
   }
 
   public stringify(pretty = false) {
