@@ -285,31 +285,31 @@ export default {
     ],
     requiredArgs: 'account',
   },
-  e2e: {
-    description: "Run your VTEX app's integration tests",
-    handler: './apps/e2e',
-    options: [
-      {
-        description: 'Specify test request id',
-        long: 'report',
-        short: 'r',
-        type: 'string',
-      },
-      {
-        description: "Test workspace's apps",
-        long: 'workspace',
-        short: 'w',
-        type: 'boolean',
-      },
-      {
-        description: "[Dangerous] Exposes toolbelt token via 'authToken' environment variable",
-        long: 'token',
-        short: 't',
-        type: 'boolean',
-      },
-    ],
-  },
   test: {
+    e2e: {
+      description: "Run your VTEX app's integration tests",
+      handler: './apps/e2e',
+      options: [
+        {
+          description: 'Specify test request id',
+          long: 'report',
+          short: 'r',
+          type: 'string',
+        },
+        {
+          description: "Test workspace's apps",
+          long: 'workspace',
+          short: 'w',
+          type: 'boolean',
+        },
+        {
+          description: "[Dangerous] Exposes toolbelt token via 'authToken' environment variable",
+          long: 'token',
+          short: 't',
+          type: 'boolean',
+        },
+      ],
+    },
     description: 'Run your VTEX app unit tests',
     handler: './apps/testCommand',
     options: [
