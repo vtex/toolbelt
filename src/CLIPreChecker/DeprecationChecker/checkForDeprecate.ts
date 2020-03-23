@@ -29,9 +29,12 @@ export const checkForDeprecate = async (store: IDeprecationCheckerStore, pkgName
 }
 
 if (require.main === module) {
+  // eslint-disable-next-line prefer-destructuring
   const storeFilePath = process.argv[2]
   const store = new DeprecationCheckerStore(storeFilePath)
+  // eslint-disable-next-line prefer-destructuring
   const pkgName = process.argv[3]
+  // eslint-disable-next-line prefer-destructuring
   const pkgVersion = process.argv[4]
   checkForDeprecate(store, pkgName, pkgVersion)
 }
