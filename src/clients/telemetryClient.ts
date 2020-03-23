@@ -6,6 +6,11 @@ export class TelemetryClient extends AppClient {
   }
 
   public reportErrors(errors: any[]) {
-    return this.http.post('/errorReport', errors)
+    const errorsBuffer = Buffer.from(JSON.stringify(errors))
+    return this.http.post('/errorReport', errorsBuffer, {
+      headers: {
+        'Content-Type': 'application/octet-stream',
+      },
+    })
   }
 }

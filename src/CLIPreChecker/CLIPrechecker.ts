@@ -1,18 +1,17 @@
 import chalk from 'chalk'
-import { spawn } from 'child_process'
 import { join } from 'path'
 import semver from 'semver'
-import { CLIPrecheckerStore, ICLIPrecheckerStore } from './CLIPrecheckerStore'
+import { configDir } from '../conf'
+import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 
 export class CLIPrechecker {
-  private static readonly DEPRECATION_CHECK_INTERVAL = 4 * 3600 * 1000
+  public static readonly PRECHECKS_LOCAL_DIR = join(configDir, 'vtex', 'prechecks')
 
   public static getCLIPrechecker(pkgJson: any) {
-    const store = new CLIPrecheckerStore(`${pkgJson.name}-prechecker-store`)
-    return new CLIPrechecker(store, pkgJson)
+    return new CLIPrechecker(pkgJson)
   }
 
-  constructor(private store: ICLIPrecheckerStore, private pkg: any) {}
+  constructor(private pkg: any) {}
 
   private ensureCompatibleNode() {
     const nodeVersion = process.version
@@ -27,32 +26,8 @@ export class CLIPrechecker {
     }
   }
 
-  private ensureNotDeprecated() {
-    const deprecated = this.store.getDeprecated()
-    if (Date.now() - this.store.getLastDeprecationCheck() >= CLIPrechecker.DEPRECATION_CHECK_INTERVAL) {
-      spawn(
-        process.execPath,
-        [join(__dirname, 'checkForDeprecate.js'), this.store.storeName, this.pkg.name, this.pkg.version],
-        {
-          detached: true,
-          stdio: 'ignore',
-        }
-      ).unref()
-    }
-
-    if (!deprecated) return
-    const errMsg = chalk.bold(
-      `This version ${this.pkg.version} was deprecated. Please update to the latest version: ${chalk.green(
-        'yarn global add vtex'
-      )}.`
-    )
-
-    console.error(errMsg)
-    process.exit(1)
-  }
-
   public runChecks() {
     this.ensureCompatibleNode()
-    this.ensureNotDeprecated()
+    DeprecationChecker.checkForDeprecation(CLIPrechecker.PRECHECKS_LOCAL_DIR, this.pkg)
   }
 }
