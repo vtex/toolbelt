@@ -157,12 +157,6 @@ export class ErrorReport extends Error {
       })
       return element
     }
-    if(Array.isArray(element)) {
-      element.forEach((elementFromArray, index) => {
-        element[index] = this.truncateStringsFromObject(elementFromArray, maxStrSize)
-      })
-      return element
-    }
     if(typeof element === 'string' && element.length > maxStrSize) {
       return `${element.substr(0, maxStrSize)}[...TRUNCATED]`
     }
