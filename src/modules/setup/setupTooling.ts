@@ -36,7 +36,7 @@ function getBasePackageJson(appName: string) {
     license: 'UNLICENSED',
     scripts: {
       lint: 'eslint --ext js,jsx,ts,tsx .',
-      format: 'prettier --write "**/*.{ts,js,json}"',
+      format: 'prettier --write "**/*.{ts,tsx,js,jsx,json}"',
     },
     husky: {
       hooks: {
