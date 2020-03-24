@@ -51,7 +51,7 @@ const sortFunction = (redirect: Redirect) =>
 
 export const readCSV = async (path: string) => {
   try {
-    const result = (await csv({ delimiter: ';', ignoreEmpty: true }).fromFile(path)) as Redirect[]
+    const result = (await csv({ delimiter: ';', ignoreEmpty: true, checkType: true }).fromFile(path)) as Redirect[]
     return sortBy(sortFunction, result)
   } catch (e) {
     handleReadError(path)(e)
