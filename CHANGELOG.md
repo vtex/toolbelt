@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
- - Command `vtex e2e` for end-to-end testing.
+ - Command `vtex test e2e` for end-to-end testing.
+ 
 ## [2.94.0] - 2020-03-31
 ### Added
 - [vtex init] Show `checkout-ui-settings` template for users outside VTEX.
