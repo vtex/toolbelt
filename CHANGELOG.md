@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
- - Command `vtex e2e` for end-to-end testing.
+ - Command `vtex test e2e` for end-to-end testing.
 
 ### Added
  - Add "edition app" to vtex init.

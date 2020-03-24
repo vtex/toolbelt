@@ -29,7 +29,7 @@ class EndToEndCommand {
 
   private async runAppTests() {
     const manifestEditor = await ManifestEditor.getManifestEditor()
-    const cleanAppId = await manifestEditor.appLocator
+    const cleanAppId = manifestEditor.appLocator
 
     const appList = await apps.listApps()
     const appId = appList.data.map(({ app }) => app).find(app => app.startsWith(cleanAppId))

@@ -303,7 +303,7 @@ export default {
           type: 'boolean',
         },
         {
-          description: "[Dangerous] Exposes toolbelt token via 'authToken' environment variable",
+          description: "[Not recommended] Send your personal authorization token to your test session so it's available while running the tests. It can be dangerous because exposes the token via 'authToken' environment variable",
           long: 'token',
           short: 't',
           type: 'boolean',
