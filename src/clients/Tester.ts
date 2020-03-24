@@ -1,4 +1,4 @@
-import { AppClient, inflightURL, InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient, inflightURL, InstanceOptions, IOContext, CacheType } from '@vtex/api'
 
 export interface SpecTestReport {
   testId: string
@@ -76,15 +76,11 @@ export class Tester extends AppClient {
   public report(testId: string) {
     return this.http.get<TestReport>(`/_v/report/${testId}`, {
       inflightKey: inflightURL,
-      metric: 'tester-report',
-      cacheable: 0,
+      cacheable: CacheType.None,
     })
   }
 
   public test(options: TestOptions, appId = '') {
-    return this.http.post<TestRequest>(`/_v/test/${appId}`, options, {
-      inflightKey: inflightURL,
-      metric: 'tester-test',
-    })
+    return this.http.post<TestRequest>(`/_v/test/${appId}`, options)
   }
 }
