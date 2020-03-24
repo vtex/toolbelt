@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Make generated `yarn format` command also format `.jsx` and `.tsx` files.
 
+### Added
+- Support for debugging .Net Core apps.
+
 ## [2.92.2] - 2020-03-23
 ### Fixed
 - Use new list api for exporting redirects.
