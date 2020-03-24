@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Support for debugging .Net Core apps.
 
+### Fixed
+- Make generated `yarn format` command also format `.jsx` and `.tsx` files.
+
 ## [2.92.4] - 2020-03-27
 ### Fixed
 - Update `open` to version 7.0.3.
