@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [vtex redirects] Logs exact uri that has a problem.
 
 ### Changed
-- Downloads the bindings along with the redirects
+- [vtex redirects] Downloads the bindings along with the redirects.
 
 ## [2.92.2] - 2020-03-23
 ### Fixed
