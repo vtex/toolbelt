@@ -20,8 +20,8 @@ export class DeprecationCheckerStore implements IDeprecationCheckerStore {
       '',
       {},
       {
-        configPath: storeFilePath ,
-      } as any
+        configPath: storeFilePath,
+      }
     )
   }
 
