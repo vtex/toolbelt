@@ -53,7 +53,7 @@ export class TelemetryCollector {
     return metricReport
   }
 
-  public async flush(forceRemoteFlush = true) {
+  public async flush(forceRemoteFlush = false) {
     const shouldRemoteFlush =
       forceRemoteFlush ||
       this.errors.length > 0 ||

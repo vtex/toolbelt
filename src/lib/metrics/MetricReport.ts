@@ -3,7 +3,7 @@ import * as pkg from '../../../package.json'
 
 export interface Metric {
   command: string
-  [metricName: string]: number | string | MetricEnv
+  [metricName: string]: number | string
 }
 
 interface MetricEnv {
@@ -20,14 +20,6 @@ interface MetricReportArguments {
 }
 
 export class MetricReport {
-  public readonly metric: Metric
-  public readonly env: MetricEnv
-
-  constructor({ metric, env }: MetricReportArguments) {
-    this.metric = metric
-    this.env = env
-  }
-
   public static create(metric: Metric) {
     const { workspace, account } = SessionManager.getSessionManager()
     return new MetricReport({
@@ -42,9 +34,17 @@ export class MetricReport {
     })
   }
 
+  constructor({ metric, env }: MetricReportArguments) {
+    this.metric = metric
+    this.env = env
+  }
+
+  public readonly metric: Metric
+  public readonly env: MetricEnv
+
   public toObject() {
     return {
-      ...this.metric,
+      metric: this.metric,
       env: this.env,
     }
   }
