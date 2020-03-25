@@ -1,4 +1,4 @@
-import { readdir, readJson, ensureDir, ensureFile, writeJson, remove } from 'fs-extra'
+import { readdir, readJson, ensureDir, ensureFile, writeJson, stat, remove } from 'fs-extra'
 import { randomBytes } from 'crypto'
 import { isArray } from 'util'
 import * as lockfile from 'lockfile'
@@ -14,6 +14,7 @@ import { ErrorReport } from '../error/ErrorReport'
 import { TelemetryCollector } from './TelemetryCollector'
 import { ErrorKinds } from '../error/ErrorKinds'
 import { MetricReport } from '../metrics/MetricReport'
+import { readdirRecursive } from '../utils'
 
 class FileLock {
   public readonly lockName: string
@@ -114,7 +115,7 @@ export class TelemetryReporter {
     try {
       await this.telemetryClient.reportErrors(errors)
     } catch (err) {
-      await this.treatReportError(err, 'error', errors)
+      await this.treatReportError(err, 'errors', errors)
     }
   }
 
@@ -122,7 +123,7 @@ export class TelemetryReporter {
     try {
       await this.telemetryClient.reportMetrics(metrics)
     } catch (err) {
-      await this.treatReportError(err, 'metric', metrics)
+      await this.treatReportError(err, 'metrics', metrics)
     }
   }
 
@@ -143,7 +144,19 @@ export class TelemetryReporter {
     await writeJson(metaErrorFilePath, errorsReport)
   }
 
-  private async treatReportError(reportError, reportType: string, metricsOrErrors: MetricReport[] | ErrorReport[]) {
+  public async ensureTelemetryDirMazSize() {
+    const telemetryFiles = await readdirRecursive(TelemetryCollector.TELEMETRY_LOCAL_DIR)
+    let telemetryDirSize = 0
+    await Promise.all(telemetryFiles.map(async (file) => {
+      const fileStats = await stat(file)
+      telemetryDirSize += fileStats.size
+    }))
+    if (telemetryDirSize > 10 * 1000 * 1000) {
+      await remove(TelemetryCollector.TELEMETRY_LOCAL_DIR)
+    }
+  }
+
+  private async treatReportError(reportError, reportType: 'metrics' | 'errors', metricsOrErrors: MetricReport[] | ErrorReport[]) {
     await this.dataPendingLock.lock()
     await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, reportType))
     await writeJson(
@@ -169,6 +182,7 @@ const start = async () => {
 
   await reporter.reportTelemetryFile(telemetryObjFilePath)
   await reporter.sendPendingData()
+  await reporter.ensureTelemetryDirMazSize()
 
   store.setLastRemoteFlush(Date.now())
   process.exit()
