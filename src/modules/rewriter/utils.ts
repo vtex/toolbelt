@@ -35,7 +35,14 @@ export const handleReadError = (path: string) => (error: any) => {
   process.exit()
 }
 
-const normalizePath = (path: string) => compose(replace(/\/+$/, ''), toLower, decodeURI)(path)
+const normalizePath = (path: string) => {
+  try {
+    return compose(replace(/\/+$/, ''), toLower, decodeURI)(path)
+  } catch (err) {
+    log.error(`Error in URI: ${path}`)
+    throw err
+  }
+}
 
 const sortFunction = (redirect: Redirect) =>
   `${createHash('md5')
