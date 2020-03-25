@@ -39,7 +39,7 @@ const normalizePath = (path: string) => {
   try {
     return compose(replace(/\/+$/, ''), toLower, decodeURI)(path)
   } catch (err) {
-    console.log(`Error in URI: ${path}`)
+    log.error(`Error in URI: ${path}`)
     throw err
   }
 }
