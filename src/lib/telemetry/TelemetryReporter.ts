@@ -146,7 +146,10 @@ export class TelemetryReporter {
   private async treatReportError(reportError, reportType: string, metricsOrErrors: MetricReport[] | ErrorReport[]) {
     await this.dataPendingLock.lock()
     await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, reportType))
-    await writeJson(join(TelemetryReporter.PENDING_DATA_DIR, reportType, randomBytes(8).toString('hex')), metricsOrErrors)
+    await writeJson(
+      join(TelemetryReporter.PENDING_DATA_DIR, reportType, randomBytes(8).toString('hex')),
+      metricsOrErrors
+    )
     await this.createTelemetryReporterMetaError(reportError)
     await this.dataPendingLock.unlock()
   }
