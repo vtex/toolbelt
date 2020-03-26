@@ -20,7 +20,10 @@ interface MetricReportArguments {
 }
 
 export class MetricReport {
-  public static create(metric: Metric) {
+  public static create(metric: Metric, env?: MetricEnv) {
+    if (env) {
+      return new MetricReport({metric, env})
+    }
     const { workspace, account } = SessionManager.getSessionManager()
     return new MetricReport({
       metric,
