@@ -158,23 +158,11 @@ export class TelemetryReporter {
     }
   }
 
-  private async treatReportError(
-    reportError,
-    reportType: 'metrics',
-    metricsOrErrors: MetricReport[]
-  )
+  private async treatReportError(reportError, reportType: 'metrics', metricsOrErrors: MetricReport[])
 
-  private async treatReportError(
-    reportError,
-    reportType: 'errors',
-    metricsOrErrors: ErrorReport[]
-  )
+  private async treatReportError(reportError, reportType: 'errors', metricsOrErrors: ErrorReport[])
 
-  private async treatReportError(
-    reportError,
-    reportType,
-    metricsOrErrors
-  ) {
+  private async treatReportError(reportError, reportType, metricsOrErrors) {
     await this.dataPendingLock.lock()
     await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, reportType))
     await writeJson(
