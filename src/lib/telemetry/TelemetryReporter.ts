@@ -1,8 +1,9 @@
-import { readdir, readJson, remove, ensureDir, ensureFile, move, writeJson } from 'fs-extra'
+import { readdir, readJson, ensureDir, writeJson, stat, remove } from 'fs-extra'
 import { randomBytes } from 'crypto'
 import { isArray } from 'util'
 import * as lockfile from 'lockfile'
 import { join, basename, dirname } from 'path'
+import glob from 'globby'
 
 import { TelemetryClient } from '../../clients/telemetryClient'
 import { region } from '../../env'
@@ -13,6 +14,7 @@ import { TelemetryLocalStore } from './TelemetryStore'
 import { ErrorReport } from '../error/ErrorReport'
 import { TelemetryCollector } from './TelemetryCollector'
 import { ErrorKinds } from '../error/ErrorKinds'
+import { MetricReport } from '../metrics/MetricReport'
 
 class FileLock {
   public readonly lockName: string
@@ -41,6 +43,7 @@ class FileLock {
 export class TelemetryReporter {
   private static readonly RETRIES = 3
   private static readonly TIMEOUT = 30 * 1000
+  private static MAX_TELEMETRY_DIR_SIZE = 10 * 1000 * 1000
   public static readonly PENDING_DATA_DIR = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, 'pendingData')
   public static getTelemetryReporter() {
     const { account, workspace, token } = SessionManager.getSessionManager()
@@ -66,29 +69,36 @@ export class TelemetryReporter {
   }
 
   public async reportTelemetryFile(telemetryObjFilePath: string) {
-    try {
-      const telemetryObj = await readJson(telemetryObjFilePath)
-      await this.reportErrors(telemetryObj.errors)
-      await remove(telemetryObjFilePath)
-    } catch (err) {
-      await this.dataPendingLock.lock()
-      await move(telemetryObjFilePath, join(TelemetryReporter.PENDING_DATA_DIR, basename(telemetryObjFilePath)))
-      await this.createTelemetryReporterMetaError(err)
-      await this.dataPendingLock.unlock()
-    }
+    const telemetryObj = await readJson(telemetryObjFilePath)
+    await this.reportErrors(telemetryObj.errors)
+    await this.reportMetrics(telemetryObj.metrics)
+    await remove(telemetryObjFilePath)
   }
 
   public async sendPendingData() {
     await this.dataPendingLock.lock()
 
-    const pendingDataFiles = await this.pendingFilesPaths()
     const errors = []
+
+    const pendingErrorsFiles = await this.pendingFilesPaths('errors')
+    const pendingMetricsFiles = await this.pendingFilesPaths('metrics')
     await Promise.all(
-      pendingDataFiles.map(async pendingDataFile => {
+      pendingErrorsFiles.map(async pendingErrorsFile => {
         try {
-          const pendingDataObject = await readJson(pendingDataFile)
-          await this.reportErrors(pendingDataObject.errors)
-          await remove(pendingDataFile)
+          const pendingErrorsObject = await readJson(pendingErrorsFile)
+          await this.reportErrors(pendingErrorsObject)
+          await remove(pendingErrorsFile)
+        } catch (err) {
+          errors.push(err)
+        }
+      })
+    )
+    await Promise.all(
+      pendingMetricsFiles.map(async pendingMetricsFile => {
+        try {
+          const pendingMetricsObject = await readJson(pendingMetricsFile)
+          await this.reportMetrics(pendingMetricsObject)
+          await remove(pendingMetricsFile)
         } catch (err) {
           errors.push(err)
         }
@@ -98,16 +108,29 @@ export class TelemetryReporter {
     if (errors.length > 0) {
       await this.createTelemetryReporterMetaError(errors)
     }
+
     await this.dataPendingLock.unlock()
   }
 
-  public reportErrors(errors: any[]) {
-    return this.telemetryClient.reportErrors(errors)
+  public async reportErrors(errors: ErrorReport[]) {
+    try {
+      await this.telemetryClient.reportErrors(errors)
+    } catch (err) {
+      await this.treatReportError(err, 'errors', errors)
+    }
+  }
+
+  public async reportMetrics(metrics: MetricReport[]) {
+    try {
+      await this.telemetryClient.reportMetrics(metrics)
+    } catch (err) {
+      await this.treatReportError(err, 'metrics', metrics)
+    }
   }
 
   public async createTelemetryReporterMetaError(errors: any) {
     const errorArray = isArray(errors) ? errors : [errors]
-    const metaErrorFilePath = join(this.pendingDataDir, `${randomBytes(8).toString('hex')}.json`)
+    const metaErrorFilePath = join(this.pendingDataDir, 'errors', randomBytes(8).toString('hex'))
     const errorsReport = errorArray.map(error => {
       if (!(error instanceof ErrorReport)) {
         return ErrorReport.create({
@@ -117,16 +140,44 @@ export class TelemetryReporter {
       }
       return error
     })
-    await ensureFile(metaErrorFilePath)
-    await writeJson(metaErrorFilePath, { errors: errorsReport })
+    await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, 'errors'))
+    await writeJson(metaErrorFilePath, errorsReport)
   }
 
-  private async pendingFilesPaths() {
-    const pendingDataFiles = (await readdir(TelemetryReporter.PENDING_DATA_DIR)).filter(fileName => {
-      return fileName !== this.dataPendingLock.lockName
-    })
+  public async ensureTelemetryDirMaxSize() {
+    const telemetryFiles = await glob('**', { cwd: TelemetryCollector.TELEMETRY_LOCAL_DIR, absolute: true })
+    let telemetryDirSize = 0
+    await Promise.all(
+      telemetryFiles.map(async file => {
+        const fileStats = await stat(file)
+        telemetryDirSize += fileStats.size
+      })
+    )
+    if (telemetryDirSize > TelemetryReporter.MAX_TELEMETRY_DIR_SIZE) {
+      await remove(TelemetryCollector.TELEMETRY_LOCAL_DIR)
+    }
+  }
 
-    return pendingDataFiles.map(pendingDataFile => join(TelemetryReporter.PENDING_DATA_DIR, pendingDataFile))
+  private async treatReportError(reportError, reportType: 'metrics', metrics: MetricReport[])
+
+  private async treatReportError(reportError, reportType: 'errors', errors: ErrorReport[])
+
+  private async treatReportError(reportError, reportType, metricsOrErrors) {
+    await this.dataPendingLock.lock()
+    await ensureDir(join(TelemetryReporter.PENDING_DATA_DIR, reportType))
+    await writeJson(
+      join(TelemetryReporter.PENDING_DATA_DIR, reportType, randomBytes(8).toString('hex')),
+      metricsOrErrors
+    )
+    await this.createTelemetryReporterMetaError(reportError)
+    await this.dataPendingLock.unlock()
+  }
+
+  private async pendingFilesPaths(fileTypes: 'metrics' | 'errors') {
+    const pendingDataDir = join(TelemetryReporter.PENDING_DATA_DIR, fileTypes)
+    await ensureDir(pendingDataDir)
+    const pendingFiles = await readdir(pendingDataDir)
+    return pendingFiles.map(pendingFile => join(pendingDataDir, pendingFile))
   }
 }
 
@@ -137,6 +188,7 @@ const start = async () => {
 
   await reporter.reportTelemetryFile(telemetryObjFilePath)
   await reporter.sendPendingData()
+  await reporter.ensureTelemetryDirMaxSize()
 
   store.setLastRemoteFlush(Date.now())
   process.exit()
