@@ -9,7 +9,7 @@ export interface ITelemetryLocalStore {
   getLastRemoteFlush: () => any
   setLastRemoteFlush: (date: number) => void
   setErrors: (errors: ErrorReport[]) => void
-  setMetrics: (metrics: any) => void
+  setMetrics: (metrics: MetricReport[]) => void
   clear: () => void
 }
 
@@ -26,7 +26,8 @@ export class TelemetryLocalStore implements ITelemetryLocalStore {
   }
 
   public getMetrics() {
-    return this.store.get('metrics') || []
+    const metrics = this.store.get('metrics') || []
+    return metrics.map(metric => MetricReport.create(metric.metric, metric.env))
   }
 
   public getLastRemoteFlush() {
