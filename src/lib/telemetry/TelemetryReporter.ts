@@ -158,9 +158,9 @@ export class TelemetryReporter {
     }
   }
 
-  private async treatReportError(reportError, reportType: 'metrics', metricsOrErrors: MetricReport[])
+  private async treatReportError(reportError, reportType: 'metrics', metrics: MetricReport[])
 
-  private async treatReportError(reportError, reportType: 'errors', metricsOrErrors: ErrorReport[])
+  private async treatReportError(reportError, reportType: 'errors', errors: ErrorReport[])
 
   private async treatReportError(reportError, reportType, metricsOrErrors) {
     await this.dataPendingLock.lock()
