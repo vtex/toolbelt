@@ -66,7 +66,7 @@ const main = async () => {
   await run(command)
   const commandLatency = process.hrtime(commandStartTime)
   const metric: Metric = {
-    command: command.command.alias,
+    command: command.command.alias || command.command.path,
     latency: 1e3 * commandLatency[0] + commandLatency[1] / 1e6,
   }
   TelemetryCollector.getCollector().registerMetric(metric)
