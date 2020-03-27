@@ -32,7 +32,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
   private async startUserAuth(account: string, workspace: string): Promise<string[] | never> {
     const state = randomstring.generate()
     const [url, fullReturnUrl] = await this.getLoginUrl(account, workspace, state)
-    opn(url, { wait: false })
+    opn(url, { url: true, wait: false })
     return onAuth(account, workspace, state, fullReturnUrl)
   }
 
