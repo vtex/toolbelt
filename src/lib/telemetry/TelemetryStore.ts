@@ -1,4 +1,6 @@
 import Configstore from 'configstore'
+import { isArray } from 'util'
+
 import { ErrorReport } from '../error/ErrorReport'
 import { MetricReport } from '../metrics/MetricReport'
 
@@ -26,7 +28,10 @@ export class TelemetryLocalStore implements ITelemetryLocalStore {
   }
 
   public getMetrics() {
-    const metrics = this.store.get('metrics') || []
+    const metrics = this.store.get('metrics')
+    if (!isArray(metrics)) {
+      return []
+    }
     return metrics.map(metric => MetricReport.create(metric.metric, metric.env))
   }
 
