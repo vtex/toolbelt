@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.92.4] - 2020-03-27
+### Fixed
+- Update `open` to version 7.0.3.
+
 ## [2.92.3] - 2020-03-25
 ### Fixed
 - [vtex redirects] Logs exact uri that has a problem.
