@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Support for debugging .Net Core apps.
+- [vtex debug dotnet] Support for debugging .Net Core apps.
 
 ### Fixed
-- Make generated `yarn format` command also format `.jsx` and `.tsx` files.
+- [vtex setup] Make generated `yarn format` command also format `.jsx` and `.tsx` files.
+
+### Changed
+- [vtex redirects] Downloads the bindings along with the redirects.
 
 ## [2.92.4] - 2020-03-27
 ### Fixed
@@ -18,9 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.92.3] - 2020-03-25
 ### Fixed
 - [vtex redirects] Logs exact uri that has a problem.
-
-### Changed
-- [vtex redirects] Downloads the bindings along with the redirects.
 
 ## [2.92.2] - 2020-03-23
 ### Fixed
