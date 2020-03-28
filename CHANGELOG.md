@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - [vtex setup] Make generated `yarn format` command also format `.jsx` and `.tsx` files.
+- [dependencies:open] Fix `open` usage that caused malfunction on wsl.
 
 ### Changed
 - [vtex redirects] Downloads the bindings along with the redirects.
