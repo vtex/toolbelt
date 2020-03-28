@@ -41,7 +41,7 @@ const checkLogin = args => {
   }
 }
 
-const main = async () => {
+const main = async (initTimeStartTime?: [number, number]) => {
   const args = process.argv.slice(2)
   conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
@@ -62,14 +62,23 @@ const main = async () => {
 
   await checkAndOpenNPSLink()
 
+  if (initTimeStartTime) {
+    const initTime = process.hrtime(initTimeStartTime)
+    const initTimeMetric: Metric = {
+      command: command.command.alias || command.command.path,
+      initTime: 1e3 * initTime[0] + initTime[1] / 1e6,
+    }
+    TelemetryCollector.getCollector().registerMetric(initTimeMetric)
+  }
+
   const commandStartTime = process.hrtime()
   await run(command)
   const commandLatency = process.hrtime(commandStartTime)
-  const metric: Metric = {
+  const commandLatencyMetric: Metric = {
     command: command.command.alias || command.command.path,
     latency: 1e3 * commandLatency[0] + commandLatency[1] / 1e6,
   }
-  TelemetryCollector.getCollector().registerMetric(metric)
+  TelemetryCollector.getCollector().registerMetric(commandLatencyMetric)
 }
 
 const onError = async (e: any) => {
@@ -180,13 +189,14 @@ axios.interceptors.request.use(config => {
 process.on('unhandledRejection', onError)
 
 const start = async () => {
+  const initTimeStartTime = process.hrtime()
   CLIPrechecker.getCLIPrechecker(pkg).runChecks()
 
   // Show update notification if newer version is available
   notify()
 
   try {
-    await main()
+    await main(initTimeStartTime)
     await TelemetryCollector.getCollector().flush()
   } catch (err) {
     await onError(err)
