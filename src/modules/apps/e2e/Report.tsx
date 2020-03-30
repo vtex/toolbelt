@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { Box, Color, Text, Static } from 'ink'
-import { all, difference, groupBy, toPairs, values, countBy, sum, pathOr, path } from 'ramda'
+import { all, difference, groupBy, toPairs, values, countBy, sum, pathOr } from 'ramda'
 import { parseAppId } from '@vtex/api'
 
-import { SpecReport, AppReport, TestReport, SpecTestReport, Screenshot } from '../../../clients/Tester'
+import { SpecReport, AppReport, TestReport, SpecTestReport } from '../../../clients/Tester'
 import { useInterval } from './useInterval'
 
-type AppIdProps = {
+interface AppIdProps {
   appId: string
 }
 
@@ -18,19 +18,19 @@ const AppId: React.FunctionComponent<AppIdProps> = ({ appId }) => {
       <Color blue>{vendor}</Color>
       <Color dim>.</Color>
       {`${app}@${version}`}
-      {build && <Color dim>{`-${build}`}</Color>}
+      {build && <Color dim>{`+${build}`}</Color>}
     </Box>
   )
 }
 
-type SpecDetailProps = {
+interface SpecDetailProps {
   label: string
   text: string
   indented: boolean
 }
 
 const FailedSpecDetail: React.FunctionComponent<SpecDetailProps> = ({ label, text, indented }) => {
-  const nLines = text.split('\n')
+  const textLines = text.split('\n')
   return (
     <Box flexDirection="column" marginBottom={1}>
       <Text>
@@ -39,7 +39,7 @@ const FailedSpecDetail: React.FunctionComponent<SpecDetailProps> = ({ label, tex
       </Text>
       {indented && (
         <Box marginTop={1}>
-          <Box flexDirection="column">{nLines.map(() => '│ ')}</Box>
+          <Box flexDirection="column">{textLines.map(() => '│ ')}</Box>
           <Box>{text}</Box>
         </Box>
       )}
@@ -47,14 +47,14 @@ const FailedSpecDetail: React.FunctionComponent<SpecDetailProps> = ({ label, tex
   )
 }
 
-type SpecProps = {
+interface SpecProps {
   spec: string
   report: SpecReport
 }
 
 const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report }) => {
-  const video = path<string>(['report', 'video'], report)
-  const screenshots = path<Screenshot[]>(['report', 'screenshots'], report)
+  const video = report.report?.video
+  const screenshots = report.report?.screenshots
   return (
     <Box flexDirection="column">
       <Color bold>{`${spec}:`}</Color>
@@ -91,7 +91,7 @@ const completedAppColors = (fail: [string, SpecReport][]) => {
   return { bgRed: true, white: true }
 }
 
-type AppProps = {
+interface AppProps {
   appId: string
   specs: AppReport
 }
@@ -139,7 +139,7 @@ const Running: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
   )
 }
 
-type ReportProps = {
+interface ReportProps {
   completed: Array<[string, AppReport]>
   running: Array<[string, AppReport]>
 }
