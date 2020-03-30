@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - [vtex debug dotnet] Support for debugging .Net Core apps.
+- Init time metric in telemetry.
 
 ### Fixed
 - [vtex setup] Make generated `yarn format` command also format `.jsx` and `.tsx` files.
