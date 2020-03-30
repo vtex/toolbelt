@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.93.1] - 2020-03-30
+
 ## [2.93.0] - 2020-03-30
 ### Added
 - [vtex debug dotnet] Support for debugging .Net Core apps.
