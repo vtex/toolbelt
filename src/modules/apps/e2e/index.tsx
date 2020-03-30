@@ -5,7 +5,7 @@ import { apps, tester } from '../../../clients'
 import { RealTimeReport } from './report'
 import { getToken } from '../../../conf'
 import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
-import { ErrorBoundary } from './errorBoundary'
+import { ErrorBoundary } from './ErrorBoundary'
 import { TestRequest } from '../../../clients/Tester'
 
 
