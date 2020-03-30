@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.93.1] - 2020-03-30
+
+## [2.93.0] - 2020-03-30
+### Added
+- [vtex debug dotnet] Support for debugging .Net Core apps.
+- Init time metric in telemetry.
+
+### Fixed
+- [vtex setup] Make generated `yarn format` command also format `.jsx` and `.tsx` files.
+- [dependencies:open] Fix `open` usage that caused malfunction on wsl.
+
+### Changed
+- [vtex redirects] Downloads the bindings along with the redirects.
+
 ## [2.92.4] - 2020-03-27
 ### Fixed
 - Update `open` to version 7.0.3.

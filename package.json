@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.92.4",
+  "version": "2.93.1",
   "description": "The platform for e-commerce apps",
   "main": "lib/index.js",
   "bin": "lib/cli.js",
@@ -98,7 +98,7 @@
     "v8-compile-cache": "^2.1.0",
     "winston": "~3.2.1",
     "winston-transport": "~4.3.0",
-    "ws": "~7.2.0",
+    "ws": "^7.2.3",
     "yarn": "~1.21.0"
   },
   "devDependencies": {

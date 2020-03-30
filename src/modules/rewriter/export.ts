@@ -24,7 +24,7 @@ const EXPORTS = 'exports'
 const [account, workspace] = accountAndWorkspace
 
 const COLORS = ['cyan', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'gray']
-const FIELDS = ['from', 'to', 'type', 'endDate']
+const FIELDS = ['from', 'to', 'type', 'endDate', 'bindings']
 
 const handleExport = async (csvPath: string) => {
   const indexHash = createHash('md5')

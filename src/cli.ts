@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+const initTimeStartTime = process.hrtime()
+
 import 'v8-compile-cache'
 
 import axios from 'axios'
@@ -20,6 +22,8 @@ import tree from './modules/tree'
 import { checkAndOpenNPSLink } from './nps'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
+import { Metric } from './lib/metrics/MetricReport'
+import { hrTimeToMs } from './lib/utils'
 
 const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
@@ -40,7 +44,7 @@ const checkLogin = args => {
   }
 }
 
-const main = async () => {
+const main = async (calculateInitTime = false) => {
   const args = process.argv.slice(2)
   conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
@@ -61,7 +65,23 @@ const main = async () => {
 
   await checkAndOpenNPSLink()
 
+  if (calculateInitTime) {
+    const initTime = process.hrtime(initTimeStartTime)
+    const initTimeMetric: Metric = {
+      command: command.command.alias || command.command.path,
+      initTime: hrTimeToMs(initTime),
+    }
+    TelemetryCollector.getCollector().registerMetric(initTimeMetric)
+  }
+
+  const commandStartTime = process.hrtime()
   await run(command)
+  const commandLatency = process.hrtime(commandStartTime)
+  const commandLatencyMetric: Metric = {
+    command: command.command.alias || command.command.path,
+    latency: hrTimeToMs(commandLatency),
+  }
+  TelemetryCollector.getCollector().registerMetric(commandLatencyMetric)
 }
 
 const onError = async (e: any) => {
@@ -178,7 +198,7 @@ const start = async () => {
   notify()
 
   try {
-    await main()
+    await main(true)
     await TelemetryCollector.getCollector().flush()
   } catch (err) {
     await onError(err)

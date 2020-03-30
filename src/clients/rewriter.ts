@@ -47,6 +47,7 @@ export class Rewriter extends AppGraphQLClient {
           listRedirects(next: $next) {
             next
             routes {
+              bindings
               from
               to
               type

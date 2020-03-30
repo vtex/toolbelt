@@ -41,7 +41,7 @@ export async function checkAndOpenNPSLink() {
           .add(3, 'months')
           .toISOString()
       )
-      opn(NPSFormURL, { wait: false })
+      opn(NPSFormURL, { url: true, wait: false })
     } else {
       let { remindChoice } = await enquirer.prompt({
         name: 'remindChoice',

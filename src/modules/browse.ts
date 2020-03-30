@@ -45,5 +45,5 @@ export default async (endpointInput, { q, qr }) => {
     return
   }
 
-  opn(uri, { wait: false })
+  opn(uri, { url: true, wait: false })
 }
