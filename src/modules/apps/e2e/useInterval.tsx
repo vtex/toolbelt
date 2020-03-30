@@ -14,13 +14,12 @@ export function useInterval(callback: () => Promise<void>, delay) {
     let savedTimeout = null
 
     const tick = async () => {
-      if (running) {
-        await savedCallback.current()
+      if (!running) {
+        return
       }
-
-      if (running) {
-        savedTimeout = setTimeout(tick, delay)
-      }
+      
+      await savedCallback.current()
+      savedTimeout = setTimeout(tick, delay)
     }
 
     const stop = () => {

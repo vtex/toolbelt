@@ -9,16 +9,13 @@ import { ErrorBoundary } from './ErrorBoundary'
 import { TestRequest } from '../../../clients/Tester'
 
 
-export default async options => {
-  new EndToEndCommand(options).run()
+export default options => {
+  return new EndToEndCommand(options).run()
 }
 
 class EndToEndCommand {
-  options : any
+  constructor(private options) {}
 
-  constructor(options) {
-    this.options = options
-  }
   public run() {
     if(this.options.workspace) {
       return this.runWorkspaceTests()
@@ -31,18 +28,18 @@ class EndToEndCommand {
     const manifestEditor = await ManifestEditor.getManifestEditor()
     const cleanAppId = manifestEditor.appLocator
 
-    const appList = await apps.listApps()
-    const appId = appList.data.map(({ app }) => app).find(app => app.startsWith(cleanAppId))
+    const { data: workspaceAppsList }= await apps.listApps()
+    const app = workspaceAppsList.find( ({ app }) => app.startsWith(cleanAppId))
   
-    if (appId === undefined) {
-      throw new Error('App was not found!')
+    if (app.id === undefined) {
+      throw new Error(`App "${cleanAppId}" was not found in the current workspace!`)
     }
   
     const testRequest = this.options.report
       ? null
       : await tester.test(
           { integration: true, monitoring: true, authToken: this.options.token ? getToken() : undefined },
-          appId
+          app.id
         )
   
     this.render(testRequest)
@@ -58,7 +55,7 @@ class EndToEndCommand {
     this.render(testRequest)
   }
 
-  private async render( testRequest: TestRequest ) {
+  private async render( testRequest: TestRequest | null) {
     const testId = testRequest ? testRequest.testId : (this.options.report as string)
     const requestedAt = testRequest ? testRequest.requestedAt : null
   
@@ -74,7 +71,6 @@ class EndToEndCommand {
           requestedAt={requestedAt}
         />
       </ErrorBoundary>,
-      process.stdout
     )
   }
 }
