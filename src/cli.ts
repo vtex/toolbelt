@@ -44,7 +44,7 @@ const checkLogin = args => {
   }
 }
 
-const main = async (calculateInitTime: boolean = false) => {
+const main = async (calculateInitTime = false) => {
   const args = process.argv.slice(2)
   conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
