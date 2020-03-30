@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+const initTimeStartTime = process.hrtime()
+
 import 'v8-compile-cache'
 
 import axios from 'axios'
@@ -21,6 +23,7 @@ import { checkAndOpenNPSLink } from './nps'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
 import { Metric } from './lib/metrics/MetricReport'
+import { hrTimeToMs } from './lib/utils'
 
 const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
@@ -41,7 +44,7 @@ const checkLogin = args => {
   }
 }
 
-const main = async (initTimeStartTime?: [number, number]) => {
+const main = async () => {
   const args = process.argv.slice(2)
   conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
@@ -66,7 +69,7 @@ const main = async (initTimeStartTime?: [number, number]) => {
     const initTime = process.hrtime(initTimeStartTime)
     const initTimeMetric: Metric = {
       command: command.command.alias || command.command.path,
-      initTime: 1e3 * initTime[0] + initTime[1] / 1e6,
+      initTime: hrTimeToMs(initTime),
     }
     TelemetryCollector.getCollector().registerMetric(initTimeMetric)
   }
@@ -76,7 +79,7 @@ const main = async (initTimeStartTime?: [number, number]) => {
   const commandLatency = process.hrtime(commandStartTime)
   const commandLatencyMetric: Metric = {
     command: command.command.alias || command.command.path,
-    latency: 1e3 * commandLatency[0] + commandLatency[1] / 1e6,
+    latency: hrTimeToMs(commandLatency),
   }
   TelemetryCollector.getCollector().registerMetric(commandLatencyMetric)
 }
@@ -189,14 +192,13 @@ axios.interceptors.request.use(config => {
 process.on('unhandledRejection', onError)
 
 const start = async () => {
-  const initTimeStartTime = process.hrtime()
   CLIPrechecker.getCLIPrechecker(pkg).runChecks()
 
   // Show update notification if newer version is available
   notify()
 
   try {
-    await main(initTimeStartTime)
+    await main()
     await TelemetryCollector.getCollector().flush()
   } catch (err) {
     await onError(err)
