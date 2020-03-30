@@ -44,7 +44,7 @@ const checkLogin = args => {
   }
 }
 
-const main = async (calculeInitTime: boolean = false) => {
+const main = async (calculateInitTime: boolean = false) => {
   const args = process.argv.slice(2)
   conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
@@ -65,7 +65,7 @@ const main = async (calculeInitTime: boolean = false) => {
 
   await checkAndOpenNPSLink()
 
-  if (calculeInitTime) {
+  if (calculateInitTime) {
     const initTime = process.hrtime(initTimeStartTime)
     const initTimeMetric: Metric = {
       command: command.command.alias || command.command.path,
