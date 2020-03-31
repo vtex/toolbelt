@@ -2,6 +2,7 @@ import { AppClient, inflightURL, InstanceOptions, IOContext, CacheType } from '@
 
 export interface SpecTestReport {
   testId: string
+  logId: string
   title: string[]
   state: string
   body: string
@@ -33,9 +34,10 @@ export interface SpecReport {
     }
     tests: SpecTestReport[]
     video?: string
+    logs?: string
     screenshots: Screenshot[]
   }
-  logId?: string
+  logId: string
   lastUpdate: number
 }
 
