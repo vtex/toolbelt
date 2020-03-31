@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Box, Color, Text, Static } from 'ink'
-import { groupBy, toPairs, sum } from 'ramda'
+import { sum } from 'ramda'
 
 import { SpecReport, AppReport, TestReport } from '../../../../clients/Tester'
 import { AppProps, Completed } from './completedTest'
@@ -28,10 +28,15 @@ const Running: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
       </Box>
     )
   }
+  
+  interface AppTest {
+    appId: string
+    specs: AppReport
+  }
 
 export interface ReportProps {
-  completed: Array<[string, AppReport]>
-  running: Array<[string, AppReport]>
+    completedAppTests: AppTest[]
+    runningAppTests: AppTest[]
 }
 
 const COMPLETED_STATES = ['passed', 'failed', 'skipped', 'error']
@@ -55,28 +60,34 @@ export const countPassedSpecs = (appReport: AppReport) => {
   return sum(specsState)
 }
 
-export const Report: React.FunctionComponent<ReportProps> = ({ completed, running }) => (
-  <Box flexDirection="column">
-    <Static>
-      {completed.map(([appId, specs]) => (
-        <Completed key={appId} appId={appId} specs={specs} />
-      ))}
-    </Static>
-
-    {running.length > 0 && (
-      <Box flexDirection="column" marginTop={1}>
-        {running.map(([appId, specs]) => (
-          <Running key={appId} appId={appId} specs={specs} />
+export const Report: React.FunctionComponent<ReportProps> = ({ completedAppTests, runningAppTests }) => (
+    <Box flexDirection="column">
+      <Static>
+        {completedAppTests.map(({ appId, specs }) => (
+          <Completed key={appId} appId={appId} specs={specs} />
         ))}
-      </Box>
-    )}
-  </Box>
-)
-
-export const parseReport = (report: TestReport): ReportProps => {
-  const { completed = [], running = [] } = groupBy(
-    ([, specs]) => (completedApp(specs) ? 'completed' : 'running'),
-    toPairs(report)
+      </Static>
+  
+      {runningAppTests.length > 0 && (
+        <Box flexDirection="column" marginTop={1}>
+          {runningAppTests.map(({ appId, specs }) => (
+            <Running key={appId} appId={appId} specs={specs} />
+          ))}
+        </Box>
+      )}
+    </Box>
   )
-  return { completed, running }
-}
+  
+
+  export const parseReport = (report: TestReport): ReportProps => {
+    const appTests = Object.keys(report).map((appId) => {
+      return { 
+        appId, 
+        specs: report[appId] 
+      }
+    })
+  
+    const completedAppTests = appTests.filter((appTest) => completedApp(appTest.specs))
+    const runningAppTests = appTests.filter((appTest) => !completedApp(appTest.specs))
+    return { completedAppTests, runningAppTests }
+  }
