@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Box, Color, Text, Static } from 'ink'
-import { all, difference, groupBy, toPairs, values, countBy, sum, pathOr } from 'ramda'
+import { difference, groupBy, toPairs, values, countBy, sum, pathOr } from 'ramda'
 import { parseAppId } from '@vtex/api'
 
 import { SpecReport, AppReport, TestReport, SpecTestReport } from '../../../clients/Tester'
@@ -144,17 +144,28 @@ interface ReportProps {
   running: Array<[string, AppReport]>
 }
 
-const completedStates = ['passed', 'failed', 'skipped', 'error']
+const COMPLETED_STATES = ['passed', 'failed', 'skipped', 'error']
 
-const completedSpec = (sr: SpecReport) => completedStates.includes(sr.state)
-const completedApp = (ar: AppReport) => all(completedSpec, values(ar))
+const completedSpec = (specReport: SpecReport) => COMPLETED_STATES.includes(specReport.state)
+const completedApp = (appReport: AppReport) => {
+  return Object.values(appReport).every((specReport: SpecReport) => {
+    return completedSpec(specReport)
+  })
+}
 
-const passedSpec = (sr: SpecReport) => sr.state === 'passed'
-const passedApp = (ar: AppReport) => all(passedSpec, values(ar))
+const passedSpec = (specReport: SpecReport) => specReport.state === 'passed'
+const passedApp = (appReport: AppReport) => {
+  return Object.values(appReport).every((specReport: SpecReport) => {
+    return passedSpec(specReport)
+  })
+}
 
-const countPassedSpecs = (ar: AppReport) => sum(values(ar).map(sr => Number(passedSpec(sr))))
+const countPassedSpecs = (appReport: AppReport) => {
+  const specsState = Object.values(appReport).map((specReport) => (passedSpec(specReport) ? 1 : 0))
+  return sum(specsState)
+}
 
-type SummaryProps = ReportProps & {
+interface SummaryProps extends ReportProps {
   testId: string
   requestedAt?: number
 }
