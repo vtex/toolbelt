@@ -2,12 +2,18 @@ import * as React from 'react'
 import { Box, Color, Text } from 'ink'
 import { sum } from 'ramda'
 
-import { passedApp, countPassedSpecs, ReportProps } from './index'
+import { ReportProps } from './index'
+import {passedApp , passedSpec} from './specsState'
 import { AppReport } from '../../../../clients/Tester'
 
 interface SummaryProps extends ReportProps {
     testId: string
     requestedAt?: number
+  }
+
+  const countPassedSpecs = (appReport: AppReport) => {
+    const specsState = Object.values(appReport).map((specReport) => (passedSpec(specReport) ? 1 : 0))
+    return sum(specsState)
   }
   
   const countPassedSpecsFromAppsTests = (appTests: AppReport[]) => {
