@@ -1,32 +1,33 @@
 import * as React from 'react'
 import { Box, Color, Text, Static } from 'ink'
-import { groupBy, toPairs, values, countBy, sum } from 'ramda'
+import { groupBy, toPairs, sum } from 'ramda'
 
 import { SpecReport, AppReport, TestReport } from '../../../../clients/Tester'
 import { AppProps, Completed } from './completedTest'
 import { AppId } from './app'
 
 const Running: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
-  const specsReports = values(specs)
-  const { running = specsReports.length, completed = 0 } = countBy(
-    sr => (completedSpec(sr) ? 'completed' : 'running'),
-    specsReports
-  )
-  return (
-    <Box>
-      <Color bgYellow black>
-        {' RUNS '}
-      </Color>
-      <Box marginLeft={1}>
-        <AppId appId={appId} />
+    const specsReports = Object.values(specs)
+  
+    const completedSpecsCount = specsReports.reduce((acum, specReport) => {
+      return acum + (completedSpec(specReport) ? 1 : 0)
+    }, 0)
+  
+    return (
+      <Box>
+        <Color bgYellow black>
+          {' RUNS '}
+        </Color>
+        <Box marginLeft={1}>
+          <AppId appId={appId} />
+        </Box>
+        <Box marginLeft={1}>
+          <Color greenBright>{`${completedSpecsCount} specs completed`}</Color>
+          <Text>{`, ${specsReports.length} total`}</Text>
+        </Box>
       </Box>
-      <Box marginLeft={1}>
-        <Color greenBright>{`${completed} specs completed`}</Color>
-        <Text>{`, ${running + completed} total`}</Text>
-      </Box>
-    </Box>
-  )
-}
+    )
+  }
 
 export interface ReportProps {
   completed: Array<[string, AppReport]>
