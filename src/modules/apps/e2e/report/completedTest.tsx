@@ -1,19 +1,15 @@
 import * as React from 'react'
 import { Box, Color } from 'ink'
 
-import { SpecReport, AppReport } from '../../../../clients/Tester'
+import { SpecReport } from '../../../../clients/Tester'
 import { FailedSpec } from './failedTest'
 import { AppId } from './app'
+import { AppProps } from './index'
 
 
 const completedAppColors = (failedSpecs: SpecResult[]) => {
   if (failedSpecs.length === 0) return { bgGreen: true, black: true }
   return { bgRed: true, white: true }
-}
-
-export interface AppProps {
-  appId: string
-  specs: AppReport
 }
 
 interface SpecResult {

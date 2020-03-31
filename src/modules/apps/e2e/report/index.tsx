@@ -3,8 +3,13 @@ import { Box, Color, Text, Static } from 'ink'
 import { sum } from 'ramda'
 
 import { SpecReport, AppReport, TestReport } from '../../../../clients/Tester'
-import { AppProps, Completed } from './completedTest'
+import { Completed } from './completedTest'
 import { AppId } from './app'
+
+export interface AppProps {
+    appId: string
+    specs: AppReport
+  }
 
 const Running: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
     const specsReports = Object.values(specs)
@@ -28,7 +33,7 @@ const Running: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
       </Box>
     )
   }
-  
+
   interface AppTest {
     appId: string
     specs: AppReport
