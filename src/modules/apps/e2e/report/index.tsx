@@ -1,71 +1,39 @@
 import * as React from 'react'
-import { Box, Color, Text, Static } from 'ink'
-import { sum } from 'ramda'
+import { Box, Static } from 'ink'
+import { difference } from 'ramda'
 
-import { SpecReport, AppReport, TestReport } from '../../../../clients/Tester'
-import { Completed } from './completedTest'
-import { AppId } from './app'
+import { AppReport, TestReport } from '../../../../clients/Tester'
+import { useInterval } from '../useInterval'
 
-export interface AppProps {
-    appId: string
-    specs: AppReport
-  }
+import { Completed } from './completedApps'
+import { Summary } from './summary'
+import { parseReport } from './specsState'
+import { Running} from './runningApps'
 
-const Running: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
-    const specsReports = Object.values(specs)
-  
-    const completedSpecsCount = specsReports.reduce((acum, specReport) => {
-      return acum + (completedSpec(specReport) ? 1 : 0)
-    }, 0)
-  
-    return (
-      <Box>
-        <Color bgYellow black>
-          {' RUNS '}
-        </Color>
-        <Box marginLeft={1}>
-          <AppId appId={appId} />
-        </Box>
-        <Box marginLeft={1}>
-          <Color greenBright>{`${completedSpecsCount} specs completed`}</Color>
-          <Text>{`, ${specsReports.length} total`}</Text>
-        </Box>
-      </Box>
-    )
+interface RealTimeReport {
+    testId: string
+    poll: () => Promise<TestReport>
+    interval: number
+    initialReport: TestReport
+    requestedAt?: number
   }
 
   interface AppTest {
     appId: string
     specs: AppReport
-  }
+  } 
 
-export interface ReportProps {
+  export interface ReportProps {
     completedAppTests: AppTest[]
     runningAppTests: AppTest[]
 }
 
-const COMPLETED_STATES = ['passed', 'failed', 'skipped', 'error']
-
-const completedSpec = (specReport: SpecReport) => COMPLETED_STATES.includes(specReport.state)
-const completedApp = (appReport: AppReport) => {
-  return Object.values(appReport).every((specReport: SpecReport) => {
-    return completedSpec(specReport)
-  })
-}
-
-const passedSpec = (specReport: SpecReport) => specReport.state === 'passed'
-export const passedApp = (appReport: AppReport) => {
-  return Object.values(appReport).every((specReport: SpecReport) => {
-    return passedSpec(specReport)
-  })
-}
-
-export const countPassedSpecs = (appReport: AppReport) => {
-  const specsState = Object.values(appReport).map((specReport) => (passedSpec(specReport) ? 1 : 0))
-  return sum(specsState)
-}
-
-export const Report: React.FunctionComponent<ReportProps> = ({ completedAppTests, runningAppTests }) => (
+export interface AppProps {
+    appId: string
+    specs: AppReport
+  }
+  
+const Report: React.FunctionComponent<ReportProps> = ({ completedAppTests, runningAppTests }) => (
     <Box flexDirection="column">
       <Static>
         {completedAppTests.map(({ appId, specs }) => (
@@ -82,17 +50,43 @@ export const Report: React.FunctionComponent<ReportProps> = ({ completedAppTests
       )}
     </Box>
   )
-  
 
-  export const parseReport = (report: TestReport): ReportProps => {
-    const appTests = Object.keys(report).map((appId) => {
-      return { 
-        appId, 
-        specs: report[appId] 
-      }
-    })
+export const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
+    testId,
+    poll,
+    interval,
+    initialReport,
+    requestedAt,
+  }) => {
+    const [delay, setDelay] = React.useState(interval)
+    const [report, setReport] = React.useState<ReportProps>(parseReport(initialReport))
   
-    const completedAppTests = appTests.filter((appTest) => completedApp(appTest.specs))
-    const runningAppTests = appTests.filter((appTest) => !completedApp(appTest.specs))
-    return { completedAppTests, runningAppTests }
+    const handleReport = ({ completedAppTests, runningAppTests }: ReportProps) => {
+      const recentlyCompleted = difference(completedAppTests, report.completedAppTests)
+  
+      setReport({
+        // careful not to reorder completed apps because they are Static
+        completedAppTests: [...report.completedAppTests, ...recentlyCompleted],
+        runningAppTests,
+      })
+  
+      if (runningAppTests.length === 0) setDelay(null)
+    }
+  
+    useInterval(
+      () =>
+        poll()
+          .then(parseReport)
+          .then(handleReport),
+      delay
+    )
+  
+    return (
+      <Box flexDirection="column">
+        <Report {...report} />
+        <Box marginTop={1}>
+          <Summary {...report} testId={testId} requestedAt={requestedAt} />
+        </Box>
+      </Box>
+    )
   }

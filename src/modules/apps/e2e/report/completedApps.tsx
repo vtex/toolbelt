@@ -3,7 +3,7 @@ import { Box, Color } from 'ink'
 
 import { SpecReport } from '../../../../clients/Tester'
 import { FailedSpec } from './failedTest'
-import { AppId } from './app'
+import { AppId } from './appId'
 import { AppProps } from './index'
 
 
