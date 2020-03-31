@@ -1,6 +1,6 @@
 import enquirer from 'enquirer'
 import moment from 'moment'
-import opn from 'open'
+import opn from 'opn'
 
 import { getNextFeedbackDate, saveNextFeedbackDate } from './conf'
 import { promptConfirm } from './modules/prompts'
@@ -41,7 +41,7 @@ export async function checkAndOpenNPSLink() {
           .add(3, 'months')
           .toISOString()
       )
-      opn(NPSFormURL, { url: true, wait: false })
+      opn(NPSFormURL, { wait: false })
     } else {
       let { remindChoice } = await enquirer.prompt({
         name: 'remindChoice',
