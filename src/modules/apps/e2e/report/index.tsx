@@ -3,7 +3,6 @@ import { Box, Static } from 'ink'
 import { difference } from 'ramda'
 
 import { AppReport, TestReport } from '../../../../clients/Tester'
-
 import { Completed } from './completedApps'
 import { Summary } from './summary'
 import { parseReport } from './specsState'
