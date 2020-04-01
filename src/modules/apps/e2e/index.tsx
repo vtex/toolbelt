@@ -8,10 +8,6 @@ import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
 import { ErrorBoundary } from './ErrorBoundary'
 import { TestRequest } from '../../../clients/Tester'
 
-export default options => {
-  return new EndToEndCommand(options).run()
-}
-
 class EndToEndCommand {
   constructor(private options) {}
 
@@ -74,4 +70,8 @@ class EndToEndCommand {
       </ErrorBoundary>
     )
   }
+}
+
+export default options => {
+  return new EndToEndCommand(options).run()
 }
