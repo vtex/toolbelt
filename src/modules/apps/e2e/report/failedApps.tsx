@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { Box, Color, Text } from 'ink'
-import { pathOr } from 'ramda'
 
-import { SpecReport, SpecTestReport } from '../../../../clients/Tester'
+import { SpecReport, SpecTestReport, Screenshot } from '../../../../clients/Tester'
 
 interface SpecDetailProps {
   label: string
@@ -34,35 +33,55 @@ interface SpecProps {
 }
 
 export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report }) => {
-  const video = report.report?.video
-  const screenshots = report.report?.screenshots
-  return (
-    <Box flexDirection="column">
-      <Color bold>{`${spec}:`}</Color>
-      <Box flexDirection="column" marginLeft={2}>
-        {report.error && <FailedSpecDetail label={'Error'} text={report.error} indented={true} />}
-        {...pathOr<SpecTestReport[], SpecTestReport[]>([] as SpecTestReport[], ['report', 'tests'], report)
-          .filter(({ state }) => state !== 'passed')
-          .map(({ testId, title, body, stack, error }) => {
-            const _screenshots = screenshots.filter(ss => ss.testId === testId)
-            return (
-              <Box key={title.join('')} flexDirection="column">
-                <FailedSpecDetail label={'Test'} text={title.join(' ')} indented={false} />
-                {body && <FailedSpecDetail label={'Body'} text={body} indented={true} />}
-                {stack && <FailedSpecDetail label={'Stack'} text={stack} indented={true} />}
-                {error && <FailedSpecDetail label={'Error'} text={error} indented={true} />}
-                {_screenshots.length > 0 && (
-                  <FailedSpecDetail
-                    label={'Screenshots'}
-                    text={_screenshots.map(ss => ` ${ss.path}`).join('\n')}
-                    indented={_screenshots.length > 1}
-                  />
-                )}
-              </Box>
-            )
-          })}
-        {video && <FailedSpecDetail label={'Video'} text={video} indented={false} />}
+    const video = report.report?.video
+    const screenshots = report.report?.screenshots
+    const notPassedSpecs = (report.report?.tests ?? []).filter(({ state }) => state !== 'passed')
+  
+    const errorsVisualization = notPassedSpecs.map(({ title, testId, body, error, stack }, index) => {
+        const testScreenshots = screenshots.filter(curScreenshot => curScreenshot.testId === testId)
+        return (
+          <ErrorVisualization key={index} title={title} body={body} error={error} stack={stack} testScreenshots={testScreenshots} />
+        )
+      })
+  
+    return (
+      <Box flexDirection="column">
+        <Color bold>{`${spec}:`}</Color>
+        <Box flexDirection="column" marginLeft={2}>
+          {report.error && <FailedSpecDetail label={'Error'} text={report.error} indented={true} />}
+          {errorsVisualization}
+          {video && <FailedSpecDetail label={'Video'} text={video} indented={false} />}
+        </Box>
       </Box>
-    </Box>
-  )
-}
+    )
+  }
+  
+  interface ErrorVisualizationProps {
+    title: SpecTestReport['title']
+    body: SpecTestReport['body']
+    error: SpecTestReport['error']
+    stack: SpecTestReport['stack']
+  
+    testScreenshots: Screenshot[]
+  }
+  
+  const ErrorVisualization: React.FunctionComponent<ErrorVisualizationProps> = ({
+    title,
+    body,
+    error,
+    stack,
+    testScreenshots,
+  }) => {
+    const testScreenshotsText = testScreenshots.map(curScreenshot => ' ' + curScreenshot.path).join('\n')
+    return (
+      <Box key={title.join('')} flexDirection="column">
+        <FailedSpecDetail label={'Test'} text={title.join(' ')} indented={false} />
+        {body && <FailedSpecDetail label={'Body'} text={body} indented={true} />}
+        {stack && <FailedSpecDetail label={'Stack'} text={stack} indented={true} />}
+        {error && <FailedSpecDetail label={'Error'} text={error} indented={true} />}
+        {testScreenshots.length > 0 && (
+          <FailedSpecDetail label={'Screenshots'} text={testScreenshotsText} indented={testScreenshots.length > 1} />
+        )}
+      </Box>
+    )
+  }

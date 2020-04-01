@@ -291,7 +291,7 @@ export default {
       handler: './apps/e2e',
       options: [
         {
-          description: 'Specify test request id',
+          description: 'Check the results and state of a previously started test given its ID',
           long: 'report',
           short: 'r',
           type: 'string',
