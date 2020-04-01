@@ -5,6 +5,7 @@ import semver from 'semver'
 import { configDir } from '../conf'
 import { PathConstants } from '../lib/constants/Paths'
 import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
+import { OutdatedChecker } from './OutdatedChecker/OutdatedChecker'
 
 export class CLIPreTasks {
   public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER
@@ -54,5 +55,7 @@ export class CLIPreTasks {
       this.removeOutdatedPaths()
       DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
     }
+
+    OutdatedChecker.checkForOutdate(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
   }
 }
