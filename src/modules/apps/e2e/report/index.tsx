@@ -3,7 +3,6 @@ import { Box, Static } from 'ink'
 import { difference } from 'ramda'
 
 import { AppReport, TestReport } from '../../../../clients/Tester'
-import { useInterval } from '../useInterval'
 
 import { Completed } from './completedApps'
 import { Summary } from './summary'
@@ -33,23 +32,25 @@ export interface AppProps {
   specs: AppReport
 }
 
-const Report: React.FunctionComponent<ReportProps> = ({ completedAppTests, runningAppTests }) => (
-  <Box flexDirection="column">
-    <Static>
-      {completedAppTests.map(({ appId, specs }) => (
-        <Completed key={appId} appId={appId} specs={specs} />
-      ))}
-    </Static>
-
-    {runningAppTests.length > 0 && (
-      <Box flexDirection="column" marginTop={1}>
-        {runningAppTests.map(({ appId, specs }) => (
-          <Running key={appId} appId={appId} specs={specs} />
-        ))}
+const Report: React.FunctionComponent<ReportProps> = ({ completedAppTests, runningAppTests }) => {
+    return (
+      <Box flexDirection="column">
+        <Static>
+          {completedAppTests.map(({ appId, specs }) => (
+            <Completed key={appId} appId={appId} specs={specs} />
+          ))}
+        </Static>
+    
+        {runningAppTests.length > 0 && (
+          <Box flexDirection="column" marginTop={1}>
+            {runningAppTests.map(({ appId, specs }) => (
+              <Running key={appId} appId={appId} specs={specs} />
+            ))}
+          </Box>
+        )}
       </Box>
-    )}
-  </Box>
-)
+    )
+  }
 
 export const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
   testId,
@@ -73,13 +74,36 @@ export const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
     if (runningAppTests.length === 0) setDelay(null)
   }
 
-  useInterval(
-    () =>
-      poll()
-        .then(parseReport)
-        .then(handleReport),
-    delay
-  )
+  React.useEffect(() => {
+      //running is local to each iteration of this effect
+      //so won't pollute anything if the user starts polling again
+      let running = false
+      let savedTimeout = null
+  
+      async function tick () {
+        if (!running) {
+          return
+        }
+        
+        await poll().then(parseReport).then(handleReport)
+        savedTimeout = setTimeout(tick, delay)
+      }
+  
+      const stop = () => {
+        running = false
+        const timeout = savedTimeout
+  
+        if (timeout !== null) {
+          clearTimeout(timeout)
+        }
+      }
+  
+      if (delay !== null) {
+        running = true
+        savedTimeout = setTimeout(tick, delay)
+        return stop
+      }
+    }, [delay])
 
   return (
     <Box flexDirection="column">
