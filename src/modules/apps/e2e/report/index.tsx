@@ -76,6 +76,10 @@ export const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
   React.useEffect(() => {
     // running is local to each iteration of this effect
     // so won't pollute anything if the user starts polling again
+    if (delay === null) {
+      return
+    }
+
     let running = false
     let savedTimeout = null
 
@@ -99,12 +103,10 @@ export const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
       }
     }
 
-    if (delay !== null) {
-      running = true
-      savedTimeout = setTimeout(tick, delay)
-      return stop
-    }
-  }, [delay])
+    running = true
+    savedTimeout = setTimeout(tick, delay)
+    return stop
+  })
 
   return (
     <Box flexDirection="column">
