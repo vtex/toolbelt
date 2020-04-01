@@ -4,6 +4,7 @@ export const enum ErrorKinds {
   EVOLUTION_MANAGER_REPORT_ERROR = 'EvolutionManagerReportError',
   GENERIC_ERROR = 'GenericError',
   INVALID_OR_EXPIRED_TOKEN_ERROR = 'InvalidOrExpiredTokenError',
+  OUTDATED_CHECK_ERROR = 'OutdatedCheckError',
   REQUEST_ERROR = 'RequestError',
   SETUP_TOOLING_ERROR = 'SetupToolingError',
   SETUP_TSCONFIG_ERROR = 'SetupTSConfigError',
