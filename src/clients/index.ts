@@ -7,6 +7,7 @@ import Billing from './billingClient'
 import { Builder } from './Builder'
 import { dummyLogger } from './dummyLogger'
 import { Rewriter } from './rewriter'
+import { Tester } from './Tester'
 
 const DEFAULT_TIMEOUT = 15000
 const context: IOContext = {
@@ -58,7 +59,7 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
   }
 }
 
-const [apps, router, workspaces, logger, events, billing, rewriter] = getToken()
+const [apps, router, workspaces, logger, events, billing, rewriter, tester] = getToken()
   ? [
       new Apps(context, options),
       new Router(context, options),
@@ -67,6 +68,7 @@ const [apps, router, workspaces, logger, events, billing, rewriter] = getToken()
       new Events(context, { headers: clusterHeader }),
       new Billing(context, options),
       new Rewriter(context, options),
+      new Tester(context, options),
     ]
   : [
       interceptor<Apps>('apps'),
@@ -76,6 +78,7 @@ const [apps, router, workspaces, logger, events, billing, rewriter] = getToken()
       interceptor<Events>('events'),
       interceptor<Billing>('billing'),
       interceptor<Rewriter>('rewriter'),
+      interceptor<Tester>('Tester'),
     ]
 
-export { apps, router, workspaces, logger, events, createClients, billing, rewriter }
+export { apps, router, workspaces, logger, events, createClients, billing, rewriter, tester }
