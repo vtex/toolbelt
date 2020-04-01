@@ -1,11 +1,10 @@
 import chalk from 'chalk'
-import { join } from 'path'
 import semver from 'semver'
-import { configDir } from '../conf'
+import { PathConstants } from '../lib/PathConstants'
 import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 
 export class CLIPreTasks {
-  public static readonly PRETASKS_LOCAL_DIR = join(configDir, 'vtex', 'prechecks')
+  public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER
   private static readonly BYPASS_LOCKS_FLAG = 'BYPASS_LOCKS'
 
   public static getCLIPreTasks(pkgJson: any) {
