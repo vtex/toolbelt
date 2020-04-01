@@ -30,7 +30,10 @@ export const Summary: React.FunctionComponent<SummaryProps> = ({
   testId,
   requestedAt,
 }) => {
-  const passedAppsCount = completedAppTests.reduce((acum, curApp) => acum + (passedApp(curApp.specs) ? 1 : 0), 0)
+  const passedAppsCount = completedAppTests.reduce(
+    (acum, curApp) => (acum as number) + (passedApp(curApp.specs) ? 1 : 0),
+    0
+  )
 
   const completedAppTestsSpecs = completedAppTests.map(({ specs }) => specs)
   const runningAppTestsSpecs = runningAppTests.map(({ specs }) => specs)

@@ -4,11 +4,12 @@ import { Box, Color, Text } from 'ink'
 import { AppId } from './appId'
 import { completedSpec } from './specsState'
 import { AppProps } from './index'
+import { SpecReport } from '../../../../clients/Tester'
 
 export const Running: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
   const specsReports = Object.values(specs)
 
-  const completedSpecsCount = specsReports.reduce((acum, specReport) => {
+  const completedSpecsCount = specsReports.reduce((acum: number, specReport: SpecReport) => {
     return acum + (completedSpec(specReport) ? 1 : 0)
   }, 0)
 
