@@ -4,11 +4,12 @@ import semver from 'semver'
 import { configDir } from '../conf'
 import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 
-export class CLIPrechecker {
-  public static readonly PRECHECKS_LOCAL_DIR = join(configDir, 'vtex', 'prechecks')
+export class CLIPreTasks {
+  public static readonly PRETASKS_LOCAL_DIR = join(configDir, 'vtex', 'prechecks')
+  private static readonly BYPASS_LOCKS_FLAG = 'BYPASS_LOCKS'
 
-  public static getCLIPrechecker(pkgJson: any) {
-    return new CLIPrechecker(pkgJson)
+  public static getCLIPreTasks(pkgJson: any) {
+    return new CLIPreTasks(pkgJson)
   }
 
   constructor(private pkg: any) {}
@@ -27,7 +28,9 @@ export class CLIPrechecker {
   }
 
   public runChecks() {
-    this.ensureCompatibleNode()
-    DeprecationChecker.checkForDeprecation(CLIPrechecker.PRECHECKS_LOCAL_DIR, this.pkg)
+    if (process.env[CLIPreTasks.BYPASS_LOCKS_FLAG] !== 'false') {
+      this.ensureCompatibleNode()
+      DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
+    }
   }
 }
