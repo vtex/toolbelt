@@ -8,16 +8,16 @@ export function useInterval(callback: () => Promise<void>, delay) {
   }, [callback])
 
   useEffect(() => {
-    //running is local to each iteration of this effect
-    //so won't pollute anything if the user starts polling again
+    // running is local to each iteration of this effect
+    // so won't pollute anything if the user starts polling again
     let running = false
     let savedTimeout = null
 
-    const tick = async () => {
+    async function tick() {
       if (!running) {
         return
       }
-      
+
       await savedCallback.current()
       savedTimeout = setTimeout(tick, delay)
     }
