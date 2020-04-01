@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.94.0] - 2020-03-31
+### Added
+- [vtex init] Show `checkout-ui-settings` template for users outside VTEX.
+
+### Fixed
+- [dependencies] Downgrade to use `opn@~5.2.0` instead of `open`.
+
 ## [2.93.1] - 2020-03-30
 
 ## [2.93.0] - 2020-03-30

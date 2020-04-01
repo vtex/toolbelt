@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.93.1",
+  "version": "2.94.0",
   "description": "The platform for e-commerce apps",
   "main": "lib/index.js",
   "bin": "lib/cli.js",
@@ -79,7 +79,7 @@
     "moment": "~2.24.0",
     "node-notifier": "^6.0.0",
     "numbro": "2.1.0",
-    "open": "^7.0.3",
+    "opn": "~5.2.0",
     "ora": "^4.0.3",
     "pad": "~2.0.3",
     "pipe-streams-to-promise": "~0.2.0",

@@ -21,7 +21,6 @@ const VTEXInternalTemplates = [
   'masterdata-graphql-guide',
   'support app',
   'react-guide',
-  'checkout-ui-settings',
 ]
 
 interface Template {

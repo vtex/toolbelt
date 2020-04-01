@@ -1,7 +1,7 @@
 import axios from 'axios'
 import childProcess from 'child_process'
 import jwt from 'jsonwebtoken'
-import opn from 'open'
+import opn from 'opn'
 import { join } from 'path'
 import randomstring from 'randomstring'
 import { clusterIdDomainInfix, publicEndpoint } from '../../../env'
@@ -32,7 +32,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
   private async startUserAuth(account: string, workspace: string): Promise<string[] | never> {
     const state = randomstring.generate()
     const [url, fullReturnUrl] = await this.getLoginUrl(account, workspace, state)
-    opn(url, { url: true, wait: false })
+    opn(url, { wait: false })
     return onAuth(account, workspace, state, fullReturnUrl)
   }
 
