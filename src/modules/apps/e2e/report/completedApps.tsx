@@ -6,9 +6,12 @@ import { FailedSpec } from './failedApps'
 import { AppId } from './appId'
 import { AppProps } from './index'
 
-const completedAppColors = (failedSpecs: SpecResult[]) => {
-  if (failedSpecs.length === 0) return { bgGreen: true, black: true }
-  return { bgRed: true, white: true }
+const completedAppColors = (failed: boolean) => {
+  if (failed) {
+    return { bgRed: true, white: true }
+  }
+
+  return { bgGreen: true, black: true }
 }
 
 interface SpecResult {
@@ -30,7 +33,7 @@ export const Completed: React.FunctionComponent<AppProps> = ({ appId, specs }) =
   return (
     <Box flexDirection="column">
       <Box>
-        <Color {...completedAppColors(failedSpecs)}>{failed ? ' FAIL ' : ' PASS '}</Color>
+        <Color {...completedAppColors(failed)}>{failed ? ' FAIL ' : ' PASS '}</Color>
         <Box marginLeft={1}>
           <AppId appId={appId} />
         </Box>
