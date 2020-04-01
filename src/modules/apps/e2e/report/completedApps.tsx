@@ -6,7 +6,6 @@ import { FailedSpec } from './failedApps'
 import { AppId } from './appId'
 import { AppProps } from './index'
 
-
 const completedAppColors = (failedSpecs: SpecResult[]) => {
   if (failedSpecs.length === 0) return { bgGreen: true, black: true }
   return { bgRed: true, white: true }
@@ -19,7 +18,7 @@ interface SpecResult {
 
 export const Completed: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
   const failedSpecs = Object.keys(specs).reduce((acum, curSpecName) => {
-    if(specs[curSpecName].state !== 'passed') {
+    if (specs[curSpecName].state !== 'passed') {
       acum.push({ specName: curSpecName, specReport: specs[curSpecName] })
     }
 
@@ -27,7 +26,7 @@ export const Completed: React.FunctionComponent<AppProps> = ({ appId, specs }) =
   }, [] as SpecResult[])
 
   const failed = failedSpecs.length > 0
-  
+
   return (
     <Box flexDirection="column">
       <Box>
