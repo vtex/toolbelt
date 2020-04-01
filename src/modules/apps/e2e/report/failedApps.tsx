@@ -55,9 +55,9 @@ export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report })
     <Box flexDirection="column">
       <Color bold>{`${spec}:`}</Color>
       <Box flexDirection="column" marginLeft={2}>
-        {report.error && <FailedSpecDetail label={'Error'} text={report.error} indented={true} />}
+        {report.error && <FailedSpecDetail label="Error" text={report.error} indented />}
         {errorsVisualization}
-        {video && <FailedSpecDetail label={'Video'} text={video} indented={false} />}
+        {video && <FailedSpecDetail label="Video" text={video} indented={false} />}
       </Box>
     </Box>
   )
@@ -82,12 +82,12 @@ const ErrorVisualization: React.FunctionComponent<ErrorVisualizationProps> = ({
   const testScreenshotsText = testScreenshots.map(curScreenshot => ` ${curScreenshot.path}`).join('\n')
   return (
     <Box key={title.join('')} flexDirection="column">
-      <FailedSpecDetail label={'Test'} text={title.join(' ')} indented={false} />
-      {body && <FailedSpecDetail label={'Body'} text={body} indented={true} />}
-      {stack && <FailedSpecDetail label={'Stack'} text={stack} indented={true} />}
-      {error && <FailedSpecDetail label={'Error'} text={error} indented={true} />}
+      <FailedSpecDetail label="Test" text={title.join(' ')} indented={false} />
+      {body && <FailedSpecDetail label="Body" text={body} indented />}
+      {stack && <FailedSpecDetail label="Stack" text={stack} indented />}
+      {error && <FailedSpecDetail label="Error" text={error} indented />}
       {testScreenshots.length > 0 && (
-        <FailedSpecDetail label={'Screenshots'} text={testScreenshotsText} indented={testScreenshots.length > 1} />
+        <FailedSpecDetail label="Screenshots" text={testScreenshotsText} indented={testScreenshots.length > 1} />
       )}
     </Box>
   )
