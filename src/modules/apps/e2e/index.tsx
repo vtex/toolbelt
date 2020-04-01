@@ -5,7 +5,6 @@ import { apps, tester } from '../../../clients'
 import { RealTimeReport } from './report/index'
 import { getToken } from '../../../conf'
 import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
-import { ErrorBoundary } from './ErrorBoundary'
 import { TestRequest } from '../../../clients/Tester'
 
 class EndToEndCommand {
@@ -59,15 +58,13 @@ class EndToEndCommand {
     const initialReport = await tester.report(testId)
 
     render(
-      <ErrorBoundary>
-        <RealTimeReport
-          initialReport={initialReport}
-          testId={testId}
-          poll={() => tester.report(testId)}
-          interval={2000}
-          requestedAt={requestedAt}
-        />
-      </ErrorBoundary>
+      <RealTimeReport
+        initialReport={initialReport}
+        testId={testId}
+        poll={() => tester.report(testId)}
+        interval={2000}
+        requestedAt={requestedAt}
+      />
     )
   }
 }
