@@ -3,7 +3,7 @@
   "title": "A foo app",
   "version": "0.1.2",
   "vendor": "bar",
-  "dependencies": [
+  "dependencies": {
     "vtex.storefront-sdk": "0.x"
-  ]
+  }
 }

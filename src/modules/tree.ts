@@ -286,6 +286,31 @@ export default {
     requiredArgs: 'account',
   },
   test: {
+    e2e: {
+      description: "Run your VTEX app's integration tests",
+      handler: './apps/e2e',
+      options: [
+        {
+          description: 'Check the results and state of a previously started test given its ID',
+          long: 'report',
+          short: 'r',
+          type: 'string',
+        },
+        {
+          description: "Test workspace's apps",
+          long: 'workspace',
+          short: 'w',
+          type: 'boolean',
+        },
+        {
+          description:
+            "[Not recommended] Send your personal authorization token to your test session so it's available while running the tests. It can be dangerous because exposes the token via 'authToken' environment variable",
+          long: 'token',
+          short: 't',
+          type: 'boolean',
+        },
+      ],
+    },
     description: 'Run your VTEX app unit tests',
     handler: './apps/testCommand',
     options: [

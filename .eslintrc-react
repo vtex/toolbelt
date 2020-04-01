@@ -1,0 +1,11 @@
+{
+  "extends": "vtex-react/io",
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jest": true
+  },
+  "rules": {
+    "no-restricted-imports": "warn"
+  }
+}
