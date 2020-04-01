@@ -121,6 +121,7 @@
     "@types/prompts": "^2.0.3",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/randomstring": "^1.1.6",
+    "@types/react": "^16.9.23",
     "@types/semver-diff": "2.1.1",
     "@types/tar": "4.0.3",
     "@types/yarnpkg__lockfile": "^1.1.3",
