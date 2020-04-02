@@ -1,3 +1,6 @@
+import isWSL from 'is-wsl'
+import isDocker from 'is-docker'
+
 export function truncateStringsFromObject(element: any, maxStrSize: number) {
   if (element === null || element === undefined) {
     return element
@@ -16,4 +19,16 @@ export function truncateStringsFromObject(element: any, maxStrSize: number) {
 
 export function hrTimeToMs(hrtime: [number, number]) {
   return 1e3 * hrtime[0] + hrtime[1] / 1e6
+}
+
+export function getPlatform() {
+  if (isWSL) {
+    return `${process.platform}:wsl`
+  }
+
+  if (isDocker()) {
+    return `${process.platform}:container`
+  }
+
+  return process.platform
 }

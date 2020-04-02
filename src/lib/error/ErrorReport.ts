@@ -4,7 +4,7 @@ import { randomBytes } from 'crypto'
 import * as pkg from '../../../package.json'
 import { SessionManager } from '../session/SessionManager'
 import { ErrorKinds } from './ErrorKinds'
-import { truncateStringsFromObject } from '../utils'
+import { truncateStringsFromObject, getPlatform } from '../utils'
 
 interface ErrorCreationArguments {
   kind?: string
@@ -76,7 +76,7 @@ export class ErrorReport extends Error {
         workspace,
         toolbeltVersion: pkg.version,
         nodeVersion: process.version,
-        platform: process.platform,
+        platform: getPlatform(),
         command: process.argv.slice(2).join(' '),
       },
     })
