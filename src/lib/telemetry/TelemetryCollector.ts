@@ -4,7 +4,7 @@ import { spawn } from 'child_process'
 import { join } from 'path'
 
 import * as pkgJson from '../../../package.json'
-import { ErrorReport } from '../error/ErrorReport'
+import { ErrorReport, ErrorCreationArguments } from '../error/ErrorReport'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 import { configDir } from '../../conf'
 import logger from '../../logger'
@@ -22,6 +22,11 @@ export class TelemetryCollector {
     }
 
     return TelemetryCollector.telemetryCollectorSingleton
+  }
+
+  public static createAndRegisterErrorReport(args: ErrorCreationArguments) {
+    const err = ErrorReport.create(args)
+    return TelemetryCollector.getCollector().registerError(err)
   }
 
   private errors: ErrorReport[]
