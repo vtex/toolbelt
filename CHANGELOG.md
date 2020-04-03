@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- [telemetry] Add suffix specifying if `env.platform` is container or WSL.
+
 ## [2.95.0] - 2020-04-01
 
 ### Added
