@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [telemetry] Add suffix specifying if `env.platform` is container or WSL.
 
 ### Added
- - Showing test's logs when using the command  `vtex test e2e`.
+ - Show test's logs when using the command  `vtex test e2e`.
 
 ## [2.95.0] - 2020-04-01
 
