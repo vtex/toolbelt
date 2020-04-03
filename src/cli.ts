@@ -195,7 +195,12 @@ process.on('exit', () => {
 })
 
 const start = async () => {
-  CLIPreTasks.getCLIPreTasks(pkg).runChecks()
+  const cliPreTasksStart = process.hrtime()
+  CLIPreTasks.getCLIPreTasks(pkg).runTasks()
+  TelemetryCollector.getCollector().registerMetric({
+    command: 'not-applicable',
+    cliPreTasksLatency: hrTimeToMs(process.hrtime(cliPreTasksStart)),
+  })
 
   // Show update notification if newer version is available
   notify()

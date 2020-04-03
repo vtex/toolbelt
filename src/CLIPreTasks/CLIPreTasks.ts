@@ -1,10 +1,10 @@
 import chalk from 'chalk'
+import { pathExistsSync, removeSync } from 'fs-extra'
+import { join } from 'path'
 import semver from 'semver'
+import { configDir } from '../conf'
 import { PathConstants } from '../lib/PathConstants'
 import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
-import { join } from 'path'
-import { configDir } from '../conf'
-import { pathExistsSync, removeSync } from 'fs-extra'
 
 export class CLIPreTasks {
   public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER
@@ -48,7 +48,7 @@ export class CLIPreTasks {
     })
   }
 
-  public runChecks() {
+  public runTasks() {
     if (process.env[CLIPreTasks.BYPASS_LOCKS_FLAG] !== 'false') {
       this.ensureCompatibleNode()
       this.removeOutdatedPaths()
