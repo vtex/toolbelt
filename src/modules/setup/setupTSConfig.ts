@@ -1,6 +1,7 @@
 import R from 'ramda'
-
 import { createClients } from '../../clients'
+import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
 import { tsconfigEditor } from './utils'
 
@@ -18,25 +19,30 @@ const getTSConfig = async () => {
     log.info(`Fetching BuilderHub tsconfig`)
     return await builderClient.builderHubTsConfig()
   } catch (err) {
-    log.warn('Failed to get BuilderHub tsconfig')
-    log.debug(err)
+    log.error('Failed to get BuilderHub tsconfig')
+    throw err
   }
 }
 
-export const setupTSConfig = async (manifest: Manifest) => {
-  const tsconfigsFromBuilder = await getTSConfig()
-  if (!tsconfigsFromBuilder) {
-    return
-  }
+export const setupTSConfig = async (manifest: Manifest, warnOnNoBuilderCandidate: boolean) => {
+  log.info(`Setting up tsconfig.json`)
+  try {
+    const tsconfigsFromBuilder = await getTSConfig()
+    if (!tsconfigsFromBuilder) {
+      if (warnOnNoBuilderCandidate) {
+        log.warn(`No builders candidates for TSConfig setup`)
+      }
 
-  const buildersWithBaseTSConfig = R.compose(
-    R.reject(R.isNil),
-    R.mapObjIndexed(R.curry(selectTSConfig)(tsconfigsFromBuilder)),
-    R.prop('builders')
-  )(manifest)
+      return
+    }
 
-  return R.mapObjIndexed((baseTSConfig: any, builder: any) => {
-    try {
+    const buildersWithBaseTSConfig = R.compose(
+      R.reject(R.isNil),
+      R.mapObjIndexed(R.curry(selectTSConfig)(tsconfigsFromBuilder)),
+      R.prop('builders')
+    )(manifest)
+
+    R.mapObjIndexed((baseTSConfig: any, builder: any) => {
       let currentTSConfig = {}
       try {
         currentTSConfig = tsconfigEditor.read(builder)
@@ -50,8 +56,14 @@ export const setupTSConfig = async (manifest: Manifest) => {
       const newTSConfig = R.mergeDeepRight(currentTSConfig, baseTSConfig)
       log.info(`Merging BuilderHub ${builder} tsconfig with local ${builder} tsconfig`)
       tsconfigEditor.write(builder, newTSConfig)
-    } catch (e) {
-      log.error(e)
-    }
-  })(buildersWithBaseTSConfig as Record<string, any>)
+    })(buildersWithBaseTSConfig as Record<string, any>)
+
+    log.info('Finished setting up tsconfig.json')
+  } catch (err) {
+    log.error('Failed setting up tsconfig.json')
+    TelemetryCollector.createAndRegisterErrorReport({
+      kind: ErrorKinds.SETUP_TSCONFIG_ERROR,
+      originalError: err,
+    }).logErrorForUser()
+  }
 }
