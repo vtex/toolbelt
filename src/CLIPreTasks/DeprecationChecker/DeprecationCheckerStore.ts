@@ -16,13 +16,7 @@ export interface IDeprecationCheckerStore {
 export class DeprecationCheckerStore implements IDeprecationCheckerStore {
   private store: Configstore
   constructor(public storeFilePath: string) {
-    this.store = new Configstore(
-      '',
-      {},
-      {
-        configPath: storeFilePath,
-      }
-    )
+    this.store = new Configstore('', null, { configPath: storeFilePath })
   }
 
   getLastDeprecationCheck() {

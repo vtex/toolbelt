@@ -18,7 +18,7 @@ export class TelemetryLocalStore implements ITelemetryLocalStore {
   private store: Configstore
   constructor(storeFilePath: string) {
     this.storeFilePath = storeFilePath
-    this.store = new Configstore('', {}, { configPath: storeFilePath })
+    this.store = new Configstore('', null, { configPath: storeFilePath })
   }
 
   public getErrors() {
