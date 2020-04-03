@@ -127,9 +127,29 @@ export default {
     optionalArgs: 'app',
   },
   setup: {
-    description: 'Download react app typings, graphql app typings, lint config and tsconfig',
+    description: 'Setup development enviroment',
     handler: './setup',
     options: [
+      {
+        description: 'Select all existing setup flags',
+        long: 'all',
+        type: 'boolean',
+      },
+      {
+        description: 'Setup GraphQL and React typings',
+        long: 'typings',
+        type: 'boolean',
+      },
+      {
+        description: 'Setup tools for applicable builders\nNode and React: Prettier, Husky and ESLint',
+        long: 'tooling',
+        type: 'boolean',
+      },
+      {
+        description: "Setup React and Node's TSconfig, if applicable",
+        long: 'tsconfig',
+        type: 'boolean',
+      },
       {
         description: 'Add only types from apps published',
         long: 'ignore-linked',
