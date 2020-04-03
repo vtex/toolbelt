@@ -16,7 +16,10 @@ export class TelemetryCollector {
 
   public static getCollector() {
     if (!TelemetryCollector.telemetryCollectorSingleton) {
-      const store = new TelemetryLocalStore(`${pkgJson.name}-telemetry-store`)
+      const store = new TelemetryLocalStore(
+        join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${pkgJson.name}-telemetry-store`)
+      )
+
       TelemetryCollector.telemetryCollectorSingleton = new TelemetryCollector(store)
     }
 
@@ -79,7 +82,7 @@ export class TelemetryCollector {
     try {
       ensureFileSync(objFilePath)
       writeJsonSync(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
-      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
+      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeFilePath, objFilePath], {
         detached: true,
         stdio: 'ignore',
       }).unref()
