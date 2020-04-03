@@ -10,6 +10,8 @@ import { isLinked, resolveAppId, appIdFromRegistry } from '../apps/utils'
 import { runYarn } from '../utils'
 import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
 import { BUILDERS_WITH_TYPES } from './consts'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { ErrorKinds } from '../../lib/error/ErrorKinds'
 
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/
@@ -18,6 +20,7 @@ const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLin
   const appId = ignoreLinked
     ? await appIdFromRegistry(appName, appMajorLocator)
     : await resolveAppId(appName, appMajorLocator)
+
   const vendor = getVendor(appId)
   const linked = isLinked({ version: appId, vendor, name: '', builders: {} })
 
@@ -46,8 +49,15 @@ const appsWithTypingsURLs = async (appDependencies: Record<string, any>, ignoreL
     appNamesAndDependencies.map(async ([appName, appVersion]: [string, string]) => {
       try {
         result[appName] = await appTypingsURL(appName, appVersion, ignoreLinked)
-      } catch (e) {
+      } catch (err) {
         log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
+        TelemetryCollector.createAndRegisterErrorReport({
+          kind: ErrorKinds.SETUP_TYPINGS_ERROR,
+          originalError: err,
+        }).logErrorForUser({
+          coreLogLevelDefault: 'debug',
+          logLevels: { core: { errorId: 'error' } },
+        })
       }
     })
   )
@@ -94,6 +104,11 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLi
       runYarn(builder, true)
     } catch (e) {
       log.error(`Error running Yarn in ${builder}.`)
+      TelemetryCollector.createAndRegisterErrorReport({
+        kind: ErrorKinds.SETUP_TSCONFIG_ERROR,
+        originalError: e,
+      })
+
       packageJsonEditor.write(builder, packageJson) // Revert package.json to original state.
     }
   }
@@ -104,6 +119,7 @@ export const setupTypings = async (
   ignoreLinked: boolean,
   buildersWithTypes = BUILDERS_WITH_TYPES
 ) => {
+  log.info('Setting up typings')
   const appName = `${manifest.vendor}.${manifest.name}`
   const appMajor = toMajorRange(manifest.version)
 
@@ -111,19 +127,27 @@ export const setupTypings = async (
   const builders = R.keys(R.prop('builders', manifest) || {})
   const filteredBuilders = R.intersection(builders, buildersWithTypes)
 
-  log.info('Fetching names of dependencies injected by BuilderHub')
-  const typingsData = await builderClient.typingsInfo()
-  const buildersWithAllDeps = filteredBuilders.map((builder: string) => {
-    return {
-      builder,
-      deps: {
-        ...getBuilderDependencies(manifest.dependencies, typingsData, manifest.builders[builder], builder),
-        ...(builder === 'node' ? { [appName]: appMajor } : {}),
-      },
-    }
-  })
+  try {
+    log.info('Fetching names of dependencies injected by BuilderHub')
+    const typingsData = await builderClient.typingsInfo()
+    const buildersWithAllDeps = filteredBuilders.map((builder: string) => {
+      return {
+        builder,
+        deps: {
+          ...getBuilderDependencies(manifest.dependencies, typingsData, manifest.builders[builder], builder),
+          ...(builder === 'node' ? { [appName]: appMajor } : {}),
+        },
+      }
+    })
 
-  await Promise.all(
-    buildersWithAllDeps.map(({ builder, deps }) => injectTypingsInPackageJson(deps, ignoreLinked, builder))
-  )
+    await Promise.all(
+      buildersWithAllDeps.map(({ builder, deps }) => injectTypingsInPackageJson(deps, ignoreLinked, builder))
+    )
+    log.info('Finished setting up typings')
+  } catch (err) {
+    TelemetryCollector.createAndRegisterErrorReport({
+      kind: ErrorKinds.SETUP_TYPINGS_ERROR,
+      originalError: err,
+    }).logErrorForUser()
+  }
 }
