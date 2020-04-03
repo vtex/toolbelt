@@ -32,8 +32,10 @@ export const checkForOutdated = async (store: IOutdatedCheckerStore, pkgVersion:
 }
 
 if (require.main === module) {
+  // eslint-disable-next-line prefer-destructuring
   const storeFilePath = process.argv[2]
   const store = new OutdatedCheckerStore(storeFilePath)
+  // eslint-disable-next-line prefer-destructuring
   const pkgVersion = process.argv[3]
   checkForOutdated(store, pkgVersion)
   console.log(`Finished checking for outdated after ${hrTimeToMs(process.hrtime(initTime))}`)
