@@ -18,15 +18,17 @@ export class CLIPreTasks {
 
   private ensureCompatibleNode() {
     const nodeVersion = process.version
-    if (!semver.satisfies(nodeVersion, this.pkg.engines.node)) {
-      const minMajor = this.pkg.engines.node.replace('>=', '')
-      const errMsg = chalk.bold(
-        `Incompatible with node < v${minMajor}. Please upgrade node to major ${minMajor} or higher.`
-      )
-
-      console.error(errMsg)
-      process.exit(1)
+    if (semver.satisfies(nodeVersion, this.pkg.engines.node)) {
+      return
     }
+
+    const minMajor = this.pkg.engines.node.replace('>=', '')
+    const errMsg = chalk.bold(
+      `Incompatible with node < v${minMajor}. Please upgrade node to major ${minMajor} or higher.`
+    )
+
+    console.error(errMsg)
+    process.exit(1)
   }
 
   private removeOutdatedPaths() {
