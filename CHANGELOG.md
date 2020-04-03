@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- [vtex setup] Create new flags for specifying what to setup:
+  - `--all`: Select all setup flags existent.
+  - `--typings`: Download and setup GraphQL and React typings.
+  - `--tooling`: Setup Prettier, Husky and ESLint.
+  - `--tsconfig`: Setup React's and Node's TSconfig, if applicable.
 
 ### Changed
 - [telemetry] Add suffix specifying if `env.platform` is container or WSL.
