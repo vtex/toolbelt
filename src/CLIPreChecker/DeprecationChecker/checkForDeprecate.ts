@@ -23,7 +23,7 @@ export const checkForDeprecate = async (store: IDeprecationCheckerStore, pkgName
       })
     )
 
-    await telemetryCollector.flush()
+    telemetryCollector.flush()
     process.exit(1)
   }
 }
