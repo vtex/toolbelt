@@ -178,7 +178,6 @@ const onError = async (e: any) => {
 
   const errorReport = TelemetryCollector.getCollector().registerError(e)
   log.error(`ErrorID: ${errorReport.errorId}`)
-  await TelemetryCollector.getCollector().flush()
   process.exit(1)
 }
 
@@ -191,6 +190,10 @@ axios.interceptors.request.use(config => {
 
 process.on('unhandledRejection', onError)
 
+process.on('exit', () => {
+  TelemetryCollector.getCollector().flush()
+})
+
 const start = async () => {
   CLIPrechecker.getCLIPrechecker(pkg).runChecks()
 
@@ -199,7 +202,6 @@ const start = async () => {
 
   try {
     await main(true)
-    await TelemetryCollector.getCollector().flush()
   } catch (err) {
     await onError(err)
   }
