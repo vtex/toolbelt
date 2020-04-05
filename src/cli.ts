@@ -23,7 +23,7 @@ import { checkAndOpenNPSLink } from './nps'
 import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
 import { Metric } from './lib/metrics/MetricReport'
-import { hrTimeToMs } from './lib/utils'
+import { hrTimeToMs } from './lib/utils/hrTimeToMs'
 
 const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
