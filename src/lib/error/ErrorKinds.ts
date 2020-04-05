@@ -6,4 +6,6 @@ export const enum ErrorKinds {
   SETUP_TOOLING_ERROR = 'SetupToolingError',
   SETUP_TSCONFIG_ERROR = 'SetupTSConfigError',
   SETUP_TYPINGS_ERROR = 'SetupTypingsError',
+  RUNTIME_WEB_SOCKET_ERROR = 'RuntimeWebSocketError',
+  RUNTIME_WEB_SOCKET_TCP_PROXY_SERVER_ERROR = 'RuntimeWebSocketTcpProxyServer',
 }
