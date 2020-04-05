@@ -1,16 +1,17 @@
 import { AxiosError } from 'axios'
-import { randomBytes } from 'crypto'
 import chalk from 'chalk'
-
+import { randomBytes } from 'crypto'
 import * as pkg from '../../../package.json'
-import { SessionManager } from '../session/SessionManager'
-import { ErrorKinds } from './ErrorKinds'
-import { truncateStringsFromObject, getPlatform } from '../utils'
 import logger from '../../logger'
+import { SessionManager } from '../session/SessionManager'
+import { getPlatform } from '../utils/getPlatform'
+import { truncateStringsFromObject } from '../utils/truncateStringsFromObject'
+import { ErrorKinds } from './ErrorKinds'
 
 export interface ErrorCreationArguments {
   kind?: string
   message?: string
+  userMessage?: string
   originalError: Error | null
   tryToParseError?: boolean
 }
@@ -18,6 +19,7 @@ export interface ErrorCreationArguments {
 interface ErrorReportArguments {
   kind: string
   message: string
+  userMessage?: string
   originalError: Error | null
   tryToParseError: boolean
   env: ErrorEnv
@@ -53,6 +55,7 @@ type ErrorLogLevel = 'error' | 'debug'
 interface LogToUserOptions {
   coreLogLevelDefault?: ErrorLogLevel
   requestDataLogLevelDefault?: ErrorLogLevel
+  logErrorId?: boolean
   logLevels?: {
     core?: {
       errorId?: ErrorLogLevel
@@ -82,12 +85,14 @@ export class ErrorReport extends Error {
   public static create(args: ErrorCreationArguments) {
     const kind = args.kind ?? this.createGenericErrorKind(args.originalError)
     const message = args.message ?? args.originalError.message
+    const userMessage = args.userMessage
     const tryToParseError = args.tryToParseError ?? true
 
     const { workspace, account } = SessionManager.getSessionManager()
     return new ErrorReport({
       kind,
       message,
+      userMessage,
       tryToParseError,
       originalError: args.originalError,
       env: {
@@ -130,13 +135,14 @@ export class ErrorReport extends Error {
   }
 
   public readonly kind: string
+  public readonly userMessage?: string
   public readonly originalError: Error | any
   public readonly errorDetails: any
   public readonly timestamp: string
   public readonly errorId: string
   public readonly env: ErrorEnv
 
-  constructor({ kind, message, originalError, tryToParseError = false, env }: ErrorReportArguments) {
+  constructor({ kind, message, userMessage, originalError, tryToParseError = false, env }: ErrorReportArguments) {
     super(message)
     this.timestamp = new Date().toISOString()
     this.kind = kind
@@ -144,6 +150,7 @@ export class ErrorReport extends Error {
     this.errorId = randomBytes(8).toString('hex')
     this.stack = originalError.stack
     this.env = env
+    this.userMessage = userMessage
 
     this.errorDetails = ErrorReport.getRequestErrorMetadata(this.originalError as AxiosError)
     if (tryToParseError) {
@@ -200,7 +207,10 @@ export class ErrorReport extends Error {
 
     logger[coreLogLevels.errorKind](chalk`{bold ErrorKind:} ${this.kind}`)
     logger[coreLogLevels.errorMessage](chalk`{bold Message:} ${this.message}`)
-    logger[coreLogLevels.errorId](chalk`{bold ErrorID:} ${this.errorId}`)
+    
+    if(opts?.logErrorId == null || opts.logErrorId) {
+      logger[coreLogLevels.errorId](chalk`{bold ErrorID:} ${this.errorId}`)
+    }
 
     if (this.errorDetails?.requestConfig) {
       const { method, url } = this.errorDetails.requestConfig
