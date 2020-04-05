@@ -4,6 +4,7 @@ import { getManifest } from '../../manifest'
 import { setupTooling } from './setupTooling'
 import { setupTSConfig } from './setupTSConfig'
 import { setupTypings } from './setupTypings'
+import { setupGraphQL } from './setupGraphQL'
 
 interface SetupOpts {
   i?: boolean
@@ -12,6 +13,7 @@ interface SetupOpts {
   tooling?: boolean
   typings?: boolean
   tsconfig?: boolean
+  graphql?: boolean
 }
 
 export default async (opts: SetupOpts) => {
@@ -19,6 +21,7 @@ export default async (opts: SetupOpts) => {
   const tooling = opts.tooling || opts.all
   const typings = opts.typings || opts.all
   const tsconfig = opts.tsconfig || opts.all
+  const graphql = opts.graphql || opts.all
   const ignoreLinked = opts.i || opts['ignore-linked']
 
   if (ignoreLinked && !(all || typings)) {
@@ -38,5 +41,9 @@ export default async (opts: SetupOpts) => {
 
   if (typings) {
     await setupTypings(manifest, ignoreLinked)
+  }
+
+  if (graphql) {
+    await setupGraphQL(manifest)
   }
 }

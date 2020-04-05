@@ -4,6 +4,9 @@ export const BUILDERS_WITH_TYPES = ['react', 'node']
 // Builders that demand tooling installation
 export const BUILDERS_WITH_TOOLING = ['react', 'node']
 
+// Builders that can query GraphQL servers
+export const BUILDERS_WITH_GRAPHQL_QUERIES = ['react']
+
 // Map of dependencies for the whole project and for each builder
 export const DEPENDENCIES = {
   // Common dependencies between projects
@@ -52,3 +55,7 @@ export const CONTENT_ESLINT_RC_BUILDERS = {
     },
   },
 }
+
+export const GENERATED_GRAPHQL_DIRNAME = '__generated__'
+
+export const GRAPHQL_GLOBAL_TYPES_FILE = 'graphQLTypes.ts'
