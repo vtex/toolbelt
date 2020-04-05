@@ -5,11 +5,12 @@ import debounce from 'debounce'
 import { readFileSync } from 'fs'
 import moment from 'moment'
 import { join, resolve as resolvePath, sep } from 'path'
-import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
+import { concat, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
 import { createClients } from '../../clients'
 import { getAccount, getEnvironment, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
+import { NodeDebugger } from '../../lib/debuggers/NodeDebugger'
 import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
 import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
 import { ManifestEditor } from '../../lib/manifest'
@@ -19,7 +20,6 @@ import { getAppRoot } from '../../manifest'
 import { listenBuild } from '../build'
 import { default as setup } from '../setup'
 import { formatNano, runYarnIfPathExists } from '../utils'
-import startDebuggerTunnel from './debugger'
 import { getIgnoredPaths, listLocalFiles } from './file'
 import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
 import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
@@ -35,22 +35,11 @@ const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 
-const buildersToStartDebugger = ['node']
 const buildersToRunLocalYarn = ['react', 'node']
 const RETRY_OPTS_INITIAL_LINK = {
   retries: 2,
   minTimeout: 1000,
   factor: 2,
-}
-const RETRY_OPTS_DEBUGGER = {
-  retries: 2,
-  minTimeout: 1000,
-  factor: 2,
-}
-
-const shouldStartDebugger = (manifest: ManifestEditor) => {
-  const buildersThatWillUseDebugger = intersection(manifest.builderNames, buildersToStartDebugger)
-  return buildersThatWillUseDebugger.length > 0
 }
 
 const performInitialLink = async (
@@ -256,32 +245,9 @@ export default async options => {
     initial_link_required: () => warnAndLinkFromStart(projectUploader, unsafe),
   }
 
-  let debuggerStarted = false
+  let nodeDebugger = NodeDebugger.create(manifest)
   const onBuild = async () => {
-    if (debuggerStarted) {
-      return
-    }
-    const startDebugger = async () => {
-      const port = await startDebuggerTunnel(manifest)
-      if (!port) {
-        throw new Error('Failed to start debugger.')
-      }
-      return port
-    }
-    if (shouldStartDebugger(manifest)) {
-      try {
-        const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
-        // eslint-disable-next-line require-atomic-updates
-        debuggerStarted = true
-        log.info(
-          `Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue(
-            'chrome://inspect'
-          )} in Google Chrome to debug your running application.`
-        )
-      } catch (e) {
-        log.error(e.message)
-      }
-    }
+    nodeDebugger.startIfNotStarted()
   }
 
   log.info(`Linking app ${appId}`)
