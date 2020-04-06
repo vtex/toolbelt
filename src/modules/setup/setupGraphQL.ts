@@ -255,9 +255,15 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
       }
     }, 0)
 
-    // this is an empty generated directory, remove
-    // to reduce clutter
-    await fs.promises.rmdir(path.join(root, GENERATED_GRAPHQL_DIRNAME))
+    try {
+      if ((await fs.promises.stat(path.join(root, GENERATED_GRAPHQL_DIRNAME))).isDirectory()) {
+        // this is an empty generated directory, remove
+        // to reduce clutter
+        await fs.promises.rmdir(path.join(root, GENERATED_GRAPHQL_DIRNAME))
+      }
+    } catch (err) {
+      // ignore
+    }
 
     logger.info(`Successfully generated ${totalFiles + 1} GraphQL type file(s).`)
   } catch (err) {
