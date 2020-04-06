@@ -59,7 +59,7 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
   }
 }
 
-const [apps, router, workspaces, logger, events, billing, rewriter, tester] = getToken()
+const [apps, router, workspaces, logger, events, billing, rewriter, tester, registry] = getToken()
   ? [
       new Apps(context, options),
       new Router(context, options),
@@ -69,6 +69,7 @@ const [apps, router, workspaces, logger, events, billing, rewriter, tester] = ge
       new Billing(context, options),
       new Rewriter(context, options),
       new Tester(context, options),
+      new Registry(context, options),
     ]
   : [
       interceptor<Apps>('apps'),
@@ -79,6 +80,7 @@ const [apps, router, workspaces, logger, events, billing, rewriter, tester] = ge
       interceptor<Billing>('billing'),
       interceptor<Rewriter>('rewriter'),
       interceptor<Tester>('Tester'),
+      interceptor<Registry>('registry'),
     ]
 
-export { apps, router, workspaces, logger, events, createClients, billing, rewriter, tester }
+export { apps, router, workspaces, logger, events, createClients, billing, rewriter, tester, registry }

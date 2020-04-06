@@ -7,7 +7,7 @@ import { mergeSchemas } from 'graphql-tools'
 import * as path from 'path'
 
 import { BUILDERS_WITH_GRAPHQL_QUERIES, GENERATED_GRAPHQL_DIRNAME, GRAPHQL_GLOBAL_TYPES_FILE } from './consts'
-import { apps } from '../../clients'
+import { registry } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import * as env from '../../env'
 import userAgent from '../../user-agent'
@@ -36,7 +36,8 @@ const context: IOContext = {
 export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_GRAPHQL_QUERIES) {
   const appBuilders = Object.keys(manifest.builders || {})
 
-  const needGraphQLTypes = appBuilders.some(builderName => builders.includes(builderName))
+  const needGraphQLTypes =
+    appBuilders.some(builderName => builders.includes(builderName)) || 'graphql' in manifest.builders
 
   if (!needGraphQLTypes || !manifest.dependencies) {
     return
@@ -59,8 +60,18 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
   }
 
   try {
+    const dependencies = Object.entries(manifest.dependencies)
+
+    if ('graphql' in manifest.builders) {
+      dependencies.push([`${manifest.vendor}.${manifest.name}`, manifest.version])
+    }
+
     const graphqlDependencies = (
-      await Promise.all(Object.keys(manifest.dependencies).map(dependentApp => apps.getApp(dependentApp)))
+      await Promise.all(
+        dependencies.map(([dependentApp, dependencyVersion]) =>
+          registry.getAppManifest(dependentApp, dependencyVersion)
+        )
+      )
     ).filter(appManifest => 'graphql' in appManifest.builders)
 
     const dependenciesSchemas = await Promise.all(
