@@ -48,6 +48,9 @@ const inputSchema = {
         type: 'string',
         enum: ['PERMANENT', 'TEMPORARY'],
       },
+      binding: {
+        type: 'string',
+      },
     },
     additionalProperties: false,
     required: ['from', 'to', 'type'],
