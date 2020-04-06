@@ -8,20 +8,20 @@ import logger from '../logger'
 const EOT = '\x04'
 
 export class Runtime {
-  private region: string
   private account: string
   private workspace: string
 
   constructor(context: IOContext) {
-    const { region, account, workspace } = context
-    this.region = region
+    const { account, workspace } = context
     this.account = account
     this.workspace = workspace
   }
 
   public async debugDotnetApp(appName: string, appVendor: string, appMajorRange: string, debugInst: string) {
-    const host = `${appName}.${appVendor}.${this.region}.vtex.io`
-    const path = `/${this.account}/${this.workspace}/_debug/dotnet`
+    const appMajor = appMajorRange.split('.', 2)[0]
+
+    const host = 'app.io.vtex.com'
+    const path = `/${appVendor}.${appName}/v${appMajor}/${this.account}/${this.workspace}/_debug/dotnet`
     const clusterHeader = cluster() ? { 'x-vtex-upstream-target': cluster() } : null
 
     const clientOptions = {
@@ -38,7 +38,6 @@ export class Runtime {
       hostname: host,
       pathname: path,
       query: {
-        __v: appMajorRange,
         inst: debugInst.split(' '),
       },
     }
