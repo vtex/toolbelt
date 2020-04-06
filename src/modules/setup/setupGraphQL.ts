@@ -99,6 +99,20 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
       sourceDocuments.map(([filePath, source]) => parse(new Source(source, path.join(root, filePath))))
     )
 
+    // remove previously generated files
+    // before generating new ones
+    const previouslyGeneratedFiles = await new Promise<string[]>((resolve, reject) =>
+      glob(`**/${GENERATED_GRAPHQL_DIRNAME}/*`, { root }, (err, matches) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(matches)
+        }
+      })
+    )
+
+    await Promise.all(previouslyGeneratedFiles.map(filePath => fs.promises.unlink(filePath)))
+
     graphQLDocuments.forEach(document => {
       const [operationDefinition] = document.definitions
 
