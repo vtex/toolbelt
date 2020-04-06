@@ -34,7 +34,7 @@ export class Runtime {
     }
 
     const urlObject = {
-      protocol: 'ws',
+      protocol: 'wss',
       hostname: host,
       pathname: path,
       query: {
