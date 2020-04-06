@@ -42,6 +42,53 @@ const context: IOContext = {
   platform: '',
 }
 
+// Extracted from: https://github.com/vtex/builder-hub/blob/master/node/build/react/3.x/webpack/loaders/GraphQLImportLoader.ts
+function resolveImports(source: string, filePath: string) {
+  const newlinePattern = /(\r\n|\r|\n)+/
+  const importPattern = /^# ?import/
+
+  const getFilepaths = (src: string, relFile: string) => {
+    const imports = src.split(newlinePattern).filter(line => importPattern.test(line))
+    return imports.map(statement => {
+      const importPath = statement
+        .split(/[\s\n]+/g)
+        .slice(-1)[0]
+        .slice(1, -1)
+      return path.resolve(path.dirname(relFile), importPath)
+    })
+  }
+
+  const getSources = (filepath: string, acc: string[] = []): string[] => {
+    const importSrc = fs.readFileSync(filepath.replace(/'/g, '')).toString()
+    const nestedPaths = getFilepaths(importSrc, filepath)
+    const srcs =
+      nestedPaths.length > 0
+        ? [...nestedPaths.reduce((srcArr, fp) => [...srcArr, ...getSources(fp, [])], []), importSrc]
+        : [importSrc]
+    return [...srcs, ...acc]
+  }
+
+  const stripImportStatements = (src: string) =>
+    src
+      .split(newlinePattern)
+      .filter((line: string) => !importPattern.test(line))
+      .join('')
+
+  const imports = getFilepaths(source, filePath)
+
+  if (imports.length === 0) {
+    return source
+  }
+
+  // Resolve all #import statements (types, etc) recursively and concat them to the main source.
+  return (
+    imports
+      .reduce((acc: string[], fp: string) => [...acc, ...getSources(fp, [])], [])
+      .map(stripImportStatements)
+      .join('') + stripImportStatements(source)
+  )
+}
+
 export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_GRAPHQL_QUERIES) {
   const appBuilders = Object.keys(manifest.builders || {})
 
@@ -128,11 +175,13 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
     const mergedSchemas = mergeSchemas({ schemas: dependenciesSchemas })
 
-    const graphQLDocuments = await Promise.all(
-      graphQLFiles.map(filePath => fs.promises.readFile(filePath).then(buffer => [filePath, buffer.toString()]))
-    ).then(sourceDocuments =>
-      sourceDocuments.map(([filePath, source]) => parse(new Source(source, path.join(root, filePath))))
+    const graphQLDocuments = (
+      await Promise.all(
+        graphQLFiles.map(filePath => fs.promises.readFile(filePath).then(buffer => [filePath, buffer.toString()]))
+      )
     )
+      .map(([filePath, source]) => [filePath, resolveImports(source, filePath)])
+      .map(([filePath, source]) => parse(new Source(source, path.join(root, filePath))))
 
     // remove previously generated files
     // before generating new ones
