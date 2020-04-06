@@ -45,8 +45,7 @@ const context: IOContext = {
   platform: '',
 }
 
-// Extracted from: https://github.com/vtex/builder-hub/blob/master/node/build/react/3.x/webpack/loaders/GraphQLImportLoader.ts
-function resolveImports(source: string, filePath: string) {
+function resolveImports(source: string, filePath: string): DefinitionNode[] {
   const newlinePattern = /(\r\n|\r|\n)+/
   const importPattern = /^# ?import/
 
@@ -61,35 +60,31 @@ function resolveImports(source: string, filePath: string) {
     })
   }
 
-  const getSources = (filepath: string, acc: string[] = []): string[] => {
-    const importSrc = fs.readFileSync(filepath.replace(/'/g, '')).toString()
-    const nestedPaths = getFilepaths(importSrc, filepath)
-    const srcs =
-      nestedPaths.length > 0
-        ? [...nestedPaths.reduce((srcArr, fp) => [...srcArr, ...getSources(fp, [])], []), importSrc]
-        : [importSrc]
-    return [...srcs, ...acc]
-  }
+  const getDefinitions = (filepath: string, acc: DefinitionNode[] = []): DefinitionNode[] => {
+    const sanitizedFilePath = filepath.replace(/'/g, '')
+    const importSrc = fs.readFileSync(sanitizedFilePath).toString()
 
-  const stripImportStatements = (src: string) =>
-    src
-      .split(newlinePattern)
-      .filter((line: string) => !importPattern.test(line))
-      .join('')
+    const importDocument = parse(new Source(importSrc, sanitizedFilePath))
+    const nestedPaths = getFilepaths(importSrc, filepath)
+
+    const definitions =
+      nestedPaths.length > 0
+        ? [
+            ...nestedPaths.reduce((srcArr, fp) => [...srcArr, ...getDefinitions(fp, [])], []),
+            ...importDocument.definitions,
+          ]
+        : importDocument.definitions
+
+    return [...definitions, ...acc]
+  }
 
   const imports = getFilepaths(source, filePath)
 
   if (imports.length === 0) {
-    return source
+    return []
   }
 
-  // Resolve all #import statements (types, etc) recursively and concat them to the main source.
-  return (
-    imports
-      .reduce((acc: string[], fp: string) => [...acc, ...getSources(fp, [])], [])
-      .map(stripImportStatements)
-      .join('') + stripImportStatements(source)
-  )
+  return imports.reduce<DefinitionNode[]>((acc, fp: string) => [...acc, ...getDefinitions(fp, [])], [])
 }
 
 export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_GRAPHQL_QUERIES) {
@@ -183,8 +178,8 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
         graphQLFiles.map(filePath => fs.promises.readFile(filePath).then(buffer => [filePath, buffer.toString()]))
       )
     )
-      .map(([filePath, source]) => [filePath, resolveImports(source, filePath)])
-      .map(([filePath, source]) => parse(new Source(source, path.join(root, filePath))))
+      .map(([filePath, source]) => [filePath, source, resolveImports(source, filePath)] as const)
+      .map(([filePath, source, imports]) => [imports, parse(new Source(source, path.join(root, filePath)))] as const)
 
     // remove previously generated files
     // before generating new ones
@@ -200,7 +195,7 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
     await Promise.all(previouslyGeneratedFiles.map(filePath => fs.promises.unlink(filePath)))
 
-    const validDocuments = graphQLDocuments.filter(document => {
+    const validDocuments = graphQLDocuments.filter(([imports, document]) => {
       const [operationDefinition] = document.definitions
 
       const {
@@ -211,7 +206,10 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
       const fileName = path.relative(root, operationName)
 
-      const validationErrors = validate(mergedSchemas, document)
+      const validationErrors = validate(mergedSchemas, {
+        kind: Kind.DOCUMENT,
+        definitions: [...imports, ...document.definitions],
+      })
 
       if (validationErrors.length > 0) {
         logger.warn(
@@ -224,7 +222,7 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
     })
 
     const documentsByBuilder = validDocuments
-      .map(document => {
+      .map(([imports, document]) => {
         return document.definitions.reduce<{ [builder: string]: DefinitionNode[] }>((acc, operationDefinition) => {
           const {
             loc: {
@@ -236,16 +234,32 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
           const [builderName] = fileName.split(path.sep)
 
-          return { ...acc, [builderName]: [...(acc[builderName] ?? []), operationDefinition] }
+          const builderDefinitions = acc[builderName] ?? []
+
+          return { ...acc, [builderName]: [...builderDefinitions, ...imports, operationDefinition] }
         }, {})
       })
-      .reduce((acc, operationsByBuilder) => [...acc, ...Object.entries(operationsByBuilder)], [])
+      .reduce<Array<[string, DefinitionNode[]]>>(
+        (acc, operationsByBuilder) => [...acc, ...Object.entries(operationsByBuilder)],
+        []
+      )
       .reduce<{ [builder: string]: DocumentNode }>((acc, [builderName, operations]) => {
+        const builderDefinitions = acc[builderName]?.definitions ?? []
+
+        // remove possible duplicate definitions. this is necessary because
+        // the way we allow imports of shared graphql files, so, if two documents
+        // imports the same file (e.g. a shared Fragment definition), the fragment
+        // will be included twice (one time for each module that imports it), so
+        // we need to remove these duplicates.
+        const operationsToInclude = operations.filter(
+          operation => !builderDefinitions.find(definition => definition.loc.source.name === operation.loc.source.name)
+        )
+
         return {
           ...acc,
           [builderName]: {
             kind: Kind.DOCUMENT,
-            definitions: [...(acc[builderName]?.definitions ?? []), ...operations],
+            definitions: [...builderDefinitions, ...operationsToInclude],
           },
         }
       }, {})
