@@ -36,7 +36,7 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
 
   return (socket: net.Socket) => {
     socket.setKeepAlive(true, keepAliveDelayMs)
-    const ws = new WebSocket(`ws://${host}${path}`, options)
+    const ws = new WebSocket(`wss://${host}${path}`, options)
 
     const interval = setInterval(ws.ping, THIRTY_SECONDS_MS)
 
