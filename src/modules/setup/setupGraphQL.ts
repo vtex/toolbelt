@@ -10,6 +10,9 @@ import {
   Source,
   validate,
   printError,
+  DocumentNode,
+  DefinitionNode,
+  Kind,
 } from 'graphql'
 import { mergeSchemas } from 'graphql-tools'
 import * as path from 'path'
@@ -197,7 +200,7 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
     await Promise.all(previouslyGeneratedFiles.map(filePath => fs.promises.unlink(filePath)))
 
-    const totalFiles = graphQLDocuments.reduce((total, document) => {
+    const validDocuments = graphQLDocuments.filter(document => {
       const [operationDefinition] = document.definitions
 
       const {
@@ -208,8 +211,6 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
       const fileName = path.relative(root, operationName)
 
-      const [builderName] = fileName.split(path.sep)
-
       const validationErrors = validate(mergedSchemas, document)
 
       if (validationErrors.length > 0) {
@@ -217,42 +218,73 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
           chalk`Failed to generate GraphQL types for file {underline ${fileName}}:\n` +
             validationErrors.reduce((errors, error) => chalk`${errors}\n${printError(error)}\n`, '')
         )
-
-        return total
       }
 
-      try {
-        const countFiles = generate(
-          // source document
-          document,
-          // project schema
-          mergedSchemas,
-          // output path
-          GENERATED_GRAPHQL_DIRNAME,
-          // "only" option (used for Swift language)
-          undefined,
-          // target language
-          'typescript',
-          // tagName, seems unused
-          '',
-          // whether to generate types next to sources
-          true,
-          {
-            // this flag isn't important for us but it is required in the type
-            // definition for the options.
-            useFlowExactObjects: false,
-            rootPath: root,
-            globalTypesFile: path.join(builderName, GRAPHQL_GLOBAL_TYPES_FILE),
-          }
+      return validationErrors.length === 0
+    })
+
+    const documentsByBuilder = validDocuments
+      .map(document => {
+        return document.definitions.reduce<{ [builder: string]: DefinitionNode[] }>((acc, operationDefinition) => {
+          const {
+            loc: {
+              source: { name: operationName },
+            },
+          } = operationDefinition
+
+          const fileName = path.relative(root, operationName)
+
+          const [builderName] = fileName.split(path.sep)
+
+          return { ...acc, [builderName]: [...(acc[builderName] ?? []), operationDefinition] }
+        }, {})
+      })
+      .reduce((acc, operationsByBuilder) => [...acc, ...Object.entries(operationsByBuilder)], [])
+      .reduce<{ [builder: string]: DocumentNode }>((acc, [builderName, operations]) => {
+        return {
+          ...acc,
+          [builderName]: {
+            kind: Kind.DOCUMENT,
+            definitions: [...(acc[builderName]?.definitions ?? []), ...operations],
+          },
+        }
+      }, {})
+
+    const totalFiles = Object.entries(documentsByBuilder).reduce((total, [builderName, document]) => {
+      const validationErrors = validate(mergedSchemas, document)
+
+      if (validationErrors.length > 0) {
+        logger.error(
+          `Toolbelt generated an invalid document definition for queries in builder "${builderName}". Please, open an issue.`
         )
-
-        // we generate the number of GraphQL queries/mutations plus
-        // a "global" types files for Input and Enums. so, we are subtracting
-        // the global file count here, to add it later in the log.
-        return total + countFiles - 1
-      } catch (err) {
         return total
       }
+
+      const countFiles = generate(
+        // source document
+        document,
+        // project schema
+        mergedSchemas,
+        // output path
+        GENERATED_GRAPHQL_DIRNAME,
+        // "only" option (used for Swift language)
+        undefined,
+        // target language
+        'typescript',
+        // tagName, seems unused
+        '',
+        // whether to generate types next to sources
+        true,
+        {
+          // this flag isn't important for us but it is required in the type
+          // definition for the options.
+          useFlowExactObjects: false,
+          rootPath: root,
+          globalTypesFile: path.join(builderName, GRAPHQL_GLOBAL_TYPES_FILE),
+        }
+      )
+
+      return total + countFiles
     }, 0)
 
     try {
