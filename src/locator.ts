@@ -1,5 +1,9 @@
+export const versionMajor = (version: string): string => {
+  return version.split('.', 2)[0]
+}
+
 export const toMajorRange = (version: string): string => {
-  return `${version.split('.', 2)[0]}.x`
+  return `${versionMajor(version)}.x`
 }
 
 export const toMajorLocator = ({ vendor, name, version }: Manifest): string => {
