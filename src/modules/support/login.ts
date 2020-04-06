@@ -7,13 +7,14 @@ import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspa
 import * as env from '../../env'
 import log from '../../logger'
 
-const getAvailableRoles = async (region: string, token: string, supportedAccount: string): Promise<string[]> => {
+const getAvailableRoles = async (token: string, supportedAccount: string): Promise<string[]> => {
   const response = await axios.get(
-    `http://support-authority.vtex.${region}.vtex.io/${getAccount()}/${getWorkspace()}/${supportedAccount}/roles`,
+    `https://app.io.vtex.com/vtex.support-authority/v0/${getAccount()}/${getWorkspace()}/${supportedAccount}/roles`,
     {
       headers: {
         Authorization: token,
         'X-Vtex-Original-Credential': token,
+		'x-vtex-upstream-target': env.cluster(),
       },
     }
   )
@@ -38,13 +39,14 @@ const promptRoles = async (roles: string[]): Promise<string> => {
   return chosen
 }
 
-const loginAsRole = async (region: string, token: string, supportedAccount: string, role: string): Promise<string> => {
+const loginAsRole = async (token: string, supportedAccount: string, role: string): Promise<string> => {
   const response = await axios.get(
-    `http://support-authority.vtex.${region}.vtex.io/${getAccount()}/${getWorkspace()}/${supportedAccount}/login/${role}`,
+    `https://app.io.vtex.com/vtex.support-authority/v0/${getAccount()}/${getWorkspace()}/${supportedAccount}/login/${role}`,
     {
       headers: {
         Authorization: token,
         'X-Vtex-Original-Credential': token,
+		'x-vtex-upstream-target': env.cluster(),
       },
     }
   )
@@ -69,15 +71,14 @@ export default async (account: string) => {
     return
   }
   const actualToken = getToken()
-  const region = env.region()
   try {
-    const roles = await getAvailableRoles(region, actualToken, account)
+    const roles = await getAvailableRoles(actualToken, account)
     if (roles.length === 0) {
       log.error('No support roles available for this account.')
       return
     }
     const role = await promptRoles(roles)
-    const newToken = await loginAsRole(region, actualToken, account, role)
+    const newToken = await loginAsRole(actualToken, account, role)
     assertToken(newToken)
     saveSupportCredentials(account, newToken)
     log.info(`Logged into ${chalk.blue(account)} with role ${role}!`)
