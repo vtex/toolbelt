@@ -35,6 +35,9 @@ const DEFAULT_TIMEOUT = 10000
 export const IOClientOptions = {
   timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
   retries: 3,
+  headers: {
+	'x-vtex-upstream-target': env.cluster()
+  },
 }
 
 export const getIOContext = () => ({
