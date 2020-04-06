@@ -44,8 +44,8 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
   const root = getAppRoot()
 
-  const graphQLFiles: string[] = await new Promise((resolve, reject) =>
-    glob('**/*.{graphql,gql}', { root }, (err, matches) => {
+  const graphQLFiles = await new Promise<string[]>((resolve, reject) =>
+    glob(`+(${builders.join('|')})/**/*.{graphql,gql}`, { root }, (err, matches) => {
       if (err) {
         reject(err)
       } else {
