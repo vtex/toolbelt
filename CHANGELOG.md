@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- Uses rewriter new redirects API with single binding support
+- [vtex rewriter] Use rewriter new redirects API with single binding support.
 
 ## [2.96.0] - 2020-04-06
 ### Added
