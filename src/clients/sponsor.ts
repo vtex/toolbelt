@@ -1,7 +1,6 @@
 import { AuthType, InstanceOptions, IOClient, IOContext } from '@vtex/api'
 
 export class Sponsor extends IOClient {
-  private region: string
   private account: string
   private workspace: string
 
@@ -10,8 +9,7 @@ export class Sponsor extends IOClient {
       ...options,
       authType: AuthType.bearer,
     })
-    const { region, account, workspace } = context
-    this.region = region
+    const { account, workspace } = context
     this.account = account
     this.workspace = workspace
   }
@@ -34,11 +32,11 @@ export class Sponsor extends IOClient {
 
   private get routes() {
     return {
-      getSponsorAccount: `http://kube-router.${this.region}.vtex.io/_account/${this.account}`,
-      getEdition: `http://apps.${this.region}.vtex.io/${this.account}/${this.workspace}/edition`,
+      getSponsorAccount: `https://platform.io.vtex.com/_account/${this.account}`,
+      getEdition: `https://infra.io.vtex.com/apps/v0/${this.account}/${this.workspace}/edition`,
       setEdition: (account: string, workspace: string) =>
-        `http://tenant-provisioner.vtex.${this.region}.vtex.io/${this.account}/master/tenants/${account}/migrate?tenantWorkspace=${workspace}`,
-      runHouseKeeper: `http://housekeeper.${this.region}.vtex.io/${this.account}/master/_housekeeping/perform`,
+        `https://app.io.vtex.com/vtex.tenant-provisioner/v0/${this.account}/master/tenants/${account}/migrate?tenantWorkspace=${workspace}`,
+      runHouseKeeper: `https://infra.io.vtex.com/housekeeper/v0/${this.account}/master/_housekeeping/perform`,
     }
   }
 }
