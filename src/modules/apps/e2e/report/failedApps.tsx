@@ -34,6 +34,7 @@ interface SpecProps {
 
 export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report }) => {
   const video = report.report?.video
+  const logs = report.report?.logs
   const screenshots = report.report?.screenshots
   const notPassedSpecs = (report.report?.tests ?? []).filter(({ state }) => state !== 'passed')
 
@@ -58,6 +59,7 @@ export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report })
         {report.error && <FailedSpecDetail label="Error" text={report.error} indented />}
         {errorsVisualization}
         {video && <FailedSpecDetail label="Video" text={video} indented={false} />}
+        {logs && <FailedSpecDetail label="Logs" text={logs} indented={false} />}
       </Box>
     </Box>
   )

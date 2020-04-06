@@ -6,6 +6,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.96.0] - 2020-04-06
+### Added
+- [vtex test e2e] Show test's logs.
+- [vtex setup] Create new flags for specifying what to setup:
+  - `--all`: Select all setup flags existent.
+  - `--typings`: Download and setup GraphQL and React typings.
+  - `--tooling`: Setup Prettier, Husky and ESLint.
+  - `--tsconfig`: Setup React's and Node's TSconfig, if applicable.
+
+### Changed
+- [telemetry] Add suffix specifying if `env.platform` is container or WSL.
+
 ## [2.95.0] - 2020-04-01
 
 ### Added

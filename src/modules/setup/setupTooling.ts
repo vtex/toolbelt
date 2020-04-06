@@ -1,28 +1,28 @@
+import chalk from 'chalk'
 import { execSync } from 'child_process'
 import { resolve } from 'path'
-
-import chalk from 'chalk'
 import { mergeDeepRight } from 'ramda'
-
-import log from '../../logger'
+import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { default as log, default as logger } from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { yarnPath } from '../utils'
 import {
-  eslintrcEditor,
-  packageJsonEditor,
-  eslintIgnoreEditor,
-  prettierrcEditor,
-  getRootPackageJson,
-  hasDevDependenciesInstalled,
-} from './utils'
-import {
-  DEPENDENCIES,
+  BUILDERS_WITH_TOOLING,
   CONTENT_BASE_ESLINT_RC,
   CONTENT_ESLINT_IGNORE,
-  CONTENT_PRETTIER_RC,
   CONTENT_ESLINT_RC_BUILDERS,
-  BUILDERS_WITH_TOOLING,
+  CONTENT_PRETTIER_RC,
+  DEPENDENCIES,
 } from './consts'
+import {
+  eslintIgnoreEditor,
+  eslintrcEditor,
+  getRootPackageJson,
+  hasDevDependenciesInstalled,
+  packageJsonEditor,
+  prettierrcEditor,
+} from './utils'
 
 /**
  * Returns a base package.json configuration
@@ -145,16 +145,24 @@ function setupBuilderTools(builders: string[]) {
 }
 
 export function setupTooling(manifest: Manifest, buildersWithTooling = BUILDERS_WITH_TOOLING) {
+  logger.info(`Setting up tooling`)
   const builders = Object.keys(manifest.builders || {})
   const needTooling = builders.some(b => buildersWithTooling.includes(b))
 
-  if (!needTooling) return
+  if (!needTooling) {
+    logger.warn(`This project doesn't have builders candidates for tooling`)
+    return
+  }
 
   try {
     configurePackageJson(manifest)
     setupCommonTools()
     setupBuilderTools(builders)
+    logger.info('Finished setting up tooling')
   } catch (err) {
-    log.error(err)
+    TelemetryCollector.createAndRegisterErrorReport({
+      kind: ErrorKinds.SETUP_TOOLING_ERROR,
+      originalError: err,
+    }).logErrorForUser()
   }
 }

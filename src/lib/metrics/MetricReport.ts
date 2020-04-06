@@ -1,5 +1,6 @@
-import { SessionManager } from '../session/SessionManager'
 import * as pkg from '../../../package.json'
+import { SessionManager } from '../session/SessionManager'
+import { getPlatform } from '../utils'
 
 export interface Metric {
   command: string
@@ -32,7 +33,7 @@ export class MetricReport {
         workspace,
         toolbeltVersion: pkg.version,
         nodeVersion: process.version,
-        platform: process.platform,
+        platform: getPlatform(),
       },
     })
   }

@@ -1,12 +1,14 @@
 import { AxiosError } from 'axios'
 import { randomBytes } from 'crypto'
+import chalk from 'chalk'
 
 import * as pkg from '../../../package.json'
 import { SessionManager } from '../session/SessionManager'
 import { ErrorKinds } from './ErrorKinds'
-import { truncateStringsFromObject } from '../utils'
+import { truncateStringsFromObject, getPlatform } from '../utils'
+import logger from '../../logger'
 
-interface ErrorCreationArguments {
+export interface ErrorCreationArguments {
   kind?: string
   message?: string
   originalError: Error | null
@@ -47,6 +49,23 @@ interface RequestErrorDetails {
   }
 }
 
+type ErrorLogLevel = 'error' | 'debug'
+interface LogToUserOptions {
+  coreLogLevelDefault?: ErrorLogLevel
+  requestDataLogLevelDefault?: ErrorLogLevel
+  logLevels?: {
+    core?: {
+      errorId?: ErrorLogLevel
+      errorMessage?: ErrorLogLevel
+      errorKind?: ErrorLogLevel
+    }
+    requestData?: {
+      requestInfo?: ErrorLogLevel
+      requestStatus?: ErrorLogLevel
+    }
+  }
+}
+
 export class ErrorReport extends Error {
   private static readonly MAX_ERROR_STRING_LENGTH = process.env.MAX_ERROR_STRING_LENGTH
     ? parseInt(process.env.MAX_ERROR_STRING_LENGTH, 10)
@@ -76,7 +95,7 @@ export class ErrorReport extends Error {
         workspace,
         toolbeltVersion: pkg.version,
         nodeVersion: process.version,
-        platform: process.platform,
+        platform: getPlatform(),
         command: process.argv.slice(2).join(' '),
       },
     })
@@ -158,5 +177,41 @@ export class ErrorReport extends Error {
     }
 
     return JSON.stringify(this.toObject())
+  }
+
+  public logErrorForUser(opts?: LogToUserOptions) {
+    const { coreLogLevelDefault, requestDataLogLevelDefault }: LogToUserOptions = {
+      coreLogLevelDefault: opts?.coreLogLevelDefault ?? 'error',
+      requestDataLogLevelDefault: opts?.requestDataLogLevelDefault ?? 'debug',
+    }
+
+    const coreLogLevels: LogToUserOptions['logLevels']['core'] = {
+      errorId: coreLogLevelDefault,
+      errorKind: coreLogLevelDefault,
+      errorMessage: coreLogLevelDefault,
+      ...opts?.logLevels?.core,
+    }
+
+    const requestDataLogLevels: LogToUserOptions['logLevels']['requestData'] = {
+      requestInfo: requestDataLogLevelDefault,
+      requestStatus: requestDataLogLevelDefault,
+      ...opts?.logLevels?.requestData,
+    }
+
+    logger[coreLogLevels.errorKind](chalk`{bold ErrorKind:} ${this.kind}`)
+    logger[coreLogLevels.errorMessage](chalk`{bold Message:} ${this.message}`)
+    logger[coreLogLevels.errorId](chalk`{bold ErrorID:} ${this.errorId}`)
+
+    if (this.errorDetails?.requestConfig) {
+      const { method, url } = this.errorDetails.requestConfig
+      logger[requestDataLogLevels.requestInfo](chalk`{bold Request:} ${method} ${url}`)
+
+      if (this.errorDetails?.response) {
+        const { status } = this.errorDetails.response
+        logger[requestDataLogLevels.requestStatus](chalk`{bold Status:} ${status}`)
+      }
+    }
+
+    return this
   }
 }
