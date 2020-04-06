@@ -10,7 +10,8 @@
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "skipLibCheck": true, 
-    "jsx": "react"
+    "jsx": "react",
+    "importHelpers": true
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.ts", "**/__tests__"]

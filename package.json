@@ -1,51 +1,12 @@
 {
   "name": "vtex",
-  "version": "2.95.0",
   "description": "The platform for e-commerce apps",
-  "main": "lib/index.js",
-  "bin": "lib/cli.js",
-  "scripts": {
-    "exe": "node scripts/make-executable.js",
-    "watch": "bash ./scripts/symlink.sh && yarn build-clean && yarn nodemon",
-    "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
-    "lint:node": "eslint ./src --cache --ext ts --config .eslintrc",
-    "lint:react": "eslint ./src --cache --cache-location .eslintcache-react --ext tsx --config .eslintrc-react",
-    "format-lint": "yarn format && yarn lint:node && yarn lint:react",
-    "build-clean": "rm -rf lib",
-    "build-incremental": "tsc --incremental && yarn exe",
-    "build": "yarn build-clean && tsc && yarn exe",
-    "test": "jest",
-    "prepublishOnly": "bash ./scripts/publishLock.sh",
-    "ci:test": "yarn test --ci",
-    "ci:prettier-check": "prettier --check --config ./.prettierrc \"./src/**/*.{ts,tsx,js,jsx,json}\""
+  "version": "3.0.0",
+  "author": "NataliaGodot @NataliaGodot",
+  "bin": {
+    "cli": "./bin/run"
   },
-  "engineStrict": true,
-  "engines": {
-    "node": ">=10"
-  },
-  "files": [
-    "scripts/closeChrome.scpt",
-    "lib/"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/vtex/toolbelt.git"
-  },
-  "keywords": [
-    "CLI",
-    "vtex",
-    "ecommerce",
-    "commerce",
-    "omnichannel",
-    "platform",
-    "react",
-    "toolbelt",
-    "apps"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/vtex/toolbelt/issues"
-  },
+  "bugs": "https://github.com/vtex/toolbelt/issues",
   "dependencies": {
     "@vtex/api": "3.71.1",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -107,7 +68,11 @@
     "winston": "~3.2.1",
     "winston-transport": "~4.3.0",
     "ws": "^7.2.3",
-    "yarn": "~1.21.0"
+    "yarn": "~1.21.0",
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^2",
+    "tslib": "^1"
   },
   "devDependencies": {
     "@types/async-retry": "1.4.1",
@@ -133,6 +98,75 @@
     "nodemon-notifier-cli": "https://github.com/Slessi/nodemon-notifier-cli.git",
     "prettier": "^1.19.1",
     "ts-jest": "24.2.0",
-    "typescript": "^3.8.2"
-  }
+    "typescript": "^3.8.2",
+    "@oclif/dev-cli": "^1",
+    "@oclif/test": "^1",
+    "@types/chai": "^4",
+    "@types/mocha": "^5",
+    "chai": "^4",
+    "eslint-config-oclif": "^3.1",
+    "eslint-config-oclif-typescript": "^0.1",
+    "globby": "^10",
+    "mocha": "^5",
+    "nyc": "^14",
+    "ts-node": "^8"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "engineStrict": true,
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "scripts/closeChrome.scpt",
+    "lib/"
+  ],
+  "homepage": "https://github.com/vtex/toolbelt",
+  "keywords": [
+    "CLI",
+    "vtex",
+    "ecommerce",
+    "commerce",
+    "omnichannel",
+    "platform",
+    "react",
+    "toolbelt",
+    "apps",
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "vtex",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vtex/toolbelt.git"
+  },
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "version": "oclif-dev readme && git add README.md",
+    "exe": "node scripts/make-executable.js",
+    "watch": "bash ./scripts/symlink.sh && yarn nodemon",
+    "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
+    "lint:node": "eslint ./src --cache --ext ts --config .eslintrc",
+    "lint:react": "eslint ./src --cache --cache-location .eslintcache-react --ext tsx --config .eslintrc-react",
+    "format-lint": "yarn format && yarn lint:node && yarn lint:react",
+    "build-clean": "rm -rf lib",
+    "build-incremental": "tsc --incremental && yarn exe",
+    "build": "yarn build-clean && tsc && yarn exe",
+    "test": "jest",
+    "prepublishOnly": "bash ./scripts/publishLock.sh",
+    "ci:test": "yarn test --ci",
+    "ci:prettier-check": "prettier --check --config ./.prettierrc \"./src/**/*.{ts,tsx,js,jsx,json}\""
+  },
+  "types": "lib/index.d.ts"
 }

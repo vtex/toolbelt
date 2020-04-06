@@ -18,7 +18,7 @@ while getopts "hr" OPT; do
     "r") CREATE=false;;
     "h") display_info;;
     "?") display_info;;
-  esac 
+  esac
 done
 
 GLOBAL_BIN_PATH_SUFFIX=".vtex/dev/bin"
@@ -29,10 +29,10 @@ if ! [[ ":$PATH:" == *":$GLOBAL_BIN_PATH:"* ]]; then
   exit 1
 fi
 
-VTEX_BIN=$(node -e "const pkg=require('./package.json'); console.log(pkg.name);")
-VTEX_BIN_TEST="$VTEX_BIN-test"
-BINARY_PATH=$PWD/lib/cli.js 
-LINK_PATH=$GLOBAL_BIN_PATH/$VTEX_BIN_TEST
+CLI_BIN=$(node -e "const pkg=require('./package.json'); console.log(pkg.oclif.bin);")
+CLI_BIN_TEST="t$CLI_BIN"
+BINARY_PATH=$PWD/bin/run
+LINK_PATH=$GLOBAL_BIN_PATH/$CLI_BIN_TEST
 
 mkdir -p $GLOBAL_BIN_PATH
 
@@ -40,7 +40,7 @@ if [ "$CREATE" == "true" ]; then
     echo "Creating symlink: $LINK_PATH -> $BINARY_PATH"
     rm $LINK_PATH || echo "Failed to remove $LINK_PATH, maybe it already doesn't exists..."
     ln -s $BINARY_PATH $LINK_PATH
-    echo "You can now run the dev version of your cli running: '$VTEX_BIN_TEST'"
+    echo "You can now run the dev version of your cli running: '$CLI_BIN_TEST'"
 else
     rm  $LINK_PATH
 fi
