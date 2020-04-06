@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- [vtex test e2e] Show test's logs.
 - [vtex setup] Create new flags for specifying what to setup:
   - `--all`: Select all setup flags existent.
   - `--typings`: Download and setup GraphQL and React typings.
