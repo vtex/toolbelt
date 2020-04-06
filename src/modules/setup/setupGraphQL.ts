@@ -14,6 +14,7 @@ import userAgent from '../../user-agent'
 import { dummyLogger } from '../../clients/dummyLogger'
 import { getAppRoot } from '../../manifest'
 import logger from '../../logger'
+import chalk from 'chalk'
 
 const context: IOContext = {
   account: getAccount(),
@@ -74,33 +75,48 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
       )
     ).filter(appManifest => 'graphql' in appManifest.builders)
 
-    const dependenciesSchemas = await Promise.all(
-      graphqlDependencies
-        .map(app => `${app.vendor}.${app.name}@${app.version}`)
-        .map(async appName => {
-          const appGraphQLClient = new (class extends AppGraphQLClient {
-            constructor() {
-              super(appName, context, { timeout: 5000 })
+    const dependenciesSchemas = (
+      await Promise.all(
+        graphqlDependencies
+          .map(app => `${app.vendor}.${app.name}@${app.version}`)
+          .map(async appName => {
+            const appGraphQLClient = new (class extends AppGraphQLClient {
+              constructor() {
+                super(appName, context, { timeout: 5000 })
+              }
+
+              public async introspect() {
+                const response = await this.graphql.query<IntrospectionQuery, {}>({
+                  query: getIntrospectionQuery(),
+                  variables: {},
+                  throwOnError: true,
+                })
+
+                return response.data
+              }
+            })()
+
+            try {
+              const introspectionResult = await appGraphQLClient.introspect()
+
+              const clientSchema = buildClientSchema(introspectionResult)
+
+              return clientSchema
+            } catch (err) {
+              logger.error(
+                chalk`Could not resolve GraphQL schema for app {bold ${appName}}. Is it linked or installed in this account and workspace?`
+              )
+              logger.debug(err.message, err.stack)
+              return undefined
             }
+          })
+      )
+    ).filter(Boolean)
 
-            public async introspect() {
-              const response = await this.graphql.query<IntrospectionQuery, {}>({
-                query: getIntrospectionQuery(),
-                variables: {},
-                throwOnError: true,
-              })
-
-              return response.data
-            }
-          })()
-
-          const introspectionResult = await appGraphQLClient.introspect()
-
-          const clientSchema = buildClientSchema(introspectionResult)
-
-          return clientSchema
-        })
-    )
+    if (!dependenciesSchemas.length) {
+      logger.warn('Could not resolve any app GraphQL schema. Aborting GraphQL types generation.')
+      return
+    }
 
     const mergedSchemas = mergeSchemas({ schemas: dependenciesSchemas })
 
