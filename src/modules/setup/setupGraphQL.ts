@@ -265,7 +265,11 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
       // ignore
     }
 
-    logger.info(`Successfully generated ${totalFiles + 1} GraphQL type file(s).`)
+    if (totalFiles > 0) {
+      logger.info(`Successfully generated ${totalFiles} GraphQL type file(s).`)
+    } else {
+      logger.info('No GraphQL type files were generated.')
+    }
   } catch (err) {
     logger.error('Failed to generate GraphQL type files')
     logger.debug(err)
