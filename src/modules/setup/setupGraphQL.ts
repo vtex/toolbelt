@@ -2,7 +2,15 @@ import { IOContext, AppGraphQLClient } from '@vtex/api'
 import generate from 'apollo/lib/generate'
 import * as fs from 'fs'
 import glob from 'glob'
-import { getIntrospectionQuery, buildClientSchema, IntrospectionQuery, parse, Source } from 'graphql'
+import {
+  getIntrospectionQuery,
+  buildClientSchema,
+  IntrospectionQuery,
+  parse,
+  Source,
+  validate,
+  printError,
+} from 'graphql'
 import { mergeSchemas } from 'graphql-tools'
 import * as path from 'path'
 
@@ -140,7 +148,7 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
     await Promise.all(previouslyGeneratedFiles.map(filePath => fs.promises.unlink(filePath)))
 
-    graphQLDocuments.forEach(document => {
+    const totalFiles = graphQLDocuments.reduce((total, document) => {
       const [operationDefinition] = document.definitions
 
       const {
@@ -149,42 +157,60 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
         },
       } = operationDefinition
 
-      const [builderName] = path.relative(root, operationName).split(path.sep)
+      const fileName = path.relative(root, operationName)
 
-      generate(
-        // source document
-        document,
-        // project schema
-        mergedSchemas,
-        // output path
-        GENERATED_GRAPHQL_DIRNAME,
-        // "only" option (used for Swift language)
-        undefined,
-        // target language
-        'typescript',
-        // tagName, seems unused
-        '',
-        // whether to generate types next to sources
-        true,
-        {
-          // this flag isn't important for us but it is required in the type
-          // definition for the options.
-          useFlowExactObjects: false,
-          rootPath: root,
-          globalTypesFile: path.join(builderName, GRAPHQL_GLOBAL_TYPES_FILE),
-        }
-      )
-    })
+      const [builderName] = fileName.split(path.sep)
+
+      const validationErrors = validate(mergedSchemas, document)
+
+      if (validationErrors.length > 0) {
+        logger.warn(
+          chalk`Failed to generate GraphQL types for file {underline ${fileName}}:\n` +
+            validationErrors.reduce((errors, error) => chalk`${errors}\n${printError(error)}\n`, '')
+        )
+
+        return total
+      }
+
+      try {
+        const countFiles = generate(
+          // source document
+          document,
+          // project schema
+          mergedSchemas,
+          // output path
+          GENERATED_GRAPHQL_DIRNAME,
+          // "only" option (used for Swift language)
+          undefined,
+          // target language
+          'typescript',
+          // tagName, seems unused
+          '',
+          // whether to generate types next to sources
+          true,
+          {
+            // this flag isn't important for us but it is required in the type
+            // definition for the options.
+            useFlowExactObjects: false,
+            rootPath: root,
+            globalTypesFile: path.join(builderName, GRAPHQL_GLOBAL_TYPES_FILE),
+          }
+        )
+
+        // we generate the number of GraphQL queries/mutations plus
+        // a "global" types files for Input and Enums. so, we are subtracting
+        // the global file count here, to add it later in the log.
+        return total + countFiles - 1
+      } catch (err) {
+        return total
+      }
+    }, 0)
 
     // this is an empty generated directory, remove
     // to reduce clutter
     await fs.promises.rmdir(path.join(root, GENERATED_GRAPHQL_DIRNAME))
 
-    // we generate the number of GraphQL queries/mutations plus
-    // a "global" types files for Input and Enums.
-    const totalFiles = graphQLDocuments.length + 1
-
-    logger.info(`Successfully generated ${totalFiles} GraphQL type file(s).`)
+    logger.info(`Successfully generated ${totalFiles + 1} GraphQL type file(s).`)
   } catch (err) {
     logger.error('Failed to generate GraphQL type files')
     logger.debug(err)
