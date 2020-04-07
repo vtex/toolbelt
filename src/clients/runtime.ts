@@ -18,7 +18,7 @@ export class Runtime {
   }
 
   public async debugDotnetApp(appName: string, appVendor: string, appMajorRange: string, debugInst: string) {
-    const appMajor = appMajorRange.split('.', 2)[0]
+    const [appMajor] = appMajorRange.split('.', 2)
 
     const host = 'app.io.vtex.com'
     const path = `/${appVendor}.${appName}/v${appMajor}/${this.account}/${this.workspace}/_debug/dotnet`
