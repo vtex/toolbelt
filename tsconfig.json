@@ -9,7 +9,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
-    "skipLibCheck": true, 
+    "skipLibCheck": true,
     "jsx": "react",
     "importHelpers": true
   },

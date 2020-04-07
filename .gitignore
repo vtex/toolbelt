@@ -1,12 +1,16 @@
-.vscode
-coverage
-node_modules
-/lib
 *-debug.log
 *-error.log
-package-lock.json
+/.nyc_output
+/dist
+/lib
+/package-lock.json
+/tmp
+node_modules
+.vscode
+coverage
 .DS_Store
 .eslintcache
 .eslintcache-react
+
 
 

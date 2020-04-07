@@ -1,10 +1,9 @@
 {
-    "ignore": ["**/*.test.ts", ".git", "node_modules", "lib"],
-    "watch": ["src", "package.json", "tsconfig.json"],
-    "exec": "yarn build-incremental",
-    "ext": "ts,tsx",
-    "events": {
-      "crash": "yarn notify -t 'toolbelt: dev-watch' -m 'build failed'"
-    }
+  "ignore": ["**/*.test.ts", ".git", "node_modules", "lib"],
+  "watch": ["src", "package.json"],
+  "exec": "yarn build",
+  "ext": "ts",
+  "events": {
+    "crash": "yarn notify -t 'oclif-template: nodemon' -m 'build failed'"
   }
-  
+}
