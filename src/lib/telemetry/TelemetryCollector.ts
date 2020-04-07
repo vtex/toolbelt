@@ -1,14 +1,18 @@
+import { spawn } from 'child_process'
 import { randomBytes } from 'crypto'
 import { ensureFileSync, writeJsonSync } from 'fs-extra'
-import { spawn } from 'child_process'
 import { join } from 'path'
-
 import * as pkgJson from '../../../package.json'
-import { ErrorReport, ErrorCreationArguments } from '../error/ErrorReport'
-import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 import { configDir } from '../../conf'
 import logger from '../../logger'
-import { Metric, MetricReport } from '../metrics/MetricReport'
+import { ErrorCreationArguments, ErrorReport, ErrorReportObj } from '../error/ErrorReport'
+import { Metric, MetricReport, MetricReportObj } from '../metrics/MetricReport'
+import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
+
+export interface TelemetryFile {
+  errors?: ErrorReportObj[]
+  metrics?: MetricReportObj[]
+}
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
@@ -72,7 +76,7 @@ export class TelemetryCollector {
     this.store.setErrors([])
     this.store.setMetrics([])
 
-    const obj = {
+    const obj: TelemetryFile = {
       errors: this.errors.map(err => err.toObject()),
       metrics: this.metrics.map(metric => metric.toObject()),
     }
