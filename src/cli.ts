@@ -24,6 +24,7 @@ import notify from './update'
 import { isVerbose, VERBOSE } from './utils'
 import { Metric } from './lib/metrics/MetricReport'
 import { hrTimeToMs } from './lib/utils/hrTimeToMs'
+import { MetricNames } from './lib/metrics/MetricNames'
 
 const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 
@@ -69,7 +70,7 @@ const main = async (calculateInitTime = false) => {
     const initTime = process.hrtime(initTimeStartTime)
     const initTimeMetric: Metric = {
       command: command.command.alias || command.command.path,
-      initTime: hrTimeToMs(initTime),
+      [MetricNames.START_TIME]: hrTimeToMs(initTime),
     }
     TelemetryCollector.getCollector().registerMetric(initTimeMetric)
   }
@@ -79,7 +80,7 @@ const main = async (calculateInitTime = false) => {
   const commandLatency = process.hrtime(commandStartTime)
   const commandLatencyMetric: Metric = {
     command: command.command.alias || command.command.path,
-    latency: hrTimeToMs(commandLatency),
+    [MetricNames.COMMAND_LATENCY]: hrTimeToMs(commandLatency),
   }
   TelemetryCollector.getCollector().registerMetric(commandLatencyMetric)
 }
