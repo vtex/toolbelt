@@ -40,8 +40,8 @@ const notifyRelease = () => {
   const RELEASE_NOTES_URL = 'https://bit.ly/2IQ2rSP'
 
   const msg = [
-    `Are you up-to-date with the VTEX IO latest news?`,
-    `${emojic.memo} Don’t forget to check out our ${chalk.bold.green(`${RELEASE_NOTES_DATE} Release Notes:`)}`,
+    `${chalk.bold.green(`${RELEASE_NOTES_DATE} Release Notes`)} is now available!`,
+    `${emojic.memo} Be up-to-date with the VTEX IO latest news now:`,
     `${chalk.blueBright(RELEASE_NOTES_URL)}`,
   ].join('\n')
 

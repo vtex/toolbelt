@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import { ensureFile, writeJson } from 'fs-extra'
+import { ensureFileSync, writeJsonSync } from 'fs-extra'
 import { spawn } from 'child_process'
 import { join } from 'path'
 
@@ -58,7 +58,7 @@ export class TelemetryCollector {
     return metricReport
   }
 
-  public async flush(forceRemoteFlush = false) {
+  public flush(forceRemoteFlush = false) {
     const shouldRemoteFlush =
       forceRemoteFlush ||
       this.errors.length > 0 ||
@@ -78,8 +78,8 @@ export class TelemetryCollector {
     }
     const objFilePath = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${randomBytes(8).toString('hex')}.json`)
     try {
-      await ensureFile(objFilePath)
-      await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
+      ensureFileSync(objFilePath)
+      writeJsonSync(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
       spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
         detached: true,
         stdio: 'ignore',

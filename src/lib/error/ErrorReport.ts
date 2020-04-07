@@ -1,12 +1,12 @@
 import { AxiosError } from 'axios'
-import { randomBytes } from 'crypto'
 import chalk from 'chalk'
-
+import { randomBytes } from 'crypto'
 import * as pkg from '../../../package.json'
-import { SessionManager } from '../session/SessionManager'
-import { ErrorKinds } from './ErrorKinds'
-import { truncateStringsFromObject, getPlatform } from '../utils'
 import logger from '../../logger'
+import { SessionManager } from '../session/SessionManager'
+import { getPlatform } from '../utils/getPlatform'
+import { truncateStringsFromObject } from '../utils/truncateStringsFromObject'
+import { ErrorKinds } from './ErrorKinds'
 
 export interface ErrorCreationArguments {
   kind?: string
