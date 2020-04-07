@@ -1,14 +1,14 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 
-import { MetricReport } from '../lib/metrics/MetricReport'
-import { ErrorReport } from '../lib/error/ErrorReport'
+import { ErrorReportObj } from '../lib/error/ErrorReport'
+import { MetricReportObj } from '../lib/metrics/MetricReport'
 
 export class TelemetryClient extends AppClient {
   constructor(ioContext: IOContext, opts?: InstanceOptions) {
     super('vtex.toolbelt-telemetry@0.x', ioContext, opts)
   }
 
-  public reportErrors(errors: ErrorReport[]) {
+  public reportErrors(errors: ErrorReportObj[]) {
     const errorsBuffer = Buffer.from(JSON.stringify(errors))
     return this.http.post('/errorReport', errorsBuffer, {
       headers: {
@@ -17,7 +17,7 @@ export class TelemetryClient extends AppClient {
     })
   }
 
-  public reportMetrics(metrics: MetricReport[]) {
+  public reportMetrics(metrics: MetricReportObj[]) {
     return this.http.post('/metricsRegister', metrics)
   }
 }
