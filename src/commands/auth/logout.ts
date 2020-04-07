@@ -7,7 +7,9 @@ import log from '../../logger'
 export default class Logout extends CustomCommand {
   static description = 'Logout of the current VTEX account'
 
-  static examples = []
+  static aliases = ['logout']
+
+  static examples = ['vtex auth:logout', 'vtex logout']
 
   static flags = {
     help: flags.help({ char: 'h' }),

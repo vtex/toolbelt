@@ -69,7 +69,9 @@ const saveSupportCredentials = (account: string, token: string): void => {
 export default class Support extends CustomCommand {
   static description = 'Login as support into another VTEX account'
 
-  static examples = []
+  static aliases = ['support']
+
+  static examples = ['vtex auth:support storecomponents', 'vtex auth:support']
 
   static flags = {
     help: flags.help({ char: 'h' }),
@@ -80,10 +82,6 @@ export default class Support extends CustomCommand {
   async run() {
     const { args } = this.parse(Support)
     const account = args.account
-    if (!account) {
-      log.error(`Please specify the account that will receive support. type vtex --help for more information.`)
-      return
-    }
     const actualToken = getToken()
     const region = env.region()
     try {

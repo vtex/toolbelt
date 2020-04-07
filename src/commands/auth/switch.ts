@@ -15,17 +15,18 @@ const hasAccountSwitched = (account: string) => {
 export default class Switch extends CustomCommand {
   static description = 'Switch to another VTEX account'
 
-  static examples = []
+  static aliases = ['switch']
+
+  static examples = ['vtex auth:switch storecomponents', 'vtex switch storecomponents', 'vtex switch storecomponents myworkspace']
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    workspace: flags.string({ char: 'w', description: 'Specify login workspace', default: 'master' }),
   }
 
-  static args = [{ name: 'account', required: true }]
+  static args = [{ name: 'account', required: true }, { name: 'workspace', required: false, default: 'master' }]
 
   async run() {
-    const { args, flags } = this.parse(Switch)
+    const { args } = this.parse(Switch)
     let account = args.account
     if (account === '-') {
       account = getLastUsedAccount()
@@ -40,7 +41,7 @@ export default class Switch extends CustomCommand {
     const [parsedAccount, parsedWorkspace] = split('/', account)
     let options
     if (parsedWorkspace) {
-      options = { ...flags, w: parsedWorkspace, workspace: parsedWorkspace }
+      options = { workspace: parsedWorkspace || args.workspace }
     }
     await switchAccount(parsedAccount, options)
     if (hasAccountSwitched(parsedAccount)) {

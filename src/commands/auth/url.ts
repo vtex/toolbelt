@@ -7,13 +7,13 @@ import { CustomCommand } from '../../lib/CustomCommand'
 export default class URL extends CustomCommand {
   static description = 'Prints base URL for current account, workspace and environment'
 
-  static examples = []
+  static aliases = ['url']
+
+  static examples = ['vtex auth:url', 'vtex url']
 
   static flags = {
     help: flags.help({ char: 'h' }),
   }
-
-  static args = []
 
   async run() {
     this.parse(URL)

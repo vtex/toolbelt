@@ -7,13 +7,13 @@ import { copyToClipboard } from '../../lib/copyToClipboard'
 export default class LocalToken extends CustomCommand {
   static description = "Show user's auth token and copy it to clipboard"
 
-  static examples = []
+  static aliases = ['token']
+
+  static examples = ['vtex auth:token', 'vtex token']
 
   static flags = {
     help: flags.help({ char: 'h' }),
   }
-
-  static args = []
 
   async run() {
     const token = getToken()

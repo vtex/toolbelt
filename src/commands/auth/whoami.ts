@@ -7,7 +7,9 @@ import log from '../../logger'
 export default class WhoAmI extends CustomCommand {
   static description = 'See your credentials current status'
 
-  static examples = []
+  static aliases = ['whoami']
+
+  static examples = ['vtex auth:whoami', 'vtex whoami']
 
   static flags = {
     help: flags.help({ char: 'h' }),
@@ -18,6 +20,6 @@ export default class WhoAmI extends CustomCommand {
   async run() {
     this.parse(WhoAmI)
     const lines = await greeting()
-  lines.forEach((msg: string) => log.info(msg))
+    lines.forEach((msg: string) => log.info(msg))
   }
 }

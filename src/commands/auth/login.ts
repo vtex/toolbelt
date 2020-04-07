@@ -62,21 +62,20 @@ const notifyRelease = () => {
 export default class Login extends CustomCommand {
   static description = 'Log into a VTEX account'
 
-  static examples = []
+  static aliases = ['login']
+
+  static examples = ['vtex auth:login', 'vtex login', 'vtex login storecomponents', 'vtex login storecomponents myworkspace']
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    account: flags.string({ char: 'a', description: 'Specify login account' }),
-    workspace: flags.string({ char: 'w', description: 'Specify login workspace' }),
   }
 
-  static args = [{ name: 'account', required: false }]
+  static args = [{ name: 'account', required: false }, { name: 'workspace', required: false }]
 
   async run() {
-    const { args, flags } = this.parse(Login)
-    const defaultArgumentAccount = args.account
-    const optionAccount = flags.account || defaultArgumentAccount
-    const optionWorkspace = flags.workspace
+    const { args } = this.parse(Login)
+    const optionAccount = args.account
+    const optionWorkspace = args.workspace
     const usePrevious = !(optionAccount || optionWorkspace) && details && (await promptUsePrevious())
     const account =
       optionAccount || (usePrevious && cachedAccount) || (await promptAccount(cachedAccount && optionWorkspace))

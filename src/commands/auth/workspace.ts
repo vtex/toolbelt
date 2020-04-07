@@ -7,7 +7,9 @@ import { copyToClipboard } from '../../lib/copyToClipboard'
 export default class LocalWorkspace extends CustomCommand {
   static description = 'Show current workspace and copy it to clipboard'
 
-  static examples = []
+  static aliases = ['workspace']
+
+  static examples = ['vtex auth:workspace', 'vtex workspace']
 
   static flags = {
     help: flags.help({ char: 'h' }),
