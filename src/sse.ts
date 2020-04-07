@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 import { compose, contains, forEach, path, pathOr } from 'ramda'
-import { getToken } from './conf'
-import { colossusEndpoint, envCookies, publicEndpoint, cluster } from './env'
+import { cluster, colossusEndpoint, envCookies, publicEndpoint } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
+import { SessionManager } from './lib/session/SessionManager'
 import { removeVersion } from './locator'
 import log from './logger'
 import userAgent from './user-agent'
@@ -13,7 +13,13 @@ const levelAdapter = { warning: 'warn' }
 
 const onOpen = type => () => log.debug(`Connected to ${type} server`)
 
-const onError = type => err => log.error(`Connection to ${type} server has failed with status ${err.status}`)
+const onError = type => err => {
+  log.error(`Connection to ${type} server has failed with status ${err.status}`)
+  if (err.status === 401 || err.status === 403) {
+    log.error(`Unable to connect to ${type} with the current token, try logging in again. Exiting process...`)
+    process.exit(1)
+  }
+}
 
 const parseMessage = (msg: MessageJSON): Message => {
   const { sender, subject, level, body }: Message = JSON.parse(msg.data)
@@ -25,10 +31,17 @@ const parseMessage = (msg: MessageJSON): Message => {
   }
 }
 
-const createEventSource = (source: string) => {
+const createEventSource = (source: string, closeOnInvalidToken = false) => {
+  let token
+  if (closeOnInvalidToken) {
+    token = SessionManager.getSessionManager().checkAndGetToken(closeOnInvalidToken)
+  } else {
+    token = SessionManager.getSessionManager().token
+  }
+
   return new EventSource(source, {
     headers: {
-      authorization: `bearer ${getToken()}`,
+      authorization: `bearer ${token}`,
       cookie: envCookies(),
       'user-agent': userAgent,
       ...(cluster() ? { 'x-vtex-upstream-target': cluster() } : null),
@@ -77,7 +90,7 @@ const onLog = (
   senders?: string[]
 ): Unlisten => {
   const source = `${colossusEndpoint()}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
-  const es = createEventSource(source)
+  const es = createEventSource(source, true)
   es.onopen = onOpen(`${logLevel} log`)
   es.onmessage = compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage)
   es.onerror = onError(`${logLevel} log`)
@@ -94,7 +107,7 @@ export const onEvent = (
   const source = `${colossusEndpoint()}/${ctx.account}/${
     ctx.workspace
   }/events?onUnsubscribe=link_interrupted&sender=${sender}${parseKeyToQueryParameter(keys)}`
-  const es = createEventSource(source)
+  const es = createEventSource(source, true)
   es.onopen = onOpen('event')
   es.onmessage = compose(maybeCall(callback), filterMessage(subject), parseMessage)
   es.onerror = onError('event')
