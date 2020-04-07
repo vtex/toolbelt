@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [vtex rewriter] Use rewriter new redirects API with single binding support.
 
 ### Changed
+- [debugger:node, debugger:dotnet] Use `wss` protocol instead of `ws` and new `app.io.vtex.com` URL format.
+- [clients:sponsor, vtex support] Use HTTPS and new URL `app.io.vtex.com` format.
 - Update release notes message.
 
 ## [2.96.0] - 2020-04-06
