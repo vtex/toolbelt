@@ -3,7 +3,9 @@ import { compose, contains, forEach, path, pathOr } from 'ramda'
 import { cluster, colossusEndpoint, envCookies, publicEndpoint } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
+import { ErrorKinds } from './lib/error/ErrorKinds'
 import { SessionManager } from './lib/session/SessionManager'
+import { TelemetryCollector } from './lib/telemetry/TelemetryCollector'
 import { removeVersion } from './locator'
 import log from './logger'
 import userAgent from './user-agent'
@@ -15,6 +17,11 @@ const onOpen = type => () => log.debug(`Connected to ${type} server`)
 
 const onError = type => err => {
   log.error(`Connection to ${type} server has failed with status ${err.status}`)
+  TelemetryCollector.createAndRegisterErrorReport({
+    kind: ErrorKinds.SSE_ERROR,
+    originalError: err,
+  })
+
   if (err.status === 401 || err.status === 403) {
     log.error(`Unable to connect to ${type} with the current token, try logging in again. Exiting process...`)
     process.exit(1)
@@ -189,6 +196,11 @@ export const onAuth = (
     es.onerror = event => {
       es.close()
       const errMessage = `Connection to login server has failed${event.status ? ` with status ${event.status}` : ''}`
+      TelemetryCollector.createAndRegisterErrorReport({
+        kind: ErrorKinds.SSE_ERROR,
+        originalError: event,
+      })
+
       reject(new SSEConnectionError(errMessage, event.status))
     }
   })
