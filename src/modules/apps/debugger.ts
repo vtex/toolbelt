@@ -2,9 +2,9 @@ import streamToString from 'get-stream'
 import net from 'net'
 import WebSocket from 'ws'
 import { getAccount, getToken, getWorkspace } from '../../conf'
-import { region } from '../../env'
 import { ManifestEditor } from '../../lib/manifest'
-import { toMajorRange } from '../../locator'
+import { versionMajor } from '../../locator'
+import { cluster } from '../../env'
 import log from '../../logger'
 
 const keepAliveDelayMs = 3 * 60 * 1000
@@ -28,14 +28,15 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
   const options = {
     headers: {
       Authorization: getToken(),
-      Host: host,
+      Host: `app.io.vtex.com`,
       'X-Vtex-Runtime-Api': 'true',
+      ...(cluster() ? { 'x-vtex-upstream-target': cluster() } : null),
     },
   }
 
   return (socket: net.Socket) => {
     socket.setKeepAlive(true, keepAliveDelayMs)
-    const ws = new WebSocket(`ws://${host}${path}`, options)
+    const ws = new WebSocket(`wss://${host}${path}`, options)
 
     const interval = setInterval(ws.ping, THIRTY_SECONDS_MS)
 
@@ -98,9 +99,9 @@ export default function startDebuggerTunnel(
   if (!node && !serviceJs) {
     return
   }
-  const majorRange = toMajorRange(version)
-  const host = `${name}.${vendor}.${region()}.vtex.io`
-  const path = `/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
+  const appMajor = versionMajor(version)
+  const host = 'app.io.vtex.com'
+  const path = `/${vendor}.${name}/v${appMajor}/${getAccount()}/${getWorkspace()}/_debug/attach`
 
   return new Promise((resolve, reject) => {
     const server = net.createServer()

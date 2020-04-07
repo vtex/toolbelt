@@ -12,5 +12,5 @@ export default async (debugInst: string) => {
   }
 
   const runtimeClient = new Runtime(getIOContext())
-  await runtimeClient.debugDotnetApp(name, vendor, manifest.majorRange, debugInst)
+  await runtimeClient.debugDotnetApp(name, vendor, manifest.major, debugInst)
 }

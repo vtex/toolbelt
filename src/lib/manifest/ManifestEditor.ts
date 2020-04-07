@@ -77,8 +77,12 @@ export class ManifestEditor {
     return `${vendor}.${name}@${version}`
   }
 
+  public get major() {
+    return this.manifest.version.split('.', 2)[0]
+  }
+
   public get majorRange() {
-    return `${this.manifest.version.split('.', 2)[0]}.x`
+    return `${this.major}.x`
   }
 
   public flushChangesSync() {
