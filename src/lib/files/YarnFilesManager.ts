@@ -36,7 +36,7 @@ export class YarnFilesManager {
     const files = await glob(['**'], {
       cwd: path,
       ignore: YarnFilesManager.LINKED_YARN_MODULES_IGNORED_FILES,
-      nodir: true,
+      onlyFiles: true,
     })
     return files.map(
       createPathToFileObject(path, join(YarnFilesManager.BUILDER_HUB_LINKED_DEPS_DIR, npmModule))

@@ -47,9 +47,9 @@ export const listLocalFiles = (root: string, test = false, folder?: string): Pro
   Promise.resolve(
     glob(['manifest.json', 'policies.json', 'node/.*', 'react/.*', `${safeFolder(folder)}`], {
       cwd: root,
-      follow: true,
+      followSymbolicLinks: true,
       ignore: getIgnoredPaths(root, test),
-      nodir: true,
+      onlyFiles: true,
     })
   )
     .then((files: string[]) => Promise.all(files.map(file => lstat(join(root, file)).then(stats => ({ file, stats })))))

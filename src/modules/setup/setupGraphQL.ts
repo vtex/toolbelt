@@ -2,7 +2,7 @@ import { IOContext, AppGraphQLClient } from '@vtex/api'
 import generate from 'apollo/lib/generate'
 import { AxiosError } from 'axios'
 import * as fs from 'fs'
-import glob from 'glob'
+import glob from 'globby'
 import {
   getIntrospectionQuery,
   buildClientSchema,
@@ -108,15 +108,7 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
   // retrieves all GraphQL documents in the builder folder. ideally we should
   // only use the files that the app requires (i.e. only the queries import'ed
   // by the React components), but we can get by with this for now.
-  const graphQLFiles = await new Promise<string[]>((resolve, reject) =>
-    glob(`+(${builders.join('|')})/**/*.{graphql,gql}`, { root }, (err, matches) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(matches)
-      }
-    })
-  )
+  const graphQLFiles = await glob(`+(${builders.join('|')})/**/*.{graphql,gql}`, { cwd: root })
 
   if (!graphQLFiles.length) {
     return
@@ -212,15 +204,7 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
       .map(([filePath, source, imports]) => [imports, parse(new Source(source, path.join(root, filePath)))] as const)
 
     // remove previously generated files before generating new ones
-    const previouslyGeneratedFiles = await new Promise<string[]>((resolve, reject) =>
-      glob(`**/${GENERATED_GRAPHQL_DIRNAME}/*`, { root }, (err, matches) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(matches)
-        }
-      })
-    )
+    const previouslyGeneratedFiles = await glob(`**/${GENERATED_GRAPHQL_DIRNAME}/*`, { cwd: root })
 
     await Promise.all(previouslyGeneratedFiles.map(filePath => fs.promises.unlink(filePath)))
 

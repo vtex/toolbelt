@@ -53,9 +53,9 @@ export class ProjectFilesManager {
   public async getLocalFiles(test = false): Promise<string[]> {
     const files: string[] = await glob(['manifest.json', 'policies.json', 'node/.*', 'react/.*'], {
       cwd: this.root,
-      follow: true,
+      followSymbolicLinks: true,
       ignore: this.getIgnoredPaths(test),
-      nodir: true,
+      onlyFiles: true,
     })
 
     const filesStats = await Promise.all(
