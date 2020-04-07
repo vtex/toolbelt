@@ -46,7 +46,7 @@ const loginAsRole = async (token: string, supportedAccount: string, role: string
       headers: {
         Authorization: token,
         'X-Vtex-Original-Credential': token,
-        'x-vtex-upstream-target': env.cluster(),
+        ...(env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null),
       },
     }
   )
