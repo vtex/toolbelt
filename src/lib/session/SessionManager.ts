@@ -1,6 +1,9 @@
 import { AuthProviderBase, AuthProviders } from '../auth/AuthProviders'
 import { Token } from '../auth/Token'
 import { SessionsPersister, SessionsPersisterBase } from './SessionsPersister'
+import { ErrorReport } from '../error/ErrorReport'
+import { ErrorKinds } from '../error/ErrorKinds'
+import logger from '../../logger'
 
 interface SessionManagerArguments {
   sessionsPersister: SessionsPersisterBase
@@ -50,6 +53,10 @@ export class SessionManager {
     return this.currToken.token
   }
 
+  get tokenObj() {
+    return this.currToken
+  }
+
   get workspace() {
     return this.currWorkspace
   }
@@ -63,6 +70,24 @@ export class SessionManager {
     this.sessionPersister.saveWorkspace(this.workspace)
     this.sessionPersister.saveLogin(this.currToken.login)
     this.sessionPersister.saveToken(this.currToken.token)
+  }
+
+  public checkAndGetToken(exitOnInvalid = false) {
+    if (this.currToken.isValid()) {
+      return this.currToken.token
+    }
+
+    const errMsg = 'Auth token is invalid or expired.'
+
+    if (exitOnInvalid) {
+      logger.error(errMsg)
+      process.exit(1)
+    }
+
+    throw ErrorReport.create({
+      kind: ErrorKinds.INVALID_OR_EXPIRED_TOKEN_ERROR,
+      originalError: new Error(errMsg),
+    })
   }
 
   public async login(
