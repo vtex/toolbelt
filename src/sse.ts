@@ -20,7 +20,7 @@ const onError = type => err => {
   TelemetryCollector.createAndRegisterErrorReport({
     kind: ErrorKinds.SSE_ERROR,
     originalError: err,
-  })
+  }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })
 
   if (err.status === 401 || err.status === 403) {
     log.error(`Unable to connect to ${type} with the current token, try logging in again. Exiting process...`)
@@ -199,7 +199,7 @@ export const onAuth = (
       TelemetryCollector.createAndRegisterErrorReport({
         kind: ErrorKinds.SSE_ERROR,
         originalError: event,
-      })
+      }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })
 
       reject(new SSEConnectionError(errMessage, event.status))
     }
