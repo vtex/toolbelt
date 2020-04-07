@@ -30,7 +30,7 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
       Authorization: getToken(),
       Host: `app.io.vtex.com`,
       'X-Vtex-Runtime-Api': 'true',
-      'x-vtex-upstream-target': cluster(),
+    ...cluster() ? { 'x-vtex-upstream-target': cluster() } : null,
     },
   }
 

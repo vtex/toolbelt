@@ -14,7 +14,7 @@ const getAvailableRoles = async (token: string, supportedAccount: string): Promi
       headers: {
         Authorization: token,
         'X-Vtex-Original-Credential': token,
-        'x-vtex-upstream-target': env.cluster(),
+    ...env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null,
       },
     }
   )
