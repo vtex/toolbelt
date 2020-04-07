@@ -7,6 +7,11 @@ export interface Metric {
   [metricName: string]: number | string
 }
 
+export interface MetricReportObj {
+  metric: Metric
+  env: MetricEnv
+}
+
 interface MetricEnv {
   account: string
   workspace: string
@@ -58,7 +63,7 @@ export class MetricReport {
     })
   }
 
-  public toObject() {
+  public toObject(): MetricReportObj {
     return {
       metric: this.metric,
       env: this.env,
