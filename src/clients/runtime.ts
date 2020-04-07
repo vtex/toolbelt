@@ -17,9 +17,7 @@ export class Runtime {
     this.workspace = workspace
   }
 
-  public async debugDotnetApp(appName: string, appVendor: string, appMajorRange: string, debugInst: string) {
-    const [appMajor] = appMajorRange.split('.', 2)
-
+  public async debugDotnetApp(appName: string, appVendor: string, appMajor: string, debugInst: string) {
     const host = 'app.io.vtex.com'
     const path = `/${appVendor}.${appName}/v${appMajor}/${this.account}/${this.workspace}/_debug/dotnet`
     const clusterHeader = cluster() ? { 'x-vtex-upstream-target': cluster() } : null
