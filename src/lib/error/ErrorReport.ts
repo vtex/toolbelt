@@ -15,6 +15,17 @@ export interface ErrorCreationArguments {
   tryToParseError?: boolean
 }
 
+export interface ErrorReportObj {
+  errorId: string
+  timestamp: string
+  kind: string
+  message: string
+  errorDetails: string
+  stack: string
+  env: ErrorEnv
+  code?: string
+}
+
 interface ErrorReportArguments {
   kind: string
   message: string
@@ -155,20 +166,19 @@ export class ErrorReport extends Error {
     }
   }
 
-  public toObject() {
-    return truncateStringsFromObject(
-      {
-        errorId: this.errorId,
-        timestamp: this.timestamp,
-        kind: this.kind,
-        message: this.message,
-        errorDetails: this.errorDetails,
-        stack: this.stack,
-        env: this.env,
-        ...(this.originalError.code ? { code: this.originalError.code } : null),
-      },
-      ErrorReport.MAX_ERROR_STRING_LENGTH
-    )
+  public toObject(): ErrorReportObj {
+    const errorReportObj: ErrorReportObj = {
+      errorId: this.errorId,
+      timestamp: this.timestamp,
+      kind: this.kind,
+      message: this.message,
+      errorDetails: this.errorDetails,
+      stack: this.stack,
+      env: this.env,
+      ...(this.originalError.code ? { code: this.originalError.code } : null),
+    }
+
+    return truncateStringsFromObject(errorReportObj, ErrorReport.MAX_ERROR_STRING_LENGTH) as ErrorReportObj
   }
 
   public stringify(pretty = false) {
