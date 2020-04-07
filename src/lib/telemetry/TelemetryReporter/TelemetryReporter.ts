@@ -60,6 +60,8 @@ export class TelemetryReporter {
   public async sendPendingData() {
     try {
       await this.pendingDataManager.acquireLock()
+
+      await this.pendingDataManager.createPendingDirMetrics()
       const pendingFiles = await this.pendingDataManager.getFilePaths()
 
       await Promise.all(
