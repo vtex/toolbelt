@@ -4,10 +4,15 @@ import { ensureFileSync, writeJsonSync } from 'fs-extra'
 import { join } from 'path'
 import * as pkgJson from '../../../package.json'
 import logger from '../../logger'
-import { ErrorCreationArguments, ErrorReport } from '../error/ErrorReport'
-import { Metric, MetricReport } from '../metrics/MetricReport'
+import { ErrorCreationArguments, ErrorReport, ErrorReportObj } from '../error/ErrorReport'
+import { Metric, MetricReport, MetricReportObj } from '../metrics/MetricReport'
 import { PathConstants } from '../PathConstants'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
+
+export interface TelemetryFile {
+  errors?: ErrorReportObj[]
+  metrics?: MetricReportObj[]
+}
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
@@ -74,18 +79,24 @@ export class TelemetryCollector {
     this.store.setErrors([])
     this.store.setMetrics([])
 
-    const obj = {
+    const obj: TelemetryFile = {
       errors: this.errors.map(err => err.toObject()),
       metrics: this.metrics.map(metric => metric.toObject()),
     }
+
     const objFilePath = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${randomBytes(8).toString('hex')}.json`)
     try {
       ensureFileSync(objFilePath)
       writeJsonSync(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
-      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeFilePath, objFilePath], {
-        detached: true,
-        stdio: 'ignore',
-      }).unref()
+
+      spawn(
+        process.execPath,
+        [join(__dirname, 'TelemetryReporter', 'report.js'), this.store.storeFilePath, objFilePath],
+        {
+          detached: true,
+          stdio: 'ignore',
+        }
+      ).unref()
     } catch (e) {
       logger.error('Error writing telemetry file. Error: ', e)
     }
