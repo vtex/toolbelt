@@ -96,10 +96,8 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
   const appBuilders = Object.keys(manifest.builders || {})
 
   // we should generate these types if the app includes
-  // builders which can query GraphQL server, or if the
-  // app is it's own graphql server.
-  const needGraphQLTypes =
-    appBuilders.some(builderName => builders.includes(builderName)) || 'graphql' in manifest.builders
+  // builders which can query GraphQL server.
+  const needGraphQLTypes = appBuilders.some(builderName => builders.includes(builderName))
 
   if (!needGraphQLTypes || !manifest.dependencies) {
     return
@@ -128,7 +126,8 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
     const dependencies = Object.entries(manifest.dependencies)
 
     // if the app has a graphql builder, we should include it
-    // in the dependencies for the schema introspection.
+    // in the dependencies for the schema introspection, since the
+    // builders that can query server could query it's own server.
     if ('graphql' in manifest.builders) {
       dependencies.push([`${manifest.vendor}.${manifest.name}`, manifest.version])
     }
