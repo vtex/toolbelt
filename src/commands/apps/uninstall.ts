@@ -41,7 +41,9 @@ const uninstallApps = async (appsList: string[]): Promise<void> => {
 export default class Uninstall extends CustomCommand {
   static description = 'Uninstall an app (defaults to the app in the current directory)'
 
-  static examples = []
+  static aliases = ['uninstall']
+
+  static examples = ['vtex apps:uninstall', 'vtex uninstall', 'vtex apps:uninstall vtex.service-example', 'vtex apps:uninstall vtex.service-example@0.x']
 
   static flags = {
     help: flags.help({ char: 'h' }),

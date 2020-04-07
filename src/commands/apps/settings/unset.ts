@@ -5,24 +5,24 @@ import { CustomCommand } from '../../../lib/CustomCommand'
 import { apps } from '../../../clients'
 
 export default class SettingsUnset extends CustomCommand {
-  static description = 'Set app settings'
+  static description = 'Unset app settings'
 
-  static examples = []
+  static aliases = ['settings:unset']
+
+  static examples = ['vtex apps:settings:unset vtex.service-example fieldName', 'vtex settings:unset vtex.service-example fieldName']
 
   static flags = {
     help: flags.help({ char: 'h' }),
   }
 
-  static args = [{ name: 'appName', required: true }, { name: 'options' }]
-
-  private FIELDS_START_INDEX = 1
+  static args = [{ name: 'appName', required: true }, { name: 'field', required: true }]
 
   async run() {
     const {
-      args: { appName: app, options },
+      args: { appName: app, field },
     } = this.parse(SettingsUnset)
 
-    const fields = options._.slice(this.FIELDS_START_INDEX)
+    const fields = [field]
     const newSettingsJson = await apps
       .getAppSettings(app)
       .then(dissocPath(fields))

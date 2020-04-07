@@ -63,7 +63,9 @@ export default class Add extends CustomCommand {
 
   static description = 'Add app(s) to the manifest dependencies'
 
-  static examples = []
+  static examples = ['vtex apps:add vtex.service-example@0.x', 'vtex add vtex.service-example@0.x']
+
+  static aliases = ['add']
 
   static flags = {
     help: flags.help({ char: 'h' }),

@@ -83,7 +83,9 @@ const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
 export default class Deprecate extends CustomCommand {
   static description = 'Deprecate an app'
 
-  static examples = []
+  static aliases = ['deprecate']
+
+  static examples = ['vtex apps:deprecate vtex.service-example@0.0.1', 'vtex deprecate vtex.service-example@0.0.1']
 
   static flags = {
     help: flags.help({ char: 'h' }),

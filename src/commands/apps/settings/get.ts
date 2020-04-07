@@ -7,7 +7,9 @@ import { apps } from '../../../clients'
 export default class SettingsGet extends CustomCommand {
   static description = 'Get app settings'
 
-  static examples = []
+  static aliases = ['settings', 'settings:get']
+
+  static examples = ['vtex apps:settings:get vtex.service-example', 'vtex settings:get vtex.service-example']
 
   static flags = {
     help: flags.help({ char: 'h' }),
@@ -22,10 +24,10 @@ export default class SettingsGet extends CustomCommand {
       args: { appName: app, options },
     } = this.parse(SettingsGet)
 
-    const fields = options._.slice(this.FIELDS_START_INDEX)
+    const fields = options?._.slice(this.FIELDS_START_INDEX)
     const settingsValues = await apps
       .getAppSettings(app)
-      .then(settings => (fields === null ? settings : path(fields, settings)))
+      .then(settings => (fields ? path(fields, settings) : settings))
       .then(value => JSON.stringify(value, null, 2))
     console.log(settingsValues)
   }

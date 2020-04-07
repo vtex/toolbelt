@@ -1,3 +1,4 @@
+import { flags } from '@oclif/command'
 import chalk from 'chalk'
 import ora from 'ora'
 import { curry, path } from 'ramda'
@@ -81,11 +82,13 @@ const getInstalledVersion = (service: string) =>
     .then(s => s?.version)
 
 export default class InfraInstall extends CustomCommand {
-  static description = 'Install a service'
+  static description = 'Install an infra service'
 
-  static examples = []
+  static aliases = ['infra:install']
 
-  static flags = {}
+  static examples = ['vtex apps:infra:install infra-service', 'vtex infra:install infra-service', 'vtex infra:install infra-service@0.0.1']
+
+  static flags = { help: flags.help({ char: 'h' }) }
 
   static args = [{ name: 'serviceId', required: true }]
 

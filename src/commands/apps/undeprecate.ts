@@ -82,7 +82,9 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
 export default class Undeprecate extends CustomCommand {
   static description = 'Undeprecate app'
 
-  static examples = []
+  static examples = ['vtex apps:undeprecate vtex.service-example@0.0.1', 'vtex undeprecate vtex.service-example@0.0.1']
+
+  static aliases = ['undeprecate']
 
   static flags = {
     help: flags.help({ char: 'h' }),

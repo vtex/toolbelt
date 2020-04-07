@@ -114,7 +114,9 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
 export default class Install extends CustomCommand {
   static description = 'Install an app (defaults to the app in the current directory)'
 
-  static examples = []
+  static examples = ['vtex apps:install', 'vtex install', 'vtex apps:install vtex.service-example@0.x', 'vtex apps:install vtex.service-example@0.0.1']
+
+  static aliases = ['install']
 
   static flags = {
     help: flags.help({ char: 'h' }),

@@ -61,13 +61,15 @@ export default class WorkspaceUse extends CustomCommand {
 
   static examples = []
 
+  static aliases = ['use']
+
   static flags = {
     help: flags.help({ char: 'h' }),
     production: flags.boolean({
       char: 'p',
       description: 'Create the workspace as production if it does not exist or is reset',
     }),
-    reset: flags.boolean({ char: 'p', description: 'Resets workspace before using it', default: false }),
+    reset: flags.boolean({ char: 'r', description: 'Resets workspace before using it', default: false }),
   }
 
   static args = [{ name: 'workspace', required: true }]

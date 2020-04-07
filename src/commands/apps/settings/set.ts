@@ -18,7 +18,9 @@ const castValue = value => {
 export default class SettingsSet extends CustomCommand {
   static description = 'Set app settings'
 
-  static examples = []
+  static aliases = ['settings:set']
+
+  static examples = ['vtex-test apps:settings:set vtex.service-example fieldName fieldValue', 'vtex-test settings:set vtex.service-example fieldName fieldValue']
 
   static flags = {
     help: flags.help({ char: 'h' }),

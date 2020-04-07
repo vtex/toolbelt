@@ -48,9 +48,9 @@ const renderTable = ({
 export default class List extends CustomCommand {
   static description = 'List your installed VTEX apps'
 
-  static examples = []
+  static examples = ['vtex apps:list', 'vtex list', 'vtex apps:ls', 'vtex ls']
 
-  static aliases = ['ls', 'list', 'workspace:apps:ls']
+  static aliases = ['ls', 'list', 'apps:ls']
 
   static flags = {
     help: flags.help({ char: 'h' }),

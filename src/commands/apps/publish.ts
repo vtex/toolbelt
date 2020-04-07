@@ -120,7 +120,9 @@ const publisher = (workspace = 'master') => {
 export default class Publish extends CustomCommand {
   static description = 'Publish the current app or a path containing an app'
 
-  static examples = []
+  static examples = ['vtex apps:publish', 'vtex publish']
+
+  static aliases = ['publish']
 
   static flags = {
     help: flags.help({ char: 'h' }),
@@ -129,8 +131,6 @@ export default class Publish extends CustomCommand {
     force: flags.boolean({ char: 'f', description: 'Publish app without checking if the semver is being respected' }),
     yes: flags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
-
-  static args = [{ name: 'path', required: false }]
 
   async run() {
     const { args, flags } = this.parse(Publish)

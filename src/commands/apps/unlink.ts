@@ -49,7 +49,9 @@ const unlinkAllApps = async (): Promise<void> => {
 export default class Unlink extends CustomCommand {
   static description = 'Unlink an app on the current directory or a specified one'
 
-  static examples = []
+  static examples = ['vtex unlink', 'vtex apps:unlink', 'vtex unlink vtex.service-example@0.x', 'vtex apps:unlink vtex.service-example@0.x']
+
+  static aliases = ['unlink']
 
   static flags = {
     help: flags.help({ char: 'h' }),

@@ -116,7 +116,9 @@ const promptContinue = async (repoName: string) => {
 export default class Init extends CustomCommand {
   static description = 'Create basic files and folders for your VTEX app'
 
-  static examples = []
+  static examples = ['vtex apps:init', 'vtex init']
+
+  static aliases = ['init']
 
   static flags = {
     help: flags.help({ char: 'h' }),

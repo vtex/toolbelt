@@ -71,14 +71,16 @@ const prepareDeploy = async (app, originalAccount, originalWorkspace: string): P
 export default class Deploy extends CustomCommand {
   static description = 'Deploy a release of an app'
 
-  static examples = []
+  static aliases = ['deploy']
+
+  static examples = ['vtex apps:deploy', 'vtex deploy', 'vtex deploy vtex.service-example@0.0.1']
 
   static flags = {
     help: flags.help({ char: 'h' }),
     yes: flags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 
-  static args = [{ name: 'appId', required: true }]
+  static args = [{ name: 'appId' }]
 
   async run() {
     const {
