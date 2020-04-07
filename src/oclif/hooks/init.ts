@@ -15,6 +15,7 @@ import { checkAndOpenNPSLink } from '../../nps'
 import { Metric } from '../../lib/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
 import { CommandError, SSEConnectionError } from '../../errors'
+import { MetricNames } from '../../lib/metrics/MetricNames'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -39,7 +40,7 @@ const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: bool
   CLIPreTasks.getCLIPreTasks(pkg).runTasks()
   TelemetryCollector.getCollector().registerMetric({
     command: 'not-applicable',
-    cliPreTasksLatency: hrTimeToMs(process.hrtime(cliPreTasksStart)),
+    [MetricNames.CLI_PRE_TASKS_LATENCY]: hrTimeToMs(process.hrtime(cliPreTasksStart)),
   })
 
   // Show update notification if newer version is available
@@ -60,7 +61,7 @@ const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: bool
     const initTime = process.hrtime(initTimeStartTime)
     const initTimeMetric: Metric = {
       command: options.id,
-      initTime: hrTimeToMs(initTime),
+      [MetricNames.START_TIME]: hrTimeToMs(initTime),
     }
     TelemetryCollector.getCollector().registerMetric(initTimeMetric)
   }
