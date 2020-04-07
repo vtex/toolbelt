@@ -43,8 +43,20 @@ export class MetricReport {
     this.env = env
   }
 
-  public readonly metric: Metric
   public readonly env: MetricEnv
+  public metric: Metric
+
+  public addMetric(metricName: string, value: number | string) {
+    console.log(metricName, value)
+    this.metric[metricName] = value
+  }
+
+  public addMetrics(metrics: Record<string, number>) {
+    console.log(metrics)
+    Object.entries(metrics).forEach(([metricName, metricValue]) => {
+      this.metric[metricName] = metricValue
+    })
+  }
 
   public toObject() {
     return {
