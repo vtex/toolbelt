@@ -14,6 +14,10 @@ const MANIFEST_SCHEMA = 'https://raw.githubusercontent.com/vtex/node-vtex-api/ma
 export const MANIFEST_FILE_NAME = 'manifest.json'
 
 export const getAppRoot = () => {
+  if (process.env.OCLIF_COMPILATION) {
+    return ''
+  }
+
   const cwd = process.cwd()
   const { root: rootDirName } = path.parse(cwd)
 
