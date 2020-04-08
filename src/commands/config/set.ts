@@ -1,5 +1,4 @@
 import { flags } from '@oclif/command'
-import chalk from 'chalk'
 import { contains, values } from 'ramda'
 
 import { CommandError } from '../../errors'
@@ -12,14 +11,16 @@ const envValues = values(Environment)
 export default class ConfigSet extends CustomCommand {
   static description = 'Sets the current value for the given configuration'
 
-  static examples = []
+  static aliases = []
+
+  static examples = ['vtex apps:config:set env envValue', 'vtex config:set cluster clusterValue']
 
   static flags = {
     help: flags.help({ char: 'h' }),
   }
 
   static args = [
-    { name: 'configName', required: true },
+    { name: 'configName', required: true, options: ['env', 'cluster'] },
     { name: 'value', required: true },
   ]
 
@@ -40,8 +41,6 @@ export default class ConfigSet extends CustomCommand {
         saveCluster(value)
         log.info(`Successfully set cluster to "${value}"`)
         break
-      default:
-        throw new CommandError(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`)
     }
   }
 }
