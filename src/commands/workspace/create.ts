@@ -45,7 +45,7 @@ export const createWorkspace = async (name: string, production: boolean) => {
 export default class WorkspaceCreate extends CustomCommand {
   static description = 'Create a new workspace with this name'
 
-  static examples = []
+  static examples = ['vtex workspace:create workspaceName']
 
   static flags = {
     help: flags.help({ char: 'h' }),

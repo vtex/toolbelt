@@ -59,7 +59,7 @@ export const workspaceUse = async (name: string, production?: boolean, reset?: b
 export default class WorkspaceUse extends CustomCommand {
   static description = 'Use a workspace to perform operations'
 
-  static examples = []
+  static examples = ['vtex workspace:use workspaceName', 'vtex use worspaceName']
 
   static aliases = ['use']
 

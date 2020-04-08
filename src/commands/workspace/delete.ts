@@ -43,7 +43,7 @@ export const deleteWorkspaces = async (names = []): Promise<string[]> => {
 export default class WorkspaceDelete extends CustomCommand {
   static description = 'Delete one or many workspaces'
 
-  static examples = []
+  static examples = ['vtex workspace:delete workspaceName', 'vtex workspace:delete workspaceName1 workspaceName2']
 
   static flags = {
     help: flags.help({ char: 'h' }),

@@ -113,7 +113,9 @@ const printUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {
 export default class Update extends CustomCommand {
   static description = 'Update all installed apps to the latest (minor or patch) version'
 
-  static examples = []
+  static aliases = ['update']
+
+  static examples = ['vtex workspace:update', 'vtex update']
 
   static flags = {
     help: flags.help({ char: 'h' }),

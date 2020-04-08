@@ -43,7 +43,9 @@ const promptPromoteConfirm = (workspace: string): Promise<any> =>
 export default class WorkspacePromote extends CustomCommand {
   static description = 'Promote this workspace to master'
 
-  static examples = []
+  static aliases = ['promote']
+
+  static examples = ['vtex workspace:promote', 'vtex promote']
 
   static flags = {
     help: flags.help({ char: 'h' }),

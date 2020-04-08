@@ -12,7 +12,9 @@ const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 export default class WorkspaceList extends CustomCommand {
   static description = 'List workspaces on this account'
 
-  static examples = []
+  static aliases = ['workspace:ls']
+
+  static examples = ['vtex workspace:list', 'vtex workspace:ls']
 
   static flags = {
     help: flags.help({ char: 'h' }),

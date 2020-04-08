@@ -7,11 +7,11 @@ import log from '../../../logger'
 const { getDependencies } = apps
 
 export default class DepsList extends CustomCommand {
-  static aliases = []
+  static aliases = ['workspace:deps:ls', 'deps:list', 'deps:ls']
 
   static description = 'List your workspace dependencies'
 
-  static examples = []
+  static examples = ['vtex workspace:deps:list', 'vtex workspace:deps:ls', 'vtex deps:list', 'vtex deps:ls']
 
   static flags = {
     keys: flags.boolean({ char: 'k', description: 'Show only keys', default: false }),

@@ -39,13 +39,13 @@ export const resetWorkspace = async (account: string, workspace: string, product
 }
 
 export default class WorkspaceReset extends CustomCommand {
-  static description = 'Delete and create a workspace'
+  static description = 'Delete and recreate a workspace'
 
-  static examples = []
+  static examples = ['vtex workspace:reset', 'vtex workspace:reset workspaceName']
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    production: flags.boolean({ char: 'p', description: 'Re-create the workspace as a production one' }),
+    production: flags.boolean({ char: 'p', description: 'Re-create the workspace as a production one', default: false }),
     yes: flags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 

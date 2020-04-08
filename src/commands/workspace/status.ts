@@ -11,7 +11,7 @@ const workspaceState = (meta: WorkspaceResponse) => (meta.production ? 'producti
 export default class WorkspaceStatus extends CustomCommand {
   static description = 'Display information about a workspace'
 
-  static examples = []
+  static examples = ['vtex workspace:status']
 
   static flags = {
     help: flags.help({ char: 'h' }),

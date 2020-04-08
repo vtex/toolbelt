@@ -66,9 +66,11 @@ const printInstalledServices = () =>
 
 
 export default class InfraList extends CustomCommand {
-  static description = 'List installed services'
+  static description = 'List installed infra services'
 
-  static examples = []
+  static aliases = ['apps:infra:ls', 'infra:list', 'infra:ls']
+
+  static examples = ['vtex apps:infra:list', 'vtex infra:list', 'vtex infra:ls', 'vtex infra:ls infraService']
 
   static flags = {
     help: flags.help({ char: 'h' }),
@@ -83,6 +85,7 @@ export default class InfraList extends CustomCommand {
     const name = args.name
     const filter = flags.filter
     const available = flags.available
+    console.log({name})
     return available
       ? name
         ? printAvailableServiceVersions(name, filter)

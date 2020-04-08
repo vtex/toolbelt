@@ -14,7 +14,9 @@ const pretty = p => (p ? chalk.green('true') : chalk.red('false'))
 export default class WorkspaceInfo extends CustomCommand {
   static description = 'Display information about the current workspace'
 
-  static examples = []
+  static aliases = ['info']
+
+  static examples = ['vtex workspace:info', 'vtex info']
 
   static flags = {
     help: flags.help({ char: 'h' }),

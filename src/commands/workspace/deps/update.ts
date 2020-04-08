@@ -16,13 +16,11 @@ const cleanDeps = compose(keys, removeNpm)
 export default class DepsUpdate extends CustomCommand {
   static description = 'Update all workspace dependencies or a specific app@version'
 
-  static examples = []
+  static examples = ['vtex workspace:update', 'vtex update vtex.service-example@0.0.1']
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    // flag with a value (-n, --name=VALUE)
     name: flags.string({ char: 'n', description: 'name to print' }),
-    // flag with no value (-f, --force)
     force: flags.boolean({ char: 'f' }),
   }
 
@@ -36,7 +34,7 @@ export default class DepsUpdate extends CustomCommand {
       log.debug('Starting update process')
       const previousDeps = await getDependencies()
       let currentDeps
-      if (appsList.length === 0) {
+      if (args.appId === undefined) {
         currentDeps = await updateDependencies()
       } else {
         for (const locator of appsList) {

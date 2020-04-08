@@ -61,9 +61,11 @@ const installUpdates = (update: InfraUpdate) =>
 
 
 export default class InfraUpdateCommand extends CustomCommand {
-  static description = 'Update all installed services'
+  static description = 'Update all installed infra services'
 
-  static examples = []
+  static aliases = ['infra:update']
+
+  static examples = ['vtex workspace:infra:update', 'vtex infra:update']
 
   static flags = {
     help: flags.help({ char: 'h' }),
