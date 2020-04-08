@@ -5,12 +5,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- [telemetry:reporter] Create and send reporter meta metrics.
+
 ### Changed
 - Migrate to framework `oclif`.
 - Improve error logging in install command.
+- [telemetry:reporter] Refactor reporting.
 
 ### Fixed
-- Increase ErrorReport serialization depth.
+- [telemetry:ErrorReport] Increase ErrorReport serialization depth.
+- [telemetry:reporter] File locking error.
 - [vtex setup] Not running when flag `--all` is omitted.
 
 ## [2.97.0] - 2020-04-09
