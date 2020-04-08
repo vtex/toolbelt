@@ -2,14 +2,14 @@ import chalk from 'chalk'
 import { join } from 'path'
 import util from 'util'
 import { createLogger, format, transports } from 'winston'
-import { configDir } from './conf'
+import { PathConstants } from './lib/PathConstants'
 
 // Setup logging
 const VERBOSE = '--verbose'
 const isVerbose = process.argv.indexOf(VERBOSE) >= 0
 
 // The debug file is likely to be on ~/.config/configstore/vtex_debug.txt
-export const DEBUG_LOG_FILE_PATH = join(configDir, 'vtex_debug.json')
+export const DEBUG_LOG_FILE_PATH = join(PathConstants.LOGS_FOLDER, 'debug.json')
 
 const isObject = (a: any) => {
   return !!a && a.constructor === Object
