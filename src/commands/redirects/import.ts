@@ -91,7 +91,7 @@ let retryCount = 0
 export default class RedirectsImport extends CustomCommand {
   static description = 'Import redirects for the current account and workspace'
 
-  static examples = []
+  static examples = ['vtex redirects:import csvPath']
 
   static flags = {
     help: flags.help({ char: 'h' }),

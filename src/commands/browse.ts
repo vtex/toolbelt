@@ -39,7 +39,7 @@ export default class Browse extends CustomCommand {
 
   static description = 'Add app(s) to the manifest dependencies'
 
-  static examples = []
+  static examples = ['vtex browse']
 
   static flags = {
     help: flags.help({ char: 'h' }),

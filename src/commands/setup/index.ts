@@ -18,7 +18,7 @@ export const setup = async (ignoreLinked: boolean) => {
 export default class Setup extends CustomCommand {
   static description = 'Download react app typings, graphql app typings, lint config and tsconfig'
 
-  static examples = []
+  static examples = ['vtex setup']
 
   static flags = {
     help: flags.help({ char: 'h' }),

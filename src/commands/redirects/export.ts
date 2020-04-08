@@ -69,7 +69,7 @@ const handleExport = async (csvPath: string) => {
 export default class RedirectsExport extends CustomCommand {
   static description = 'Export all redirects in the current account and workspace'
 
-  static examples = []
+  static examples = ['vtex redirects:export csvPath']
 
   static flags = {
     help: flags.help({ char: 'h' }),

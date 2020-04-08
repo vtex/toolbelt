@@ -95,7 +95,7 @@ export const redirectsDelete = async (csvPath: string) => {
 export default class RedirectsDelete extends CustomCommand {
   static description = 'Delete redirects in the current account and workspace'
 
-  static examples = []
+  static examples = ['vtex redirects:delete csvPath']
 
   static flags = {
     help: flags.help({ char: 'h' }),
