@@ -1,5 +1,5 @@
 {
-  "name": "vtex3",
+  "name": "vtex",
   "description": "The platform for e-commerce apps",
   "version": "3.0.0-alpha.0",
   "author": "NataliaGodot @NataliaGodot",
@@ -139,7 +139,7 @@
   "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "vtex3",
+    "bin": "vtex",
     "plugins": [
       "@oclif/plugin-help"
     ]
