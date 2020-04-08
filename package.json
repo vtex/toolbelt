@@ -153,7 +153,7 @@
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rm -rf lib && tsc -b && OCLIF_COMPILATION=true oclif-dev manifest && cd docs && OCLIF_COMPILATION=true oclif-dev readme",
     "version": "oclif-dev readme && git add README.md",
     "exe": "node scripts/make-executable.js",
     "watch": "bash ./scripts/symlink.sh && yarn nodemon && yarn oclif-dev manifest",

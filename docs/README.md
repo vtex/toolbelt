@@ -19,7 +19,7 @@ $ npm install -g vtex
 $ vtex COMMAND
 running command...
 $ vtex (-v|--version|version)
-vtex/3.0.0 darwin-x64 node-v12.4.0
+vtex/3.0.0-alpha darwin-x64 node-v12.4.0
 $ vtex --help [COMMAND]
 USAGE
   $ vtex COMMAND
@@ -103,7 +103,7 @@ EXAMPLES
   vtex add vtex.service-example@0.x
 ```
 
-_See code: [src/commands/apps/add.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/add.ts)_
+_See code: [src/commands/apps/add.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/add.ts)_
 
 ## `vtex apps:deploy [APPID]`
 
@@ -126,7 +126,7 @@ EXAMPLES
   vtex deploy vtex.service-example@0.0.1
 ```
 
-_See code: [src/commands/apps/deploy.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/deploy.ts)_
+_See code: [src/commands/apps/deploy.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/deploy.ts)_
 
 ## `vtex apps:deprecate APPID`
 
@@ -148,7 +148,7 @@ EXAMPLES
   vtex deprecate vtex.service-example@0.0.1
 ```
 
-_See code: [src/commands/apps/deprecate.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/deprecate.ts)_
+_See code: [src/commands/apps/deprecate.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/deprecate.ts)_
 
 ## `vtex apps:infra:install SERVICEID`
 
@@ -170,7 +170,7 @@ EXAMPLES
   vtex infra:install infra-service@0.0.1
 ```
 
-_See code: [src/commands/apps/infra/install.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/infra/install.ts)_
+_See code: [src/commands/apps/infra/install.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/infra/install.ts)_
 
 ## `vtex apps:infra:list [NAME]`
 
@@ -197,7 +197,7 @@ EXAMPLES
   vtex infra:ls infraService
 ```
 
-_See code: [src/commands/apps/infra/list.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/infra/list.ts)_
+_See code: [src/commands/apps/infra/list.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/infra/list.ts)_
 
 ## `vtex apps:init`
 
@@ -218,7 +218,7 @@ EXAMPLES
   vtex init
 ```
 
-_See code: [src/commands/apps/init.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/init.ts)_
+_See code: [src/commands/apps/init.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/init.ts)_
 
 ## `vtex apps:install [APPID]`
 
@@ -242,7 +242,7 @@ EXAMPLES
   vtex apps:install vtex.service-example@0.0.1
 ```
 
-_See code: [src/commands/apps/install.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/install.ts)_
+_See code: [src/commands/apps/install.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/install.ts)_
 
 ## `vtex apps:link`
 
@@ -263,7 +263,7 @@ ALIASES
   $ vtex link
 ```
 
-_See code: [src/commands/apps/link.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/link.ts)_
+_See code: [src/commands/apps/link.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/link.ts)_
 
 ## `vtex apps:list`
 
@@ -288,7 +288,7 @@ EXAMPLES
   vtex ls
 ```
 
-_See code: [src/commands/apps/list.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/list.ts)_
+_See code: [src/commands/apps/list.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/list.ts)_
 
 ## `vtex apps:publish`
 
@@ -313,7 +313,7 @@ EXAMPLES
   vtex publish
 ```
 
-_See code: [src/commands/apps/publish.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/publish.ts)_
+_See code: [src/commands/apps/publish.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/publish.ts)_
 
 ## `vtex apps:release [RELEASETYPE] [TAGNAME]`
 
@@ -338,7 +338,7 @@ EXAMPLES
   vtex release pre
 ```
 
-_See code: [src/commands/apps/release.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/release.ts)_
+_See code: [src/commands/apps/release.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/release.ts)_
 
 ## `vtex apps:settings:get APPNAME [OPTIONS]`
 
@@ -360,7 +360,7 @@ EXAMPLES
   vtex settings:get vtex.service-example
 ```
 
-_See code: [src/commands/apps/settings/get.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/settings/get.ts)_
+_See code: [src/commands/apps/settings/get.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/settings/get.ts)_
 
 ## `vtex apps:settings:set APPNAME FIELD VALUE`
 
@@ -381,7 +381,7 @@ EXAMPLES
   vtex-test settings:set vtex.service-example fieldName fieldValue
 ```
 
-_See code: [src/commands/apps/settings/set.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/settings/set.ts)_
+_See code: [src/commands/apps/settings/set.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/settings/set.ts)_
 
 ## `vtex apps:settings:unset APPNAME FIELD`
 
@@ -402,7 +402,7 @@ EXAMPLES
   vtex settings:unset vtex.service-example fieldName
 ```
 
-_See code: [src/commands/apps/settings/unset.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/settings/unset.ts)_
+_See code: [src/commands/apps/settings/unset.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/settings/unset.ts)_
 
 ## `vtex apps:undeprecate APPID`
 
@@ -424,7 +424,7 @@ EXAMPLES
   vtex undeprecate vtex.service-example@0.0.1
 ```
 
-_See code: [src/commands/apps/undeprecate.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/undeprecate.ts)_
+_See code: [src/commands/apps/undeprecate.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/undeprecate.ts)_
 
 ## `vtex apps:uninstall [APPNAME]`
 
@@ -448,7 +448,7 @@ EXAMPLES
   vtex apps:uninstall vtex.service-example@0.x
 ```
 
-_See code: [src/commands/apps/uninstall.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/uninstall.ts)_
+_See code: [src/commands/apps/uninstall.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/uninstall.ts)_
 
 ## `vtex apps:unlink [APPID]`
 
@@ -472,7 +472,7 @@ EXAMPLES
   vtex apps:unlink vtex.service-example@0.x
 ```
 
-_See code: [src/commands/apps/unlink.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/apps/unlink.ts)_
+_See code: [src/commands/apps/unlink.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/apps/unlink.ts)_
 
 ## `vtex auth:account`
 
@@ -493,7 +493,7 @@ EXAMPLES
   vtex account
 ```
 
-_See code: [src/commands/auth/account.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/account.ts)_
+_See code: [src/commands/auth/account.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/account.ts)_
 
 ## `vtex auth:login [ACCOUNT] [WORKSPACE]`
 
@@ -516,7 +516,7 @@ EXAMPLES
   vtex login storecomponents myworkspace
 ```
 
-_See code: [src/commands/auth/login.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/login.ts)_
+_See code: [src/commands/auth/login.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/login.ts)_
 
 ## `vtex auth:logout`
 
@@ -537,7 +537,7 @@ EXAMPLES
   vtex logout
 ```
 
-_See code: [src/commands/auth/logout.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/logout.ts)_
+_See code: [src/commands/auth/logout.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/logout.ts)_
 
 ## `vtex auth:support ACCOUNT`
 
@@ -558,7 +558,7 @@ EXAMPLES
   vtex auth:support
 ```
 
-_See code: [src/commands/auth/support.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/support.ts)_
+_See code: [src/commands/auth/support.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/support.ts)_
 
 ## `vtex auth:switch ACCOUNT [WORKSPACE]`
 
@@ -580,7 +580,7 @@ EXAMPLES
   vtex switch storecomponents myworkspace
 ```
 
-_See code: [src/commands/auth/switch.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/switch.ts)_
+_See code: [src/commands/auth/switch.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/switch.ts)_
 
 ## `vtex auth:token`
 
@@ -601,7 +601,7 @@ EXAMPLES
   vtex token
 ```
 
-_See code: [src/commands/auth/token.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/token.ts)_
+_See code: [src/commands/auth/token.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/token.ts)_
 
 ## `vtex auth:url`
 
@@ -622,7 +622,7 @@ EXAMPLES
   vtex url
 ```
 
-_See code: [src/commands/auth/url.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/url.ts)_
+_See code: [src/commands/auth/url.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/url.ts)_
 
 ## `vtex auth:whoami`
 
@@ -643,7 +643,7 @@ EXAMPLES
   vtex whoami
 ```
 
-_See code: [src/commands/auth/whoami.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/whoami.ts)_
+_See code: [src/commands/auth/whoami.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/whoami.ts)_
 
 ## `vtex auth:workspace`
 
@@ -664,7 +664,7 @@ EXAMPLES
   vtex workspace
 ```
 
-_See code: [src/commands/auth/workspace.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/auth/workspace.ts)_
+_See code: [src/commands/auth/workspace.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/auth/workspace.ts)_
 
 ## `vtex browse [ENDPOINTINPUT]`
 
@@ -682,7 +682,7 @@ EXAMPLE
   vtex browse
 ```
 
-_See code: [src/commands/browse.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/browse.ts)_
+_See code: [src/commands/browse.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/browse.ts)_
 
 ## `vtex config:get CONFIGNAME`
 
@@ -701,7 +701,7 @@ EXAMPLES
   vtex config:get cluster
 ```
 
-_See code: [src/commands/config/get.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/config/get.ts)_
+_See code: [src/commands/config/get.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/config/get.ts)_
 
 ## `vtex config:set CONFIGNAME VALUE`
 
@@ -719,7 +719,7 @@ EXAMPLES
   vtex config:set cluster clusterValue
 ```
 
-_See code: [src/commands/config/set.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/config/set.ts)_
+_See code: [src/commands/config/set.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/config/set.ts)_
 
 ## `vtex debug:dotnet DEBUGINST`
 
@@ -736,7 +736,7 @@ EXAMPLE
   vtex debig:dotnet debugInst
 ```
 
-_See code: [src/commands/debug/dotnet.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/debug/dotnet.ts)_
+_See code: [src/commands/debug/dotnet.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/debug/dotnet.ts)_
 
 ## `vtex edition:get`
 
@@ -753,7 +753,7 @@ EXAMPLE
   vtex edition:get
 ```
 
-_See code: [src/commands/edition/get.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/edition/get.ts)_
+_See code: [src/commands/edition/get.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/edition/get.ts)_
 
 ## `vtex edition:set EDITION`
 
@@ -770,7 +770,7 @@ EXAMPLE
   vtex edition:set editionName
 ```
 
-_See code: [src/commands/edition/set.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/edition/set.ts)_
+_See code: [src/commands/edition/set.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/edition/set.ts)_
 
 ## `vtex help [COMMAND]`
 
@@ -804,7 +804,7 @@ EXAMPLE
   vtex redirects:delete csvPath
 ```
 
-_See code: [src/commands/redirects/delete.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/redirects/delete.ts)_
+_See code: [src/commands/redirects/delete.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/redirects/delete.ts)_
 
 ## `vtex redirects:export CSVPATH`
 
@@ -821,7 +821,7 @@ EXAMPLE
   vtex redirects:export csvPath
 ```
 
-_See code: [src/commands/redirects/export.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/redirects/export.ts)_
+_See code: [src/commands/redirects/export.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/redirects/export.ts)_
 
 ## `vtex redirects:import CSVPATH`
 
@@ -839,7 +839,7 @@ EXAMPLE
   vtex redirects:import csvPath
 ```
 
-_See code: [src/commands/redirects/import.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/redirects/import.ts)_
+_See code: [src/commands/redirects/import.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/redirects/import.ts)_
 
 ## `vtex setup`
 
@@ -857,7 +857,7 @@ EXAMPLE
   vtex setup
 ```
 
-_See code: [src/commands/setup/index.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/setup/index.ts)_
+_See code: [src/commands/setup/index.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/setup/index.ts)_
 
 ## `vtex test`
 
@@ -872,7 +872,7 @@ OPTIONS
   -u, --unsafe  Allow tests with Typescript errors
 ```
 
-_See code: [src/commands/test/index.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/test/index.ts)_
+_See code: [src/commands/test/index.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/test/index.ts)_
 
 ## `vtex test:ab:finish`
 
@@ -886,7 +886,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/test/ab/finish.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/test/ab/finish.ts)_
+_See code: [src/commands/test/ab/finish.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/test/ab/finish.ts)_
 
 ## `vtex test:ab:start`
 
@@ -900,7 +900,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/test/ab/start.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/test/ab/start.ts)_
+_See code: [src/commands/test/ab/start.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/test/ab/start.ts)_
 
 ## `vtex test:ab:status`
 
@@ -914,7 +914,7 @@ OPTIONS
   -h, --help  show CLI help
 ```
 
-_See code: [src/commands/test/ab/status.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/test/ab/status.ts)_
+_See code: [src/commands/test/ab/status.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/test/ab/status.ts)_
 
 ## `vtex test:e2e`
 
@@ -939,7 +939,7 @@ ALIASES
   $ vtex test:e2e
 ```
 
-_See code: [src/commands/test/e2e.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/test/e2e.ts)_
+_See code: [src/commands/test/e2e.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/test/e2e.ts)_
 
 ## `vtex workspace:create [WORKSPACENAME]`
 
@@ -957,7 +957,7 @@ EXAMPLE
   vtex workspace:create workspaceName
 ```
 
-_See code: [src/commands/workspace/create.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/create.ts)_
+_See code: [src/commands/workspace/create.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/create.ts)_
 
 ## `vtex workspace:delete WORKSPACE1 [ITHWORKSPACE]`
 
@@ -977,7 +977,7 @@ EXAMPLES
   vtex workspace:delete workspaceName1 workspaceName2
 ```
 
-_See code: [src/commands/workspace/delete.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/delete.ts)_
+_See code: [src/commands/workspace/delete.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/delete.ts)_
 
 ## `vtex workspace:deps:diff [WORKSPACE1] [WORKSPACE2]`
 
@@ -997,7 +997,7 @@ EXAMPLES
   vtex diff
 ```
 
-_See code: [src/commands/workspace/deps/diff.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/deps/diff.ts)_
+_See code: [src/commands/workspace/deps/diff.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/deps/diff.ts)_
 
 ## `vtex workspace:deps:list`
 
@@ -1022,7 +1022,7 @@ EXAMPLES
   vtex deps:ls
 ```
 
-_See code: [src/commands/workspace/deps/list.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/deps/list.ts)_
+_See code: [src/commands/workspace/deps/list.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/deps/list.ts)_
 
 ## `vtex workspace:deps:update [APPID]`
 
@@ -1042,7 +1042,7 @@ EXAMPLES
   vtex update vtex.service-example@0.0.1
 ```
 
-_See code: [src/commands/workspace/deps/update.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/deps/update.ts)_
+_See code: [src/commands/workspace/deps/update.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/deps/update.ts)_
 
 ## `vtex workspace:info`
 
@@ -1063,7 +1063,7 @@ EXAMPLES
   vtex info
 ```
 
-_See code: [src/commands/workspace/info.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/info.ts)_
+_See code: [src/commands/workspace/info.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/info.ts)_
 
 ## `vtex workspace:infra:update`
 
@@ -1084,7 +1084,7 @@ EXAMPLES
   vtex infra:update
 ```
 
-_See code: [src/commands/workspace/infra/update.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/infra/update.ts)_
+_See code: [src/commands/workspace/infra/update.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/infra/update.ts)_
 
 ## `vtex workspace:list`
 
@@ -1105,7 +1105,7 @@ EXAMPLES
   vtex workspace:ls
 ```
 
-_See code: [src/commands/workspace/list.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/list.ts)_
+_See code: [src/commands/workspace/list.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/list.ts)_
 
 ## `vtex workspace:promote`
 
@@ -1126,7 +1126,7 @@ EXAMPLES
   vtex promote
 ```
 
-_See code: [src/commands/workspace/promote.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/promote.ts)_
+_See code: [src/commands/workspace/promote.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/promote.ts)_
 
 ## `vtex workspace:reset [WORKSPACENAME]`
 
@@ -1146,7 +1146,7 @@ EXAMPLES
   vtex workspace:reset workspaceName
 ```
 
-_See code: [src/commands/workspace/reset.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/reset.ts)_
+_See code: [src/commands/workspace/reset.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/reset.ts)_
 
 ## `vtex workspace:status [WORKSPACENAME]`
 
@@ -1163,7 +1163,7 @@ EXAMPLE
   vtex workspace:status
 ```
 
-_See code: [src/commands/workspace/status.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/status.ts)_
+_See code: [src/commands/workspace/status.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/status.ts)_
 
 ## `vtex workspace:update`
 
@@ -1184,7 +1184,7 @@ EXAMPLES
   vtex update
 ```
 
-_See code: [src/commands/workspace/update.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/update.ts)_
+_See code: [src/commands/workspace/update.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/update.ts)_
 
 ## `vtex workspace:use WORKSPACE`
 
@@ -1207,5 +1207,5 @@ EXAMPLES
   vtex use worspaceName
 ```
 
-_See code: [src/commands/workspace/use.ts](https://github.com/vtex/toolbelt/blob/v3.0.0/src/commands/workspace/use.ts)_
+_See code: [src/commands/workspace/use.ts](https://github.com/vtex/toolbelt/blob/v3.0.0-alpha/src/commands/workspace/use.ts)_
 <!-- commandsstop -->
