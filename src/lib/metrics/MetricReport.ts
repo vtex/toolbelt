@@ -43,6 +43,7 @@ export class MetricReport {
   }
 
   public readonly metric: Metric
+
   public readonly env: MetricEnv
 
   public toObject() {

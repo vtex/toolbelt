@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import { diffJson } from 'diff'
 import { compose, keys, map, path } from 'ramda'
@@ -19,9 +19,9 @@ export default class DepsUpdate extends CustomCommand {
   static examples = ['vtex workspace:update', 'vtex update vtex.service-example@0.0.1']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    name: flags.string({ char: 'n', description: 'name to print' }),
-    force: flags.boolean({ char: 'f' }),
+    help: oclifFlags.help({ char: 'h' }),
+    name: oclifFlags.string({ char: 'n', description: 'name to print' }),
+    force: oclifFlags.boolean({ char: 'f' }),
   }
 
   static args = [{ name: 'appId', required: false }]

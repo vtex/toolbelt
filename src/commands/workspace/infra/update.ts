@@ -9,7 +9,7 @@ import { Region } from '../../../conf'
 import log from '../../../logger'
 import { diffVersions, getTag } from '../../../lib/infra/utils'
 import { CustomCommand } from '../../../lib/CustomCommand'
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { promptConfirm } from '../../../lib/prompts'
 
 const { listAvailableServices, listInstalledServices, installService } = router
@@ -59,7 +59,6 @@ const hasUpdate = (update: InfraUpdate): boolean => Object.keys(update).length >
 const installUpdates = (update: InfraUpdate) =>
   Promise.all(Object.keys(update).map(name => installService(name, update[name].latest)))
 
-
 export default class InfraUpdateCommand extends CustomCommand {
   static description = 'Update all installed infra services'
 
@@ -68,7 +67,7 @@ export default class InfraUpdateCommand extends CustomCommand {
   static examples = ['vtex workspace:infra:update', 'vtex infra:update']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

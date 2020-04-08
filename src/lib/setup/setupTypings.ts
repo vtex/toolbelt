@@ -21,7 +21,7 @@ const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLin
   const vendor = getVendor(appId)
   const linked = isLinked({ version: appId, vendor, name: '', builders: {} })
 
-  const oldSuffix = `/_types/react`
+  const oldSuffix = '/_types/react'
   const newSuffix = `/@types/${appName}`
 
   const base =

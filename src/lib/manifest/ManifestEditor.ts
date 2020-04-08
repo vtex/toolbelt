@@ -6,6 +6,7 @@ import { ManifestValidator } from './ManifestValidator'
 
 export class ManifestEditor {
   public static readonly MANIFEST_FILE_NAME = 'manifest.json'
+
   public static readonly MANIFEST_SCHEMA =
     'https://raw.githubusercontent.com/vtex/node-vtex-api/master/gen/manifest.schema'
 
@@ -41,6 +42,7 @@ export class ManifestEditor {
   }
 
   public manifest: Manifest
+
   constructor(public path = ManifestEditor.manifestPath) {}
 
   public async init() {

@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { contains, values } from 'ramda'
 
 import { CommandError } from '../../errors'
@@ -16,7 +16,7 @@ export default class ConfigSet extends CustomCommand {
   static examples = ['vtex apps:config:set env envValue', 'vtex config:set cluster clusterValue']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [
@@ -32,7 +32,9 @@ export default class ConfigSet extends CustomCommand {
     switch (name) {
       case 'env':
         if (!contains(value, envValues)) {
-          throw new CommandError(`Invalid value for environment "${value}". Possible values are: ${envValues.join(', ')}`)
+          throw new CommandError(
+            `Invalid value for environment "${value}". Possible values are: ${envValues.join(', ')}`
+          )
         }
         saveEnvironment(value as Environment)
         log.info(`Successfully set environment to "${value}"`)

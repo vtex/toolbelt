@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import { contains, flatten, head, tail } from 'ramda'
 
@@ -46,9 +46,9 @@ export default class WorkspaceDelete extends CustomCommand {
   static examples = ['vtex workspace:delete workspaceName', 'vtex workspace:delete workspaceName1 workspaceName2']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    force: flags.string({ char: 'f', description: `Ignore if you're currently using the workspace` }),
-    yes: flags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
+    help: oclifFlags.help({ char: 'h' }),
+    force: oclifFlags.string({ char: 'f', description: "Ignore if you're currently using the workspace" }),
+    yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 
   static args = [
@@ -60,7 +60,7 @@ export default class WorkspaceDelete extends CustomCommand {
     const { raw, flags } = this.parse(WorkspaceDelete)
     const names = this.getAllArgs(raw)
     const preConfirm = flags.yes
-    const force = flags.force
+    const { force } = flags
     log.debug(`Deleting workspace${names.length > 1 ? 's' : ''}:`, names.join(', '))
 
     if (!force && contains(workspace, names)) {
@@ -75,7 +75,7 @@ export default class WorkspaceDelete extends CustomCommand {
 
     const deleted = await deleteWorkspaces(names)
     if (contains(workspace, deleted)) {
-      log.warn(`The workspace you were using was deleted`)
+      log.warn('The workspace you were using was deleted')
       return workspaceUse('master')
     }
   }

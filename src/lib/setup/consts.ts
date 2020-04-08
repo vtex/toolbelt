@@ -30,7 +30,7 @@ coverage/
 *.snap.ts
 `
 
-export const CONTENT_PRETTIER_RC = `@vtex/prettier-config`
+export const CONTENT_PRETTIER_RC = '@vtex/prettier-config'
 
 export const CONTENT_BASE_ESLINT_RC = {
   extends: 'vtex',

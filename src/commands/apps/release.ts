@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { indexOf, prop } from 'ramda'
 import semver from 'semver'
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import log from '../../logger'
 import {
@@ -79,14 +79,26 @@ export default class Release extends CustomCommand {
 
   static aliases = ['release']
 
-  static examples = ['vtex apps:release', 'vtex release', 'vtex release patch', 'vtex release patch beta', 'vtex release minor stable', 'vtex release pre']
+  static examples = [
+    'vtex apps:release',
+    'vtex release',
+    'vtex release patch',
+    'vtex release patch beta',
+    'vtex release minor stable',
+    'vtex release pre',
+  ]
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [
-    { name: 'releaseType', required: false, default: 'patch', options: [...supportedReleaseTypes, ...Object.keys(releaseTypeAliases)] },
+    {
+      name: 'releaseType',
+      required: false,
+      default: 'patch',
+      options: [...supportedReleaseTypes, ...Object.keys(releaseTypeAliases)],
+    },
     { name: 'tagName', required: false, default: 'beta', options: supportedTagNames },
   ]
 

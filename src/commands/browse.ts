@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import opn from 'opn'
@@ -36,14 +36,13 @@ const prepareSupportBrowser = async (account: string, workspace: string): Promis
 }
 
 export default class Browse extends CustomCommand {
-
   static description = 'Add app(s) to the manifest dependencies'
 
   static examples = ['vtex browse']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    qr: flags.boolean({ char: 'q', description: 'Outputs a QR Code on the terminal' }),
+    help: oclifFlags.help({ char: 'h' }),
+    qr: oclifFlags.boolean({ char: 'q', description: 'Outputs a QR Code on the terminal' }),
   }
 
   static args = [{ name: 'endpointInput' }]

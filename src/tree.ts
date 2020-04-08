@@ -155,7 +155,7 @@ export default {
         type: 'boolean',
       },
       {
-        description: `Don't watch for file changes after initial link`,
+        description: "Don't watch for file changes after initial link",
         long: 'no-watch',
         type: 'boolean',
       },

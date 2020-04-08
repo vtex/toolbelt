@@ -31,7 +31,7 @@ export async function checkAndOpenNPSLink() {
 
   if (moment() > nextFeedbackDate) {
     const shouldOpenFeedbackForm = await promptConfirm(
-      `Help us evolve VTEX IO! Can you fill in our feedback form?`,
+      'Help us evolve VTEX IO! Can you fill in our feedback form?',
       true
     )
     if (shouldOpenFeedbackForm) {

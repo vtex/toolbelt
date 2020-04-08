@@ -9,7 +9,9 @@ const EOT = '\x04'
 
 export class Runtime {
   private region: string
+
   private account: string
+
   private workspace: string
 
   constructor(context: IOContext) {

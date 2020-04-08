@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { map, prop } from 'ramda'
@@ -44,7 +44,7 @@ export default class ABTestFinish extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []
@@ -56,7 +56,7 @@ export default class ABTestFinish extends CustomCommand {
     const workspace = await promptWorkspaceToFinishABTest()
     await promptContinue(workspace)
     log.info('Finishing A/B tests')
-    log.info(`Latest results:`)
+    log.info('Latest results:')
     await abTestStatus()
     await abtester.finish(workspace)
     log.info(`A/B testing with workspace ${chalk.blue(workspace)} is now finished`)

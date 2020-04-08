@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 'ramda'
@@ -8,7 +8,15 @@ import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../../lib/prompts'
 import { CustomCommand } from '../../../lib/CustomCommand'
-import { SIGNIFICANCE_LEVELS, abtester, formatDays, installedABTester, promptProductionWorkspace, promptProportionTrafic, promptConstraintDuration } from '../../../lib/test/ab'
+import {
+  SIGNIFICANCE_LEVELS,
+  abtester,
+  formatDays,
+  installedABTester,
+  promptProductionWorkspace,
+  promptProportionTrafic,
+  promptConstraintDuration,
+} from '../../../lib/test/ab'
 
 const promptSignificanceLevel = async (): Promise<string> => {
   const significanceTimePreviews = await Promise.all(
@@ -57,7 +65,7 @@ export default class ABTestStart extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

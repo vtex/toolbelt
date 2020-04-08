@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
@@ -44,9 +44,13 @@ export default class WorkspaceReset extends CustomCommand {
   static examples = ['vtex workspace:reset', 'vtex workspace:reset workspaceName']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    production: flags.boolean({ char: 'p', description: 'Re-create the workspace as a production one', default: false }),
-    yes: flags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
+    help: oclifFlags.help({ char: 'h' }),
+    production: oclifFlags.boolean({
+      char: 'p',
+      description: 'Re-create the workspace as a production one',
+      default: false,
+    }),
+    yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 
   static args = [{ name: 'workspaceName', required: false }]
@@ -57,7 +61,7 @@ export default class WorkspaceReset extends CustomCommand {
     const account = getAccount()
     const workspace = args.workspaceName || getWorkspace()
     const preConfirm = flags.yes
-    const production = flags.production
+    const { production } = flags
 
     log.debug('Resetting workspace', workspace)
 

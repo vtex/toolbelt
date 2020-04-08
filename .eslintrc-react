@@ -6,6 +6,7 @@
     "jest": true
   },
   "rules": {
-    "no-restricted-imports": "warn"
+    "no-restricted-imports": "warn",
+    "@typescript-eslint/explicit-member-accessibility": "off"
   }
 }

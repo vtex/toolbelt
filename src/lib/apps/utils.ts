@@ -7,7 +7,7 @@ import semverDiff from 'semver-diff'
 import { apps, createClients, workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
-import { ManifestEditor } from '../../lib/manifest'
+import { ManifestEditor } from '../manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 
@@ -199,7 +199,7 @@ export function optionsFormatter(billingOptions: BillingOptions) {
 
 export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
   const http = axios.create({
-    baseURL: `https://vtex.myvtex.com`,
+    baseURL: 'https://vtex.myvtex.com',
     timeout: cliRoute === 'link' ? builderHubMessagesLinkTimeout : builderHubMessagesPublishTimeout,
   })
   try {

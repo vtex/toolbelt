@@ -78,9 +78,9 @@ const onLog = (
 ): Unlisten => {
   const source = `${colossusEndpoint()}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
   const es = createEventSource(source)
-  es.onopen = onOpen(`${logLevel} log`)
-  es.onmessage = compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage)
-  es.onerror = onError(`${logLevel} log`)
+  es.addEventListener('open', onOpen(`${logLevel} log`))
+  es.addEventListener('message', compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage))
+  es.addEventListener('error', onError(`${logLevel} log`))
   return es.close.bind(es)
 }
 
@@ -95,9 +95,9 @@ export const onEvent = (
     ctx.workspace
   }/events?onUnsubscribe=link_interrupted&sender=${sender}${parseKeyToQueryParameter(keys)}`
   const es = createEventSource(source)
-  es.onopen = onOpen('event')
-  es.onmessage = compose(maybeCall(callback), filterMessage(subject), parseMessage)
-  es.onerror = onError('event')
+  es.addEventListener('open', onOpen('event'))
+  es.addEventListener('message', compose(maybeCall(callback), filterMessage(subject), parseMessage))
+  es.addEventListener('error', onError('event'))
   return es.close.bind(es)
 }
 
@@ -167,16 +167,16 @@ export const onAuth = (
   log.debug(`Listening for auth events from: ${source}`)
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
-    es.onmessage = (msg: MessageJSON) => {
+    es.addEventListener('message', (msg: MessageJSON) => {
       const { body: token } = JSON.parse(msg.data) as { body: string }
       es.close()
       resolve([token, returnUrl])
-    }
+    })
 
-    es.onerror = event => {
+    es.addEventListener('error', event => {
       es.close()
       const errMessage = `Connection to login server has failed${event.status ? ` with status ${event.status}` : ''}`
       reject(new SSEConnectionError(errMessage, event.status))
-    }
+    })
   })
 }

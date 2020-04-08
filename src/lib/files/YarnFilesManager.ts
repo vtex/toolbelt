@@ -22,6 +22,7 @@ export class YarnFilesManager {
   ]
 
   private static readonly BUILDER_HUB_LINKED_DEPS_DIR = '.linked_deps'
+
   private static readonly BUILDER_HUB_LINKED_DEPS_CONFIG_PATH = join(
     YarnFilesManager.BUILDER_HUB_LINKED_DEPS_DIR,
     '.config'

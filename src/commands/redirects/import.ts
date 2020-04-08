@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { createHash } from 'crypto'
 import { readFile, readJson, remove, writeFile } from 'fs-extra'
 import { difference, isEmpty, length, map, pluck } from 'ramda'
@@ -11,9 +11,22 @@ import { RedirectInput } from '../../clients/rewriter'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
 import { redirectsDelete } from './delete'
-import { accountAndWorkspace, handleReadError, METAINFO_FILE, readCSV, validateInput, splitJsonArray, progressBar, saveMetainfo, deleteMetainfo, showGraphQLErrors, MAX_RETRIES, RETRY_INTERVAL_S, sleep } from '../../lib/redirects/utils'
+import {
+  accountAndWorkspace,
+  handleReadError,
+  METAINFO_FILE,
+  readCSV,
+  validateInput,
+  splitJsonArray,
+  progressBar,
+  saveMetainfo,
+  deleteMetainfo,
+  showGraphQLErrors,
+  MAX_RETRIES,
+  RETRY_INTERVAL_S,
+  sleep,
+} from '../../lib/redirects/utils'
 import { CustomCommand } from '../../lib/CustomCommand'
-
 
 const IMPORTS = 'imports'
 const [account, workspace] = accountAndWorkspace
@@ -94,16 +107,16 @@ export default class RedirectsImport extends CustomCommand {
   static examples = ['vtex redirects:import csvPath']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    reset: flags.boolean({ char: 'r', description: 'Remove all previous redirects', default: false }),
+    help: oclifFlags.help({ char: 'h' }),
+    reset: oclifFlags.boolean({ char: 'r', description: 'Remove all previous redirects', default: false }),
   }
 
   static args = [{ name: 'csvPath', required: true }]
 
   async run() {
     const { args, flags } = this.parse(RedirectsImport)
-    const reset = flags.reset
-    const csvPath = args.csvPath
+    const { reset } = flags
+    const { csvPath } = args
     let indexedRoutes
     let importedRoutes
     try {

@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import { CustomCommand } from '../../lib/CustomCommand'
 import { SessionManager } from '../../lib/session/SessionManager'
@@ -12,7 +12,7 @@ export default class Logout extends CustomCommand {
   static examples = ['vtex auth:logout', 'vtex logout']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

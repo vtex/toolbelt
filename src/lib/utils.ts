@@ -199,7 +199,7 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
         R.map(k => R.head(R.split('@', k))),
         R.flatten,
         R.pluck('value'),
-        R.filter((k: any) => !!k.removed || !!k.added)
+        R.filter((k: any) => Boolean(k.removed) || Boolean(k.added))
       )(depsDiff)
     ),
   ].sort((strA, strB) => strA.localeCompare(strB))
@@ -229,12 +229,12 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
   setObjectValues(
     removedDeps,
     k => chalk.red(`${cleanVersion(k)}`),
-    (k: any) => !!k.removed
+    (k: any) => Boolean(k.removed)
   )
   setObjectValues(
     addedDeps,
     k => chalk.green(`${cleanVersion(k)}`),
-    (k: any) => !!k.added
+    (k: any) => Boolean(k.added)
   )
 
   const table = createTable() // Set table headers.

@@ -1,8 +1,6 @@
 {
   "extends": [
-    "vtex",
-    "oclif",
-    "oclif-typescript"
+    "vtex"
   ],
   "root": true,
   "env": {

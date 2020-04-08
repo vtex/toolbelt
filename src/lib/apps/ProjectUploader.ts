@@ -55,11 +55,15 @@ export class ChangeSizeLimitError extends Error {
 
 export class ProjectUploader {
   public static CHANGE_BYTESIZE_LIMIT = 50 * MB
+
   public static PROJECT_BYTESIZE_LIMIT = 90 * MB
+
   public static BYTES_PROJECT_SIZE_SCALE = [10 * MB, 20 * MB]
 
   public static getProjectUploader(appId: string, context: Context, clientTimeout?: number): ProjectUploader
+
   public static getProjectUploader(appId: string, builderHubClient: Builder): ProjectUploader
+
   public static getProjectUploader(appId: string, contextOrClient: Builder | Context, clientTimeout = 60000) {
     let builderHubClient: Builder
     if (contextOrClient instanceof Builder) {
@@ -115,8 +119,10 @@ export class ProjectUploader {
 
   // prettier-ignore
   private async sendWholeProject(operation: 'link' | 'test', files: FileToSend[], requestParams: RequestParams): Promise<BuildResult>
+
   // prettier-ignore
   private async sendWholeProject(operation: 'publish', files: FileToSend[], requestParams: RequestParams, publishTag: string): Promise<BuildResult>
+
   // prettier-ignore
   private async sendWholeProject(operation: 'link' | 'publish' | 'test', files: FileToSend[], requestParams: RequestParams, publishTag?: string) {
     this.checkSizeLimits(files)
@@ -137,7 +143,7 @@ export class ProjectUploader {
     }
 
     if (operation === 'publish') {
-      return this.builderHubClient.publishApp(this.appName, zipFile, { ...builderHubResolvingOpts, tag: publishTag }, requestParams)
+      return this.builderHubClient.publishApp(this.appName, zipFile, {...builderHubResolvingOpts, tag: publishTag}, requestParams)
     }
 
     return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)

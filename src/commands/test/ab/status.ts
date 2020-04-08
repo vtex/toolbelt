@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import moment from 'moment'
 import numbro from 'numbro'
@@ -102,11 +102,11 @@ const printResultsTable = (testInfo: ABTestStatusInterface) => {
   // probabilitiesTable.push(bold(['Data as extreme as the observed', `Workspaces being equal (both to ${chalk.blue(WorkspaceA)}).`, formatPercent(PValue)]))
 
   const resultsTable = createTable()
-  resultsTable.push(bold([`Start Date`, `${moment(ABTestBeginning).format('DD-MMM-YYYY HH:mm')} (UTC)`]))
+  resultsTable.push(bold(['Start Date', `${moment(ABTestBeginning).format('DD-MMM-YYYY HH:mm')} (UTC)`]))
   const nowUTC = moment.utc()
   const runningTime = nowUTC.diff(moment.utc(ABTestBeginning), 'minutes')
-  resultsTable.push(bold([`Running Time`, formatDuration(runningTime)]))
-  resultsTable.push(bold([chalk.bold.green(`Winner`), chalk.bold.green(Winner)]))
+  resultsTable.push(bold(['Running Time', formatDuration(runningTime)]))
+  resultsTable.push(bold([chalk.bold.green('Winner'), chalk.bold.green(Winner)]))
 
   console.log(`Raw Data:\n${rawDataTable.toString()}\n`)
   console.log(`Comparison of losses in case of choosing wrong workspace:\n${comparisonTable.toString()}\n`)
@@ -130,7 +130,7 @@ export default class ABTestStatus extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

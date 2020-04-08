@@ -100,7 +100,7 @@ export const promptConstraintDuration = async (): Promise<string> => {
     await enquirer.prompt({
       name: 'proportion',
       message: "What's the amount of time respecting the restriction?",
-      validate: s => /^[0-9]+$/.test(s) || message,
+      validate: s => /^\d+$/.test(s) || message,
       filter: s => s.trim(),
       type: 'input',
     })
@@ -116,7 +116,7 @@ export const promptProportionTrafic = async (): Promise<string> => {
       message: `What's the proportion of traffic initially directed to workspace ${chalk.blue('master')}?
       This should be an integer between 0 and 10000 that corresponds each 1% to 100, i.e. if you want to direct 54.32% of traffic to master, this value should be 5432.
       If you don't want to fix this value, just type any value here and set the next restriction to 0.`,
-      validate: s => /^([0-9]{1,4}|10000)$/.test(s) || message,
+      validate: s => /^(\d{1,4}|10000)$/.test(s) || message,
       filter: s => s.trim(),
       type: 'input',
     })

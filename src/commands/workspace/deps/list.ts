@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import { apps } from '../../../clients'
 import { CustomCommand } from '../../../lib/CustomCommand'
@@ -14,7 +14,7 @@ export default class DepsList extends CustomCommand {
   static examples = ['vtex workspace:deps:list', 'vtex workspace:deps:ls', 'vtex deps:list', 'vtex deps:ls']
 
   static flags = {
-    keys: flags.boolean({ char: 'k', description: 'Show only keys', default: false }),
+    keys: oclifFlags.boolean({ char: 'k', description: 'Show only keys', default: false }),
   }
 
   static args = []

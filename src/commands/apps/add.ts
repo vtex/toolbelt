@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { router } from '../../clients'
@@ -60,7 +60,6 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
 }
 
 export default class Add extends CustomCommand {
-
   static description = 'Add app(s) to the manifest dependencies'
 
   static examples = ['vtex apps:add vtex.service-example@0.x', 'vtex add vtex.service-example@0.x']
@@ -68,7 +67,7 @@ export default class Add extends CustomCommand {
   static aliases = ['add']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [{ name: 'appId', required: true }]

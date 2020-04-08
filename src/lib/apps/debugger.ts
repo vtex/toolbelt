@@ -3,7 +3,7 @@ import net from 'net'
 import WebSocket from 'ws'
 import { getAccount, getToken, getWorkspace } from '../../conf'
 import { region } from '../../env'
-import { ManifestEditor } from '../../lib/manifest'
+import { ManifestEditor } from '../manifest'
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
 
@@ -71,7 +71,7 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
     ws.on('open', () => {
       socket.on('data', data => {
         if (ws.readyState !== ws.OPEN) {
-          log.debug(`Tried to write to debugger websocket but it is not opened`)
+          log.debug('Tried to write to debugger websocket but it is not opened')
           return
         }
         ws.send(data, err => {

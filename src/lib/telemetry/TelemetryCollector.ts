@@ -12,7 +12,9 @@ import { Metric, MetricReport } from '../metrics/MetricReport'
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
+
   public static readonly TELEMETRY_LOCAL_DIR = join(configDir, 'vtex', 'telemetry')
+
   private static telemetryCollectorSingleton: TelemetryCollector
 
   public static getCollector() {
@@ -25,7 +27,9 @@ export class TelemetryCollector {
   }
 
   private errors: ErrorReport[]
+
   private metrics: MetricReport[]
+
   constructor(private store: ITelemetryLocalStore) {
     this.errors = this.store.getErrors()
     this.metrics = this.store.getMetrics()

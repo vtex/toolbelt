@@ -1,5 +1,5 @@
 import { SpecReport, AppReport, TestReport } from '../../../../clients/Tester'
-import { ReportProps } from './index'
+import { ReportProps } from '.'
 
 const COMPLETED_STATES = ['passed', 'failed', 'skipped', 'error']
 

@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../../conf'
 import * as env from '../../env'
@@ -56,7 +56,7 @@ const loginAsRole = async (region: string, token: string, supportedAccount: stri
 
 const assertToken = (raw: string): void => {
   if (!jwt.decode(raw)) {
-    throw Error(`Could not validate new token! token = '${raw}'`)
+    throw new Error(`Could not validate new token! token = '${raw}'`)
   }
 }
 
@@ -74,14 +74,14 @@ export default class Support extends CustomCommand {
   static examples = ['vtex auth:support storecomponents', 'vtex auth:support']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [{ name: 'account', required: true }]
 
   async run() {
     const { args } = this.parse(Support)
-    const account = args.account
+    const { account } = args
     const actualToken = getToken()
     const region = env.region()
     try {

@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import { CustomCommand } from '../../lib/CustomCommand'
 import { getCluster, getEnvironment } from '../../conf'
@@ -11,10 +11,10 @@ export default class ConfigGet extends CustomCommand {
   static examples = ['vtex apps:config:get env', 'vtex config:get env', 'vtex config:get cluster']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
-  static args = [{ name: 'configName', required: true, options: ['env', 'cluster']}]
+  static args = [{ name: 'configName', required: true, options: ['env', 'cluster'] }]
 
   async run() {
     const {

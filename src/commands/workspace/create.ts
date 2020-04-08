@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { createClients, workspaces } from '../../clients'
@@ -11,11 +11,11 @@ const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 
 const warmUpRouteMap = async (workspace: string) => {
   try {
-    const { builder } = createClients({ workspace: workspace })
+    const { builder } = createClients({ workspace })
     await builder.availability('vtex.builder-hub@0.x', null)
     log.debug('Warmed up route map')
   } catch (err) {
-    return
+    log.error(err)
   }
 }
 
@@ -48,8 +48,8 @@ export default class WorkspaceCreate extends CustomCommand {
   static examples = ['vtex workspace:create workspaceName']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    production: flags.boolean({ char: 'p', description: 'Create a production workspace', default: false }),
+    help: oclifFlags.help({ char: 'h' }),
+    production: oclifFlags.boolean({ char: 'p', description: 'Create a production workspace', default: false }),
   }
 
   static args = [{ name: 'workspaceName' }]

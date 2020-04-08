@@ -28,10 +28,13 @@ export class SessionManager {
   }
 
   private currAccount: string
+
   private currToken: Token
+
   private currWorkspace: string
 
   private sessionPersister: SessionManagerArguments['sessionsPersister']
+
   private authProviders: SessionManagerArguments['authProviders']
 
   constructor({ sessionsPersister, authProviders }: SessionManagerArguments) {

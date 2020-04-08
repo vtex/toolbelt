@@ -16,6 +16,7 @@ export class UserCancelledError extends ExtendableError {}
 
 export class SSEConnectionError extends ExtendableError {
   public statusCode: number
+
   constructor(message: string, statusCode: number) {
     super(message)
     this.statusCode = statusCode
@@ -24,6 +25,7 @@ export class SSEConnectionError extends ExtendableError {
 
 export class BuildFailError extends ExtendableError {
   public code: string
+
   public message: string
 
   constructor(eventMessage: Message) {
@@ -43,6 +45,7 @@ export class GraphQlError extends ExtendableError {
 
 export class BuilderHubTimeoutError extends ExtendableError {
   public code: string
+
   public message: string
 
   constructor(message: string) {

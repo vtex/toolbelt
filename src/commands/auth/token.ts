@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import { getToken } from '../../conf'
 import { CustomCommand } from '../../lib/CustomCommand'
@@ -12,7 +12,7 @@ export default class LocalToken extends CustomCommand {
   static examples = ['vtex auth:token', 'vtex token']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   async run() {

@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { CustomCommand } from '../../lib/CustomCommand'
@@ -11,7 +11,6 @@ import { UserCancelledError } from '../../errors'
 import { createClients } from '../../clients'
 import { ManifestValidator, ManifestEditor } from '../../lib/manifest'
 import log from '../../logger'
-
 
 let originalAccount
 let originalWorkspace
@@ -88,8 +87,8 @@ export default class Deprecate extends CustomCommand {
   static examples = ['vtex apps:deprecate vtex.service-example@0.0.1', 'vtex deprecate vtex.service-example@0.0.1']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    yes: flags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
+    help: oclifFlags.help({ char: 'h' }),
+    yes: oclifFlags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
   }
 
   static args = [{ name: 'appId', required: true }]

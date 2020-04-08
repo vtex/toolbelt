@@ -5,18 +5,23 @@ export abstract class SessionsPersisterBase {
   public abstract clearData(): void
 
   public abstract getAccount(): string
+
   public abstract saveAccount(account: string): void
 
   public abstract getWorkspace(): string
+
   public abstract saveWorkspace(workspace: string): void
 
   public abstract getToken(): string
+
   public abstract saveToken(token: string): void
 
   public abstract getLogin(): string
+
   public abstract saveLogin(login: string): void
 
   public abstract getAccountToken(account: string): string
+
   public abstract saveAccountToken(account: string, token: string)
 }
 

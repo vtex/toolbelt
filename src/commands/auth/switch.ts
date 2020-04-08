@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import { split } from 'ramda'
 
@@ -17,17 +17,24 @@ export default class Switch extends CustomCommand {
 
   static aliases = ['switch']
 
-  static examples = ['vtex auth:switch storecomponents', 'vtex switch storecomponents', 'vtex switch storecomponents myworkspace']
+  static examples = [
+    'vtex auth:switch storecomponents',
+    'vtex switch storecomponents',
+    'vtex switch storecomponents myworkspace',
+  ]
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
-  static args = [{ name: 'account', required: true }, { name: 'workspace', required: false, default: 'master' }]
+  static args = [
+    { name: 'account', required: true },
+    { name: 'workspace', required: false, default: 'master' },
+  ]
 
   async run() {
     const { args } = this.parse(Switch)
-    let account = args.account
+    let { account } = args
     if (account === '-') {
       account = getLastUsedAccount()
       if (account == null) {

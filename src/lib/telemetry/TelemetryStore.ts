@@ -15,7 +15,9 @@ export interface ITelemetryLocalStore {
 
 export class TelemetryLocalStore implements ITelemetryLocalStore {
   public readonly storeName: string
+
   private store: Configstore
+
   constructor(storeName: string) {
     this.storeName = storeName
     this.store = new Configstore(storeName)

@@ -5,9 +5,11 @@ import { DeprecationCheckerStore, IDeprecationCheckerStore, VersionDeprecationIn
 
 export class DeprecationChecker {
   private static readonly DEPRECATION_CHECK_INTERVAL = 1 * 3600 * 1000
+
   private static readonly DEPRECATION_CHECKER_STORE_FILENAME = 'deprecation-checking.json'
 
   private static singleton: DeprecationChecker
+
   public static checkForDeprecation(storeDir: string, pkgJson: any) {
     if (!DeprecationChecker.singleton) {
       const store = new DeprecationCheckerStore(join(storeDir, DeprecationChecker.DEPRECATION_CHECKER_STORE_FILENAME))

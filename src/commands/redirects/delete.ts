@@ -2,14 +2,27 @@ import { createHash } from 'crypto'
 import { readFile, readJson } from 'fs-extra'
 import { length, map } from 'ramda'
 import { createInterface } from 'readline'
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import { rewriter } from '../../clients'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
 import { CustomCommand } from '../../lib/CustomCommand'
-import { handleReadError, accountAndWorkspace, METAINFO_FILE, readCSV, validateInput, splitJsonArray, progressBar, saveMetainfo, deleteMetainfo, showGraphQLErrors, MAX_RETRIES, RETRY_INTERVAL_S, sleep } from '../../lib/redirects/utils'
-
+import {
+  handleReadError,
+  accountAndWorkspace,
+  METAINFO_FILE,
+  readCSV,
+  validateInput,
+  splitJsonArray,
+  progressBar,
+  saveMetainfo,
+  deleteMetainfo,
+  showGraphQLErrors,
+  MAX_RETRIES,
+  RETRY_INTERVAL_S,
+  sleep,
+} from '../../lib/redirects/utils'
 
 const DELETES = 'deletes'
 const [account, workspace] = accountAndWorkspace
@@ -98,7 +111,7 @@ export default class RedirectsDelete extends CustomCommand {
   static examples = ['vtex redirects:delete csvPath']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [{ name: 'csvPath', required: true }]
@@ -107,7 +120,7 @@ export default class RedirectsDelete extends CustomCommand {
 
   async run() {
     const { args } = this.parse(RedirectsDelete)
-    const csvPath = args.csvPath
+    const { csvPath } = args
     await redirectsDelete(csvPath)
   }
 }

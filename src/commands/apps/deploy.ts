@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { CustomCommand } from '../../lib/CustomCommand'
@@ -76,8 +76,8 @@ export default class Deploy extends CustomCommand {
   static examples = ['vtex apps:deploy', 'vtex deploy', 'vtex deploy vtex.service-example@0.0.1']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    yes: flags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
+    help: oclifFlags.help({ char: 'h' }),
+    yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 
   static args = [{ name: 'appId' }]

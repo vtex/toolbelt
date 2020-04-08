@@ -1,5 +1,5 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import semver from 'semver'
 
@@ -64,7 +64,6 @@ const printInstalledServices = () =>
       console.log(table.toString())
     })
 
-
 export default class InfraList extends CustomCommand {
   static description = 'List installed infra services'
 
@@ -73,19 +72,19 @@ export default class InfraList extends CustomCommand {
   static examples = ['vtex apps:infra:list', 'vtex infra:list', 'vtex infra:ls', 'vtex infra:ls infraService']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    filter: flags.string({ char: 'f', description: 'Only list versions containing this word' }),
-    available: flags.boolean({ char: 'a', description: 'List services available to install' }),
+    help: oclifFlags.help({ char: 'h' }),
+    filter: oclifFlags.string({ char: 'f', description: 'Only list versions containing this word' }),
+    available: oclifFlags.boolean({ char: 'a', description: 'List services available to install' }),
   }
 
   static args = [{ name: 'name', required: false }]
 
   async run() {
     const { args, flags } = this.parse(InfraList)
-    const name = args.name
-    const filter = flags.filter
-    const available = flags.available
-    console.log({name})
+    const { name } = args
+    const { filter } = flags
+    const { available } = flags
+    console.log({ name })
     return available
       ? name
         ? printAvailableServiceVersions(name, filter)

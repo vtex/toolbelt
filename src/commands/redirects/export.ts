@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { createHash } from 'crypto'
 import { writeFile, readJson } from 'fs-extra'
 import ora from 'ora'
@@ -10,7 +10,16 @@ import { rewriter } from '../../clients'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
 import { CustomCommand } from '../../lib/CustomCommand'
-import { accountAndWorkspace, METAINFO_FILE, saveMetainfo, deleteMetainfo, showGraphQLErrors, MAX_RETRIES, RETRY_INTERVAL_S, sleep } from '../../lib/redirects/utils'
+import {
+  accountAndWorkspace,
+  METAINFO_FILE,
+  saveMetainfo,
+  deleteMetainfo,
+  showGraphQLErrors,
+  MAX_RETRIES,
+  RETRY_INTERVAL_S,
+  sleep,
+} from '../../lib/redirects/utils'
 
 const EXPORTS = 'exports'
 
@@ -72,7 +81,7 @@ export default class RedirectsExport extends CustomCommand {
   static examples = ['vtex redirects:export csvPath']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [{ name: 'csvPath', required: true }]
@@ -81,7 +90,7 @@ export default class RedirectsExport extends CustomCommand {
 
   async run() {
     const { args } = this.parse(RedirectsExport)
-    const csvPath = args.csvPath
+    const { csvPath } = args
     try {
       await handleExport(csvPath)
     } catch (e) {

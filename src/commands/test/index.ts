@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import retry from 'async-retry'
 import chalk from 'chalk'
 import { concat, map, prop } from 'ramda'
@@ -85,8 +85,8 @@ export default class Test extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    unsafe: flags.boolean({ char: 'u', description: 'Allow tests with Typescript errors', default: false }),
+    help: oclifFlags.help({ char: 'h' }),
+    unsafe: oclifFlags.boolean({ char: 'u', description: 'Allow tests with Typescript errors', default: false }),
   }
 
   static args = []
@@ -95,7 +95,7 @@ export default class Test extends CustomCommand {
     const { flags } = this.parse(Test)
 
     await validateAppAction('test')
-    const unsafe = flags.unsafe
+    const { unsafe } = flags
     const manifest = await getManifest()
     try {
       await writeManifestSchema()
@@ -120,7 +120,7 @@ export default class Test extends CustomCommand {
     const onError = {
       // eslint-disable-next-line @typescript-eslint/camelcase
       build_failed: () => {
-        log.error(`App build failed. Waiting for changes...`)
+        log.error('App build failed. Waiting for changes...')
       },
     }
 

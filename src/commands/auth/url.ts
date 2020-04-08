@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import * as conf from '../../conf'
 import { clusterIdDomainInfix, publicEndpoint } from '../../env'
@@ -12,7 +12,7 @@ export default class URL extends CustomCommand {
   static examples = ['vtex auth:url', 'vtex url']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   async run() {

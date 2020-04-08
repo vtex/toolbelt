@@ -31,6 +31,7 @@ export class ProjectFilesManager {
   }
 
   public root: string
+
   constructor(projectRoot: string) {
     this.root = projectRoot
   }

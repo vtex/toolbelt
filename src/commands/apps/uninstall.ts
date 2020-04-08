@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { apps } from '../../clients'
@@ -43,11 +43,16 @@ export default class Uninstall extends CustomCommand {
 
   static aliases = ['uninstall']
 
-  static examples = ['vtex apps:uninstall', 'vtex uninstall', 'vtex apps:uninstall vtex.service-example', 'vtex apps:uninstall vtex.service-example@0.x']
+  static examples = [
+    'vtex apps:uninstall',
+    'vtex uninstall',
+    'vtex apps:uninstall vtex.service-example',
+    'vtex apps:uninstall vtex.service-example@0.x',
+  ]
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    yes: flags.boolean({ char: 'y', description: 'Auto confirm prompts' }),
+    help: oclifFlags.help({ char: 'h' }),
+    yes: oclifFlags.boolean({ char: 'y', description: 'Auto confirm prompts' }),
   }
 
   static args = [{ name: 'appName', required: false }]

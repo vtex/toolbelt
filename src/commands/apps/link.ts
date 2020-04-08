@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import retry from 'async-retry'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
@@ -18,7 +18,12 @@ import { ManifestEditor } from '../../lib/manifest'
 import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
-import { ProjectUploader, ProjectSizeLimitError, ChangeToSend, ChangeSizeLimitError } from '../../lib/apps/ProjectUploader'
+import {
+  ProjectUploader,
+  ProjectSizeLimitError,
+  ChangeToSend,
+  ChangeSizeLimitError,
+} from '../../lib/apps/ProjectUploader'
 import { listLocalFiles, getIgnoredPaths } from '../../lib/apps/file'
 import { CustomCommand } from '../../lib/CustomCommand'
 import { validateAppAction, checkBuilderHubMessage, showBuilderHubMessage } from '../../lib/apps/utils'
@@ -223,15 +228,15 @@ export default class Link extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    clean: flags.boolean({ char: 'c', description: 'Clean builder cache', default: false }),
-    setup: flags.boolean({
+    help: oclifFlags.help({ char: 'h' }),
+    clean: oclifFlags.boolean({ char: 'c', description: 'Clean builder cache', default: false }),
+    setup: oclifFlags.boolean({
       char: 's',
       description: 'Do not add app dependencies to package.json and do not run Yarn',
       default: false,
     }),
-    'no-watch': flags.boolean({ description: "Don't watch for file changes after initial link", default: false }),
-    unsafe: flags.boolean({ char: 'u', description: 'Allow links with Typescript errors', default: false }),
+    'no-watch': oclifFlags.boolean({ description: "Don't watch for file changes after initial link", default: false }),
+    unsafe: oclifFlags.boolean({ char: 'u', description: 'Allow links with Typescript errors', default: false }),
   }
 
   static args = []
@@ -240,7 +245,7 @@ export default class Link extends CustomCommand {
     const { flags } = this.parse(Link)
 
     await validateAppAction('link')
-    const unsafe = flags.unsafe
+    const { unsafe } = flags
     const manifest = await ManifestEditor.getManifestEditor()
     await manifest.writeSchema()
 
@@ -276,7 +281,7 @@ export default class Link extends CustomCommand {
     const onError = {
       // eslint-disable-next-line @typescript-eslint/camelcase
       build_failed: () => {
-        log.error(`App build failed. Waiting for changes...`)
+        log.error('App build failed. Waiting for changes...')
       },
       // eslint-disable-next-line @typescript-eslint/camelcase
       initial_link_required: () => warnAndLinkFromStart(projectUploader, unsafe),
@@ -317,7 +322,7 @@ export default class Link extends CustomCommand {
     try {
       const buildTrigger = performInitialLink.bind(this, projectUploader, extraData, unsafe)
       const [subject] = appId.split('@')
-      if (flags["no-watch"] === false) {
+      if (flags['no-watch'] === false) {
         await listenBuild(subject, buildTrigger, { waitCompletion: true })
         return
       }

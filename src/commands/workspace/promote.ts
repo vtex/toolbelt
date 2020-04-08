@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
@@ -48,7 +48,7 @@ export default class WorkspacePromote extends CustomCommand {
   static examples = ['vtex workspace:promote', 'vtex promote']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

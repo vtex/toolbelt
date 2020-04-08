@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { Housekeeper, HousekeeperStatesAndUpdates } from '@vtex/api'
 import chalk from 'chalk'
 import ora from 'ora'
@@ -33,7 +33,7 @@ const printAppsDiff = (
   let pluckFunction: (obj: any) => any
   if (type === 'apps') {
     if (!source) {
-      throw new Error(`source argument must be supplied when type === 'apps'`)
+      throw new Error("source argument must be supplied when type === 'apps'")
     }
     filterFunction = sourceFilter(source)
     pluckFunction = pluck('id')
@@ -80,19 +80,19 @@ const printEditionAppsDiff = (resolvedUpdates: any) => {
   if (diffTable.length === 1) {
     return
   }
-  console.log(`The following apps will be uninstalled/installed due to changes to current edition:`)
+  console.log('The following apps will be uninstalled/installed due to changes to current edition:')
   console.log(`${diffTable.toString()}\n`)
 }
 
 const hasAvailableUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {
   const updates = prop('updates', resolvedUpdates)
   const anyAppsUpdates = compose<any, any, any, any>(
-    any(x => !!x),
+    any(x => Boolean(x)),
     map(x => !isEmpty(x)),
     props(['apps', 'infra', 'runtimes'])
   )(updates)
   const anyEditionUpdates = compose<any, any, any, any, any>(
-    any(x => !!x),
+    any(x => Boolean(x)),
     map(x => !isEmpty(x)),
     props(['install', 'uninstall']),
     prop('editionApps')
@@ -109,7 +109,6 @@ const printUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {
   printEditionAppsDiff(resolvedUpdates)
 }
 
-
 export default class Update extends CustomCommand {
   static description = 'Update all installed apps to the latest (minor or patch) version'
 
@@ -118,7 +117,7 @@ export default class Update extends CustomCommand {
   static examples = ['vtex workspace:update', 'vtex update']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

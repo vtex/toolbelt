@@ -15,7 +15,7 @@ const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: str
 const getTSConfig = async () => {
   try {
     const { builder: builderClient } = createClients({}, { retries: 2, timeout: 10000 })
-    log.info(`Fetching BuilderHub tsconfig`)
+    log.info('Fetching BuilderHub tsconfig')
     return await builderClient.builderHubTsConfig()
   } catch (err) {
     log.warn('Failed to get BuilderHub tsconfig')

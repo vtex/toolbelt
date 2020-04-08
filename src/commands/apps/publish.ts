@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { BuildResult } from '@vtex/api'
 import retry from 'async-retry'
 import chalk from 'chalk'
@@ -125,11 +125,14 @@ export default class Publish extends CustomCommand {
   static aliases = ['publish']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    tag: flags.string({ char: 't', description: 'Apply a tag to the release' }),
-    workspace: flags.string({ char: 'w', description: 'Specify the workspace for the app registry' }),
-    force: flags.boolean({ char: 'f', description: 'Publish app without checking if the semver is being respected' }),
-    yes: flags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
+    help: oclifFlags.help({ char: 'h' }),
+    tag: oclifFlags.string({ char: 't', description: 'Apply a tag to the release' }),
+    workspace: oclifFlags.string({ char: 'w', description: 'Specify the workspace for the app registry' }),
+    force: oclifFlags.boolean({
+      char: 'f',
+      description: 'Publish app without checking if the semver is being respected',
+    }),
+    yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 
   async run() {
@@ -156,16 +159,16 @@ export default class Publish extends CustomCommand {
     }
 
     if (yesFlag && manifest.vendor !== account) {
-      log.error(`When using the 'yes' flag, you need to be logged in to the same account as your app’s vendor.`)
+      log.error("When using the 'yes' flag, you need to be logged in to the same account as your app’s vendor.")
       process.exit(1)
     }
 
-    const workspace = flags.workspace
+    const { workspace } = flags
     const path = args.path || root
-    const force = flags.force
+    const { force } = flags
 
     if (workspace && manifest.vendor !== account) {
-      log.error(`When using the 'workspace' flag, you need to be logged in to the same account as your app’s vendor.`)
+      log.error("When using the 'workspace' flag, you need to be logged in to the same account as your app’s vendor.")
       process.exit(1)
     }
 

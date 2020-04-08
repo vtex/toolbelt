@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import R from 'ramda'
 
@@ -29,7 +29,7 @@ export default class EditionSet extends CustomCommand {
   static examples = ['vtex edition:set editionName']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [{ name: 'edition', required: true }]

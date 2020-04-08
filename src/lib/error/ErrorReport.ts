@@ -111,10 +111,15 @@ export class ErrorReport extends Error {
   }
 
   public readonly kind: string
+
   public readonly originalError: Error | any
+
   public readonly errorDetails: any
+
   public readonly timestamp: string
+
   public readonly errorId: string
+
   public readonly env: ErrorEnv
 
   constructor({ kind, message, originalError, tryToParseError = false, env }: ErrorReportArguments) {

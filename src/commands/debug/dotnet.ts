@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import { CustomCommand } from '../../lib/CustomCommand'
 import { Runtime } from '../../clients/runtime'
@@ -12,7 +12,7 @@ export default class DotnetDebug extends CustomCommand {
   static examples = ['vtex debig:dotnet debugInst']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [{ name: 'debugInst', required: true }]

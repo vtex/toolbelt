@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import { compose, equals, filter, head, prop, split } from 'ramda'
 
@@ -53,7 +53,7 @@ export default class List extends CustomCommand {
   static aliases = ['ls', 'list', 'apps:ls']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import ora from 'ora'
 import { curry, path } from 'ramda'
@@ -74,7 +74,7 @@ const logInstall = curry<string, [string, string], void>(
 )
 
 const hasNewVersion = ([installedVersion, newVersion]: [string, string]): boolean =>
-  !!(newVersion && newVersion !== installedVersion)
+  Boolean(newVersion && newVersion !== installedVersion)
 
 const getInstalledVersion = (service: string) =>
   listInstalledServices()
@@ -86,9 +86,13 @@ export default class InfraInstall extends CustomCommand {
 
   static aliases = ['infra:install']
 
-  static examples = ['vtex apps:infra:install infra-service', 'vtex infra:install infra-service', 'vtex infra:install infra-service@0.0.1']
+  static examples = [
+    'vtex apps:infra:install infra-service',
+    'vtex infra:install infra-service',
+    'vtex infra:install infra-service@0.0.1',
+  ]
 
-  static flags = { help: flags.help({ char: 'h' }) }
+  static flags = { help: oclifFlags.help({ char: 'h' }) }
 
   static args = [{ name: 'serviceId', required: true }]
 

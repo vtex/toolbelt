@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { merge } from 'ramda'
 
 import { CustomCommand } from '../../../lib/CustomCommand'
@@ -20,20 +20,27 @@ export default class SettingsSet extends CustomCommand {
 
   static aliases = ['settings:set']
 
-  static examples = ['vtex-test apps:settings:set vtex.service-example fieldName fieldValue', 'vtex-test settings:set vtex.service-example fieldName fieldValue']
+  static examples = [
+    'vtex-test apps:settings:set vtex.service-example fieldName fieldValue',
+    'vtex-test settings:set vtex.service-example fieldName fieldValue',
+  ]
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
-  static args = [{ name: 'appName', required: true }, { name: 'field', required: true }, { name: 'value', required: true }]
+  static args = [
+    { name: 'appName', required: true },
+    { name: 'field', required: true },
+    { name: 'value', required: true },
+  ]
 
   async run() {
     const {
       args: { appName: app, field, value },
     } = this.parse(SettingsSet)
 
-    const commandSettings = {[field]: castValue(value)}
+    const commandSettings = { [field]: castValue(value) }
 
     const oldSettings = await apps.getAppSettings(app)
     const newSettingsJson = JSON.stringify(merge(oldSettings, commandSettings), null, 2)

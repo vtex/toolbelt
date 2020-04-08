@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { getAccount, getLogin, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../session/SessionManager'
 import log from '../../logger'
 
 export const switchAccount = async (account: string, options, previousAccount = getAccount()) => {

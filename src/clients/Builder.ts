@@ -25,7 +25,7 @@ export interface AvailabilityResponse {
   score: number
 }
 
-const builderBaseRoute = `/_v/builder/0`
+const builderBaseRoute = '/_v/builder/0'
 const routes = {
   tsConfig: `${builderBaseRoute}/tsconfig`,
   typings: `${builderBaseRoute}/typings`,

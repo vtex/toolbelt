@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 
 import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
@@ -87,8 +87,8 @@ export default class Undeprecate extends CustomCommand {
   static aliases = ['undeprecate']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    yes: flags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
+    help: oclifFlags.help({ char: 'h' }),
+    yes: oclifFlags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
   }
 
   static args = [{ name: 'appId', required: true }]

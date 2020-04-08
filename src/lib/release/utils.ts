@@ -78,7 +78,7 @@ const runCommand = (
     if (retries <= 0) {
       throw e
     }
-    log.info(`Retrying...`)
+    log.info('Retrying...')
     return runCommand(cmd, successMessage, hideOutput, retries - 1, hideSuccessMessage)
   }
 }
@@ -119,7 +119,7 @@ export const checkIfGitPushWorks = () => {
   try {
     runCommand('git push', '', true, 2, true)
   } catch (e) {
-    log.error(`Failed pushing to remote.`)
+    log.error('Failed pushing to remote.')
     throw e
   }
 }
@@ -160,8 +160,8 @@ export const checkGit = () => {
   try {
     execSync('git --version')
   } catch (e) {
-    log.error(`${chalk.bold(`git`)} is not available in your system. \
-Please install it if you wish to use ${chalk.bold(`vtex release`)}`)
+    log.error(`${chalk.bold('git')} is not available in your system. \
+Please install it if you wish to use ${chalk.bold('vtex release')}`)
     throw e
   }
 }
@@ -171,7 +171,7 @@ export const checkIfInGitRepo = () => {
     execSync('git rev-parse --git-dir')
   } catch (e) {
     log.error(`The current working directory is not in a git repo. \
-Please run ${chalk.bold(`vtex release`)} from inside a git repo.`)
+Please run ${chalk.bold('vtex release')} from inside a git repo.`)
     throw e
   }
 }
@@ -219,7 +219,7 @@ export const updateChangelog = (changelogVersion: any) => {
       try {
         writeSync(file, bufferedText, 0, bufferedText.length, position)
         close(file)
-        log.info(`updated CHANGELOG`)
+        log.info('updated CHANGELOG')
       } catch (e) {
         throw new Error(`Error writing file: ${e}`)
       }

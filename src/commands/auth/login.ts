@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { prop } from 'ramda'
@@ -43,7 +43,7 @@ const notifyRelease = () => {
   const RELEASE_NOTES_URL = 'https://bit.ly/2IQ2rSP'
 
   const msg = [
-    `Are you up-to-date with the VTEX IO latest news?`,
+    'Are you up-to-date with the VTEX IO latest news?',
     `${emojic.memo} Don’t forget to check out our ${chalk.bold.green(`${RELEASE_NOTES_DATE} Release Notes:`)}`,
     `${chalk.blueBright(RELEASE_NOTES_URL)}`,
   ].join('\n')
@@ -64,13 +64,21 @@ export default class Login extends CustomCommand {
 
   static aliases = ['login']
 
-  static examples = ['vtex auth:login', 'vtex login', 'vtex login storecomponents', 'vtex login storecomponents myworkspace']
+  static examples = [
+    'vtex auth:login',
+    'vtex login',
+    'vtex login storecomponents',
+    'vtex login storecomponents myworkspace',
+  ]
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
-  static args = [{ name: 'account', required: false }, { name: 'workspace', required: false }]
+  static args = [
+    { name: 'account', required: false },
+    { name: 'workspace', required: false },
+  ]
 
   async run() {
     const { args } = this.parse(Login)

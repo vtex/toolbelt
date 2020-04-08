@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
 
@@ -88,7 +88,7 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
         )
       } else if (isForbiddenError(e)) {
         log.error(
-          `You do not have permission to install apps. Please check your VTEX IO 'Install App' resource access in Account Management`
+          "You do not have permission to install apps. Please check your VTEX IO 'Install App' resource access in Account Management"
         )
       } else if (hasErrorMessage(e)) {
         log.error(e.response.data.message)
@@ -114,13 +114,18 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
 export default class Install extends CustomCommand {
   static description = 'Install an app (defaults to the app in the current directory)'
 
-  static examples = ['vtex apps:install', 'vtex install', 'vtex apps:install vtex.service-example@0.x', 'vtex apps:install vtex.service-example@0.0.1']
+  static examples = [
+    'vtex apps:install',
+    'vtex install',
+    'vtex apps:install vtex.service-example@0.x',
+    'vtex apps:install vtex.service-example@0.0.1',
+  ]
 
   static aliases = ['install']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    force: flags.boolean({
+    help: oclifFlags.help({ char: 'h' }),
+    force: oclifFlags.boolean({
       char: 'f',
       description: 'Install app without checking for route conflicts',
       default: false,
@@ -132,7 +137,7 @@ export default class Install extends CustomCommand {
   async run() {
     const { args, flags } = this.parse(Install)
 
-    const force = flags.force
+    const { force } = flags
     const app = args.appId || (await ManifestEditor.getManifestEditor()).appLocator
     const appsList = [app]
     log.debug(`Installing app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)

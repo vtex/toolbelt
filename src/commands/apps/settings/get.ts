@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { path } from 'ramda'
 
 import { CustomCommand } from '../../../lib/CustomCommand'
@@ -12,7 +12,7 @@ export default class SettingsGet extends CustomCommand {
   static examples = ['vtex apps:settings:get vtex.service-example', 'vtex settings:get vtex.service-example']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = [{ name: 'appName', required: true }, { name: 'options' }]

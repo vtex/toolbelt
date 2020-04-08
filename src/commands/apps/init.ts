@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { keys, prop, reject, test } from 'ramda'
@@ -121,7 +121,7 @@ export default class Init extends CustomCommand {
   static aliases = ['init']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

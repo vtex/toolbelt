@@ -28,7 +28,7 @@ export const getAppRoot = () => {
     } catch (e) {
       if (dir === rootDirName) {
         throw new CommandError(
-          `Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app.`
+          "Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app."
         )
       }
 

@@ -2,6 +2,7 @@ import { AuthType, InstanceOptions, IOClient, IOContext } from '@vtex/api'
 
 export class Sponsor extends IOClient {
   private account: string
+
   private workspace: string
 
   constructor(context: IOContext, options: InstanceOptions) {

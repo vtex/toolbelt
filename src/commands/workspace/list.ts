@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { createTable } from '../../table'
@@ -17,7 +17,7 @@ export default class WorkspaceList extends CustomCommand {
   static examples = ['vtex workspace:list', 'vtex workspace:ls']
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
   static args = []

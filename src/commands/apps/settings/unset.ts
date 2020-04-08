@@ -1,4 +1,4 @@
-import { flags } from '@oclif/command'
+import { flags as oclifFlags } from '@oclif/command'
 import { dissocPath } from 'ramda'
 
 import { CustomCommand } from '../../../lib/CustomCommand'
@@ -9,13 +9,19 @@ export default class SettingsUnset extends CustomCommand {
 
   static aliases = ['settings:unset']
 
-  static examples = ['vtex apps:settings:unset vtex.service-example fieldName', 'vtex settings:unset vtex.service-example fieldName']
+  static examples = [
+    'vtex apps:settings:unset vtex.service-example fieldName',
+    'vtex settings:unset vtex.service-example fieldName',
+  ]
 
   static flags = {
-    help: flags.help({ char: 'h' }),
+    help: oclifFlags.help({ char: 'h' }),
   }
 
-  static args = [{ name: 'appName', required: true }, { name: 'field', required: true }]
+  static args = [
+    { name: 'appName', required: true },
+    { name: 'field', required: true },
+  ]
 
   async run() {
     const {
