@@ -7,4 +7,5 @@ export class PathConstants {
   public static readonly PRETASKS_FOLDER = join(PathConstants.VTEX_FOLDER, 'pretasks')
   public static readonly TELEMETRY_FOLDER = join(PathConstants.VTEX_FOLDER, 'telemetry')
   public static readonly LOGS_FOLDER = join(PathConstants.VTEX_FOLDER, 'logs')
+  public static readonly SESSION_FOLDER = join(PathConstants.VTEX_FOLDER, 'session')
 }
