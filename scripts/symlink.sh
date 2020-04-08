@@ -30,7 +30,7 @@ if ! [[ ":$PATH:" == *":$GLOBAL_BIN_PATH:"* ]]; then
 fi
 
 CLI_BIN=$(node -e "const pkg=require('./package.json'); console.log(pkg.oclif.bin);")
-CLI_BIN_TEST="$CLI_BIN-test"
+CLI_BIN_TEST="t$CLI_BIN"
 BINARY_PATH=$PWD/bin/run
 LINK_PATH=$GLOBAL_BIN_PATH/$CLI_BIN_TEST
 

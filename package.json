@@ -1,11 +1,9 @@
 {
-  "name": "vtex",
+  "name": "vtex3",
   "description": "The platform for e-commerce apps",
   "version": "3.0.0-alpha",
   "author": "NataliaGodot @NataliaGodot",
-  "bin": {
-    "cli": "./bin/run"
-  },
+  "bin": "./bin/run",
   "bugs": "https://github.com/vtex/toolbelt/issues",
   "dependencies": {
     "@oclif/command": "^1",
@@ -141,7 +139,7 @@
   "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
-    "bin": "vtex",
+    "bin": "vtex3",
     "plugins": [
       "@oclif/plugin-help"
     ]
