@@ -26,7 +26,7 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
 export default class EditionSet extends CustomCommand {
   static description = 'Set edition of the current account'
 
-  static examples = []
+  static examples = ['vtex edition:set editionName']
 
   static flags = {
     help: flags.help({ char: 'h' }),

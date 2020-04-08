@@ -10,7 +10,7 @@ import { getIOContext, IOClientOptions } from '../../lib/utils'
 export default class EditionGet extends CustomCommand {
   static description = 'Get edition of the current account'
 
-  static examples = []
+  static examples = ['vtex edition:get']
 
   static flags = {
     help: flags.help({ char: 'h' }),

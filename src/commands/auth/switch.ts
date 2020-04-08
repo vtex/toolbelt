@@ -39,10 +39,7 @@ export default class Switch extends CustomCommand {
     // Enable users to type `vtex switch {account}/{workspace}` and switch
     // directly to a workspace without typing the `-w` option.
     const [parsedAccount, parsedWorkspace] = split('/', account)
-    let options
-    if (parsedWorkspace) {
-      options = { workspace: parsedWorkspace || args.workspace }
-    }
+    const options = { workspace: parsedWorkspace || args.workspace }
     await switchAccount(parsedAccount, options)
     if (hasAccountSwitched(parsedAccount)) {
       log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(parsedAccount)}`)

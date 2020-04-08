@@ -7,9 +7,9 @@ import logger from '../../logger'
 import { getIOContext } from '../../lib/utils'
 
 export default class DotnetDebug extends CustomCommand {
-  static description = 'Gets the current value for the requested configuration'
+  static description = 'Debug for .NET applications'
 
-  static examples = []
+  static examples = ['vtex debig:dotnet debugInst']
 
   static flags = {
     help: flags.help({ char: 'h' }),
