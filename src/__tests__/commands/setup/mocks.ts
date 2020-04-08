@@ -44,7 +44,7 @@ export const mockEnv = () => {
 }
 
 export const mockRunYarn = () => {
-  jest.mock('../../../modules/utils', () => {
+  jest.mock('../../../lib/utils', () => {
     return {
       runYarn: jest.fn().mockReturnValue(undefined),
     }
@@ -52,15 +52,15 @@ export const mockRunYarn = () => {
 }
 
 export const mockAppsUtils = () => {
-  jest.doMock('../../../modules/apps/utils', () => {
+  jest.doMock('../../../lib/apps/utils', () => {
     return {
-      isLinked: jest.requireActual('../../../modules/apps/utils').isLinked,
+      isLinked: jest.requireActual('../../../lib/apps/utils').isLinked,
       resolveAppId: jest.fn(),
       appIdFromRegistry: jest.fn(),
     }
   })
 
-  const { resolveAppId, appIdFromRegistry } = jest.requireMock('../../../modules/apps/utils')
+  const { resolveAppId, appIdFromRegistry } = jest.requireMock('../../../lib/apps/utils')
   let appsAppIDs = {}
   resolveAppId.mockImplementation((appName: string, appVersion: string) => appsAppIDs[appName][appVersion])
   let registryAppIDs = {}
@@ -72,9 +72,9 @@ export const mockAppsUtils = () => {
 }
 
 export const mockSetupUtils = () => {
-  jest.doMock('../../../modules/setup/utils', () => {
+  jest.doMock('../../../lib/setup/utils', () => {
     return {
-      ...jest.requireActual('../../../modules/setup/utils'),
+      ...jest.requireActual('../../../lib/setup/utils'),
       checkIfTarGzIsEmpty: jest.fn(),
       tsconfigEditor: { read: jest.fn(), write: jest.fn(), path: jest.fn() },
       packageJsonEditor: { read: jest.fn(), write: jest.fn(), path: jest.fn() },
@@ -91,7 +91,7 @@ export const mockSetupUtils = () => {
     eslintIgnoreEditor,
     prettierrcEditor,
     checkIfTarGzIsEmpty,
-  } = jest.requireMock('../../../modules/setup/utils') as Record<
+  } = jest.requireMock('../../../lib/setup/utils') as Record<
     string,
     { read: jest.Mock; write: jest.Mock; path: jest.Mock }
   > & { checkIfTarGzIsEmpty: jest.Mock }

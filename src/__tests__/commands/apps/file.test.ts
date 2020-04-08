@@ -1,5 +1,6 @@
 import path from 'path'
-import { listLocalFiles } from '../../../modules/apps/file'
+
+import { listLocalFiles } from '../../../lib/apps/file'
 
 const root = path.resolve(__dirname, '../../fixtures/file-test')
 

@@ -5,7 +5,7 @@ import { mockCreateClients, mockSetupUtils } from './mocks'
 const { setBuilderHubTsConfig } = mockCreateClients()
 const { setTSConfigByBuilder, tsconfigEditorMock, setPackageJsonByBuilder } = mockSetupUtils()
 
-const { setupTSConfig } = require('../../../modules/setup/setupTSConfig')
+const { setupTSConfig } = require('../../../lib/setup/setupTSConfig')
 
 const pkg = { devDependencies: {} }
 setPackageJsonByBuilder({ root: pkg })

@@ -1,4 +1,4 @@
-import { truncateStringsFromObject } from './utils'
+import { truncateStringsFromObject } from '../lib/utils'
 
 it.each([
   [5, ['123456', '12345', '1234']],
