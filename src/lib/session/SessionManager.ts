@@ -24,7 +24,7 @@ export class SessionManager {
       return SessionManager.sessionManagerSingleton
     }
 
-    const sessionsPersister = SessionsPersister.getSessionsPersister()
+    const sessionsPersister = SessionsPersister.getSingleton()
     const authProviders = AuthProviders.getAuthProviders()
     SessionManager.sessionManagerSingleton = new SessionManager({ sessionsPersister, authProviders })
     return SessionManager.sessionManagerSingleton
