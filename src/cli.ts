@@ -11,7 +11,7 @@ import os from 'os'
 import path from 'path'
 import { without } from 'ramda'
 import * as pkg from '../package.json'
-import { CLIPrechecker } from './CLIPreChecker/CLIPrechecker'
+import { CLIPreTasks } from './CLIPreTasks/CLIPreTasks'
 import * as conf from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
@@ -195,7 +195,12 @@ process.on('exit', () => {
 })
 
 const start = async () => {
-  CLIPrechecker.getCLIPrechecker(pkg).runChecks()
+  const cliPreTasksStart = process.hrtime()
+  CLIPreTasks.getCLIPreTasks(pkg).runTasks()
+  TelemetryCollector.getCollector().registerMetric({
+    command: 'not-applicable',
+    cliPreTasksLatency: hrTimeToMs(process.hrtime(cliPreTasksStart)),
+  })
 
   // Show update notification if newer version is available
   notify()

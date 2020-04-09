@@ -26,8 +26,6 @@ export const saveAccount = (account: string): void => {
   conf.set('account', account)
 }
 
-export const saveLogin = (login: string): void => conf.set('login', login)
-
 export const saveToken = (token: string): void => conf.set('token', token)
 
 export const getWorkspace = (): string => conf.get('workspace')
@@ -74,8 +72,6 @@ export const getEnvironment = (): Environment => {
   return env || persisted
 }
 
-export const clear = (): void => conf.clear()
-
 export const currentContext: Context = {
   account: getAccount(),
   workspace: getWorkspace(),
@@ -83,14 +79,6 @@ export const currentContext: Context = {
 
 export enum Region {
   Production = 'aws-us-east-1',
-}
-
-export const saveAccountToken = (account: string, token: string) => {
-  conf.set(`tokens.${account}`, token)
-}
-
-export const getTokens = () => {
-  return conf.get('tokens') || {}
 }
 
 export const saveCluster = (cluster: string) => {

@@ -1,23 +1,25 @@
+import { spawn } from 'child_process'
 import { randomBytes } from 'crypto'
 import { ensureFileSync, writeJsonSync } from 'fs-extra'
-import { spawn } from 'child_process'
 import { join } from 'path'
-
 import * as pkgJson from '../../../package.json'
-import { ErrorReport, ErrorCreationArguments } from '../error/ErrorReport'
-import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
-import { configDir } from '../../conf'
 import logger from '../../logger'
+import { ErrorCreationArguments, ErrorReport } from '../error/ErrorReport'
 import { Metric, MetricReport } from '../metrics/MetricReport'
+import { PathConstants } from '../PathConstants'
+import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
-  public static readonly TELEMETRY_LOCAL_DIR = join(configDir, 'vtex', 'telemetry')
+  public static readonly TELEMETRY_LOCAL_DIR = PathConstants.TELEMETRY_FOLDER
   private static telemetryCollectorSingleton: TelemetryCollector
 
   public static getCollector() {
     if (!TelemetryCollector.telemetryCollectorSingleton) {
-      const store = new TelemetryLocalStore(`${pkgJson.name}-telemetry-store`)
+      const store = new TelemetryLocalStore(
+        join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${pkgJson.name}-telemetry-store`)
+      )
+
       TelemetryCollector.telemetryCollectorSingleton = new TelemetryCollector(store)
     }
 
@@ -80,7 +82,7 @@ export class TelemetryCollector {
     try {
       ensureFileSync(objFilePath)
       writeJsonSync(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
-      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
+      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeFilePath, objFilePath], {
         detached: true,
         stdio: 'ignore',
       }).unref()
