@@ -1,8 +1,8 @@
 import chalk from 'chalk'
 
 import { Sponsor } from '../../clients/sponsor'
-import { getAccount } from '../../conf'
-import log from '../../logger'
+import { getAccount } from '../../utils/conf'
+import log from '../../utils/logger'
 import { getIOContext, IOClientOptions } from '../../utils/utils'
 
 export async function editionGet() {

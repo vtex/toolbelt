@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
 import { apps } from '../../../clients'
-import log from '../../../logger'
+import log from '../../../utils/logger'
 import { CustomCommand } from '../../../utils/CustomCommand'
 
 const { getDependencies } = apps

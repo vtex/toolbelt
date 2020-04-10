@@ -1,8 +1,8 @@
 import chalk from 'chalk'
 import { join } from 'path'
 import semver from 'semver'
-import { configDir } from '../conf'
 import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
+import { configDir } from '../conf'
 
 export class CLIPrechecker {
   public static readonly PRECHECKS_LOCAL_DIR = join(configDir, 'vtex', 'prechecks')

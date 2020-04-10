@@ -3,9 +3,9 @@ import moment from 'moment'
 import numbro from 'numbro'
 import R from 'ramda'
 
-import { getAccount } from '../../../conf'
-import log from '../../../logger'
-import { createTable } from '../../../table'
+import { getAccount } from '../../../utils/conf'
+import log from '../../../utils/logger'
+import { createTable } from '../../../utils/table'
 import { formatDuration, installedABTester, abtester } from '../../../utils/test/ab'
 
 interface ABTestStatusInterface {

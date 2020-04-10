@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 import { split } from 'ramda'
 
-import { getAccount, getLastUsedAccount, getLogin, getWorkspace } from '../../conf'
-import { CommandError } from '../../errors'
-import log from '../../logger'
+import { getAccount, getLastUsedAccount, getLogin, getWorkspace } from '../../utils/conf'
+import { CommandError } from '../../utils/errors'
+import log from '../../utils/logger'
 import { SessionManager } from '../../utils/session/SessionManager'
 
 const hasAccountSwitched = (account: string) => {

@@ -1,6 +1,6 @@
 import { Runtime } from '../../clients/runtime'
-import logger from '../../logger'
-import { ManifestEditor } from '../../utils/manifest'
+import logger from '../../utils/logger'
+import { ManifestEditor } from '../../utils/manifest/ManifestEditor'
 import { getIOContext } from '../../utils/utils'
 
 export async function debugDotnet(debug) {

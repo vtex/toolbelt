@@ -11,18 +11,18 @@ import path from 'path'
 import { without } from 'ramda'
 
 import * as pkg from '../package.json'
-import { CLIPrechecker } from './CLIPreChecker/CLIPrechecker'
 import * as conf from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
-import { Token } from './lib/auth/Token'
+import { Token } from '../lib/auth/Token'
 import log from './logger'
 import { checkAndOpenNPSLink } from './nps'
 import notify from './update'
 import tree from './tree'
-import { hrTimeToMs, VERBOSE, isVerbose } from './utils/utils'
-import { Metric } from './utils/metrics/MetricReport'
-import { TelemetryCollector } from './utils/telemetry/TelemetryCollector'
+import { hrTimeToMs, VERBOSE, isVerbose } from '../utils/utils'
+import { Metric } from '../utils/metrics/MetricReport'
+import { TelemetryCollector } from '../utils/telemetry/TelemetryCollector'
+import { CLIPrechecker } from '../utils/CLIPreChecker/CLIPrechecker'
 
 const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 

@@ -4,8 +4,8 @@ import { diffJson } from 'diff'
 import { compose, keys, map, path } from 'ramda'
 
 import { apps } from '../../../clients'
-import { parseLocator } from '../../../locator'
-import log from '../../../logger'
+import { parseLocator } from '../../../utils/locator'
+import log from '../../../utils/logger'
 import { removeNpm } from '../../../utils/deps'
 import { CustomCommand } from '../../../utils/CustomCommand'
 

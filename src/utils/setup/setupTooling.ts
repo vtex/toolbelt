@@ -4,8 +4,8 @@ import { resolve } from 'path'
 import chalk from 'chalk'
 import { mergeDeepRight } from 'ramda'
 
-import log from '../../logger'
-import { getAppRoot } from '../../manifest'
+import log from '../logger'
+import { getAppRoot } from '../manifest'
 import { yarnPath } from '../utils'
 import {
   eslintrcEditor,

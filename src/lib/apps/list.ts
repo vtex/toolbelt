@@ -2,10 +2,10 @@ import chalk from 'chalk'
 import { compose, equals, filter, head, prop, split } from 'ramda'
 
 import { apps } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
-import { parseLocator } from '../../locator'
-import log from '../../logger'
-import { createTable } from '../../table'
+import { getAccount, getWorkspace } from '../../utils/conf'
+import { parseLocator } from '../../utils/locator'
+import log from '../../utils/logger'
+import { createTable } from '../../utils/table'
 
 const { listApps } = apps
 

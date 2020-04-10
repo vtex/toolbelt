@@ -1,4 +1,4 @@
-import log from '../../logger'
+import log from '../../utils/logger'
 import { SessionManager } from '../../utils/session/SessionManager'
 
 export function authLogout() {

@@ -2,10 +2,10 @@ import React from 'react'
 import { render } from 'ink'
 
 import { apps, tester } from '../../clients'
-import { getToken } from '../../conf'
 import { ManifestEditor } from '../../utils/manifest/ManifestEditor'
 import { TestRequest } from '../../clients/Tester'
 import { RealTimeReport } from '../../utils/test/e2e/report'
+import { getToken } from '../../utils/conf'
 
 class EndToEndCommand {
   constructor(private options) {}

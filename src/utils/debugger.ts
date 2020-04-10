@@ -2,11 +2,11 @@ import streamToString from 'get-stream'
 import net from 'net'
 import WebSocket from 'ws'
 
-import log from '../logger'
-import { getToken, getAccount, getWorkspace } from '../conf'
-import { ManifestEditor } from './manifest'
-import { toMajorRange } from '../locator'
-import { region } from '../env'
+import log from './logger'
+import { getToken, getAccount, getWorkspace } from './conf'
+import { toMajorRange } from './locator'
+import { region } from './env'
+import { ManifestEditor } from './manifest/ManifestEditor'
 
 const keepAliveDelayMs = 3 * 60 * 1000
 const THIRTY_SECONDS_MS = 30 * 1000

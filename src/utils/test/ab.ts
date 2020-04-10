@@ -4,13 +4,13 @@ import enquirer from 'enquirer'
 import numbro from 'numbro'
 import { compose, filter, map, prop } from 'ramda'
 
-import * as env from '../../env'
-import envTimeout from '../../timeout'
-import userAgent from '../../user-agent'
-import { getAccount, getToken } from '../../conf'
+import * as env from '../env'
+import envTimeout from '../timeout'
+import userAgent from '../user-agent'
+import { getAccount, getToken } from '../conf'
 import { dummyLogger } from '../../clients/dummyLogger'
 import { ABTester } from '../../clients/abTester'
-import { CommandError } from '../../errors'
+import { CommandError } from '../errors'
 import { workspaces } from '../../clients'
 
 const account = getAccount()

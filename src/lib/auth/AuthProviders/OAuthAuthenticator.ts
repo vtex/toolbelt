@@ -4,9 +4,10 @@ import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import { join } from 'path'
 import randomstring from 'randomstring'
-import { clusterIdDomainInfix, publicEndpoint } from '../../../env'
-import { onAuth } from '../../../sse'
+
 import { AuthProviderBase } from './AuthProviderBase'
+import { onAuth } from '../../../utils/sse'
+import { clusterIdDomainInfix, publicEndpoint } from '../../../utils/env'
 
 export class OAuthAuthenticator extends AuthProviderBase {
   public static readonly AUTH_TYPE = 'oauth'

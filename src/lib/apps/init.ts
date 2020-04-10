@@ -2,10 +2,10 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { keys, prop, reject, test } from 'ramda'
 
-import { getLogin } from '../../conf'
-import log from '../../logger'
+import log from '../../utils/logger'
 import * as git from '../../utils/git'
 import { promptConfirm } from '../../utils/prompts'
+import { getLogin } from '../../utils/conf'
 
 const VTEX_APPS = 'vtex-apps'
 

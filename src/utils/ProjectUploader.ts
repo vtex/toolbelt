@@ -4,10 +4,10 @@ import getStream from 'get-stream'
 import { Readable } from 'stream'
 import { ZlibOptions } from 'zlib'
 
-import logger from '../logger'
+import logger from './logger'
 import { createClients } from '../clients'
 import { RequestParams, Builder, BuildResult } from '../clients/Builder'
-import { getSavedOrMostAvailableHost } from '../host'
+import { getSavedOrMostAvailableHost } from './host'
 
 const MB = 1000000
 

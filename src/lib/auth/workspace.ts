@@ -1,4 +1,4 @@
-import { getWorkspace } from '../../conf'
+import { getWorkspace } from '../../utils/conf'
 import { copyToClipboard } from '../../utils/copyToClipboard'
 
 export function authWorkspace() {

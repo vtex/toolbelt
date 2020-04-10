@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 
-import { getAccount, getToken, getWorkspace } from '../../../conf'
+import { getAccount, getToken, getWorkspace } from '../../../utils/conf'
 import { dummyLogger } from '../../../clients/dummyLogger'
-import userAgent from '../../../user-agent'
-import * as env from '../../../env'
+import userAgent from '../../../utils/user-agent'
+import * as env from '../../../utils/env'
 import { CustomCommand } from '../../../utils/CustomCommand'
 import { getCleanDependencies } from '../../../utils/deps'
 import { matchedDepsDiffTable } from '../../../utils/utils'

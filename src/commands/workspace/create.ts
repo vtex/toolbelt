@@ -2,10 +2,10 @@ import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { createClients, workspaces } from '../../clients'
-import { getAccount } from '../../conf'
-import { CommandError } from '../../errors'
+import { getAccount } from '../../utils/conf'
+import { CommandError } from '../../utils/errors'
 import { CustomCommand } from '../../utils/CustomCommand'
-import log from '../../logger'
+import log from '../../utils/logger'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 

@@ -1,6 +1,6 @@
 import { decode } from 'jsonwebtoken'
 
-import { getToken } from '../../conf'
+import { getToken } from '../../utils/conf'
 import { copyToClipboard } from '../../utils/copyToClipboard'
 
 export class Token {

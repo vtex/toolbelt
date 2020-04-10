@@ -3,11 +3,6 @@ import chalk from 'chalk'
 import { concat, map, prop } from 'ramda'
 
 import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getWorkspace } from '../../conf'
-import { CommandError } from '../../errors'
-import { toAppLocator } from '../../locator'
-import log from '../../logger'
-import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
 import { ProjectUploader } from '../../utils/ProjectUploader'
 import { YarnFilesManager } from '../../utils/files/YarnFilesManager'
 import { listLocalFiles } from '../../utils/file'
@@ -15,6 +10,11 @@ import { createPathToFileObject } from '../../utils/files/ProjectFilesManager'
 import { validateAppAction, runYarnIfPathExists } from '../../utils/utils'
 import { PinnedDeps, fixPinnedDependencies } from '../../utils/pinnedDependencies'
 import { listenBuild } from '../../utils/build'
+import { getAppRoot, getManifest, writeManifestSchema } from '../../utils/manifest'
+import { toAppLocator } from '../../utils/locator'
+import { getAccount, getWorkspace, getEnvironment } from '../../utils/conf'
+import { CommandError } from '../../utils/errors'
+import log from '../../utils/logger'
 
 const root = getAppRoot()
 const buildersToRunLocalYarn = ['react', 'node']

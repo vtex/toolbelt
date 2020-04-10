@@ -1,14 +1,15 @@
 import chalk from 'chalk'
 
-import { getAccount, getToken, getWorkspace } from '../../conf'
+import { getAccount, getToken, getWorkspace } from '../../utils/conf'
 import { switchAccount } from '../auth/switch'
-import { parseLocator } from '../../locator'
-import { UserCancelledError } from '../../errors'
+import { parseLocator } from '../../utils/locator'
+import { UserCancelledError } from '../../utils/errors'
 import { createClients } from '../../clients'
-import log from '../../logger'
+import log from '../../utils/logger'
 import { promptConfirm } from '../../utils/prompts'
 import { switchAccountMessage } from '../../utils/utils'
-import { ManifestValidator, ManifestEditor } from '../../utils/manifest'
+import { ManifestValidator } from '../../utils/manifest/ManifestValidator'
+import { ManifestEditor } from '../../utils/manifest/ManifestEditor'
 
 let originalAccount
 let originalWorkspace

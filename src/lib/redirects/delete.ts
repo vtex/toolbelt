@@ -4,7 +4,7 @@ import { length, map } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
-import log from '../../logger'
+import log from '../../utils/logger'
 import { accountAndWorkspace, handleReadError, METAINFO_FILE, readCSV, validateInput, splitJsonArray, progressBar, saveMetainfo, deleteMetainfo, showGraphQLErrors, MAX_RETRIES, RETRY_INTERVAL_S, sleep } from '../../utils/redirects'
 import { isVerbose } from '../../utils/utils'
 

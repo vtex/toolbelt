@@ -1,8 +1,8 @@
 import chalk from 'chalk'
 
-import { workspaces } from './clients'
 import { getAccount, getLogin, getWorkspace } from './conf'
 import log from './logger'
+import { workspaces } from '../clients'
 
 const login = getLogin()
 const account = getAccount()

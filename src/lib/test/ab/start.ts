@@ -3,8 +3,8 @@ import enquirer from 'enquirer'
 import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 'ramda'
 import semver from 'semver'
 
-import { UserCancelledError } from '../../../errors'
-import log from '../../../logger'
+import { UserCancelledError } from '../../../utils/errors'
+import log from '../../../utils/logger'
 import { abtester, SIGNIFICANCE_LEVELS, formatDays, installedABTester, promptProductionWorkspace, promptProportionTrafic, promptConstraintDuration } from '../../../utils/test/ab'
 import { promptConfirm } from '../../../utils/prompts'
 

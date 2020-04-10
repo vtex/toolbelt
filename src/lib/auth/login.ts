@@ -4,8 +4,8 @@ import { prop } from 'ramda'
 import boxen from 'boxen'
 import emojic from 'emojic'
 
-import * as conf from '../../conf'
-import log from '../../logger'
+import * as conf from '../../utils/conf'
+import log from '../../utils/logger'
 import { promptConfirm } from '../../utils/prompts'
 import { SessionManager } from '../../utils/session/SessionManager'
 

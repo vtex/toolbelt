@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { indexOf, prop, add } from 'ramda'
 import semver from 'semver'
 
-import log from '../../logger'
+import log from '../../utils/logger'
 import { readVersion, incrementVersion, checkGit, checkIfInGitRepo, confirmRelease, preRelease, bump, updateChangelog, commit, tag, push, postRelease } from '../../utils/release'
 
 export const releaseTypeAliases = {

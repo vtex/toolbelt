@@ -1,9 +1,9 @@
 import { IOContext } from '@vtex/api'
-import { cluster } from '../env'
+import { cluster } from '../utils/env'
 import * as url from 'url'
 import WebSocket from 'ws'
-import { getToken } from '../conf'
-import logger from '../logger'
+import { getToken } from '../utils/conf'
+import logger from '../utils/logger'
 
 const EOT = '\x04'
 

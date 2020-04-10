@@ -1,4 +1,4 @@
-import { getCluster, getEnvironment } from '../../conf'
+import { getCluster, getEnvironment } from '../../utils/conf'
 
 export function configGet(name: string) {
   switch (name) {

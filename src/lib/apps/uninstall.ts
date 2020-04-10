@@ -1,12 +1,13 @@
 import chalk from 'chalk'
 
 import { apps } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
-import log from '../../logger'
+import log from '../../utils/logger'
 import { promptConfirm } from '../../utils/prompts'
-import { ManifestValidator, ManifestEditor } from '../../utils/manifest'
 import { validateAppAction } from '../../utils/utils'
+import { ManifestValidator } from '../../utils/manifest/ManifestValidator'
+import { ManifestEditor } from '../../utils/manifest/ManifestEditor'
+import { getAccount, getWorkspace } from '../../utils/conf'
+import { UserCancelledError } from '../../utils/errors'
 
 const { uninstallApp } = apps
 

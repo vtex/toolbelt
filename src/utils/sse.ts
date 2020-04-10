@@ -7,7 +7,7 @@ import EventSource from './eventsource'
 import { removeVersion } from './locator'
 import log from './logger'
 import userAgent from './user-agent'
-import { isVerbose } from './utils/utils'
+import { isVerbose } from '../utils/utils'
 
 const levelAdapter = { warning: 'warn' }
 

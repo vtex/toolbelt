@@ -2,9 +2,9 @@ import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
-import log from '../../logger'
+import { getAccount, getWorkspace } from '../../utils/conf'
+import { UserCancelledError } from '../../utils/errors'
+import log from '../../utils/logger'
 import { promptConfirm } from '../../utils/prompts'
 import { CustomCommand } from '../../utils/CustomCommand'
 

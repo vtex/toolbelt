@@ -1,11 +1,12 @@
 import chalk from 'chalk'
 
 import { router } from '../../clients'
-import { region } from '../../env'
-import { CommandError } from '../../errors'
-import log from '../../logger'
+import { region } from '../../utils/env'
+import { CommandError } from '../../utils/errors'
+import log from '../../utils/logger'
 import { pickLatestVersion, wildVersionByMajor, appLatestMajor } from '../../utils/utils'
-import { ManifestEditor, ManifestValidator } from '../../utils/manifest'
+import { ManifestEditor } from '../../utils/manifest/ManifestEditor'
+import { ManifestValidator } from '../../utils/manifest/ManifestValidator'
 
 const unprefixName = (str: string) => {
   return str.split(':').pop()

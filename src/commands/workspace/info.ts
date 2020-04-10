@@ -2,9 +2,9 @@ import { flags as oclifFlags } from '@oclif/command'
 import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
+import { getAccount, getWorkspace } from '../../utils/conf'
 import { CustomCommand } from '../../utils/CustomCommand'
-import log from '../../logger'
+import log from '../../utils/logger'
 
 const { get } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]

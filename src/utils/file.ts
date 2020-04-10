@@ -4,7 +4,7 @@ import glob from 'globby'
 import { join, resolve as resolvePath, sep } from 'path'
 import { reject } from 'ramda'
 
-import log from '../logger'
+import log from './logger'
 
 type AnyFunction = (...args: any[]) => any
 

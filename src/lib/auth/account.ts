@@ -1,4 +1,4 @@
-import { getAccount } from '../../conf'
+import { getAccount } from '../../utils/conf'
 import { copyToClipboard } from '../../utils/copyToClipboard'
 
 export function authAccount() {

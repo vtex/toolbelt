@@ -2,10 +2,10 @@ import { AvailableServices, InstalledService } from '@vtex/api'
 import chalk from 'chalk'
 import semver from 'semver'
 
-import { createTable } from '../../../table'
+import { createTable } from '../../../utils/table'
 import { router } from '../../../clients'
-import { getAccount, getWorkspace } from '../../../conf'
-import log from '../../../logger'
+import { getAccount, getWorkspace } from '../../../utils/conf'
+import log from '../../../utils/logger'
 import { getLastStableAndPrerelease } from '../../../utils/infra'
 
 const [account, workspace] = [getAccount(), getWorkspace()]

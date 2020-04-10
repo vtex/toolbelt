@@ -1,7 +1,7 @@
 import { InstanceOptions, IOContext, Workspaces } from '@vtex/api'
 
-import * as env from '../env'
-import envTimeout from '../timeout'
+import * as env from './env'
+import envTimeout from './timeout'
 import { dummyLogger } from '../clients/dummyLogger'
 import { TelemetryClient } from '../clients/telemetryClient'
 

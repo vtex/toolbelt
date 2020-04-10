@@ -6,8 +6,8 @@ import { join } from 'path'
 import * as pkgJson from '../../../package.json'
 import { ErrorReport } from '../error/ErrorReport'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
-import { configDir } from '../../conf'
-import logger from '../../logger'
+import { configDir } from '../conf'
+import logger from '../logger'
 import { Metric, MetricReport } from '../metrics/MetricReport'
 
 export class TelemetryCollector {

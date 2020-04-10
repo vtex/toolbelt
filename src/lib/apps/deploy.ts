@@ -1,15 +1,15 @@
 import chalk from 'chalk'
 
 import { createClients } from '../../clients'
-import { getAccount, getToken, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
-import { parseLocator, toAppLocator } from '../../locator'
-import log from '../../logger'
-import { getManifest } from '../../manifest'
+import { getAccount, getToken, getWorkspace } from '../../utils/conf'
+import { UserCancelledError } from '../../utils/errors'
+import { parseLocator, toAppLocator } from '../../utils/locator'
+import log from '../../utils/logger'
+import { getManifest } from '../../utils/manifest'
 import { switchAccount } from '../auth/switch'
 import { promptConfirm } from '../../utils/prompts'
 import { switchAccountMessage } from '../../utils/utils'
-import { ManifestValidator } from '../../utils/manifest'
+import { ManifestValidator } from '../../utils/manifest/ManifestValidator'
 
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to deploy this app in an account that differs from the indicated vendor. Do you want to deploy in account ${chalk.blue(

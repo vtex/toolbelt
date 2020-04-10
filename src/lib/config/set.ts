@@ -1,8 +1,8 @@
 import { contains, values } from 'ramda'
 
-import { CommandError } from '../../errors'
-import log from '../../logger'
-import { Environment, saveCluster, saveEnvironment } from '../../conf'
+import { CommandError } from '../../utils/errors'
+import log from '../../utils/logger'
+import { Environment, saveCluster, saveEnvironment } from '../../utils/conf'
 
 const envValues = values(Environment)
 

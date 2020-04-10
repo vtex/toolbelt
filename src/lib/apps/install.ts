@@ -2,11 +2,12 @@ import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
 
 import { apps, billing } from '../../clients'
-import { UserCancelledError } from '../../errors'
-import log from '../../logger'
+import { UserCancelledError } from '../../utils/errors'
+import log from '../../utils/logger'
 import { promptConfirm } from '../../utils/prompts'
 import { optionsFormatter } from '../../utils/utils'
-import { ManifestValidator, ManifestEditor } from '../../utils/manifest'
+import { ManifestValidator } from '../../utils/manifest/ManifestValidator'
+import { ManifestEditor } from '../../utils/manifest/ManifestEditor'
 
 const { installApp } = billing
 const { installApp: legacyInstallApp } = apps

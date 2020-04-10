@@ -3,9 +3,9 @@ import ora from 'ora'
 import { curry, path } from 'ramda'
 import semver from 'semver'
 
-import log from '../../../logger'
+import log from '../../../utils/logger'
 import { router } from '../../../clients'
-import { Region } from '../../../conf'
+import { Region } from '../../../utils/conf'
 import { promptConfirm } from '../../../utils/prompts'
 import { getTag, diffVersions } from '../../../utils/infra'
 

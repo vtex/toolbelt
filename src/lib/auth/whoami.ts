@@ -1,5 +1,5 @@
-import { greeting } from '../../greeting'
-import log from '../../logger'
+import { greeting } from '../../utils/greeting'
+import log from '../../utils/logger'
 
 export async function authWhoami() {
   const lines = await greeting()

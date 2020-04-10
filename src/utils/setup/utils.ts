@@ -4,8 +4,8 @@ import { pipeline } from 'stream'
 import axios from 'axios'
 import tar from 'tar'
 
-import { getToken } from '../../conf'
-import log from '../../logger'
+import { getToken } from '../conf'
+import log from '../logger'
 import { FileReaderWriter } from './includes/FileReaderWriter'
 
 export const packageJsonEditor = new FileReaderWriter('packageJson')

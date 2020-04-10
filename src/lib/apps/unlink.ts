@@ -1,7 +1,8 @@
 import { apps } from '../../clients'
-import log from '../../logger'
-import { ManifestValidator, ManifestEditor } from '../../utils/manifest'
+import log from '../../utils/logger'
 import { validateAppAction } from '../../utils/utils'
+import { ManifestValidator } from '../../utils/manifest/ManifestValidator'
+import { ManifestEditor } from '../../utils/manifest/ManifestEditor'
 
 const { unlink, unlinkAll, listLinks } = apps
 
