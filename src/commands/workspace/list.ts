@@ -1,13 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
-import chalk from 'chalk'
 
-import { createTable } from '../../utils/table'
-import { workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../utils/conf'
-import log from '../../utils/logger'
 import { CustomCommand } from '../../utils/CustomCommand'
-
-const [account, currentWorkspace] = [getAccount(), getWorkspace()]
+import { workspaceList } from '../../lib/workspace/list'
 
 export default class WorkspaceList extends CustomCommand {
   static description = 'List workspaces on this account'
@@ -25,18 +19,6 @@ export default class WorkspaceList extends CustomCommand {
   async run() {
     this.parse(WorkspaceList)
 
-    log.debug('Listing workspaces')
-    const table = createTable({ head: ['Name', 'Weight', 'Production'] })
-    return workspaces
-      .list(account)
-      .then((workspaceArray: WorkspaceResponse[]) =>
-        workspaceArray.forEach(workspace => {
-          const name = workspace.name === currentWorkspace ? chalk.green(`* ${workspace.name}`) : workspace.name
-          const { weight } = workspace
-          const { production } = workspace
-          table.push([name, weight, production])
-        })
-      )
-      .then(() => console.log(table.toString()))
+    workspaceList()
   }
 }

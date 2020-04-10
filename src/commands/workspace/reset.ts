@@ -1,42 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
-import chalk from 'chalk'
 
-import { workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../utils/conf'
-import { UserCancelledError } from '../../utils/errors'
-import log from '../../utils/logger'
-import { promptConfirm } from '../../utils/prompts'
+import { workspaceReset } from '../../lib/workspace/reset'
 import { CustomCommand } from '../../utils/CustomCommand'
-
-const promptWorkspaceReset = (name: string, account: string) =>
-  promptConfirm(
-    `Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`
-  ).then(answer => {
-    if (!answer) {
-      throw new UserCancelledError()
-    }
-  })
-
-export const resetWorkspace = async (account: string, workspace: string, production: boolean) => {
-  try {
-    log.debug('Starting to reset workspace', workspace, 'with production =', production)
-    await (workspaces as any).reset(account, workspace, { production })
-    log.info(
-      `Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')} using ${chalk.green(
-        `production=${production}`
-      )}`
-    )
-  } catch (err) {
-    log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
-    if (err.response) {
-      const { status, statusText, data = { message: null } } = err.response
-      const message = data.message || data
-      log.error(`Error ${status}: ${statusText}. ${message}`)
-    }
-
-    throw err
-  }
-}
 
 export default class WorkspaceReset extends CustomCommand {
   static description = 'Delete and recreate a workspace'
@@ -56,19 +21,8 @@ export default class WorkspaceReset extends CustomCommand {
   static args = [{ name: 'workspaceName', required: false }]
 
   async run() {
-    const { args, flags } = this.parse(WorkspaceReset)
+    const { args: { workspaceName }, flags: { yes, production } } = this.parse(WorkspaceReset)
 
-    const account = getAccount()
-    const workspace = args.workspaceName || getWorkspace()
-    const preConfirm = flags.yes
-    const { production } = flags
-
-    log.debug('Resetting workspace', workspace)
-
-    if (!preConfirm) {
-      await promptWorkspaceReset(workspace, account)
-    }
-
-    await resetWorkspace(account, workspace, production)
+    await workspaceReset(workspaceName, yes, production)
   }
 }

@@ -1,10 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { apps } from '../../../clients'
-import log from '../../../utils/logger'
 import { CustomCommand } from '../../../utils/CustomCommand'
-
-const { getDependencies } = apps
+import { workspaceDepsList } from '../../../lib/workspace/deps/list'
 
 export default class DepsList extends CustomCommand {
   static aliases = ['workspace:deps:ls', 'deps:list', 'deps:ls']
@@ -20,11 +17,8 @@ export default class DepsList extends CustomCommand {
   static args = []
 
   async run() {
-    const { flags } = this.parse(DepsList)
-    log.debug('Starting to list dependencies')
-    const deps = await getDependencies()
-    const keysOnly = flags.keys
-    const result = keysOnly ? Object.keys(deps) : deps
-    console.log(JSON.stringify(result, null, 2))
+    const { flags: keys } = this.parse(DepsList)
+
+    await workspaceDepsList(keys)
   }
 }
