@@ -6,8 +6,6 @@ import { appsSettingsSet } from '../../lib/settings/set'
 export default class SettingsSet extends CustomCommand {
   static description = 'Set app settings'
 
-  static aliases = ['settings:set']
-
   static examples = [
     'vtex-test apps:settings:set vtex.service-example fieldName fieldValue',
     'vtex-test settings:set vtex.service-example fieldName fieldValue',

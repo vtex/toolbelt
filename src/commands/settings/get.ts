@@ -6,7 +6,7 @@ import { appsSettingsGet } from '../../lib/settings/get'
 export default class SettingsGet extends CustomCommand {
   static description = 'Get app settings'
 
-  static aliases = ['settings', 'settings:get']
+  static aliases = ['settings']
 
   static examples = ['vtex apps:settings:get vtex.service-example', 'vtex settings:get vtex.service-example']
 

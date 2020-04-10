@@ -6,8 +6,6 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class InfraInstall extends CustomCommand {
   static description = 'Install an infra service'
 
-  static aliases = ['infra:install']
-
   static examples = [
     'vtex apps:infra:install infra-service',
     'vtex infra:install infra-service',

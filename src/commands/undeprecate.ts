@@ -8,8 +8,6 @@ export default class Undeprecate extends CustomCommand {
 
   static examples = ['vtex apps:undeprecate vtex.service-example@0.0.1', 'vtex undeprecate vtex.service-example@0.0.1']
 
-  static aliases = ['undeprecate']
-
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
     yes: oclifFlags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),

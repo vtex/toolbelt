@@ -8,8 +8,6 @@ export default class Init extends CustomCommand {
 
   static examples = ['vtex apps:init', 'vtex init']
 
-  static aliases = ['init']
-
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
   }

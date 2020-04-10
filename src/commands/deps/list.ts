@@ -4,7 +4,7 @@ import { CustomCommand } from '../../utils/CustomCommand'
 import { workspaceDepsList } from '../../lib/deps/list'
 
 export default class DepsList extends CustomCommand {
-  static aliases = ['workspace:deps:ls', 'deps:list', 'deps:ls']
+  static aliases = ['deps ls']
 
   static description = 'List your workspace dependencies'
 

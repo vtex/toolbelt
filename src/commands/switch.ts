@@ -6,8 +6,6 @@ import { authSwitch } from '../lib/switch'
 export default class Switch extends CustomCommand {
   static description = 'Switch to another VTEX account'
 
-  static aliases = ['switch']
-
   static examples = [
     'vtex auth:switch storecomponents',
     'vtex switch storecomponents',

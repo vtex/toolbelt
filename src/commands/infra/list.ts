@@ -6,7 +6,7 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class InfraList extends CustomCommand {
   static description = 'List installed infra services'
 
-  static aliases = ['apps:infra:ls', 'infra:list', 'infra:ls']
+  static aliases = ['infra ls']
 
   static examples = ['vtex apps:infra:list', 'vtex infra:list', 'vtex infra:ls', 'vtex infra:ls infraService']
 

@@ -6,8 +6,6 @@ import { authToken } from '../../lib/local/Token'
 export default class LocalToken extends CustomCommand {
   static description = "Show user's auth token and copy it to clipboard"
 
-  static aliases = ['token']
-
   static examples = ['vtex auth:token', 'vtex token']
 
   static flags = {

@@ -6,8 +6,6 @@ import { testE2e } from '../../lib/test/e2e'
 export default class E2E extends CustomCommand {
   static description = 'Start a development session for this app'
 
-  static aliases = ['e2e', 'test:e2e']
-
   static examples = []
 
   static flags = {

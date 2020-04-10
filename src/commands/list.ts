@@ -8,7 +8,7 @@ export default class List extends CustomCommand {
 
   static examples = ['vtex apps:list', 'vtex list', 'vtex apps:ls', 'vtex ls']
 
-  static aliases = ['ls', 'list', 'apps:ls']
+  static aliases = ['ls']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

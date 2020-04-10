@@ -6,8 +6,6 @@ import { appsUninstall } from '../lib/uninstall'
 export default class Uninstall extends CustomCommand {
   static description = 'Uninstall an app (defaults to the app in the current directory)'
 
-  static aliases = ['uninstall']
-
   static examples = [
     'vtex apps:uninstall',
     'vtex uninstall',

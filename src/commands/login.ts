@@ -6,8 +6,6 @@ import { authLogin } from '../lib/login'
 export default class Login extends CustomCommand {
   static description = 'Log into a VTEX account'
 
-  static aliases = ['login']
-
   static examples = [
     'vtex auth:login',
     'vtex login',

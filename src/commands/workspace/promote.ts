@@ -6,8 +6,6 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class WorkspacePromote extends CustomCommand {
   static description = 'Promote this workspace to master'
 
-  static aliases = ['promote']
-
   static examples = ['vtex workspace:promote', 'vtex promote']
 
   static flags = {

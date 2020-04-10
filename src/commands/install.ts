@@ -13,8 +13,6 @@ export default class Install extends CustomCommand {
     'vtex apps:install vtex.service-example@0.0.1',
   ]
 
-  static aliases = ['install']
-
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
     force: oclifFlags.boolean({

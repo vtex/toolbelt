@@ -8,8 +8,6 @@ export default class Add extends CustomCommand {
 
   static examples = ['vtex apps:add vtex.service-example@0.x', 'vtex add vtex.service-example@0.x']
 
-  static aliases = ['add']
-
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
   }

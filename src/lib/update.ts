@@ -3,10 +3,10 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, prop, props, union } from 'ramda'
 
-import { toMajorRange } from '../../utils/locator'
-import log from '../../utils/logger'
-import { promptConfirm } from '../../utils/prompts'
-import { matchedDepsDiffTable, getIOContext, IOClientOptions, isVerbose } from '../../utils/utils'
+import { toMajorRange } from '../utils/locator'
+import log from '../utils/logger'
+import { promptConfirm } from '../utils/prompts'
+import { matchedDepsDiffTable, getIOContext, IOClientOptions, isVerbose } from '../utils/utils'
 
 const promptUpdate = (): Promise<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
 

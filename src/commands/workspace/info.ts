@@ -6,7 +6,7 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class WorkspaceInfo extends CustomCommand {
   static description = 'Display information about the current workspace'
 
-  static aliases = ['info']
+  static aliases = ['workspace']
 
   static examples = ['vtex workspace:info', 'vtex info']
 

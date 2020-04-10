@@ -6,8 +6,6 @@ import { appsLink } from '../lib/link'
 export default class Link extends CustomCommand {
   static description = 'Start a development session for this app'
 
-  static aliases = ['link']
-
   static examples = []
 
   static flags = {

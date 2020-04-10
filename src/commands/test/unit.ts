@@ -6,6 +6,8 @@ import { testCommand } from '../../lib/test'
 export default class UnitTest extends CustomCommand {
   static description = 'Run your VTEX app unit tests'
 
+  static aliases = ['test']
+
   static examples = []
 
   static flags = {

@@ -6,8 +6,6 @@ import { setup } from '../lib/setup'
 export default class Setup extends CustomCommand {
   static description = 'Download react app typings, graphql app typings, lint config and tsconfig'
 
-  static examples = ['vtex setup']
-
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
     'ignore-linked': oclifFlags.boolean({

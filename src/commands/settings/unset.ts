@@ -6,8 +6,6 @@ import { appsSettingsUnset } from '../../lib/settings/unset'
 export default class SettingsUnset extends CustomCommand {
   static description = 'Unset app settings'
 
-  static aliases = ['settings:unset']
-
   static examples = [
     'vtex apps:settings:unset vtex.service-example fieldName',
     'vtex settings:unset vtex.service-example fieldName',

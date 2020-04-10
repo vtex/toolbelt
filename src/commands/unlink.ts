@@ -13,8 +13,6 @@ export default class Unlink extends CustomCommand {
     'vtex apps:unlink vtex.service-example@0.x',
   ]
 
-  static aliases = ['unlink']
-
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
     all: oclifFlags.boolean({ char: 'a', description: 'Unlink all apps', default: false }),

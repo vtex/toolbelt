@@ -6,8 +6,6 @@ import { authLogout } from '../lib/logout'
 export default class Logout extends CustomCommand {
   static description = 'Logout of the current VTEX account'
 
-  static aliases = ['logout']
-
   static examples = ['vtex auth:logout', 'vtex logout']
 
   static flags = {

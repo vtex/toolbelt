@@ -8,8 +8,6 @@ export default class Publish extends CustomCommand {
 
   static examples = ['vtex apps:publish', 'vtex publish']
 
-  static aliases = ['publish']
-
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
     tag: oclifFlags.string({ char: 't', description: 'Apply a tag to the release' }),
