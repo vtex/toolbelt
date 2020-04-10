@@ -6,7 +6,7 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class RedirectsDelete extends CustomCommand {
   static description = 'Delete redirects in the current account and workspace'
 
-  static examples = ['vtex redirects:delete csvPath']
+  static examples = ['vtex redirects delete csvPath']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

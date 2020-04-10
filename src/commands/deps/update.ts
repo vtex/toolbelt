@@ -6,7 +6,7 @@ import { workspaceDepsUpdate } from '../../lib/deps/update'
 export default class DepsUpdate extends CustomCommand {
   static description = 'Update all workspace dependencies or a specific app@version'
 
-  static examples = ['vtex workspace:update', 'vtex update vtex.service-example@0.0.1']
+  static examples = ['vtex deps update', 'vtex deps update vtex.service-example@0.0.1']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

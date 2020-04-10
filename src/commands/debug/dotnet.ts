@@ -6,7 +6,7 @@ import { debugDotnet } from '../../lib/debug/dotnet'
 export default class DotnetDebug extends CustomCommand {
   static description = 'Debug for .NET applications'
 
-  static examples = ['vtex debig:dotnet debugInst']
+  static examples = ['vtex debug dotnet debugInst']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

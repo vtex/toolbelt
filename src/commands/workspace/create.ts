@@ -6,7 +6,7 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class WorkspaceCreate extends CustomCommand {
   static description = 'Create a new workspace with this name'
 
-  static examples = ['vtex workspace:create workspaceName']
+  static examples = ['vtex workspace create workspaceName']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

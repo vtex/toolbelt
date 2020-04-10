@@ -7,8 +7,7 @@ export default class SettingsSet extends CustomCommand {
   static description = 'Set app settings'
 
   static examples = [
-    'vtex-test apps:settings:set vtex.service-example fieldName fieldValue',
-    'vtex-test settings:set vtex.service-example fieldName fieldValue',
+    'vtex settings set vtex.service-example fieldName fieldValue',
   ]
 
   static flags = {

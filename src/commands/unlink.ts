@@ -8,9 +8,7 @@ export default class Unlink extends CustomCommand {
 
   static examples = [
     'vtex unlink',
-    'vtex apps:unlink',
     'vtex unlink vtex.service-example@0.x',
-    'vtex apps:unlink vtex.service-example@0.x',
   ]
 
   static flags = {

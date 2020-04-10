@@ -7,7 +7,6 @@ export default class Switch extends CustomCommand {
   static description = 'Switch to another VTEX account'
 
   static examples = [
-    'vtex auth:switch storecomponents',
     'vtex switch storecomponents',
     'vtex switch storecomponents myworkspace',
   ]

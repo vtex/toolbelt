@@ -5,7 +5,7 @@ import { workspaceStatus } from '../../lib/workspace/status'
 export default class WorkspaceStatus extends CustomCommand {
   static description = 'Display information about a workspace'
 
-  static examples = ['vtex workspace:status']
+  static examples = ['vtex workspace status']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

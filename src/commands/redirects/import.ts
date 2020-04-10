@@ -6,7 +6,7 @@ import { redirectsImport } from '../../lib/redirects/import'
 export default class RedirectsImport extends CustomCommand {
   static description = 'Import redirects for the current account and workspace'
 
-  static examples = ['vtex redirects:import csvPath']
+  static examples = ['vtex redirects import csvPath']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

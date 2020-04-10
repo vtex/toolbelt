@@ -6,7 +6,7 @@ import { appsUndeprecate } from '../lib/undeprecate'
 export default class Undeprecate extends CustomCommand {
   static description = 'Undeprecate app'
 
-  static examples = ['vtex apps:undeprecate vtex.service-example@0.0.1', 'vtex undeprecate vtex.service-example@0.0.1']
+  static examples = ['vtex undeprecate vtex.service-example@0.0.1']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

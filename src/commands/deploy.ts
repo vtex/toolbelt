@@ -6,7 +6,7 @@ import { appsDeploy } from '../lib/deploy'
 export default class Deploy extends CustomCommand {
   static description = 'Deploy a release of an app'
 
-  static examples = ['vtex apps:deploy', 'vtex deploy', 'vtex deploy vtex.service-example@0.0.1']
+  static examples = ['vtex deploy', 'vtex deploy vtex.service-example@0.0.1']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

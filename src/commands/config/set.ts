@@ -8,7 +8,7 @@ export default class ConfigSet extends CustomCommand {
 
   static aliases = []
 
-  static examples = ['vtex apps:config:set env envValue', 'vtex config:set cluster clusterValue']
+  static examples = ['vtex config set env envValue', 'vtex config set cluster clusterValue']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

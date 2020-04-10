@@ -7,10 +7,7 @@ export default class DepsDiff extends CustomCommand {
     'Diff between workspace dependencies. If only a parameter is passed the current workspace is used in the diff and if no parameter is passed the diff is made between the current workspace and master.'
 
   static examples = [
-    'vtex workspace:diff workspace1 workspace2',
-    'vtex diff workspace1 workspace2',
-    'vtex diff workspace1',
-    'vtex diff',
+    'vtex deps diff workspace1 workspace2',
   ]
 
   static flags = {}

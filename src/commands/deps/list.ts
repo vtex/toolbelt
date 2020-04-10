@@ -8,7 +8,7 @@ export default class DepsList extends CustomCommand {
 
   static description = 'List your workspace dependencies'
 
-  static examples = ['vtex workspace:deps:list', 'vtex workspace:deps:ls', 'vtex deps:list', 'vtex deps:ls']
+  static examples = ['vtex deps list', 'vtex deps ls']
 
   static flags = {
     keys: oclifFlags.boolean({ char: 'k', description: 'Show only keys', default: false }),

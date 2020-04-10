@@ -6,7 +6,7 @@ import { authSupport } from '../lib/support'
 export default class Support extends CustomCommand {
   static description = 'Login as support into another VTEX account'
 
-  static examples = ['vtex auth:support storecomponents', 'vtex auth:support']
+  static examples = ['vtex support storecomponents', 'vtex support']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

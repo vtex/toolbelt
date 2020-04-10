@@ -6,7 +6,7 @@ import { appsPublish } from '../lib/publish'
 export default class Publish extends CustomCommand {
   static description = 'Publish the current app or a path containing an app'
 
-  static examples = ['vtex apps:publish', 'vtex publish']
+  static examples = ['vtex publish']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

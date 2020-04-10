@@ -8,7 +8,7 @@ export default class SettingsGet extends CustomCommand {
 
   static aliases = ['settings']
 
-  static examples = ['vtex apps:settings:get vtex.service-example', 'vtex settings:get vtex.service-example']
+  static examples = ['vtex settings get vtex.service-example']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

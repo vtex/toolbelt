@@ -8,7 +8,7 @@ export default class InfraList extends CustomCommand {
 
   static aliases = ['infra ls']
 
-  static examples = ['vtex apps:infra:list', 'vtex infra:list', 'vtex infra:ls', 'vtex infra:ls infraService']
+  static examples = ['vtex infra list', 'vtex infra ls']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

@@ -8,7 +8,7 @@ export default class WorkspaceInfo extends CustomCommand {
 
   static aliases = ['workspace']
 
-  static examples = ['vtex workspace:info', 'vtex info']
+  static examples = ['vtex workspace info', 'vtex info']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

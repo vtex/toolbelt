@@ -6,7 +6,7 @@ import { appsAdd } from '../lib/add'
 export default class Add extends CustomCommand {
   static description = 'Add app(s) to the manifest dependencies'
 
-  static examples = ['vtex apps:add vtex.service-example@0.x', 'vtex add vtex.service-example@0.x']
+  static examples = ['vtex apps add vtex.service-example@0.x', 'vtex add vtex.service-example@0.x']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

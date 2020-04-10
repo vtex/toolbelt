@@ -6,7 +6,7 @@ import { authWorkspace } from '../../lib/local/workspace'
 export default class LocalWorkspace extends CustomCommand {
   static description = 'Show current workspace and copy it to clipboard'
 
-  static examples = ['vtex auth:workspace', 'vtex workspace']
+  static examples = ['vtex local workspace']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

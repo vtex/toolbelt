@@ -7,7 +7,6 @@ export default class Login extends CustomCommand {
   static description = 'Log into a VTEX account'
 
   static examples = [
-    'vtex auth:login',
     'vtex login',
     'vtex login storecomponents',
     'vtex login storecomponents myworkspace',

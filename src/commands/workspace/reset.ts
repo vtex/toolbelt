@@ -6,7 +6,7 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class WorkspaceReset extends CustomCommand {
   static description = 'Delete and recreate a workspace'
 
-  static examples = ['vtex workspace:reset', 'vtex workspace:reset workspaceName']
+  static examples = ['vtex workspace reset', 'vtex workspace reset workspaceName']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

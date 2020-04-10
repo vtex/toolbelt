@@ -7,8 +7,7 @@ export default class SettingsUnset extends CustomCommand {
   static description = 'Unset app settings'
 
   static examples = [
-    'vtex apps:settings:unset vtex.service-example fieldName',
-    'vtex settings:unset vtex.service-example fieldName',
+    'vtex settings unset vtex.service-example fieldName',
   ]
 
   static flags = {

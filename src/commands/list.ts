@@ -6,7 +6,7 @@ import { appsList } from '../lib/list'
 export default class List extends CustomCommand {
   static description = 'List your installed VTEX apps'
 
-  static examples = ['vtex apps:list', 'vtex list', 'vtex apps:ls', 'vtex ls']
+  static examples = ['vtex list', 'vtex ls']
 
   static aliases = ['ls']
 

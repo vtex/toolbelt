@@ -7,10 +7,9 @@ export default class Uninstall extends CustomCommand {
   static description = 'Uninstall an app (defaults to the app in the current directory)'
 
   static examples = [
-    'vtex apps:uninstall',
     'vtex uninstall',
-    'vtex apps:uninstall vtex.service-example',
-    'vtex apps:uninstall vtex.service-example@0.x',
+    'vtex uninstall vtex.service-example',
+    'vtex uninstall vtex.service-example@0.x',
   ]
 
   static flags = {

@@ -8,7 +8,7 @@ export default class ConfigGet extends CustomCommand {
 
   static aliases = []
 
-  static examples = ['vtex apps:config:get env', 'vtex config:get env', 'vtex config:get cluster']
+  static examples = ['vtex config get env', 'vtex config get cluster']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

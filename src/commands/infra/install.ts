@@ -7,9 +7,8 @@ export default class InfraInstall extends CustomCommand {
   static description = 'Install an infra service'
 
   static examples = [
-    'vtex apps:infra:install infra-service',
-    'vtex infra:install infra-service',
-    'vtex infra:install infra-service@0.0.1',
+    'vtex infra install infra-service',
+    'vtex infra install infra-service@0.0.1',
   ]
 
   static flags = { help: oclifFlags.help({ char: 'h' }) }

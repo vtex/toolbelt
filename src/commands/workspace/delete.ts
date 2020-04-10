@@ -6,7 +6,7 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class WorkspaceDelete extends CustomCommand {
   static description = 'Delete one or many workspaces'
 
-  static examples = ['vtex workspace:delete workspaceName', 'vtex workspace:delete workspaceName1 workspaceName2']
+  static examples = ['vtex workspace delete workspaceName', 'vtex workspace delete workspaceName1 workspaceName2']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
