@@ -1,7 +1,7 @@
 
 import { SessionsPersister, SessionsPersisterBase } from './SessionsPersister'
-import { AuthProviderBase, AuthProviders } from '../../lib/auth/AuthProviders'
-import { Token } from '../../lib/auth/Token'
+import { AuthProviderBase, AuthProviders } from '../AuthProviders'
+import { Token } from '../../lib/local/Token'
 
 interface SessionManagerArguments {
   sessionsPersister: SessionsPersisterBase

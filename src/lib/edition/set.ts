@@ -5,7 +5,7 @@ import { Sponsor } from '../../clients/sponsor'
 import * as conf from '../../utils/conf'
 import { CommandError, UserCancelledError } from '../../utils/errors'
 import log from '../../utils/logger'
-import { switchAccount } from '../auth/switch'
+import { switchAccount } from '../switch'
 import { promptConfirm } from '../../utils/prompts'
 import { getIOContext, IOClientOptions, promptWorkspaceMaster, switchToPreviousAccount } from '../../utils/utils'
 
