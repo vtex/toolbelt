@@ -2,11 +2,11 @@ import chalk from 'chalk'
 
 import { getAccount, getToken, getWorkspace } from '../../../conf'
 import { dummyLogger } from '../../../clients/dummyLogger'
-import { CustomCommand } from '../../../lib/CustomCommand'
-import { matchedDepsDiffTable } from '../../../lib/utils'
 import userAgent from '../../../user-agent'
 import * as env from '../../../env'
-import { getCleanDependencies } from '../../../lib/deps/utils'
+import { CustomCommand } from '../../../utils/CustomCommand'
+import { getCleanDependencies } from '../../../utils/deps'
+import { matchedDepsDiffTable } from '../../../utils/utils'
 
 const context = (workspace: string) => {
   // Returns default context with variable workspace name.

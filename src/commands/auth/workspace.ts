@@ -1,8 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { getWorkspace } from '../../conf'
-import { CustomCommand } from '../../lib/CustomCommand'
-import { copyToClipboard } from '../../lib/copyToClipboard'
+import { CustomCommand } from '../../utils/CustomCommand'
+import { authWorkspace } from '../../lib/auth/workspace'
 
 export default class LocalWorkspace extends CustomCommand {
   static description = 'Show current workspace and copy it to clipboard'
@@ -19,8 +18,7 @@ export default class LocalWorkspace extends CustomCommand {
 
   async run() {
     this.parse(LocalWorkspace)
-    const workspace = getWorkspace()
-    copyToClipboard(workspace)
-    return console.log(workspace)
+
+    authWorkspace()
   }
 }

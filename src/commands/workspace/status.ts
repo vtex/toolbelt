@@ -3,7 +3,7 @@ import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
-import { CustomCommand } from '../../lib/CustomCommand'
+import { CustomCommand } from '../../utils/CustomCommand'
 import log from '../../logger'
 
 const workspaceState = (meta: WorkspaceResponse) => (meta.production ? 'production' : 'dev')

@@ -1,7 +1,7 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 
-import { MetricReport } from '../lib/metrics/MetricReport'
-import { ErrorReport } from '../lib/error/ErrorReport'
+import { ErrorReport } from '../utils/error/ErrorReport'
+import { MetricReport } from '../utils/metrics/MetricReport'
 
 export class TelemetryClient extends AppClient {
   constructor(ioContext: IOContext, opts?: InstanceOptions) {

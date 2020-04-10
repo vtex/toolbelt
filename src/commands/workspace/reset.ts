@@ -4,9 +4,9 @@ import chalk from 'chalk'
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
-import { CustomCommand } from '../../lib/CustomCommand'
 import log from '../../logger'
-import { promptConfirm } from '../../lib/prompts'
+import { promptConfirm } from '../../utils/prompts'
+import { CustomCommand } from '../../utils/CustomCommand'
 
 const promptWorkspaceReset = (name: string, account: string) =>
   promptConfirm(

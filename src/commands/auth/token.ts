@@ -1,8 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { getToken } from '../../conf'
-import { CustomCommand } from '../../lib/CustomCommand'
-import { copyToClipboard } from '../../lib/copyToClipboard'
+import { CustomCommand } from '../../utils/CustomCommand'
+import { authToken } from '../../lib/auth/Token'
 
 export default class LocalToken extends CustomCommand {
   static description = "Show user's auth token and copy it to clipboard"
@@ -16,8 +15,6 @@ export default class LocalToken extends CustomCommand {
   }
 
   async run() {
-    const token = getToken()
-    copyToClipboard(token)
-    return console.log(token)
+    authToken()
   }
 }

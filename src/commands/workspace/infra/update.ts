@@ -1,3 +1,4 @@
+import { flags as oclifFlags } from '@oclif/command'
 import { AvailableServices, InstalledService } from '@vtex/api'
 import chalk from 'chalk'
 import ora from 'ora'
@@ -7,10 +8,9 @@ import semver from 'semver'
 import { router } from '../../../clients'
 import { Region } from '../../../conf'
 import log from '../../../logger'
-import { diffVersions, getTag } from '../../../lib/infra/utils'
-import { CustomCommand } from '../../../lib/CustomCommand'
-import { flags as oclifFlags } from '@oclif/command'
-import { promptConfirm } from '../../../lib/prompts'
+import { promptConfirm } from '../../../utils/prompts'
+import { diffVersions, getTag } from '../../../utils/infra'
+import { CustomCommand } from '../../../utils/CustomCommand'
 
 const { listAvailableServices, listInstalledServices, installService } = router
 

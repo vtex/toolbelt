@@ -2,7 +2,6 @@
 const initTimeStartTime = process.hrtime()
 
 import 'v8-compile-cache'
-
 import axios from 'axios'
 import chalk from 'chalk'
 import { all as clearCachedModules } from 'clear-module'
@@ -10,20 +9,20 @@ import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun
 import os from 'os'
 import path from 'path'
 import { without } from 'ramda'
+
 import * as pkg from '../package.json'
 import { CLIPrechecker } from './CLIPreChecker/CLIPrechecker'
 import * as conf from './conf'
 import { envCookies } from './env'
 import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
 import { Token } from './lib/auth/Token'
-import { TelemetryCollector } from './lib/telemetry/TelemetryCollector'
 import log from './logger'
 import { checkAndOpenNPSLink } from './nps'
 import notify from './update'
-import { isVerbose, VERBOSE } from './utils'
-import { Metric } from './lib/metrics/MetricReport'
-import { hrTimeToMs } from './lib/utils'
 import tree from './tree'
+import { hrTimeToMs, VERBOSE, isVerbose } from './utils/utils'
+import { Metric } from './utils/metrics/MetricReport'
+import { TelemetryCollector } from './utils/telemetry/TelemetryCollector'
 
 const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
 

@@ -1,19 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
-import { merge } from 'ramda'
 
-import { CustomCommand } from '../../../lib/CustomCommand'
-import { apps } from '../../../clients'
-
-const castValue = value => {
-  let parsedValue
-  try {
-    parsedValue = JSON.parse(value)
-  } catch (err) {
-    parsedValue = value
-  }
-  const numberCast = Number(value)
-  return Number.isNaN(numberCast) ? parsedValue : numberCast
-}
+import { appsSettingsSet } from '../../../lib/apps/settings/set'
+import { CustomCommand } from '../../../utils/CustomCommand'
 
 export default class SettingsSet extends CustomCommand {
   static description = 'Set app settings'
@@ -37,15 +25,9 @@ export default class SettingsSet extends CustomCommand {
 
   async run() {
     const {
-      args: { appName: app, field, value },
+      args: { appName, field, value },
     } = this.parse(SettingsSet)
 
-    const commandSettings = { [field]: castValue(value) }
-
-    const oldSettings = await apps.getAppSettings(app)
-    const newSettingsJson = JSON.stringify(merge(oldSettings, commandSettings), null, 2)
-
-    await apps.saveAppSettings(app, newSettingsJson)
-    console.log(newSettingsJson)
+    await appsSettingsSet(appName, field, value)
   }
 }

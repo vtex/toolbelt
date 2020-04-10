@@ -5,7 +5,7 @@ import { createTable } from '../../table'
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
-import { CustomCommand } from '../../lib/CustomCommand'
+import { CustomCommand } from '../../utils/CustomCommand'
 
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 

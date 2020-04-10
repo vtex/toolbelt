@@ -1,10 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../lib/CustomCommand'
-import { Runtime } from '../../clients/runtime'
-import { ManifestEditor } from '../../lib/manifest'
-import logger from '../../logger'
-import { getIOContext } from '../../lib/utils'
+import { CustomCommand } from '../../utils/CustomCommand'
+import { debugDotnet } from '../../lib/debug/dotnet'
 
 export default class DotnetDebug extends CustomCommand {
   static description = 'Debug for .NET applications'
@@ -19,17 +16,9 @@ export default class DotnetDebug extends CustomCommand {
 
   async run() {
     const {
-      args: { debugInst: debug },
+      args: { debugInst },
     } = this.parse(DotnetDebug)
 
-    const manifest = await ManifestEditor.getManifestEditor()
-    const { name, vendor, builders } = manifest
-    if (!builders?.dotnet) {
-      logger.error('This command can only be used for dotnet apps')
-      return
-    }
-
-    const runtimeClient = new Runtime(getIOContext())
-    await runtimeClient.debugDotnetApp(name, vendor, manifest.majorRange, debug)
+    await debugDotnet(debugInst)
   }
 }

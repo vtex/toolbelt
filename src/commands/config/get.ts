@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../lib/CustomCommand'
-import { getCluster, getEnvironment } from '../../conf'
+import { CustomCommand } from '../../utils/CustomCommand'
+import { configGet } from '../../lib/config/get'
 
 export default class ConfigGet extends CustomCommand {
   static description = 'Gets the current value for the requested configuration'
@@ -18,16 +18,9 @@ export default class ConfigGet extends CustomCommand {
 
   async run() {
     const {
-      args: { configName: name },
+      args: { configName },
     } = this.parse(ConfigGet)
 
-    switch (name) {
-      case 'env':
-        console.log(getEnvironment() || '')
-        break
-      case 'cluster':
-        console.log(getCluster())
-        break
-    }
+    configGet(configName)
   }
 }

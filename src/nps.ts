@@ -3,7 +3,7 @@ import moment from 'moment'
 import opn from 'opn'
 
 import { getNextFeedbackDate, saveNextFeedbackDate } from './conf'
-import { promptConfirm } from './lib/prompts'
+import { promptConfirm } from './utils/prompts'
 
 const NPSFormURL = 'https://forms.gle/CRRHn6P3x9AeaWTQ8'
 

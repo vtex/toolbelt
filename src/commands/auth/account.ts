@@ -1,8 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { getAccount } from '../../conf'
-import { CustomCommand } from '../../lib/CustomCommand'
-import { copyToClipboard } from '../../lib/copyToClipboard'
+import { CustomCommand } from '../../utils/CustomCommand'
+import { authAccount } from '../../lib/auth/account'
 
 export default class LocalAccount extends CustomCommand {
   static description = 'Show current account and copy it to clipboard'
@@ -18,8 +17,6 @@ export default class LocalAccount extends CustomCommand {
   static args = []
 
   async run() {
-    const account = getAccount()
-    copyToClipboard(account)
-    return console.log(account)
+    authAccount()
   }
 }

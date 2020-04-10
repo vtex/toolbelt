@@ -1,8 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
-import { dissocPath } from 'ramda'
 
-import { CustomCommand } from '../../../lib/CustomCommand'
-import { apps } from '../../../clients'
+import { appsSettingsUnset } from '../../../lib/apps/settings/unset'
+import { CustomCommand } from '../../../utils/CustomCommand'
 
 export default class SettingsUnset extends CustomCommand {
   static description = 'Unset app settings'
@@ -25,16 +24,9 @@ export default class SettingsUnset extends CustomCommand {
 
   async run() {
     const {
-      args: { appName: app, field },
+      args: { appName, field },
     } = this.parse(SettingsUnset)
 
-    const fields = [field]
-    const newSettingsJson = await apps
-      .getAppSettings(app)
-      .then(dissocPath(fields))
-      .then(newSettings => JSON.stringify(newSettings, null, 2))
-
-    await apps.saveAppSettings(app, newSettingsJson)
-    console.log(newSettingsJson)
+    await appsSettingsUnset(appName, field)
   }
 }

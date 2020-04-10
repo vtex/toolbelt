@@ -1,8 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { greeting } from '../../greeting'
-import { CustomCommand } from '../../lib/CustomCommand'
-import log from '../../logger'
+import { CustomCommand } from '../../utils/CustomCommand'
+import { authWhoami } from '../../lib/auth/whoami'
 
 export default class WhoAmI extends CustomCommand {
   static description = 'See your credentials current status'
@@ -19,7 +18,7 @@ export default class WhoAmI extends CustomCommand {
 
   async run() {
     this.parse(WhoAmI)
-    const lines = await greeting()
-    lines.forEach((msg: string) => log.info(msg))
+
+    await authWhoami()
   }
 }

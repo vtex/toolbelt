@@ -6,10 +6,9 @@ import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, 
 
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
-import { isVerbose } from '../../utils'
-import { matchedDepsDiffTable, getIOContext, IOClientOptions } from '../../lib/utils'
-import { CustomCommand } from '../../lib/CustomCommand'
-import { promptConfirm } from '../../lib/prompts'
+import { promptConfirm } from '../../utils/prompts'
+import { matchedDepsDiffTable, getIOContext, IOClientOptions, isVerbose } from '../../utils/utils'
+import { CustomCommand } from '../../utils/CustomCommand'
 
 const promptUpdate = (): Promise<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
 

@@ -1,42 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
-import chalk from 'chalk'
 
-import { apps } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import { promptConfirm } from '../../lib/prompts'
-import { CustomCommand } from '../../lib/CustomCommand'
-import { validateAppAction } from '../../lib/apps/utils'
-
-const { uninstallApp } = apps
-
-const promptAppUninstall = (appsList: string[]): Promise<void> =>
-  promptConfirm(
-    `Are you sure you want to uninstall ${appsList.join(', ')} from account ${chalk.blue(
-      getAccount()
-    )}, workspace ${chalk.green(getWorkspace())}?`
-  ).then(answer => {
-    if (!answer) {
-      throw new UserCancelledError()
-    }
-  })
-
-const uninstallApps = async (appsList: string[]): Promise<void> => {
-  for (const app of appsList) {
-    const appName = ManifestValidator.validateApp(app.split('@')[0], true)
-    try {
-      log.debug('Starting to uninstall app', appName)
-      // eslint-disable-next-line no-await-in-loop
-      await uninstallApp(appName)
-      log.info(`Uninstalled app ${appName} successfully`)
-    } catch (e) {
-      log.warn(`The following app was not uninstalled: ${appName}`)
-      log.error(`${e.response.status}: ${e.response.statusText}. ${e.response.data.message}`)
-    }
-  }
-}
+import { CustomCommand } from '../../utils/CustomCommand'
+import { appsUninstall } from '../../lib/apps/uninstall'
 
 export default class Uninstall extends CustomCommand {
   static description = 'Uninstall an app (defaults to the app in the current directory)'
@@ -58,19 +23,11 @@ export default class Uninstall extends CustomCommand {
   static args = [{ name: 'appName', required: false }]
 
   async run() {
-    const { args, flags } = this.parse(Uninstall)
-    const optionalApp = args.appName
+    const {
+      args: { appName },
+      flags: { yes },
+    } = this.parse(Uninstall)
 
-    await validateAppAction('uninstall', optionalApp)
-    const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-    const appsList = [app]
-    const preConfirm = flags.yes
-
-    if (!preConfirm) {
-      await promptAppUninstall(appsList)
-    }
-
-    log.debug(`Uninstalling app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
-    return uninstallApps(appsList)
+    await appsUninstall(appName, yes)
   }
 }

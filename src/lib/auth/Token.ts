@@ -1,5 +1,8 @@
 import { decode } from 'jsonwebtoken'
 
+import { getToken } from '../../conf'
+import { copyToClipboard } from '../../utils/copyToClipboard'
+
 export class Token {
   public token: string | undefined
 
@@ -24,4 +27,10 @@ export class Token {
       Number(this.decoded.exp) >= Date.now() / 1000
     )
   }
+}
+
+export function authToken() {
+  const token = getToken()
+  copyToClipboard(token)
+  return console.log(token)
 }

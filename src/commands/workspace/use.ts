@@ -4,11 +4,11 @@ import chalk from 'chalk'
 import { workspaces } from '../../clients'
 import { getAccount, getLastUsedWorkspace, saveWorkspace } from '../../conf'
 import { CommandError, UserCancelledError } from '../../errors'
-import { CustomCommand } from '../../lib/CustomCommand'
 import log from '../../logger'
 import { createWorkspace } from './create'
 import { resetWorkspace } from './reset'
-import { promptConfirm } from '../../lib/prompts'
+import { promptConfirm } from '../../utils/prompts'
+import { CustomCommand } from '../../utils/CustomCommand'
 
 const promptWorkspaceCreation = (name: string) => {
   console.log(chalk.blue('!'), `Workspace ${chalk.green(name)} doesn't exist`)

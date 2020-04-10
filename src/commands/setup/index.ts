@@ -1,18 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { getManifest } from '../../manifest'
-import { CustomCommand } from '../../lib/CustomCommand'
-import { setupTooling } from '../../lib/setup/setupTooling'
-import { setupTSConfig } from '../../lib/setup/setupTSConfig'
-import { setupTypings } from '../../lib/setup/setupTypings'
-
-export const setup = async (ignoreLinked: boolean) => {
-  const manifest = await getManifest()
-
-  setupTooling(manifest)
-  await setupTSConfig(manifest)
-  await setupTypings(manifest, ignoreLinked)
-}
+import { CustomCommand } from '../../utils/CustomCommand'
+import { setup } from '../../lib/setup'
 
 export default class Setup extends CustomCommand {
   static description = 'Download react app typings, graphql app typings, lint config and tsconfig'
@@ -33,6 +22,7 @@ export default class Setup extends CustomCommand {
   async run() {
     const { flags } = this.parse(Setup)
     const ignoreLinked = flags['ignore-linked']
+
     await setup(ignoreLinked)
   }
 }

@@ -4,7 +4,7 @@ import chalk from 'chalk'
 import { createClients, workspaces } from '../../clients'
 import { getAccount } from '../../conf'
 import { CommandError } from '../../errors'
-import { CustomCommand } from '../../lib/CustomCommand'
+import { CustomCommand } from '../../utils/CustomCommand'
 import log from '../../logger'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/

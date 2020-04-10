@@ -1,16 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
-import chalk from 'chalk'
-import { split } from 'ramda'
 
-import { getAccount, getLastUsedAccount } from '../../conf'
-import { CommandError } from '../../errors'
-import log from '../../logger'
-import { switchAccount } from '../../lib/auth/switch'
-import { CustomCommand } from '../../lib/CustomCommand'
-
-const hasAccountSwitched = (account: string) => {
-  return account === getAccount()
-}
+import { CustomCommand } from '../../utils/CustomCommand'
+import { authSwitch } from '../../lib/auth/switch'
 
 export default class Switch extends CustomCommand {
   static description = 'Switch to another VTEX account'
@@ -33,23 +24,10 @@ export default class Switch extends CustomCommand {
   ]
 
   async run() {
-    const { args } = this.parse(Switch)
-    let { account } = args
-    if (account === '-') {
-      account = getLastUsedAccount()
-      if (account == null) {
-        throw new CommandError('No last used account was found')
-      }
-    }
+    const {
+      args: { account, workspace },
+    } = this.parse(Switch)
 
-    const previousAccount = getAccount()
-    // Enable users to type `vtex switch {account}/{workspace}` and switch
-    // directly to a workspace without typing the `-w` option.
-    const [parsedAccount, parsedWorkspace] = split('/', account)
-    const options = { workspace: parsedWorkspace || args.workspace }
-    await switchAccount(parsedAccount, options)
-    if (hasAccountSwitched(parsedAccount)) {
-      log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(parsedAccount)}`)
-    }
+    await authSwitch(account, workspace)
   }
 }

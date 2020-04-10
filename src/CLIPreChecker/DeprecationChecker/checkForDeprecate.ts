@@ -1,8 +1,8 @@
 import { NpmClient } from '../../clients/npmClient'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { ErrorReport } from '../../lib/error/ErrorReport'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { DeprecationCheckerStore, IDeprecationCheckerStore } from './DeprecationCheckerStore'
+import { TelemetryCollector } from '../../utils/telemetry/TelemetryCollector'
+import { ErrorReport } from '../../utils/error/ErrorReport'
+import { ErrorKinds } from '../../utils/error/ErrorKinds'
 
 export const checkForDeprecate = async (store: IDeprecationCheckerStore, pkgName: string, pkgVersion: string) => {
   try {

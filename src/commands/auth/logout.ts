@@ -1,8 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../lib/CustomCommand'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { CustomCommand } from '../../utils/CustomCommand'
+import { authLogout } from '../../lib/auth/logout'
 
 export default class Logout extends CustomCommand {
   static description = 'Logout of the current VTEX account'
@@ -18,9 +17,6 @@ export default class Logout extends CustomCommand {
   static args = []
 
   async run() {
-    log.debug('Clearing config file')
-    const sessionManager = SessionManager.getSessionManager()
-    sessionManager.logout()
-    log.info('See you soon!')
+    authLogout()
   }
 }

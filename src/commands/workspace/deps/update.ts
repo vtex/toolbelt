@@ -4,10 +4,10 @@ import { diffJson } from 'diff'
 import { compose, keys, map, path } from 'ramda'
 
 import { apps } from '../../../clients'
-import { CustomCommand } from '../../../lib/CustomCommand'
 import { parseLocator } from '../../../locator'
 import log from '../../../logger'
-import { removeNpm } from '../../../lib/deps/utils'
+import { removeNpm } from '../../../utils/deps'
+import { CustomCommand } from '../../../utils/CustomCommand'
 
 const { getDependencies, updateDependencies, updateDependency } = apps
 
