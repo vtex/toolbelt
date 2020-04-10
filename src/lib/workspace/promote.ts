@@ -5,7 +5,7 @@ import { getAccount, getWorkspace } from '../../utils/conf'
 import { CommandError, UserCancelledError } from '../../utils/errors'
 import log from '../../utils/logger'
 import { promptConfirm } from '../../utils/prompts'
-import { workspaceUse } from '../../commands/workspace/use'
+import { workspaceUse } from './use'
 
 const { promote, get } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
