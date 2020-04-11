@@ -4,7 +4,7 @@ import { CustomCommand } from '../utils/CustomCommand'
 import { browse } from '../lib/browse'
 
 export default class Browse extends CustomCommand {
-  static description = 'Add app(s) to the manifest dependencies'
+  static description = 'Open endpoint in browser window'
 
   static examples = ['vtex browse']
 
