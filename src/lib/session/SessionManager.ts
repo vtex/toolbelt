@@ -98,6 +98,13 @@ export class SessionManager implements ISessionManager {
     return this.state.lastWorkspace
   }
 
+  private saveCredentials() {
+    this.sessionPersister.saveAccount(this.currAccount)
+    this.sessionPersister.saveWorkspace(this.currWorkspace)
+    this.sessionPersister.saveLogin(this.currToken.login)
+    this.sessionPersister.saveToken(this.currToken.token)
+  }
+
   public checkAndGetToken(exitOnInvalid = false) {
     if (this.state.tokenObj.isValid()) {
       return this.state.tokenObj.token
