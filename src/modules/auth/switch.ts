@@ -1,7 +1,10 @@
 import chalk from 'chalk'
 import { split } from 'ramda'
+import { all as clearCachedModules } from 'clear-module'
+import { getAccount, getLastUsedAccount, getLogin, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { SessionManager } from '../../lib/session/SessionManager'
+import welcome from './welcome'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 
@@ -64,11 +67,16 @@ export const switchAccount = async (account: string, options: SwitchOptions): Pr
   // directly to a workspace without typing the `-w` option.
   const [parsedAccount, parsedWorkspace] = split('/', account)
   if (parsedWorkspace) {
-    options = { ...options, workspace: parsedWorkspace }
+    options = { ...options, w: parsedWorkspace, workspace: parsedWorkspace }
   }
 
-  await checkAndSwitch(parsedAccount, options.workspace || 'master')
+  await switchAccount(parsedAccount, options)
+  if (!hasAccountSwitched(parsedAccount)) {
+    return null
+  }
   log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(parsedAccount)}`)
+  clearCachedModules()
+  welcome()
   return true
 }
 
