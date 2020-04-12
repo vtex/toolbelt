@@ -4,7 +4,6 @@ import { TelemetryCollector } from '../../telemetry/TelemetryCollector'
 import { ErrorReport } from '../../error/ErrorReport'
 import { ErrorKinds } from '../../error/ErrorKinds'
 
-
 export const checkForDeprecate = async (store: IDeprecationCheckerStore, pkgName: string, pkgVersion: string) => {
   try {
     const { deprecated } = await NpmClient.getPackageMetadata(pkgName, pkgVersion)

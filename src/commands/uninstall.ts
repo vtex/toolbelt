@@ -6,11 +6,7 @@ import { appsUninstall } from '../lib/uninstall'
 export default class Uninstall extends CustomCommand {
   static description = 'Uninstall an app (defaults to the app in the current directory)'
 
-  static examples = [
-    'vtex uninstall',
-    'vtex uninstall vtex.service-example',
-    'vtex uninstall vtex.service-example@0.x',
-  ]
+  static examples = ['vtex uninstall', 'vtex uninstall vtex.service-example', 'vtex uninstall vtex.service-example@0.x']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

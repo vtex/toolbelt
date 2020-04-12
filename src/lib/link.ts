@@ -8,7 +8,6 @@ import { join, resolve as resolvePath, sep } from 'path'
 import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
 
-
 import log from '../utils/logger'
 import startDebuggerTunnel from '../utils/debugger'
 import { getAppRoot } from '../utils/manifest'
@@ -16,7 +15,13 @@ import { ProjectUploader, ProjectSizeLimitError, ChangeToSend, ChangeSizeLimitEr
 import { YarnFilesManager } from '../utils/files/YarnFilesManager'
 import { listLocalFiles, getIgnoredPaths } from '../utils/file'
 import { createPathToFileObject } from '../utils/files/ProjectFilesManager'
-import { validateAppAction, checkBuilderHubMessage, showBuilderHubMessage, runYarnIfPathExists, formatNano } from '../utils/utils'
+import {
+  validateAppAction,
+  checkBuilderHubMessage,
+  showBuilderHubMessage,
+  runYarnIfPathExists,
+  formatNano,
+} from '../utils/utils'
 import { getAccount, getWorkspace, getEnvironment } from '../utils/conf'
 import { createClients } from '../clients'
 import { setup } from './setup'

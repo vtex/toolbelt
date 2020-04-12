@@ -11,7 +11,6 @@ const { getDependencies, updateDependencies, updateDependency } = apps
 
 const cleanDeps = compose(keys, removeNpm)
 
-
 export async function workspaceDepsUpdate(appId) {
   const appsList = [appId]
   try {

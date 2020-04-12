@@ -6,9 +6,7 @@ export default class DepsDiff extends CustomCommand {
   static description =
     'Diff between workspace dependencies. If only a parameter is passed the current workspace is used in the diff and if no parameter is passed the diff is made between the current workspace and master.'
 
-  static examples = [
-    'vtex deps diff workspace1 workspace2',
-  ]
+  static examples = ['vtex deps diff workspace1 workspace2']
 
   static flags = {}
 
@@ -18,7 +16,9 @@ export default class DepsDiff extends CustomCommand {
   ]
 
   async run() {
-    const { args: { workspace1, workspace2 } } = this.parse(DepsDiff)
+    const {
+      args: { workspace1, workspace2 },
+    } = this.parse(DepsDiff)
 
     await workspaceDepsDiff(workspace1, workspace2)
   }

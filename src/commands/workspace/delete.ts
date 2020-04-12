@@ -20,7 +20,10 @@ export default class WorkspaceDelete extends CustomCommand {
   ]
 
   async run() {
-    const { raw, flags: { force, yes } } = this.parse(WorkspaceDelete)
+    const {
+      raw,
+      flags: { force, yes },
+    } = this.parse(WorkspaceDelete)
     const names = this.getAllArgs(raw)
 
     await workspaceDelete(names, yes, force)

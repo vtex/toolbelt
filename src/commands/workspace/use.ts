@@ -22,7 +22,10 @@ export default class WorkspaceUse extends CustomCommand {
   static args = [{ name: 'workspace', required: true }]
 
   async run() {
-    const { args: { workspace }, flags: { production, reset } } = this.parse(WorkspaceUse)
+    const {
+      args: { workspace },
+      flags: { production, reset },
+    } = this.parse(WorkspaceUse)
 
     await workspaceUse(workspace, production, reset)
   }

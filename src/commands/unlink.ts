@@ -6,10 +6,7 @@ import { appsUnlink } from '../lib/unlink'
 export default class Unlink extends CustomCommand {
   static description = 'Unlink an app on the current directory or a specified one'
 
-  static examples = [
-    'vtex unlink',
-    'vtex unlink vtex.service-example@0.x',
-  ]
+  static examples = ['vtex unlink', 'vtex unlink vtex.service-example@0.x']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

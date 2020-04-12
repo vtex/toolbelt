@@ -6,11 +6,7 @@ import { authLogin } from '../lib/login'
 export default class Login extends CustomCommand {
   static description = 'Log into a VTEX account'
 
-  static examples = [
-    'vtex login',
-    'vtex login storecomponents',
-    'vtex login storecomponents myworkspace',
-  ]
+  static examples = ['vtex login', 'vtex login storecomponents', 'vtex login storecomponents myworkspace']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

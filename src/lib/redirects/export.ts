@@ -6,7 +6,16 @@ import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
 import log from '../../utils/logger'
-import { accountAndWorkspace, METAINFO_FILE, saveMetainfo, deleteMetainfo, showGraphQLErrors, MAX_RETRIES, RETRY_INTERVAL_S, sleep } from '../../utils/redirects'
+import {
+  accountAndWorkspace,
+  METAINFO_FILE,
+  saveMetainfo,
+  deleteMetainfo,
+  showGraphQLErrors,
+  MAX_RETRIES,
+  RETRY_INTERVAL_S,
+  sleep,
+} from '../../utils/redirects'
 import { isVerbose } from '../../utils/utils'
 
 const EXPORTS = 'exports'

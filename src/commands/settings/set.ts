@@ -6,9 +6,7 @@ import { appsSettingsSet } from '../../lib/settings/set'
 export default class SettingsSet extends CustomCommand {
   static description = 'Set app settings'
 
-  static examples = [
-    'vtex settings set vtex.service-example fieldName fieldValue',
-  ]
+  static examples = ['vtex settings set vtex.service-example fieldName fieldValue']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

@@ -17,7 +17,7 @@ const warmUpRouteMap = async (workspace: string) => {
   }
 }
 
-export async function workspaceCreate (name: string, production: boolean) {
+export async function workspaceCreate(name: string, production: boolean) {
   if (!VALID_WORKSPACE.test(name)) {
     throw new CommandError("Whoops! That's not a valid workspace name. Please use only lowercase letters and numbers.")
   }

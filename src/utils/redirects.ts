@@ -6,7 +6,6 @@ import jsonSplit from 'json-array-split'
 import ProgressBar from 'progress'
 import { compose, keys, join, map, match, pluck, prop, replace, sortBy, toLower } from 'ramda'
 
-
 import log from './logger'
 import { getAccount, getWorkspace } from './conf'
 import { Redirect } from '../clients/rewriter'

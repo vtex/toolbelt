@@ -57,7 +57,6 @@ const hasUpdate = (update: InfraUpdate): boolean => Object.keys(update).length >
 const installUpdates = (update: InfraUpdate) =>
   Promise.all(Object.keys(update).map(name => installService(name, update[name].latest)))
 
-
 export async function workspaceInfraUpdate() {
   const spinner = ora('Getting available updates').start()
   try {

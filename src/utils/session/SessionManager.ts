@@ -1,4 +1,3 @@
-
 import { SessionsPersister, SessionsPersisterBase } from './SessionsPersister'
 import { AuthProviderBase, AuthProviders } from '../AuthProviders'
 import { Token } from '../../lib/local/Token'

@@ -21,7 +21,10 @@ export default class WorkspaceReset extends CustomCommand {
   static args = [{ name: 'workspaceName', required: false }]
 
   async run() {
-    const { args: { workspaceName }, flags: { yes, production } } = this.parse(WorkspaceReset)
+    const {
+      args: { workspaceName },
+      flags: { yes, production },
+    } = this.parse(WorkspaceReset)
 
     await workspaceReset(workspaceName, yes, production)
   }

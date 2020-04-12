@@ -6,11 +6,7 @@ import { appsInstall } from '../lib/install'
 export default class Install extends CustomCommand {
   static description = 'Install an app (defaults to the app in the current directory)'
 
-  static examples = [
-    'vtex install',
-    'vtex install vtex.service-example@0.x',
-    'vtex install vtex.service-example@0.0.1',
-  ]
+  static examples = ['vtex install', 'vtex install vtex.service-example@0.x', 'vtex install vtex.service-example@0.0.1']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),

@@ -6,10 +6,7 @@ import { CustomCommand } from '../../utils/CustomCommand'
 export default class InfraInstall extends CustomCommand {
   static description = 'Install an infra service'
 
-  static examples = [
-    'vtex infra install infra-service',
-    'vtex infra install infra-service@0.0.1',
-  ]
+  static examples = ['vtex infra install infra-service', 'vtex infra install infra-service@0.0.1']
 
   static flags = { help: oclifFlags.help({ char: 'h' }) }
 

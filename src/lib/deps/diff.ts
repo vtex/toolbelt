@@ -39,8 +39,6 @@ export async function workspaceDepsDiff(workspace1: string, workspace2: string) 
       )} is empty\n`
     )
   }
-  console.log(
-    `${chalk.yellow('Dependency diff')} between ${chalk.yellow(workspace1)} and ${chalk.yellow(workspace2)}`
-  )
+  console.log(`${chalk.yellow('Dependency diff')} between ${chalk.yellow(workspace1)} and ${chalk.yellow(workspace2)}`)
   console.log(diffTable.toString())
 }

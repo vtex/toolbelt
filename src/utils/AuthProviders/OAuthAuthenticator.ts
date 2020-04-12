@@ -6,8 +6,8 @@ import { join } from 'path'
 import randomstring from 'randomstring'
 
 import { AuthProviderBase } from './AuthProviderBase'
-import { onAuth } from '../../utils/sse'
-import { clusterIdDomainInfix, publicEndpoint } from '../../utils/env'
+import { onAuth } from '../sse'
+import { clusterIdDomainInfix, publicEndpoint } from '../env'
 
 export class OAuthAuthenticator extends AuthProviderBase {
   public static readonly AUTH_TYPE = 'oauth'

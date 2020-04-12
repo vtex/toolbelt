@@ -5,7 +5,15 @@ import semver from 'semver'
 
 import { UserCancelledError } from '../../../utils/errors'
 import log from '../../../utils/logger'
-import { abtester, SIGNIFICANCE_LEVELS, formatDays, installedABTester, promptProductionWorkspace, promptProportionTrafic, promptConstraintDuration } from '../../../utils/test/ab'
+import {
+  abtester,
+  SIGNIFICANCE_LEVELS,
+  formatDays,
+  installedABTester,
+  promptProductionWorkspace,
+  promptProportionTrafic,
+  promptConstraintDuration,
+} from '../../../utils/test/ab'
 import { promptConfirm } from '../../../utils/prompts'
 
 const promptSignificanceLevel = async (): Promise<string> => {

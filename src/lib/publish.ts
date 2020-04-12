@@ -12,7 +12,12 @@ import { ProjectUploader } from '../utils/ProjectUploader'
 import { listLocalFiles } from '../utils/file'
 import { createPathToFileObject } from '../utils/files/ProjectFilesManager'
 import { ManifestEditor } from '../utils/manifest/ManifestEditor'
-import { checkBuilderHubMessage, showBuilderHubMessage, switchToPreviousAccount, runYarnIfPathExists } from '../utils/utils'
+import {
+  checkBuilderHubMessage,
+  showBuilderHubMessage,
+  switchToPreviousAccount,
+  runYarnIfPathExists,
+} from '../utils/utils'
 import { promptConfirm } from '../utils/prompts'
 import { switchAccount } from './switch'
 import { listenBuild } from '../utils/build'
