@@ -1,7 +1,7 @@
 {
   "name": "vtex",
   "description": "The platform for e-commerce apps",
-  "version": "2.97.1-0",
+  "version": "2.97.1-beta",
   "bin": "./bin/run",
   "bugs": "https://github.com/vtex/toolbelt/issues",
   "dependencies": {
