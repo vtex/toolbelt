@@ -1,8 +1,7 @@
 {
   "name": "vtex",
   "description": "The platform for e-commerce apps",
-  "version": "3.0.0-alpha.3",
-  "author": "NataliaGodot @NataliaGodot",
+  "version": "2.97.0",
   "bin": "./bin/run",
   "bugs": "https://github.com/vtex/toolbelt/issues",
   "dependencies": {

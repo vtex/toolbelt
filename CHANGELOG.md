@@ -6,6 +6,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.97.0] - 2020-04-09
+### Changed
+- [local-data] Use new paths on `~/.vtex` for persisting data. (older session path at ~/.config/configstore/vtex.json will still be updated).
+
+## [2.96.1] - 2020-04-07
+### Fixed
+- [vtex rewriter] Use rewriter new redirects API with single binding support.
+
+### Changed
+- [debugger:node, debugger:dotnet] Use `wss` protocol instead of `ws` and new `app.io.vtex.com` URL format.
+- [clients:sponsor, vtex support] Use HTTPS and new URL `app.io.vtex.com` format.
+- [telemetry:collector] Flush just before exiting process.
+- [sse] Check if token is valid before creating connection.
+- [sse] Abort process on 401 or 403 server errors. 
+- [sse:telemetry] Register sse errors with errorKind `SSEError`.
+- Update release notes message.
+
+## [2.96.0] - 2020-04-06
+### Added
+- [vtex test e2e] Show test's logs.
+- [vtex setup] Create new flags for specifying what to setup:
+  - `--all`: Select all setup flags existent.
+  - `--typings`: Download and setup GraphQL and React typings.
+  - `--tooling`: Setup Prettier, Husky and ESLint.
+  - `--tsconfig`: Setup React's and Node's TSconfig, if applicable.
+
+### Changed
+- [telemetry] Add suffix specifying if `env.platform` is container or WSL.
+
 ## [2.95.0] - 2020-04-01
 
 ### Added
