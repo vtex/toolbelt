@@ -1,7 +1,7 @@
 import { Region, getCluster } from './conf'
 
 export function colossusEndpoint() {
-  return process.env.VTEX_COLOSSUS_ENDPOINT || 'https://infra.io.vtex.com/colossus/v0'
+  return process.env.VTEX_COLOSSUS_ENDPOINT || `https://infra.io.vtex.com/colossus/v0`
 }
 
 export function cluster() {

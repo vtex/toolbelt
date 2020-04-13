@@ -13,29 +13,18 @@ const MAX_RETRIES = 3
 
 export default class CustomEventSource {
   public esOnError: (err: any) => void
-
   public esOnMessage: () => void
-
   public esOnOpen: () => void
 
   private configuration: any
-
   private events: any
-
   private eventSource: EventSource
-
   private isClosed: boolean
-
   private nRetries: number
-
   private pingStatus: any
-
   private reconnectInterval: number
-
   private source: string
-
   private timerAfterNextPing: any
-
   private timerBeforeNextPing: any
 
   constructor(source, configuration) {
@@ -61,7 +50,7 @@ export default class CustomEventSource {
     this.esOnOpen = newOnOpen
     this.esOnOpen = this.esOnOpen.bind(this)
     if (this.eventSource) {
-      this.eventSource.addEventListener('open', this.esOnOpen)
+      this.eventSource.onopen = this.esOnOpen
     }
   }
 
@@ -69,7 +58,7 @@ export default class CustomEventSource {
     this.esOnMessage = newOnMessage
     this.esOnMessage = this.esOnMessage.bind(this)
     if (this.eventSource) {
-      this.eventSource.addEventListener('message', this.esOnMessage)
+      this.eventSource.onmessage = this.esOnMessage
     }
   }
 
@@ -77,7 +66,7 @@ export default class CustomEventSource {
     this.esOnError = newOnError
     this.esOnError = this.esOnError.bind(this)
     if (this.eventSource) {
-      this.eventSource.addEventListener('error', this.handleError)
+      this.eventSource.onerror = this.handleError
     }
   }
 
@@ -118,9 +107,9 @@ export default class CustomEventSource {
 
   private addMethods() {
     if (this.eventSource) {
-      this.eventSource.addEventListener('message', this.esOnMessage)
-      this.eventSource.addEventListener('open', this.esOnOpen)
-      this.eventSource.addEventListener('error', this.handleError)
+      this.eventSource.onmessage = this.esOnMessage
+      this.eventSource.onopen = this.esOnOpen
+      this.eventSource.onerror = this.handleError
 
       forEach(({ event, handler }) => {
         this.eventSource.addEventListener(event, handler)

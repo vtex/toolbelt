@@ -16,7 +16,7 @@ const getWorkspaceState = async (): Promise<string> => {
 
     return `${workspaceState(meta)} `
   } catch (err) {
-    log.debug('Unable to fetch workspace state')
+    log.debug(`Unable to fetch workspace state`)
     log.debug(err.message)
     return undefined
   }

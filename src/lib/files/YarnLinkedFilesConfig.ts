@@ -24,9 +24,7 @@ export class YarnSymlinkedModulesConfig {
   }
 
   private stack = []
-
   private graph: Record<string, string[]> = {}
-
   private _metadata: Record<string, string> = {}
 
   constructor(private projectSrc: string) {}

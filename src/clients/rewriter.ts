@@ -6,7 +6,7 @@ export interface RedirectInput {
   to: string
   endDate: string
   type: RedirectTypes
-  bindings: string[] | null
+  binding: string
 }
 
 export interface Redirect {
@@ -14,7 +14,7 @@ export interface Redirect {
   to: string
   endDate: string
   type: RedirectTypes
-  bindings: string[] | null
+  binding: string
 }
 
 export enum RedirectTypes {
@@ -47,7 +47,7 @@ export class Rewriter extends AppGraphQLClient {
           listRedirects(next: $next) {
             next
             routes {
-              bindings
+              binding
               from
               to
               type

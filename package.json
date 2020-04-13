@@ -9,6 +9,7 @@
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^2",
+    "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.2",
     "@vtex/api": "3.71.1",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "~6.10.2",
@@ -141,7 +142,8 @@
     "commands": "./lib/commands",
     "bin": "vtex",
     "plugins": [
-      "@oclif/plugin-help"
+      "@oclif/plugin-help",
+      "@tiagonapoli/oclif-plugin-spaced-commands"
     ]
   },
   "repository": {

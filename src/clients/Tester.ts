@@ -33,6 +33,7 @@ export interface SpecReport {
     }
     tests: SpecTestReport[]
     video?: string
+    logs?: string
     screenshots: Screenshot[]
   }
   logId?: string

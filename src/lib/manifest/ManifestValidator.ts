@@ -11,19 +11,12 @@ const appLocator = new RegExp(`^${vendorPattern}\\.${namePattern}(?:@${wildVersi
 
 export class ManifestValidator {
   public static readonly namePattern = namePattern
-
   public static readonly vendorPattern = vendorPattern
-
   public static readonly versionPattern = versionPattern
-
   public static readonly wildVersionPattern = wildVersionPattern
-
   public static readonly majorVersionLocatorPattern = majorVersionLocatorPattern
-
   public static readonly appID = appID
-
   public static readonly dependencyName = dependencyName
-
   public static readonly appLocator = appLocator
 
   public static validate(manifest: any) {

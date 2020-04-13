@@ -1,17 +1,12 @@
 import { flags as oclifFlags } from '@oclif/command'
-import chalk from 'chalk'
 
-import { workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
-import { CustomCommand } from '../../lib/CustomCommand'
-import log from '../../logger'
-
-const workspaceState = (meta: WorkspaceResponse) => (meta.production ? 'production' : 'dev')
+import { CustomCommand } from '../../oclif/CustomCommand'
+import workspaceStatus from '../../modules/workspace/status'
 
 export default class WorkspaceStatus extends CustomCommand {
   static description = 'Display information about a workspace'
 
-  static examples = ['vtex workspace:status']
+  static examples = ['vtex workspace status']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
@@ -20,17 +15,10 @@ export default class WorkspaceStatus extends CustomCommand {
   static args = [{ name: 'workspaceName', required: false }]
 
   async run() {
-    const { args } = this.parse(WorkspaceStatus)
+    const {
+      args: { workspaceName },
+    } = this.parse(WorkspaceStatus)
 
-    const account = getAccount()
-    const workspace = args.workspaceName || getWorkspace()
-
-    const meta = await workspaces.get(account, workspace)
-
-    log.info(
-      `Workspace ${chalk.green(workspace)} in account ${chalk.blue(account)} is a ${chalk.yellowBright(
-        workspaceState(meta)
-      )} workspace with weight ${chalk.yellowBright(`${meta.weight}`)}`
-    )
+    await workspaceStatus(workspaceName)
   }
 }

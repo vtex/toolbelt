@@ -18,7 +18,6 @@ import { MetricReport } from '../metrics/MetricReport'
 
 class FileLock {
   public readonly lockName: string
-
   constructor(private lockPath: string, private options: any) {
     this.lockName = basename(lockPath)
   }
@@ -43,13 +42,9 @@ class FileLock {
 
 export class TelemetryReporter {
   private static readonly RETRIES = 3
-
   private static readonly TIMEOUT = 30 * 1000
-
   private static MAX_TELEMETRY_DIR_SIZE = 10 * 1000 * 1000
-
   public static readonly PENDING_DATA_DIR = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, 'pendingData')
-
   public static getTelemetryReporter() {
     const { account, workspace, token } = SessionManager.getSessionManager()
     const telemetryClient = createTelemetryClient(
@@ -67,7 +62,6 @@ export class TelemetryReporter {
   }
 
   private dataPendingLock: FileLock
-
   constructor(private telemetryClient: TelemetryClient, private pendingDataDir: string) {
     const dataPendingLockName = 'reporter.lock'
     const dataPendingLockPath = join(pendingDataDir, dataPendingLockName)

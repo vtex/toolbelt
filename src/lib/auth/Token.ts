@@ -2,7 +2,6 @@ import { decode } from 'jsonwebtoken'
 
 export class Token {
   public token: string | undefined
-
   private decoded: string | Record<string, any>
 
   constructor(token: string) {

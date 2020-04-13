@@ -68,7 +68,7 @@ const getMostAvailableHost = async (
   nHosts: number,
   timeout: number
 ): Promise<string> => {
-  const hintsIdxArray = [...new Array(nHosts)].map((_, idx) => idx)
+  const hintsIdxArray = Array.from(new Array(nHosts), (_, idx) => idx)
   const getAvailability = mapAvailability(appId, builder, timeout)
 
   log.debug(`Trying to retrieve builder-hub availability from ${nHosts} hosts`)
@@ -77,7 +77,7 @@ const getMostAvailableHost = async (
 
   stickyHint
     ? log.debug(`Selected host ${hostname} with availability score ${score}`)
-    : log.debug('Unable to select host a priori, will use default options')
+    : log.debug(`Unable to select host a priori, will use default options`)
 
   return stickyHint
 }
@@ -90,15 +90,15 @@ export const getSavedOrMostAvailableHost = async (
 ): Promise<string> => {
   const [appName] = appId.split('@')
   if (hasStickyHost(appName)) {
-    log.debug('Found sticky host saved locally')
+    log.debug(`Found sticky host saved locally`)
     const { stickyHost, lastUpdated } = getStickyHost(appName)
     const timeElapsed = moment.duration(moment().diff(lastUpdated))
     if (timeElapsed.asHours() <= TTL_SAVED_HOST_HOURS) {
       return stickyHost
     }
-    log.debug('Saved sticky host has expired')
+    log.debug(`Saved sticky host has expired`)
   }
-  log.debug('Finding a new sticky host')
+  log.debug(`Finding a new sticky host`)
   const newStickyHost = await getMostAvailableHost(appId, builder, nHosts, timeout)
   if (newStickyHost) {
     saveStickyHost(appName, newStickyHost)

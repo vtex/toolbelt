@@ -59,9 +59,7 @@ export class PackageJson {
   }
 
   content: PackageJsonInterface
-
   yarnLock: ReturnType<typeof parseYarnLock>
-
   constructor(public packageJsonPath: string, private notifier?: any) {}
 
   public async init() {

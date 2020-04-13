@@ -3,7 +3,7 @@ import moment from 'moment'
 import opn from 'opn'
 
 import { getNextFeedbackDate, saveNextFeedbackDate } from './conf'
-import { promptConfirm } from './lib/prompts'
+import { promptConfirm } from './modules/prompts'
 
 const NPSFormURL = 'https://forms.gle/CRRHn6P3x9AeaWTQ8'
 
@@ -31,7 +31,7 @@ export async function checkAndOpenNPSLink() {
 
   if (moment() > nextFeedbackDate) {
     const shouldOpenFeedbackForm = await promptConfirm(
-      'Help us evolve VTEX IO! Can you fill in our feedback form?',
+      `Help us evolve VTEX IO! Can you fill in our feedback form?`,
       true
     )
     if (shouldOpenFeedbackForm) {

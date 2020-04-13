@@ -1,9 +1,11 @@
 import chalk from 'chalk'
 import { compose, contains, forEach, path, pathOr } from 'ramda'
-import { getToken } from './conf'
-import { colossusEndpoint, envCookies, publicEndpoint, cluster } from './env'
+import { cluster, colossusEndpoint, envCookies, publicEndpoint } from './env'
 import { SSEConnectionError } from './errors'
 import EventSource from './eventsource'
+import { ErrorKinds } from './lib/error/ErrorKinds'
+import { SessionManager } from './lib/session/SessionManager'
+import { TelemetryCollector } from './lib/telemetry/TelemetryCollector'
 import { removeVersion } from './locator'
 import log from './logger'
 import userAgent from './user-agent'
@@ -13,7 +15,18 @@ const levelAdapter = { warning: 'warn' }
 
 const onOpen = type => () => log.debug(`Connected to ${type} server`)
 
-const onError = type => err => log.error(`Connection to ${type} server has failed with status ${err.status}`)
+const onError = type => err => {
+  log.error(`Connection to ${type} server has failed with status ${err.status}`)
+  TelemetryCollector.createAndRegisterErrorReport({
+    kind: ErrorKinds.SSE_ERROR,
+    originalError: err,
+  }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })
+
+  if (err.status === 401 || err.status === 403) {
+    log.error(`Unable to connect to ${type} with the current token, try logging in again. Exiting process...`)
+    process.exit(1)
+  }
+}
 
 const parseMessage = (msg: MessageJSON): Message => {
   const { sender, subject, level, body }: Message = JSON.parse(msg.data)
@@ -25,10 +38,17 @@ const parseMessage = (msg: MessageJSON): Message => {
   }
 }
 
-const createEventSource = (source: string) => {
+const createEventSource = (source: string, closeOnInvalidToken = false) => {
+  let token
+  if (closeOnInvalidToken) {
+    token = SessionManager.getSessionManager().checkAndGetToken(closeOnInvalidToken)
+  } else {
+    token = SessionManager.getSessionManager().token
+  }
+
   return new EventSource(source, {
     headers: {
-      authorization: `bearer ${getToken()}`,
+      authorization: `bearer ${token}`,
       cookie: envCookies(),
       'user-agent': userAgent,
       ...(cluster() ? { 'x-vtex-upstream-target': cluster() } : null),
@@ -77,10 +97,10 @@ const onLog = (
   senders?: string[]
 ): Unlisten => {
   const source = `${colossusEndpoint()}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
-  const es = createEventSource(source)
-  es.addEventListener('open', onOpen(`${logLevel} log`))
-  es.addEventListener('message', compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage))
-  es.addEventListener('error', onError(`${logLevel} log`))
+  const es = createEventSource(source, true)
+  es.onopen = onOpen(`${logLevel} log`)
+  es.onmessage = compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage)
+  es.onerror = onError(`${logLevel} log`)
   return es.close.bind(es)
 }
 
@@ -94,10 +114,10 @@ export const onEvent = (
   const source = `${colossusEndpoint()}/${ctx.account}/${
     ctx.workspace
   }/events?onUnsubscribe=link_interrupted&sender=${sender}${parseKeyToQueryParameter(keys)}`
-  const es = createEventSource(source)
-  es.addEventListener('open', onOpen('event'))
-  es.addEventListener('message', compose(maybeCall(callback), filterMessage(subject), parseMessage))
-  es.addEventListener('error', onError('event'))
+  const es = createEventSource(source, true)
+  es.onopen = onOpen('event')
+  es.onmessage = compose(maybeCall(callback), filterMessage(subject), parseMessage)
+  es.onerror = onError('event')
   return es.close.bind(es)
 }
 
@@ -167,16 +187,21 @@ export const onAuth = (
   log.debug(`Listening for auth events from: ${source}`)
   const es = createEventSource(source)
   return new Promise((resolve, reject) => {
-    es.addEventListener('message', (msg: MessageJSON) => {
+    es.onmessage = (msg: MessageJSON) => {
       const { body: token } = JSON.parse(msg.data) as { body: string }
       es.close()
       resolve([token, returnUrl])
-    })
+    }
 
-    es.addEventListener('error', event => {
+    es.onerror = event => {
       es.close()
       const errMessage = `Connection to login server has failed${event.status ? ` with status ${event.status}` : ''}`
+      TelemetryCollector.createAndRegisterErrorReport({
+        kind: ErrorKinds.SSE_ERROR,
+        originalError: event,
+      }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })
+
       reject(new SSEConnectionError(errMessage, event.status))
-    })
+    }
   })
 }
