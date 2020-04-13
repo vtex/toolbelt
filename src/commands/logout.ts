@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { authLogout } from '../lib/logout'
+import { CustomCommand } from '../oclif/CustomCommand'
+import authLogout from '../modules/auth/logout'
 
 export default class Logout extends CustomCommand {
   static description = 'Logout of the current VTEX account'

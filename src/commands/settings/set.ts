@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { appsSettingsSet } from '../../lib/settings/set'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import appsSettingsSet from '../../modules/apps/settings/set'
 
 export default class SettingsSet extends CustomCommand {
   static description = 'Set app settings'
@@ -23,6 +23,6 @@ export default class SettingsSet extends CustomCommand {
       args: { appName, field, value },
     } = this.parse(SettingsSet)
 
-    await appsSettingsSet(appName, field, value)
+    await appsSettingsSet(appName, field, value, [])
   }
 }

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { authAccount } from '../../lib/local/account'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import authAccount from '../../modules/local/account'
 
 export default class LocalAccount extends CustomCommand {
   static description = 'Show current account and copy it to clipboard'

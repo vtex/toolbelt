@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { testE2e } from '../../lib/test/e2e'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import testE2e from '../../modules/apps/e2e'
 
 export default class E2E extends CustomCommand {
   static description = 'Start a development session for this app'

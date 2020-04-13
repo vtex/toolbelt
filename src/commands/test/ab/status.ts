@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { testAbStatus } from '../../../lib/test/ab/status'
-import { CustomCommand } from '../../../utils/CustomCommand'
+import testAbStatus from '../../../modules/workspace/abtest/status'
+import { CustomCommand } from '../../../oclif/CustomCommand'
 
 export default class ABTestStatus extends CustomCommand {
   static description = 'Display currently running AB tests results'

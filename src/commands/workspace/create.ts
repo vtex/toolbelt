@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { workspaceCreate } from '../../lib/workspace/create'
-import { CustomCommand } from '../../utils/CustomCommand'
+import workspaceCreate from '../../modules/workspace/create'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class WorkspaceCreate extends CustomCommand {
   static description = 'Create a new workspace with this name'
@@ -16,8 +16,11 @@ export default class WorkspaceCreate extends CustomCommand {
   static args = [{ name: 'workspaceName' }]
 
   async run() {
-    const { args, flags } = this.parse(WorkspaceCreate)
+    const {
+      args,
+      flags: { production },
+    } = this.parse(WorkspaceCreate)
     const name = args.workspaceName
-    await workspaceCreate(name, flags.production)
+    await workspaceCreate(name, { production })
   }
 }

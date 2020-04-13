@@ -1,5 +1,5 @@
 import { HttpClient, InstanceOptions, IOContext } from '@vtex/api'
-import { GraphQlError } from '../utils/errors'
+import { GraphQlError } from '../errors'
 
 export default class Billing {
   private http: HttpClient
@@ -21,7 +21,7 @@ export default class Billing {
     }`
     const {
       data: { data, errors },
-    } = await this.http.postRaw<any>('/_v/graphql', { query: graphQLQuery })
+    } = await this.http.postRaw<any>(`/_v/graphql`, { query: graphQLQuery })
     if (errors) {
       throw new GraphQlError(errors)
     }

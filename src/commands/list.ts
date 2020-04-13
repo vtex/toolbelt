@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsList } from '../lib/list'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsList from '../modules/apps/list'
 
 export default class List extends CustomCommand {
   static description = 'List your installed VTEX apps'

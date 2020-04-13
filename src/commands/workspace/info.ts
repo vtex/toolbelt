@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { workspaceInfo } from '../../lib/workspace/info'
-import { CustomCommand } from '../../utils/CustomCommand'
+import workspaceInfo from '../../modules/workspace/info'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class WorkspaceInfo extends CustomCommand {
   static description = 'Display information about the current workspace'

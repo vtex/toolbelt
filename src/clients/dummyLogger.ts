@@ -1,5 +1,5 @@
 import { Logger } from '@vtex/api/lib/service/logger'
-import { getAccount, getWorkspace } from '../utils/conf'
+import { getAccount, getWorkspace } from '../conf'
 
 const noop = () => {}
 

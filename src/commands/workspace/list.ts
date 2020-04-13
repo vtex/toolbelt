@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { workspaceList } from '../../lib/workspace/list'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import workspaceList from '../../modules/workspace/list'
 
 export default class WorkspaceList extends CustomCommand {
   static description = 'List workspaces on this account'

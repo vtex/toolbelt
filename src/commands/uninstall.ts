@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsUninstall } from '../lib/uninstall'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsUninstall from '../modules/apps/uninstall'
 
 export default class Uninstall extends CustomCommand {
   static description = 'Uninstall an app (defaults to the app in the current directory)'
@@ -21,6 +21,6 @@ export default class Uninstall extends CustomCommand {
       flags: { yes },
     } = this.parse(Uninstall)
 
-    await appsUninstall(appName, yes)
+    await appsUninstall(appName, { yes })
   }
 }

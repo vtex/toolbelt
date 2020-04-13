@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { workspaceInfraUpdate } from '../../lib/infra/update'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import workspaceInfraUpdate from '../../modules/infra/update'
 
 export default class InfraUpdateCommand extends CustomCommand {
   static description = 'Update all installed infra services'

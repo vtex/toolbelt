@@ -1,6 +1,6 @@
-import { CustomCommand } from '../../utils/CustomCommand'
-import { getWorkspace } from '../../utils/conf'
-import { workspaceDepsDiff } from '../../lib/deps/diff'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import { getWorkspace } from '../../conf'
+import workspaceDepsDiff from '../../modules/deps/diff'
 
 export default class DepsDiff extends CustomCommand {
   static description =

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { authSwitch } from '../lib/switch'
+import { CustomCommand } from '../oclif/CustomCommand'
+import authSwitch from '../modules/auth/switch'
 
 export default class Switch extends CustomCommand {
   static description = 'Switch to another VTEX account'
@@ -22,6 +22,6 @@ export default class Switch extends CustomCommand {
       args: { account, workspace },
     } = this.parse(Switch)
 
-    await authSwitch(account, workspace)
+    await authSwitch(account, { workspace })
   }
 }

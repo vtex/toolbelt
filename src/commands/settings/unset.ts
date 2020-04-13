@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { appsSettingsUnset } from '../../lib/settings/unset'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import appsSettingsUnset from '../../modules/apps/settings/unset'
 
 export default class SettingsUnset extends CustomCommand {
   static description = 'Unset app settings'
@@ -22,6 +22,6 @@ export default class SettingsUnset extends CustomCommand {
       args: { appName, field },
     } = this.parse(SettingsUnset)
 
-    await appsSettingsUnset(appName, field)
+    await appsSettingsUnset(appName, field, {})
   }
 }

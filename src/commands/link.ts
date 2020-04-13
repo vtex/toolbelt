@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsLink } from '../lib/link'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsLink from '../modules/apps/link'
 
 export default class Link extends CustomCommand {
   static description = 'Start a development session for this app'
@@ -29,6 +29,6 @@ export default class Link extends CustomCommand {
     } = this.parse(Link)
     const noWatch = flags['no-watch']
 
-    await appsLink(setup, clean, unsafe, noWatch)
+    await appsLink({ setup, clean, unsafe, noWatch })
   }
 }

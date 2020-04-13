@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsAdd } from '../lib/add'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsAdd from '../modules/apps/add'
 
 export default class Add extends CustomCommand {
   static description = 'Add app(s) to the manifest dependencies'
@@ -19,6 +19,6 @@ export default class Add extends CustomCommand {
       args: { appId },
     } = this.parse(Add)
 
-    await appsAdd(appId)
+    await appsAdd(appId, [])
   }
 }

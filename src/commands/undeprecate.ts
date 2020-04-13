@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsUndeprecate } from '../lib/undeprecate'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsUndeprecate from '../modules/apps/undeprecate'
 
 export default class Undeprecate extends CustomCommand {
   static description = 'Undeprecate app'
@@ -21,6 +21,6 @@ export default class Undeprecate extends CustomCommand {
       flags: { yes },
     } = this.parse(Undeprecate)
 
-    await appsUndeprecate(appId, yes)
+    await appsUndeprecate(appId, { yes })
   }
 }

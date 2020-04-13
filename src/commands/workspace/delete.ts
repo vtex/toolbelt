@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { workspaceDelete } from '../../lib/workspace/delete'
-import { CustomCommand } from '../../utils/CustomCommand'
+import workspaceDelete from '../../modules/workspace/delete'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class WorkspaceDelete extends CustomCommand {
   static description = 'Delete one or many workspaces'
@@ -26,6 +26,6 @@ export default class WorkspaceDelete extends CustomCommand {
     } = this.parse(WorkspaceDelete)
     const names = this.getAllArgs(raw)
 
-    await workspaceDelete(names, yes, force)
+    await workspaceDelete(names[0], { yes, force, _: names })
   }
 }

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { testAbStart } from '../../../lib/test/ab/start'
-import { CustomCommand } from '../../../utils/CustomCommand'
+import testAbStart from '../../../modules/workspace/abtest/start'
+import { CustomCommand } from '../../../oclif/CustomCommand'
 
 export default class ABTestStart extends CustomCommand {
   static description = 'Start AB testing with current workspace'

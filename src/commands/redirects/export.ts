@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { redirectsExport } from '../../lib/redirects/export'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import redirectsExport from '../../modules/rewriter/export'
 
 export default class RedirectsExport extends CustomCommand {
   static description = 'Export all redirects in the current account and workspace'

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { redirectsImport } from '../../lib/redirects/import'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import redirectsImport from '../../modules/rewriter/import'
 
 export default class RedirectsImport extends CustomCommand {
   static description = 'Import redirects for the current account and workspace'
@@ -21,6 +21,6 @@ export default class RedirectsImport extends CustomCommand {
       flags: { reset },
     } = this.parse(RedirectsImport)
 
-    await redirectsImport(csvPath, reset)
+    await redirectsImport(csvPath, { reset })
   }
 }

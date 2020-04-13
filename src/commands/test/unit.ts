@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { testCommand } from '../../lib/test'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import testCommand from '../../modules/apps/testCommand'
 
 export default class UnitTest extends CustomCommand {
   static description = 'Run your VTEX app unit tests'
@@ -22,6 +22,6 @@ export default class UnitTest extends CustomCommand {
       flags: { unsafe },
     } = this.parse(UnitTest)
 
-    await testCommand(unsafe)
+    await testCommand({ unsafe })
   }
 }

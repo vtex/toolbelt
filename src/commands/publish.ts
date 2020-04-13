@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsPublish } from '../lib/publish'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsPublish from '../modules/apps/publish'
 
 export default class Publish extends CustomCommand {
   static description = 'Publish the current app or a path containing an app'
@@ -25,6 +25,6 @@ export default class Publish extends CustomCommand {
       flags: { yes, workspace, force, tag },
     } = this.parse(Publish)
 
-    await appsPublish(path, yes, workspace, force, tag)
+    await appsPublish(path, { yes, workspace, force, tag })
   }
 }

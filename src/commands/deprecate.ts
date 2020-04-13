@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsDeprecate } from '../lib/deprecate'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsDeprecate from '../modules/apps/deprecate'
 
 export default class Deprecate extends CustomCommand {
   static description = 'Deprecate an app'
@@ -21,6 +21,6 @@ export default class Deprecate extends CustomCommand {
       flags: { yes },
     } = this.parse(Deprecate)
 
-    await appsDeprecate(appId, yes)
+    await appsDeprecate(appId, { yes })
   }
 }

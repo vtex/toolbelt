@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { workspaceDepsList } from '../../lib/deps/list'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import workspaceDepsList from '../../modules/deps/list'
 
 export default class DepsList extends CustomCommand {
   static aliases = ['deps ls']
@@ -12,13 +12,16 @@ export default class DepsList extends CustomCommand {
 
   static flags = {
     keys: oclifFlags.boolean({ char: 'k', description: 'Show only keys', default: false }),
+    npm: oclifFlags.boolean({ char: 'n', description: 'Include deps from npm registry', default: false }),
   }
 
   static args = []
 
   async run() {
-    const { flags: keys } = this.parse(DepsList)
+    const {
+      flags: { keys, npm },
+    } = this.parse(DepsList)
 
-    await workspaceDepsList(keys)
+    await workspaceDepsList({ keys, k: keys, npm, n: npm })
   }
 }

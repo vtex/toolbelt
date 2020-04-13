@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { testAbFinish } from '../../../lib/test/ab/finish'
-import { CustomCommand } from '../../../utils/CustomCommand'
+import testAbFinish from '../../../modules/workspace/abtest/finish'
+import { CustomCommand } from '../../../oclif/CustomCommand'
 
 export default class ABTestFinish extends CustomCommand {
   static description = 'Stop all AB testing in current account'

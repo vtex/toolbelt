@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { configSet } from '../../lib/config/set'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import configSet from '../../modules/config/set'
 
 export default class ConfigSet extends CustomCommand {
   static description = 'Sets the current value for the given configuration'

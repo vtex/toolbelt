@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsUnlink } from '../lib/unlink'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsUnlink from '../modules/apps/unlink'
 
 export default class Unlink extends CustomCommand {
   static description = 'Unlink an app on the current directory or a specified one'
@@ -21,6 +21,6 @@ export default class Unlink extends CustomCommand {
       flags: { all },
     } = this.parse(Unlink)
 
-    await appsUnlink(appId, all)
+    await appsUnlink(appId, { all })
   }
 }

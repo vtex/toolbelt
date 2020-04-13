@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { workspaceUse } from '../../lib/workspace/use'
-import { CustomCommand } from '../../utils/CustomCommand'
+import workspaceUse from '../../modules/workspace/use'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class WorkspaceUse extends CustomCommand {
   static description = 'Use a workspace to perform operations'
@@ -27,6 +27,6 @@ export default class WorkspaceUse extends CustomCommand {
       flags: { production, reset },
     } = this.parse(WorkspaceUse)
 
-    await workspaceUse(workspace, production, reset)
+    await workspaceUse(workspace, { production, reset })
   }
 }

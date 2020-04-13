@@ -1,5 +1,5 @@
 import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
-import { ChangeToSend } from '../utils/ProjectUploader'
+import { ChangeToSend } from '../modules/apps/ProjectUploader'
 
 interface StickyOptions {
   sticky?: boolean
@@ -25,7 +25,7 @@ export interface AvailabilityResponse {
   score: number
 }
 
-const builderBaseRoute = '/_v/builder/0'
+const builderBaseRoute = `/_v/builder/0`
 const routes = {
   tsConfig: `${builderBaseRoute}/tsconfig`,
   typings: `${builderBaseRoute}/typings`,

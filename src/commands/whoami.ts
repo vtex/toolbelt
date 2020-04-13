@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { authWhoami } from '../lib/whoami'
+import { CustomCommand } from '../oclif/CustomCommand'
+import authWhoami from '../modules/auth/whoami'
 
 export default class WhoAmI extends CustomCommand {
   static description = 'See your credentials current status'

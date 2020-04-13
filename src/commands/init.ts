@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsInit } from '../lib/init'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsInit from '../modules/init'
 
 export default class Init extends CustomCommand {
   static description = 'Create basic files and folders for your VTEX app'

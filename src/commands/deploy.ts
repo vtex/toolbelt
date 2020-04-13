@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsDeploy } from '../lib/deploy'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsDeploy from '../modules/apps/deploy'
 
 export default class Deploy extends CustomCommand {
   static description = 'Deploy a release of an app'
@@ -21,6 +21,6 @@ export default class Deploy extends CustomCommand {
       flags: { yes },
     } = this.parse(Deploy)
 
-    await appsDeploy(appId, yes)
+    await appsDeploy(appId, { yes })
   }
 }

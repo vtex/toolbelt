@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../utils/CustomCommand'
-import { debugDotnet } from '../../lib/debug/dotnet'
+import { CustomCommand } from '../../oclif/CustomCommand'
+import debugDotnet from '../../modules/debug/dotnet'
 
 export default class DotnetDebug extends CustomCommand {
   static description = 'Debug for .NET applications'

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { appsInstall } from '../lib/install'
+import { CustomCommand } from '../oclif/CustomCommand'
+import appsInstall from '../modules/apps/install'
 
 export default class Install extends CustomCommand {
   static description = 'Install an app (defaults to the app in the current directory)'
@@ -25,6 +25,6 @@ export default class Install extends CustomCommand {
       flags: { force },
     } = this.parse(Install)
 
-    await appsInstall(appId, force)
+    await appsInstall(appId, { force })
   }
 }

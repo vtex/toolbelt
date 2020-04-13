@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { authLogin } from '../lib/login'
+import { CustomCommand } from '../oclif/CustomCommand'
+import authLogin from '../modules/auth/login'
 
 export default class Login extends CustomCommand {
   static description = 'Log into a VTEX account'
@@ -22,6 +22,6 @@ export default class Login extends CustomCommand {
       args: { account, workspace },
     } = this.parse(Login)
 
-    await authLogin(account, workspace)
+    await authLogin({ account, workspace })
   }
 }

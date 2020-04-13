@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { appsInfraInstall } from '../../lib/infra/install'
-import { CustomCommand } from '../../utils/CustomCommand'
+import appsInfraInstall from '../../modules/infra/install'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class InfraInstall extends CustomCommand {
   static description = 'Install an infra service'

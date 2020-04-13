@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { redirectsDelete } from '../../lib/redirects/delete'
-import { CustomCommand } from '../../utils/CustomCommand'
+import redirectsDelete from '../../modules/rewriter/delete'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class RedirectsDelete extends CustomCommand {
   static description = 'Delete redirects in the current account and workspace'

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { appsInfraList } from '../../lib/infra/list'
-import { CustomCommand } from '../../utils/CustomCommand'
+import appsInfraList from '../../modules/infra/list'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class InfraList extends CustomCommand {
   static description = 'List installed infra services'
@@ -23,6 +23,6 @@ export default class InfraList extends CustomCommand {
       args: { name },
       flags: { filter, available },
     } = this.parse(InfraList)
-    return appsInfraList(name, filter, available)
+    return appsInfraList(name, { filter, available })
   }
 }

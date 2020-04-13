@@ -1,6 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
-import { CustomCommand } from '../../utils/CustomCommand'
-import { workspaceStatus } from '../../lib/workspace/status'
+
+import { CustomCommand } from '../../oclif/CustomCommand'
+import workspaceStatus from '../../modules/workspace/status'
 
 export default class WorkspaceStatus extends CustomCommand {
   static description = 'Display information about a workspace'
@@ -14,7 +15,9 @@ export default class WorkspaceStatus extends CustomCommand {
   static args = [{ name: 'workspaceName', required: false }]
 
   async run() {
-    const { args: workspaceName } = this.parse(WorkspaceStatus)
+    const {
+      args: { workspaceName },
+    } = this.parse(WorkspaceStatus)
 
     await workspaceStatus(workspaceName)
   }

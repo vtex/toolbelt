@@ -1,29 +1,25 @@
 import { IOContext } from '@vtex/api'
-import { cluster } from '../utils/env'
+import { cluster } from '../env'
 import * as url from 'url'
 import WebSocket from 'ws'
-import { getToken } from '../utils/conf'
-import logger from '../utils/logger'
+import { getToken } from '../conf'
+import logger from '../logger'
 
 const EOT = '\x04'
 
 export class Runtime {
-  private region: string
-
   private account: string
-
   private workspace: string
 
   constructor(context: IOContext) {
-    const { region, account, workspace } = context
-    this.region = region
+    const { account, workspace } = context
     this.account = account
     this.workspace = workspace
   }
 
-  public async debugDotnetApp(appName: string, appVendor: string, appMajorRange: string, debugInst: string) {
-    const host = `${appName}.${appVendor}.${this.region}.vtex.io`
-    const path = `/${this.account}/${this.workspace}/_debug/dotnet`
+  public async debugDotnetApp(appName: string, appVendor: string, appMajor: string, debugInst: string) {
+    const host = 'app.io.vtex.com'
+    const path = `/${appVendor}.${appName}/v${appMajor}/${this.account}/${this.workspace}/_debug/dotnet`
     const clusterHeader = cluster() ? { 'x-vtex-upstream-target': cluster() } : null
 
     const clientOptions = {
@@ -36,11 +32,10 @@ export class Runtime {
     }
 
     const urlObject = {
-      protocol: 'ws',
+      protocol: 'wss',
       hostname: host,
       pathname: path,
       query: {
-        __v: appMajorRange,
         inst: debugInst.split(' '),
       },
     }

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { workspacePromote } from '../../lib/workspace/promote'
-import { CustomCommand } from '../../utils/CustomCommand'
+import workspacePromote from '../../modules/workspace/promote'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class WorkspacePromote extends CustomCommand {
   static description = 'Promote this workspace to master'

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../utils/CustomCommand'
-import { authSupport } from '../lib/support'
+import { CustomCommand } from '../oclif/CustomCommand'
+import authSupport from '../modules/support/login'
 
 export default class Support extends CustomCommand {
   static description = 'Login as support into another VTEX account'

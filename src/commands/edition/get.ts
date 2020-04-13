@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { editionGet } from '../../lib/edition/get'
-import { CustomCommand } from '../../utils/CustomCommand'
+import editionGet from '../../modules/sponsor/getEdition'
+import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class EditionGet extends CustomCommand {
   static description = 'Get edition of the current account'
