@@ -1,6 +1,4 @@
 #!/usr/bin/env node
-const initTimeStartTime = process.hrtime()
-
 import 'v8-compile-cache'
 import { Hook } from '@oclif/config'
 import axios from 'axios'
@@ -23,6 +21,8 @@ import { Metric } from '../../lib/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
 import { CommandError, SSEConnectionError, UserCancelledError } from '../../errors'
 
+const initTimeStartTime = process.hrtime()
+
 let loginPending = false
 
 const logToolbeltVersion = () => {
@@ -36,6 +36,38 @@ const checkLogin = async args => {
   if (!token.isValid() && whitelist.indexOf(first) === -1) {
     log.debug('Requesting login before command:', args.join(' '))
     await authLogin({})
+  }
+}
+
+const main = async (options?, calculateInitTime?: boolean) => {
+  const cliPreTasksStart = process.hrtime()
+  CLIPreTasks.getCLIPreTasks(pkg).runTasks()
+  TelemetryCollector.getCollector().registerMetric({
+    command: 'not-applicable',
+    cliPreTasksLatency: hrTimeToMs(process.hrtime(cliPreTasksStart)),
+  })
+
+  // Show update notification if newer version is available
+  notify()
+
+  const args = process.argv.slice(2)
+  conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
+
+  logToolbeltVersion()
+  log.debug('node %s - %s %s', process.version, os.platform(), os.release())
+  log.debug(args)
+
+  await checkLogin(args)
+
+  await checkAndOpenNPSLink()
+
+  if (calculateInitTime) {
+    const initTime = process.hrtime(initTimeStartTime)
+    const initTimeMetric: Metric = {
+      command: options.id,
+      initTime: hrTimeToMs(initTime),
+    }
+    TelemetryCollector.getCollector().registerMetric(initTimeMetric)
   }
 }
 
@@ -136,39 +168,7 @@ const onError = async (e: any) => {
   process.exit(1)
 }
 
-const main = async (options?, calculateInitTime?: boolean) => {
-  const cliPreTasksStart = process.hrtime()
-  CLIPreTasks.getCLIPreTasks(pkg).runTasks()
-  TelemetryCollector.getCollector().registerMetric({
-    command: 'not-applicable',
-    cliPreTasksLatency: hrTimeToMs(process.hrtime(cliPreTasksStart)),
-  })
-
-  // Show update notification if newer version is available
-  notify()
-
-  const args = process.argv.slice(2)
-  conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
-
-  logToolbeltVersion()
-  log.debug('node %s - %s %s', process.version, os.platform(), os.release())
-  log.debug(args)
-
-  await checkLogin(args)
-
-  await checkAndOpenNPSLink()
-
-  if (calculateInitTime) {
-    const initTime = process.hrtime(initTimeStartTime)
-    const initTimeMetric: Metric = {
-      command: options.id,
-      initTime: hrTimeToMs(initTime),
-    }
-    TelemetryCollector.getCollector().registerMetric(initTimeMetric)
-  }
-}
-
-export const hook: Hook<'init'> = async function (options) {
+export const hook: Hook<'init'> = async function(options) {
   axios.interceptors.request.use(config => {
     if (envCookies()) {
       config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
