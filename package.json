@@ -145,7 +145,10 @@
     "plugins": [
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands"
-    ]
+    ],
+    "hooks": {
+      "init": "./lib/oclif/hooks/init"
+    }
   },
   "repository": {
     "type": "git",
