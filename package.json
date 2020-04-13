@@ -38,6 +38,8 @@
     "get-stream": "~4.0.0",
     "globby": "~8.0.1",
     "ink": "^2.7.1",
+    "is-docker": "^2.0.0",
+    "is-wsl": "^2.1.1",
     "js-yaml": "~3.13.1",
     "json-array-split": "~1.0.0",
     "json2csv": "~4.5.4",
