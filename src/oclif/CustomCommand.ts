@@ -4,6 +4,7 @@ import { ParsingToken } from '@oclif/parser/lib/parse'
 import { hrTimeToMs } from '../lib/utils/hrTimeToMs'
 import { TelemetryCollector } from '../lib/telemetry/TelemetryCollector'
 import { Metric } from '../lib/metrics/MetricReport'
+import { onError } from './hooks/init'
 
 export abstract class CustomCommand extends OclifCommand {
   getAllArgs(rawParse: ParsingToken[]) {
@@ -31,6 +32,17 @@ export abstract class CustomCommand extends OclifCommand {
       await this.catch(error)
     } finally {
       await this.finally(err)
+    }
+  }
+
+  async finally(err: any): Promise<any> {
+    try {
+      if (err.oclif === undefined) await onError(err)
+      const config = require('@oclif/errors').config
+      if (config.errorLogger) await config.errorLogger.flush()
+      // tslint:disable-next-line no-console
+    } catch (error) {
+      console.error(error)
     }
   }
 }

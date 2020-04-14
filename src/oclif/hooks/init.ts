@@ -1,4 +1,3 @@
-import { Hook } from '@oclif/config'
 import axios from 'axios'
 import chalk from 'chalk'
 import os from 'os'
@@ -70,7 +69,7 @@ const main = async (options?, calculateInitTime?: boolean) => {
   }
 }
 
-const onError = async (e: any) => {
+export const onError = async (e: any) => {
   const status = e?.response?.status
   const statusText = e?.response?.statusText
   const headers = e?.response?.headers
@@ -156,7 +155,7 @@ const onError = async (e: any) => {
       default:
         log.error('Unhandled exception')
         log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
-        log.error('Raw error:', e)
+        log.error('Raw error: ', e)
     }
   }
 
@@ -167,7 +166,7 @@ const onError = async (e: any) => {
   process.exit(1)
 }
 
-export const hook: Hook<'init'> = async function(options) {
+export default async function(options) {
   axios.interceptors.request.use(config => {
     if (envCookies()) {
       config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
