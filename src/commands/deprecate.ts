@@ -13,14 +13,17 @@ export default class Deprecate extends CustomCommand {
     yes: oclifFlags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
   }
 
-  static args = [{ name: 'appId', required: true }]
+  static args = [{ name: 'appId', required: false }]
 
   async run() {
     const {
+      raw,
       args: { appId },
       flags: { yes },
     } = this.parse(Deprecate)
 
-    await appsDeprecate(appId, { yes })
+    const allArgs = this.getAllArgs(raw)
+
+    await appsDeprecate(appId, { yes, _: allArgs })
   }
 }
