@@ -1,12 +1,13 @@
 .vscode
 coverage
 node_modules
-/lib
+/build
 *-debug.log
 *-error.log
 package-lock.json
 .DS_Store
 .eslintcache
 .eslintcache-react
+oclif.manifest.json
 
 
