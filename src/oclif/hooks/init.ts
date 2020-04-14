@@ -71,7 +71,7 @@ const main = async (options?, calculateInitTime?: boolean) => {
   }
 }
 
-const onError = async (e: any) => {
+export const onError = async (e: any) => {
   const status = e?.response?.status
   const statusText = e?.response?.statusText
   const headers = e?.response?.headers
