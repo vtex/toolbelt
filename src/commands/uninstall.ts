@@ -17,10 +17,13 @@ export default class Uninstall extends CustomCommand {
 
   async run() {
     const {
+      raw,
       args: { appName },
       flags: { yes },
     } = this.parse(Uninstall)
 
-    await appsUninstall(appName, { yes })
+    const allArgs = this.getAllArgs(raw)
+
+    await appsUninstall(appName, { _: allArgs, yes })
   }
 }
