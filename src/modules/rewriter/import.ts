@@ -25,6 +25,7 @@ import {
   validateInput,
   handleReadError,
   RETRY_INTERVAL_S,
+  DELIMITER,
 } from './utils'
 
 const IMPORTS = 'imports'
@@ -133,7 +134,7 @@ export default async (csvPath: string, options: any) => {
       log.info(
         `In case this step fails, run 'vtex redirects delete ${resolve(fileName)}' to finish deleting old redirects.`
       )
-      const json2csvParser = new Parser({ fields: ['from'], delimiter: ';', quote: '' })
+      const json2csvParser = new Parser({ fields: ['from'], delimiter: DELIMITER, quote: '' })
       const csv = json2csvParser.parse(map(route => ({ from: route }), routesToDelete))
       await writeFile(filePath, csv)
       await deleteRedirects(filePath)
