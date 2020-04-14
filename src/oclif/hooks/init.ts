@@ -1,5 +1,6 @@
-#!/usr/bin/env node
-import 'v8-compile-cache'
+
+const { initTimeStartTime } = require('../../../bin/run')
+
 import { Hook } from '@oclif/config'
 import axios from 'axios'
 import chalk from 'chalk'
@@ -20,8 +21,6 @@ import { checkAndOpenNPSLink } from '../../nps'
 import { Metric } from '../../lib/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
 import { CommandError, SSEConnectionError, UserCancelledError } from '../../errors'
-
-const initTimeStartTime = process.hrtime()
 
 let loginPending = false
 
