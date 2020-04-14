@@ -6,7 +6,7 @@ import { CustomCommand } from '../../oclif/CustomCommand'
 export default class InfraList extends CustomCommand {
   static description = 'List installed infra services'
 
-  static aliases = ['infra ls']
+  static aliases = ['infra:ls']
 
   static examples = ['vtex infra list', 'vtex infra ls']
 
