@@ -17,10 +17,13 @@ export default class Unlink extends CustomCommand {
 
   async run() {
     const {
+      raw,
       args: { appId },
       flags: { all },
     } = this.parse(Unlink)
 
-    await appsUnlink(appId, { all })
+    const allArgs = this.getAllArgs(raw)
+
+    await appsUnlink(appId, { _: allArgs, all })
   }
 }
