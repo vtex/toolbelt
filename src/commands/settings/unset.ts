@@ -22,6 +22,6 @@ export default class SettingsUnset extends CustomCommand {
       args: { appName, field },
     } = this.parse(SettingsUnset)
 
-    await appsSettingsUnset(appName, field, {})
+    await appsSettingsUnset(appName, field)
   }
 }
