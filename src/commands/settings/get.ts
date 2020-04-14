@@ -14,13 +14,13 @@ export default class SettingsGet extends CustomCommand {
     help: oclifFlags.help({ char: 'h' }),
   }
 
-  static args = [{ name: 'appName', required: true }, { name: 'field' }, { name: 'options' }]
+  static args = [{ name: 'appName', required: true }, { name: 'field' }]
 
   async run() {
     const {
-      args: { appName, field, options },
+      args: { appName, field },
     } = this.parse(SettingsGet)
 
-    await appsSettingsGet(appName, field, options)
+    await appsSettingsGet(appName, field, {_: [field]})
   }
 }

@@ -23,6 +23,6 @@ export default class SettingsSet extends CustomCommand {
       args: { appName, field, value },
     } = this.parse(SettingsSet)
 
-    await appsSettingsSet(appName, field, value, [])
+    await appsSettingsSet(appName, field, value, {_: [field]})
   }
 }
