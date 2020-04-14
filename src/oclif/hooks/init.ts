@@ -1,6 +1,3 @@
-
-const { initTimeStartTime } = require('../../../bin/run')
-
 import { Hook } from '@oclif/config'
 import axios from 'axios'
 import chalk from 'chalk'
@@ -21,6 +18,9 @@ import { checkAndOpenNPSLink } from '../../nps'
 import { Metric } from '../../lib/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
 import { CommandError, SSEConnectionError, UserCancelledError } from '../../errors'
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { initTimeStartTime } = require('../../../bin/run')
 
 let loginPending = false
 
