@@ -432,7 +432,7 @@
     "@nodelib/fs.scandir" "2.1.3"
     fastq "^1.6.0"
 
-"@oclif/command@^1", "@oclif/command@^1.0.0", "@oclif/command@^1.5.1", "@oclif/command@^1.5.13":
+"@oclif/command@^1.0.0", "@oclif/command@^1.5.1", "@oclif/command@^1.5.13":
   version "1.5.19"
   resolved "https://registry.yarnpkg.com/@oclif/command/-/command-1.5.19.tgz#13f472450eb83bd6c6871a164c03eadb5e1a07ed"
   integrity sha512-6+iaCMh/JXJaB2QWikqvGE9//wLEVYYwZd5sud8aLoLKog1Q75naZh2vlGVtg5Mq/NqpqGQvdIjJb3Bm+64AUQ==
@@ -586,19 +586,19 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@tiagonapoli/oclif-plugin-spaced-commands@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@tiagonapoli/oclif-plugin-spaced-commands/-/oclif-plugin-spaced-commands-0.0.2.tgz#98f1a27c24cafbc710951f665d685ff8111003aa"
-  integrity sha512-kI2JYSwCaiukwIDQ63hq/cSniCmq/h5we4PAdunLbRxAvMI/L2RdX5lVy4Hz/gfNs+w0zUSjiMDLLk5Bfzaq9w==
+"@tiagonapoli/oclif-plugin-spaced-commands@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@tiagonapoli/oclif-plugin-spaced-commands/-/oclif-plugin-spaced-commands-0.0.4.tgz#e5ca5bc0d20dc59379b683835c2da9ae32aaf334"
+  integrity sha512-sfgcDpmBlv/Ew4EFuM4iDbZRpy1/SAn+o2eF2OPTPw0v7V03eULm6YAg25CvtPn7IzDG4/pQb3C9ZFCGQ9m1YA==
   dependencies:
-    "@oclif/command" "^1"
-    "@oclif/config" "^1"
+    "@oclif/command" "^1.0.0"
+    "@oclif/config" "^1.0.0"
     "@oclif/errors" "^1.2.2"
     chalk "^2.4.1"
     indent-string "^3.2.0"
     strip-ansi "^5.0.0"
     treeify "^1.1.0"
-    tslib "^1"
+    tslib "^1.0.0"
     wrap-ansi "^4.0.0"
 
 "@types/accepts@*":
@@ -8124,7 +8124,7 @@ ts-node@^8.0.0:
     source-map-support "^0.5.6"
     yn "3.1.1"
 
-tslib@^1, tslib@^1.0.0, tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
+tslib@^1.0.0, tslib@^1.10.0, tslib@^1.8.1, tslib@^1.9.0, tslib@^1.9.3:
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.11.1.tgz#eb15d128827fbee2841549e171f45ed338ac7e35"
   integrity sha512-aZW88SY8kQbU7gpV19lN24LtXh/yD4ZZg6qieAJDDg+YBsJcSmLGK9QpnUjAKVG/xefmvJGd1WUmfpT/g6AJGA==
