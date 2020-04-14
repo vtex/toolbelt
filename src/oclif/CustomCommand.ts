@@ -37,7 +37,7 @@ export abstract class CustomCommand extends OclifCommand {
 
   async finally(err: any): Promise<any> {
     try {
-      if (err.oclif === undefined) await onError(err)
+      if (err && err.oclif === undefined) await onError(err)
       const config = require('@oclif/errors').config
       if (config.errorLogger) await config.errorLogger.flush()
       // tslint:disable-next-line no-console
