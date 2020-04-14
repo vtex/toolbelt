@@ -31,12 +31,6 @@
       "rules": {
         "@typescript-eslint/ban-ts-ignore": "off"
       }
-    },
-    {
-      "files": ["./src/cli.ts"],
-      "rules": {
-        "import/first": "off"
-      }
     }
   ]
 }
