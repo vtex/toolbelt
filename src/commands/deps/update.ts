@@ -16,9 +16,12 @@ export default class DepsUpdate extends CustomCommand {
 
   async run() {
     const {
+      raw,
       args: { appId },
     } = this.parse(DepsUpdate)
 
-    await workspaceDepsUpdate(appId, [])
+    const allArgs = this.getAllArgs(raw)
+
+    await workspaceDepsUpdate(appId, {_: allArgs})
   }
 }
