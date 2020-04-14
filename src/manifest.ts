@@ -14,6 +14,10 @@ const MANIFEST_SCHEMA = 'https://raw.githubusercontent.com/vtex/node-vtex-api/ma
 export const MANIFEST_FILE_NAME = 'manifest.json'
 
 export const getAppRoot = () => {
+  if (process.env.OCLIF_COMPILATION) {
+    return ''
+  }
+
   const cwd = process.cwd()
   const { root: rootDirName } = path.parse(cwd)
 
@@ -24,7 +28,7 @@ export const getAppRoot = () => {
     } catch (e) {
       if (dir === rootDirName) {
         throw new CommandError(
-          `Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app.`
+          "Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app."
         )
       }
 
