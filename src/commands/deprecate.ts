@@ -6,7 +6,7 @@ import appsDeprecate from '../modules/apps/deprecate'
 export default class Deprecate extends CustomCommand {
   static description = 'Deprecate an app'
 
-  static examples = ['vtex deprecate vtex.service-example@0.0.1']
+  static examples = ['vtex deprecate', 'vtex deprecate vtex.service-example@0.0.1']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
