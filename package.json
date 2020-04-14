@@ -6,14 +6,14 @@
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "eslint . --ext .ts --config .eslintrc",
-    "prepack": "rm -rf lib && tsc -b && OCLIF_COMPILATION=true yarn oclif-dev manifest",
+    "prepack": "rm -rf build && tsc -b && OCLIF_COMPILATION=true yarn oclif-dev manifest",
     "exe": "node scripts/make-executable.js",
     "watch": "bash ./scripts/symlink.sh && yarn nodemon && yarn oclif-dev manifest",
     "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
     "lint:node": "eslint ./src --cache --ext ts --config .eslintrc",
     "lint:react": "eslint ./src --cache --cache-location .eslintcache-react --ext tsx --config .eslintrc-react",
     "format-lint": "yarn format && yarn lint:node && yarn lint:react",
-    "build-clean": "rm -rf lib",
+    "build-clean": "rm -rf build",
     "build-incremental": "tsc --incremental && OCLIF_COMPILATION=true yarn oclif-dev manifest",
     "build": "yarn build-clean && tsc && OCLIF_COMPILATION=true yarn oclif-dev manifest",
     "test": "jest",
@@ -150,14 +150,14 @@
     "typescript": "^3.8.2"
   },
   "oclif": {
-    "commands": "./lib/commands",
+    "commands": "./build/commands",
     "bin": "vtex",
     "plugins": [
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands"
     ],
     "hooks": {
-      "init": "./lib/oclif/hooks/init"
+      "init": "./build/oclif/hooks/init"
     },
     "topics": {
       "config": {
