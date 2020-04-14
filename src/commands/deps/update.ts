@@ -22,6 +22,6 @@ export default class DepsUpdate extends CustomCommand {
 
     const allArgs = this.getAllArgs(raw)
 
-    await workspaceDepsUpdate(appId, {_: allArgs})
+    await workspaceDepsUpdate(appId, { _: allArgs })
   }
 }
