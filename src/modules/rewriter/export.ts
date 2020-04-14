@@ -1,22 +1,24 @@
 import { createHash } from 'crypto'
-import { writeFile, readJson } from 'fs-extra'
-import ora from 'ora'
-
+import { readJson, writeFile } from 'fs-extra'
 import { Parser } from 'json2csv'
+import ora from 'ora'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
 import log from '../../logger'
 import { isVerbose } from '../../utils'
+import { Redirect } from '../../clients/rewriter'
 import {
   accountAndWorkspace,
   deleteMetainfo,
+  DELIMITER,
+  encode,
   MAX_RETRIES,
   METAINFO_FILE,
-  saveMetainfo,
-  sleep,
   RETRY_INTERVAL_S,
+  saveMetainfo,
   showGraphQLErrors,
+  sleep,
 } from './utils'
 
 const EXPORTS = 'exports'
@@ -65,8 +67,13 @@ const handleExport = async (csvPath: string) => {
   } while (next)
   spinner.stop()
 
-  const json2csvParser = new Parser({ fields: FIELDS, delimiter: ';', quote: '' })
-  const csv = json2csvParser.parse(listOfRoutes)
+  const json2csvParser = new Parser({ fields: FIELDS, delimiter: DELIMITER, quote: '' })
+  const encodedRoutes = listOfRoutes.map((route: Redirect) => ({
+    ...route,
+    from: encode(route.from),
+    to: encode(route.to),
+  }))
+  const csv = json2csvParser.parse(encodedRoutes)
   await writeFile(`./${csvPath}`, csv)
   log.info('Finished!\n')
   listener.close()
