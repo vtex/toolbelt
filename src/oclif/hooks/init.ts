@@ -9,7 +9,7 @@ import { envCookies } from '../../env'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
-import notify from '../../update'
+import { updateNotify } from '../../update'
 import log from '../../logger'
 import * as pkg from '../../../package.json'
 import * as conf from '../../conf'
@@ -46,7 +46,7 @@ const main = async (options?, calculateInitTime?: boolean) => {
   })
 
   // Show update notification if newer version is available
-  notify()
+  updateNotify()
 
   const args = process.argv.slice(2)
   conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
