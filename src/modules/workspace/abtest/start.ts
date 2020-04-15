@@ -39,7 +39,7 @@ const promptSignificanceLevel = async (): Promise<string> => {
 }
 
 const promptContinue = async (workspace: string, significanceLevel?: string) => {
-  const proceed = significanceLevel
+  return significanceLevel
     ? await promptConfirm(
         `You are about to start an A/B test between workspaces \
 ${chalk.green('master')} and ${chalk.green(workspace)} with \
@@ -51,9 +51,6 @@ ${chalk.red(significanceLevel)} significance level. Proceed?`,
 ${chalk.green('master')} and ${chalk.green(workspace)}. Proceed?`,
         false
       )
-  if (!proceed) {
-    return
-  }
 }
 
 export default async () => {
@@ -63,7 +60,8 @@ export default async () => {
   try {
     if (semver.satisfies(abTesterManifest.version, '>=0.10.0')) {
       log.info(`Setting workspace ${chalk.green(workspace)} to A/B test`)
-      await promptContinue(workspace)
+      const promptAnswer = await promptContinue(workspace)
+      if (!promptAnswer) return
       const proportion = Number(await promptProportionTrafic())
       const timeLength = Number(await promptConstraintDuration())
       await abtester.customStart(workspace, timeLength, proportion)
@@ -73,7 +71,8 @@ export default async () => {
     }
 
     const significanceLevel = await promptSignificanceLevel()
-    await promptContinue(workspace, significanceLevel)
+    const promptAnswer = await promptContinue(workspace, significanceLevel)
+    if (!promptAnswer) return
     const significanceLevelValue = SIGNIFICANCE_LEVELS[significanceLevel]
     log.info(`Setting workspace ${chalk.green(workspace)} to A/B test with \
         ${significanceLevel} significance level`)
