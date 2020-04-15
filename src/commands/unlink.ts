@@ -13,17 +13,16 @@ export default class Unlink extends CustomCommand {
     all: oclifFlags.boolean({ char: 'a', description: 'Unlink all apps', default: false }),
   }
 
-  static args = [{ name: 'appId', required: false }]
+  static args = [{ name: 'appId', required: false }, { name: 'ithAppId', required: false, multiple: true }]
 
   async run() {
     const {
       raw,
-      args: { appId },
       flags: { all },
     } = this.parse(Unlink)
 
     const allArgs = this.getAllArgs(raw)
 
-    await appsUnlink(appId, { _: allArgs, all })
+    await appsUnlink(allArgs, { all })
   }
 }
