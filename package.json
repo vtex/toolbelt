@@ -161,34 +161,34 @@
     },
     "topics": {
       "config": {
-        "description": "Config commands. Run 'vtex config --help' to see all subcommands"
+        "description": "Config commands. Run 'vtex config' to see all subcommands"
       },
       "debug": {
-        "description": "Debug commands. Run 'vtex debug --help' to see all subcommands"
+        "description": "Debug commands. Run 'vtex debug' to see all subcommands"
       },
       "deps": {
-        "description": "Deps commands. Run 'vtex deps --help' to see all subcommands"
+        "description": "Deps commands. Run 'vtex deps' to see all subcommands"
       },
       "edition": {
-        "description": "Edition commands. Run 'vtex edition --help' to see all subcommands"
+        "description": "Edition commands. Run 'vtex edition' to see all subcommands"
       },
       "infra": {
-        "description": "Infra commands. Run 'vtex infra --help' to see all subcommands"
+        "description": "Infra commands. Run 'vtex infra' to see all subcommands"
       },
       "local": {
-        "description": "Local commands. Run 'vtex local --help' to see all subcommands"
+        "description": "Local commands. Run 'vtex local' to see all subcommands"
       },
       "redirects": {
-        "description": "Redirects commands. Run 'vtex redirects --help' to see all subcommands"
+        "description": "Redirects commands. Run 'vtex redirects' to see all subcommands"
       },
       "settings": {
-        "description": "Settings commands. Run 'vtex settings --help' to see all subcommands"
+        "description": "Settings commands. Run 'vtex settings' to see all subcommands"
       },
       "test": {
-        "description": "Test commands. Run 'vtex test --help' to see all subcommands"
+        "description": "Test commands. Run 'vtex test' to see all subcommands"
       },
       "workspace": {
-        "description": "Workspace commands. Run 'vtex workspace --help' to see all subcommands"
+        "description": "Workspace commands. Run 'vtex workspace' to see all subcommands"
       }
     }
   }
