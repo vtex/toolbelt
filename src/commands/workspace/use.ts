@@ -15,6 +15,7 @@ export default class WorkspaceUse extends CustomCommand {
     production: oclifFlags.boolean({
       char: 'p',
       description: 'Create the workspace as production if it does not exist or is reset',
+      default: false
     }),
     reset: oclifFlags.boolean({ char: 'r', description: 'Resets workspace before using it', default: false }),
   }
