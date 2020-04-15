@@ -40,13 +40,13 @@ const promptSignificanceLevel = async (): Promise<string> => {
 
 const promptContinue = async (workspace: string, significanceLevel?: string) => {
   return significanceLevel
-    ? await promptConfirm(
+    ? promptConfirm(
         `You are about to start an A/B test between workspaces \
 ${chalk.green('master')} and ${chalk.green(workspace)} with \
 ${chalk.red(significanceLevel)} significance level. Proceed?`,
         false
       )
-    : await promptConfirm(
+    : promptConfirm(
         `You are about to start an A/B test between workspaces \
 ${chalk.green('master')} and ${chalk.green(workspace)}. Proceed?`,
         false
