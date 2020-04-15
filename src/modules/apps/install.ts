@@ -5,7 +5,7 @@ import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
-import { optionsFormatter, parseArgs, validateAppAction } from './utils'
+import { optionsFormatter, validateAppAction } from './utils'
 
 const { installApp } = billing
 const { installApp: legacyInstallApp } = apps
@@ -108,11 +108,10 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
   }
 }
 
-export default async (optionalApp: string, options) => {
+export default async (optionalApps: string[], options) => {
   const force = options.f || options.force
-  await validateAppAction('install', optionalApp)
-  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-  const appsList = [app, ...parseArgs(options._)]
+  await validateAppAction('install', optionalApps)
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   log.debug(`Installing app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return prepareInstall(appsList, force)
 }

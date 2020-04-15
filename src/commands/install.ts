@@ -17,17 +17,16 @@ export default class Install extends CustomCommand {
     }),
   }
 
-  static args = [{ name: 'appId' }]
+  static args = [{ name: 'appId', required: false }, { name: 'ithAppId', required: false, multiple: true }]
 
   async run() {
     const {
       raw,
-      args: { appId },
       flags: { force },
     } = this.parse(Install)
 
     const allArgs = this.getAllArgs(raw)
 
-    await appsInstall(appId, { force, _: allArgs })
+    await appsInstall(allArgs, { force })
   }
 }
