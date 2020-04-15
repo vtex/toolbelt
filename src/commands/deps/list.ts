@@ -19,9 +19,9 @@ export default class DepsList extends CustomCommand {
 
   async run() {
     const {
-      flags: { keys, npm },
+      flags,
     } = this.parse(DepsList)
 
-    await workspaceDepsList({ keys, k: keys, npm, n: npm })
+    await workspaceDepsList(flags)
   }
 }
