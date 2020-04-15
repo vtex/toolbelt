@@ -21,6 +21,6 @@ export default class SettingsGet extends CustomCommand {
       args: { appName, field },
     } = this.parse(SettingsGet)
 
-    await appsSettingsGet(appName, field, { _: [field] })
+    await appsSettingsGet(appName, field ? [field] : null)
   }
 }
