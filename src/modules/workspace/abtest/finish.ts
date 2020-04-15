@@ -11,7 +11,7 @@ import { abtester, installedABTester } from './utils'
 const [account] = [getAccount()]
 
 const promptContinue = async (workspace: string) => {
-  return await promptConfirm(
+  return promptConfirm(
     `You are about to finish A/B testing in workspace \
 ${chalk.blue(workspace)}, account ${chalk.green(account)}. Are you sure?`,
     false
