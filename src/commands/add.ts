@@ -18,9 +18,7 @@ export default class Add extends CustomCommand {
   ]
 
   async run() {
-    const {
-      raw,
-    } = this.parse(Add)
+    const { raw } = this.parse(Add)
     const args = this.getAllArgs(raw)
 
     await appsAdd(args)
