@@ -5,7 +5,7 @@ import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, 
 
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
-import { isVerbose } from '../../utils'
+import { isVerbose } from '../../verbose'
 import { promptConfirm } from '../prompts'
 import { matchedDepsDiffTable, getIOContext, IOClientOptions } from '../utils'
 
