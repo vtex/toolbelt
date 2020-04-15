@@ -18,9 +18,7 @@ export default class DepsList extends CustomCommand {
   static args = []
 
   async run() {
-    const {
-      flags,
-    } = this.parse(DepsList)
+    const { flags } = this.parse(DepsList)
 
     await workspaceDepsList(flags)
   }
