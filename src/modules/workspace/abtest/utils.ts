@@ -9,7 +9,6 @@ import { ABTester } from '../../../clients/abTester'
 import { getAccount, getToken } from '../../../conf'
 import * as env from '../../../env'
 import { CommandError } from '../../../errors'
-import envTimeout from '../../../timeout'
 import userAgent from '../../../user-agent'
 import { dummyLogger } from '../../../clients/dummyLogger'
 
@@ -41,7 +40,7 @@ const contextForMaster = {
   platform: '',
 }
 
-const options = { timeout: (envTimeout || DEFAULT_TIMEOUT) as number }
+const options = { timeout: (env.envTimeout || DEFAULT_TIMEOUT) as number }
 
 // Clients for the 'master' workspace
 export const abtester = new ABTester(contextForMaster, { ...options, retries: 3 })
