@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Fixed
-- [redirects] Encode delimiter before exporing `.csv` file to avoid conflicts
+- [redirects] Encode delimiter before exporing `.csv` file to avoid conflicts.
 
 ## [2.97.0] - 2020-04-09
 ### Changed
