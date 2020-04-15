@@ -17,7 +17,10 @@ export default class Install extends CustomCommand {
     }),
   }
 
-  static args = [{ name: 'appId', required: false }, { name: 'ithAppId', required: false, multiple: true }]
+  static args = [
+    { name: 'appId', required: false },
+    { name: 'ithAppId', required: false, multiple: true },
+  ]
 
   async run() {
     const {
