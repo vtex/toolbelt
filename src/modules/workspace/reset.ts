@@ -8,9 +8,7 @@ const promptWorkspaceReset = (name: string, account: string) =>
   promptConfirm(
     `Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`
   ).then(answer => {
-    if (!answer) {
-      return
-    }
+    return answer
   })
 
 export default async (name: string, options) => {
@@ -21,26 +19,29 @@ export default async (name: string, options) => {
 
   log.debug('Resetting workspace', workspace)
 
+  let promptAnswer
   if (!preConfirm) {
-    await promptWorkspaceReset(workspace, account)
+    promptAnswer = await promptWorkspaceReset(workspace, account)
   }
 
-  try {
-    log.debug('Starting to reset workspace', workspace, 'with production =', production)
-    await (workspaces as any).reset(account, workspace, { production })
-    log.info(
-      `Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')} using ${chalk.green(
-        `production=${production}`
-      )}`
-    )
-  } catch (err) {
-    log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
-    if (err.response) {
-      const { status, statusText, data = { message: null } } = err.response
-      const message = data.message || data
-      log.error(`Error ${status}: ${statusText}. ${message}`)
-    }
+  if (promptAnswer) {
+    try {
+      log.debug('Starting to reset workspace', workspace, 'with production =', production)
+      await (workspaces as any).reset(account, workspace, { production })
+      log.info(
+        `Workspace ${chalk.green(workspace)} was reset ${chalk.green('successfully')} using ${chalk.green(
+          `production=${production}`
+        )}`
+      )
+    } catch (err) {
+      log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
+      if (err.response) {
+        const { status, statusText, data = { message: null } } = err.response
+        const message = data.message || data
+        log.error(`Error ${status}: ${statusText}. ${message}`)
+      }
 
-    throw err
+      throw err
+    }
   }
 }
