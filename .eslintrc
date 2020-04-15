@@ -31,6 +31,12 @@
       "rules": {
         "@typescript-eslint/ban-ts-ignore": "off"
       }
+    },
+    {
+      "files": ["./src/oclif/CustomCommand.ts"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "warn"
+      }
     }
   ]
 }

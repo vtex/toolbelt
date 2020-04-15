@@ -4,7 +4,7 @@ import { removeNpm } from './utils'
 
 const { getDependencies } = apps
 
-export default async (flags: {keys: boolean, npm: boolean}) => {
+export default async (flags: { keys: boolean; npm: boolean }) => {
   log.debug('Starting to list dependencies')
   const deps = await getDependencies()
   const keysOnly = flags.keys

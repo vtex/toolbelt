@@ -12,12 +12,13 @@ export default class DepsUpdate extends CustomCommand {
     help: oclifFlags.help({ char: 'h' }),
   }
 
-  static args = [{ name: 'appId', required: false }, { name: 'ithAppId', required: false, multiple: true }]
+  static args = [
+    { name: 'appId', required: false },
+    { name: 'ithAppId', required: false, multiple: true },
+  ]
 
   async run() {
-    const {
-      raw,
-    } = this.parse(DepsUpdate)
+    const { raw } = this.parse(DepsUpdate)
 
     const allArgs = this.getAllArgs(raw)
 
