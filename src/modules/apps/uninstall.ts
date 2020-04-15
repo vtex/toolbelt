@@ -8,15 +8,13 @@ import { validateAppAction } from './utils'
 
 const { uninstallApp } = apps
 
-const promptAppUninstall = (appsList: string[]): Promise<void> =>
+const promptAppUninstall = (appsList: string[]): Promise<boolean> =>
   promptConfirm(
     `Are you sure you want to uninstall ${appsList.join(', ')} from account ${chalk.blue(
       getAccount()
     )}, workspace ${chalk.green(getWorkspace())}?`
   ).then(answer => {
-    if (!answer) {
-      return
-    }
+    return answer
   })
 
 const uninstallApps = async (appsList: string[]): Promise<void> => {
@@ -38,11 +36,14 @@ export default async (optionalApps: string[], options) => {
   await validateAppAction('uninstall', optionalApps)
   const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   const preConfirm = options.y || options.yes
+  let promptConfirm
 
   if (!preConfirm) {
-    await promptAppUninstall(appsList)
+    promptConfirm = await promptAppUninstall(appsList)
   }
 
-  log.debug(`Uninstalling app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
-  return uninstallApps(appsList)
+  if (promptConfirm) {
+    log.debug(`Uninstalling app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
+    return uninstallApps(appsList)
+  }
 }
