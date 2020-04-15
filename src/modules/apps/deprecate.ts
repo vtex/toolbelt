@@ -7,7 +7,7 @@ import log from '../../logger'
 import switchAccount from '../auth/switch'
 import { promptConfirm } from '../prompts'
 import { parseLocator } from '../../locator'
-import { parseArgs, switchAccountMessage } from './utils'
+import { switchAccountMessage } from './utils'
 
 let originalAccount
 let originalWorkspace
@@ -76,12 +76,12 @@ const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
   await switchToPreviousAccount(originalAccount, originalWorkspace)
 }
 
-export default async (optionalApp: string, options) => {
+export default async (optionalApps: string[], options) => {
   const preConfirm = options.y || options.yes
 
   originalAccount = getAccount()
   originalWorkspace = getWorkspace()
-  const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator, ...parseArgs(options._)]
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
 
   if (!preConfirm && !(await promptDeprecate(appsList))) {
     throw new UserCancelledError()
