@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import R from 'ramda'
 import { Sponsor } from '../../clients/sponsor'
 import * as conf from '../../conf'
-import { CommandError, UserCancelledError } from '../../errors'
+import { CommandError } from '../../errors'
 import log from '../../logger'
 import { promptWorkspaceMaster } from '../apps/utils'
 import { default as switchAccount } from '../auth/switch'
@@ -15,7 +15,7 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
     : `Only current account sponsor (${chalk.blue(account)}) can change its edition`
   const proceed = await promptConfirm(`${reason}. Do you want to switch to account ${chalk.blue(account)}?`)
   if (!proceed) {
-    throw new UserCancelledError()
+    return
   }
   await switchAccount(account, {})
 }

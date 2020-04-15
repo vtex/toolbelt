@@ -2,7 +2,7 @@ import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
 import { getAccount, saveWorkspace, getLastUsedWorkspace } from '../../conf'
-import { UserCancelledError, CommandError } from '../../errors'
+import { CommandError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import createCmd from './create'
@@ -38,7 +38,7 @@ export default async (name: string, options?) => {
     if (err.response && err.response.status === 404) {
       confirm = await promptWorkspaceCreation(name)
       if (!confirm) {
-        throw new UserCancelledError()
+        return
       }
       if (shouldPromptProduction(production)) {
         production = await promptWorkspaceProductionFlag()

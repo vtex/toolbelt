@@ -3,7 +3,6 @@ import enquirer from 'enquirer'
 import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 'ramda'
 import semver from 'semver'
 
-import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import {
@@ -53,7 +52,7 @@ ${chalk.green('master')} and ${chalk.green(workspace)}. Proceed?`,
         false
       )
   if (!proceed) {
-    throw new UserCancelledError()
+    return
   }
 }
 

@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 
@@ -10,7 +9,7 @@ const promptWorkspaceReset = (name: string, account: string) =>
     `Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`
   ).then(answer => {
     if (!answer) {
-      throw new UserCancelledError()
+      return
     }
   })
 

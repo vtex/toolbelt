@@ -3,7 +3,6 @@ import enquirer from 'enquirer'
 import { map, prop } from 'ramda'
 
 import { getAccount } from '../../../conf'
-import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import { default as abTestStatus } from './status'
@@ -18,7 +17,7 @@ ${chalk.blue(workspace)}, account ${chalk.green(account)}. Are you sure?`,
     false
   )
   if (!proceed) {
-    throw new UserCancelledError()
+    return
   }
 }
 
