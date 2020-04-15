@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import switchAccount from '../auth/switch'
@@ -41,7 +40,7 @@ const undeprecateApp = async (app: string): Promise<void> => {
   if (vendor !== account) {
     const canSwitchToVendor = await promptUndeprecateOnVendor(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
-      throw new UserCancelledError()
+      return
     }
     await switchAccount(vendor, {})
   }
@@ -83,7 +82,7 @@ export default async (optionalApp: string, options) => {
   const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator, ...parseArgs(options._)]
 
   if (!preConfirm && !(await promptUndeprecate(appsList))) {
-    throw new UserCancelledError()
+    return
   }
   log.debug(`Undeprecating app ${appsList.length > 1 ? 's' : ''} : ${appsList.join(', ')}`)
   return prepareUndeprecate(appsList)

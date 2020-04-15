@@ -2,7 +2,7 @@ import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
-import { CommandError, UserCancelledError } from '../../errors'
+import { CommandError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import useCmd from './use'
@@ -33,7 +33,7 @@ const promptPromoteConfirm = (workspace: string): Promise<any> =>
   promptConfirm(`Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`, true).then(
     answer => {
       if (!answer) {
-        throw new UserCancelledError()
+        return
       }
     }
   )

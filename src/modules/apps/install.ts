@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
 import { apps, billing } from '../../clients'
-import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
@@ -32,7 +31,7 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
   )
   const confirm = await promptPolicies()
   if (!confirm) {
-    throw new UserCancelledError()
+    return
   }
 
   log.info('Starting to install app with accepted Terms')
@@ -74,9 +73,6 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
       }
       log.info(`Installed app ${chalk.green(app)} successfully`)
     } catch (e) {
-      if (e.name === UserCancelledError.name) {
-        throw new UserCancelledError()
-      }
       if (isNotFoundError(e)) {
         log.warn(
           `Billing app not found in current workspace. Please install it with ${chalk.green(

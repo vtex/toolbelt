@@ -16,7 +16,7 @@ import * as conf from '../../conf'
 import { checkAndOpenNPSLink } from '../../nps'
 import { Metric } from '../../lib/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
-import { CommandError, SSEConnectionError, UserCancelledError } from '../../errors'
+import { CommandError, SSEConnectionError } from '../../errors'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -148,9 +148,6 @@ export const onError = async (e: any) => {
         break
       case SSEConnectionError.name:
         log.error(e.message ?? 'Connection to login server has failed')
-        break
-      case UserCancelledError.name:
-        log.debug('User Cancelled')
         break
       default:
         log.error('Unhandled exception')

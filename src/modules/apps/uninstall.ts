@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 import { apps } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
@@ -16,7 +15,7 @@ const promptAppUninstall = (appsList: string[]): Promise<void> =>
     )}, workspace ${chalk.green(getWorkspace())}?`
   ).then(answer => {
     if (!answer) {
-      throw new UserCancelledError()
+      return
     }
   })
 

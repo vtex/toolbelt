@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
 import { ManifestValidator } from '../../lib/manifest'
 import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
@@ -34,7 +33,7 @@ const deployRelease = async (app: string): Promise<void> => {
   if (vendor !== account) {
     const canSwitchToVendor = await promptConfirm(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
-      throw new UserCancelledError()
+      return
     }
     await switchAccount(vendor, {})
   }
@@ -72,7 +71,7 @@ export default async (optionalApp: string, options) => {
   const app = optionalApp || toAppLocator(await getManifest())
 
   if (!preConfirm && !(await promptDeploy(app))) {
-    throw new UserCancelledError()
+    return
   }
   log.debug(`Deploying app ${app}`)
   return prepareDeploy(app, originalAccount, originalWorkspace)
