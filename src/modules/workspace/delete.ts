@@ -1,11 +1,10 @@
 import chalk from 'chalk'
-import { contains, flatten, head, prepend, tail } from 'ramda'
+import { contains, flatten, head, tail } from 'ramda'
 
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { UserCancelledError } from '../../errors'
 import log from '../../logger'
-import { parseArgs } from '../apps/utils'
 import { promptConfirm } from '../prompts'
 import workspaceUse from './use'
 
@@ -39,8 +38,7 @@ export const deleteWorkspaces = async (names = []): Promise<string[]> => {
   }
 }
 
-export default async (name: string, options) => {
-  const names = prepend(name, parseArgs(options._))
+export default async (names: string[], options) => {
   const preConfirm = options.y || options.yes
   const force = options.f || options.force
   log.debug(`Deleting workspace${names.length > 1 ? 's' : ''}:`, names.join(', '))
