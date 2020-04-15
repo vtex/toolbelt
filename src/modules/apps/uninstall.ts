@@ -5,7 +5,7 @@ import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
-import { parseArgs, validateAppAction } from './utils'
+import { validateAppAction } from './utils'
 
 const { uninstallApp } = apps
 
@@ -35,10 +35,9 @@ const uninstallApps = async (appsList: string[]): Promise<void> => {
   }
 }
 
-export default async (optionalApp: string, options) => {
-  await validateAppAction('uninstall', optionalApp)
-  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-  const appsList = [app, ...parseArgs(options._)]
+export default async (optionalApps: string[], options) => {
+  await validateAppAction('uninstall', optionalApps)
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   const preConfirm = options.y || options.yes
 
   if (!preConfirm) {

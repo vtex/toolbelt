@@ -13,17 +13,16 @@ export default class Uninstall extends CustomCommand {
     yes: oclifFlags.boolean({ char: 'y', description: 'Auto confirm prompts' }),
   }
 
-  static args = [{ name: 'appName', required: false }]
+  static args = [{ name: 'appName', required: false }, { name: 'ithAppName', required: false, multiple: true } ]
 
   async run() {
     const {
       raw,
-      args: { appName },
       flags: { yes },
     } = this.parse(Uninstall)
 
     const allArgs = this.getAllArgs(raw)
 
-    await appsUninstall(appName, { _: allArgs, yes })
+    await appsUninstall(allArgs, { yes })
   }
 }
