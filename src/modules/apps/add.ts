@@ -4,7 +4,7 @@ import { region } from '../../env'
 import { CommandError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
-import { appLatestMajor, parseArgs, pickLatestVersion, wildVersionByMajor } from './utils'
+import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from './utils'
 
 const unprefixName = (str: string) => {
   return str.split(':').pop()
@@ -56,8 +56,7 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
   }
 }
 
-export default async (app: string, options) => {
-  const apps = [app, ...parseArgs(options._)]
+export default async (apps: string[]) => {
   const manifest = await ManifestEditor.getManifestEditor()
   log.debug(`Adding app${apps.length > 1 ? 's' : ''}: ${apps.join(', ')}`)
   try {
