@@ -17,10 +17,10 @@ export default class WorkspaceCreate extends CustomCommand {
 
   async run() {
     const {
-      args,
+      args: { workspaceName },
       flags: { production },
     } = this.parse(WorkspaceCreate)
-    const name = args.workspaceName
-    await workspaceCreate(name, { production })
+
+    await workspaceCreate(workspaceName, { production })
   }
 }
