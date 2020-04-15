@@ -36,13 +36,13 @@ export default async (optionalApps: string[], options) => {
   await validateAppAction('uninstall', optionalApps)
   const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   const preConfirm = options.y || options.yes
-  let promptConfirm
+  let promptAnswer
 
   if (!preConfirm) {
-    promptConfirm = await promptAppUninstall(appsList)
+    promptAnswer = await promptAppUninstall(appsList)
   }
 
-  if (promptConfirm) {
+  if (promptAnswer) {
     log.debug(`Uninstalling app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
     return uninstallApps(appsList)
   }
