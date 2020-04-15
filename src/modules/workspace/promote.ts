@@ -29,21 +29,21 @@ const isPromotable = async (workspace: string) => {
     )
   }
 }
-const promptPromoteConfirm = (workspace: string): Promise<any> =>
+const promptPromoteConfirm = (workspace: string): Promise<boolean> =>
   promptConfirm(`Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`, true).then(
     answer => {
-      if (!answer) {
-        return
-      }
+      return answer
     }
   )
 
 export default async () => {
   log.debug('Promoting workspace', currentWorkspace)
   await isPromotable(currentWorkspace)
-  await promptPromoteConfirm(currentWorkspace)
-  await promote(account, currentWorkspace)
+  const promptAnswer = await promptPromoteConfirm(currentWorkspace)
+  if (promptAnswer) {
+    await promote(account, currentWorkspace)
 
-  log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`)
-  await useCmd('master')
+    log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`)
+    await useCmd('master')
+  }
 }
