@@ -163,7 +163,7 @@
         "description": "Debug commands. Run 'vtex debug' to see all subcommands"
       },
       "deps": {
-        "description": "Deps commands. Run 'vtex deps' to see all subcommands"
+        "description": "Dependencies commands. Run 'vtex deps' to see all subcommands"
       },
       "edition": {
         "description": "Edition commands. Run 'vtex edition' to see all subcommands"
