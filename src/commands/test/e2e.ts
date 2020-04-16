@@ -4,7 +4,7 @@ import { CustomCommand } from '../../oclif/CustomCommand'
 import testE2e from '../../modules/apps/e2e'
 
 export default class E2E extends CustomCommand {
-  static description = 'Start a development session for this app'
+  static description = "Run your VTEX app's integration tests"
 
   static examples = []
 
