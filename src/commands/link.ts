@@ -13,7 +13,7 @@ export default class Link extends CustomCommand {
     clean: oclifFlags.boolean({ char: 'c', description: 'Clean builder cache', default: false }),
     setup: oclifFlags.boolean({
       char: 's',
-      description: 'Do not add app dependencies to package.json and do not run Yarn',
+      description: 'Setup typings before linking [see vtex setup --help]',
       default: false,
     }),
     'no-watch': oclifFlags.boolean({ description: "Don't watch for file changes after initial link", default: false }),
