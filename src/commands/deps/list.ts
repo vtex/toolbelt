@@ -11,6 +11,7 @@ export default class DepsList extends CustomCommand {
   static examples = ['vtex deps list', 'vtex deps ls']
 
   static flags = {
+    help: oclifFlags.help({ char: 'h' }),
     keys: oclifFlags.boolean({ char: 'k', description: 'Show only keys', default: false }),
     npm: oclifFlags.boolean({ char: 'n', description: 'Include deps from npm registry', default: false }),
   }
