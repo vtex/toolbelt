@@ -6,20 +6,21 @@ import authLogin from '../modules/auth/login'
 export default class Login extends CustomCommand {
   static description = 'Log into a VTEX account'
 
-  static examples = ['vtex login', 'vtex login storecomponents', 'vtex login storecomponents myworkspace']
+  static examples = ['vtex login', 'vtex login storecomponents']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
+    workspace: oclifFlags.string({ char: 'w', description: 'Workspace to login into' }),
   }
 
   static args = [
     { name: 'account', required: false },
-    { name: 'workspace', required: false },
   ]
 
   async run() {
     const {
-      args: { account, workspace },
+      args: { account },
+      flags: { workspace }
     } = this.parse(Login)
 
     await authLogin({ account, workspace })
