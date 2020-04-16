@@ -1,8 +1,5 @@
 import axios from 'axios'
-import chalk from 'chalk'
 import os from 'os'
-import { all as clearCachedModules } from 'clear-module'
-import { CommandNotFoundError, MissingRequiredArgsError } from 'findhelp'
 
 import { Token } from '../../lib/auth/Token'
 import { envCookies } from '../../env'
@@ -86,7 +83,6 @@ export const onError = async (e: any) => {
       // Try to login and re-issue the command.
       loginPending = true
       authLogin({}).then(() => {
-        clearCachedModules()
         main()
       }) // TODO: catch with different handler for second error
     }
@@ -135,12 +131,6 @@ export const onError = async (e: any) => {
     }
   } else {
     switch (e.name) {
-      case MissingRequiredArgsError.name:
-        log.error('Missing required arguments:', chalk.blue(e.message))
-        break
-      case CommandNotFoundError.name:
-        log.error('Command not found:', chalk.blue(...process.argv.slice(2)))
-        break
       case CommandError.name:
         if (e.message && e.message !== '') {
           log.error(e.message)
