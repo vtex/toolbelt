@@ -6,21 +6,21 @@ import browse from '../modules/browse'
 export default class Browse extends CustomCommand {
   static description = 'Open endpoint in browser window'
 
-  static examples = ['vtex browse']
+  static examples = ['vtex browse', 'vtex browse admin']
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
     qr: oclifFlags.boolean({ char: 'q', description: 'Outputs a QR Code on the terminal' }),
   }
 
-  static args = [{ name: 'endpointInput' }]
+  static args = [{ name: 'path' }]
 
   async run() {
     const {
-      args: { endpointInput },
+      args: { path },
       flags: { qr },
     } = this.parse(Browse)
 
-    await browse(endpointInput, { qr, q: qr })
+    await browse(path, { qr, q: qr })
   }
 }
