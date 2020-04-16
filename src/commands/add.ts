@@ -12,6 +12,8 @@ export default class Add extends CustomCommand {
     help: oclifFlags.help({ char: 'h' }),
   }
 
+  static strict = false
+
   static args = [
     { name: 'appId', required: true },
     { name: 'ithAppId', required: false, multiple: true },

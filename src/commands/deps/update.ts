@@ -12,6 +12,8 @@ export default class DepsUpdate extends CustomCommand {
     help: oclifFlags.help({ char: 'h' }),
   }
 
+  static strict = false
+
   static args = [
     { name: 'appId', required: false },
     { name: 'ithAppId', required: false, multiple: true },

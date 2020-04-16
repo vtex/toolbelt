@@ -14,6 +14,8 @@ export default class WorkspaceDelete extends CustomCommand {
     yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 
+  static strict = false
+
   static args = [
     { name: 'workspace1', required: true },
     { name: 'ithWorkspace', required: false, multiple: true },

@@ -13,6 +13,8 @@ export default class Uninstall extends CustomCommand {
     yes: oclifFlags.boolean({ char: 'y', description: 'Auto confirm prompts' }),
   }
 
+  static strict = false
+
   static args = [
     { name: 'appName', required: false },
     { name: 'ithAppName', required: false, multiple: true },

@@ -13,6 +13,8 @@ export default class Unlink extends CustomCommand {
     all: oclifFlags.boolean({ char: 'a', description: 'Unlink all apps', default: false }),
   }
 
+  static strict = false
+
   static args = [
     { name: 'appId', required: false },
     { name: 'ithAppId', required: false, multiple: true },

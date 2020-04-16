@@ -17,6 +17,8 @@ export default class Install extends CustomCommand {
     }),
   }
 
+  static strict = false
+
   static args = [
     { name: 'appId', required: false },
     { name: 'ithAppId', required: false, multiple: true },
