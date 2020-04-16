@@ -7,9 +7,7 @@ import { promptConfirm } from '../prompts'
 const promptWorkspaceReset = (name: string, account: string) =>
   promptConfirm(
     `Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`
-  ).then(answer => {
-    return answer
-  })
+  )
 
 export default async (name: string, options) => {
   const account = getAccount()
