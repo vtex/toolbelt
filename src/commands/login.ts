@@ -13,14 +13,12 @@ export default class Login extends CustomCommand {
     workspace: oclifFlags.string({ char: 'w', description: 'Workspace to login into' }),
   }
 
-  static args = [
-    { name: 'account', required: false },
-  ]
+  static args = [{ name: 'account', required: false }]
 
   async run() {
     const {
       args: { account },
-      flags: { workspace }
+      flags: { workspace },
     } = this.parse(Login)
 
     await authLogin({ account, workspace })

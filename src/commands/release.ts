@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
 import { CustomCommand } from '../oclif/CustomCommand'
-import appsRelease from '../modules/release'
+import appsRelease, { releaseTypeAliases, supportedReleaseTypes, supportedTagNames } from '../modules/release'
 
 export default class Release extends CustomCommand {
   static description =
@@ -24,8 +24,9 @@ export default class Release extends CustomCommand {
       name: 'releaseType',
       required: false,
       default: 'patch',
+      options: [...Object.keys(releaseTypeAliases), ...supportedReleaseTypes],
     },
-    { name: 'tagName', required: false, default: 'beta' },
+    { name: 'tagName', required: false, default: 'beta', options: supportedTagNames },
   ]
 
   async run() {
