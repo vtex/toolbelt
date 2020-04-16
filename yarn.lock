@@ -586,10 +586,10 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@tiagonapoli/oclif-plugin-spaced-commands@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@tiagonapoli/oclif-plugin-spaced-commands/-/oclif-plugin-spaced-commands-0.0.4.tgz#e5ca5bc0d20dc59379b683835c2da9ae32aaf334"
-  integrity sha512-sfgcDpmBlv/Ew4EFuM4iDbZRpy1/SAn+o2eF2OPTPw0v7V03eULm6YAg25CvtPn7IzDG4/pQb3C9ZFCGQ9m1YA==
+"@tiagonapoli/oclif-plugin-spaced-commands@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@tiagonapoli/oclif-plugin-spaced-commands/-/oclif-plugin-spaced-commands-0.0.5.tgz#a3cf570ea0f8a4bde2d17804160b0ad6ef2de1b1"
+  integrity sha512-S7vyXRFoBCI+EknaIbp8QqvaXzHVUaVGLUa37MmbcDQmG3wlecGq3X8iUrIxd8O6iqYwBBWnC1X89wKXP8vFww==
   dependencies:
     "@oclif/command" "^1.0.0"
     "@oclif/config" "^1.0.0"

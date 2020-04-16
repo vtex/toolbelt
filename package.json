@@ -55,7 +55,7 @@
     "@oclif/command": "^1.0.0",
     "@oclif/config": "^1.0.0",
     "@oclif/plugin-help": "^2.0.0",
-    "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.4",
+    "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.5",
     "@vtex/api": "3.71.1",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "~6.10.2",
