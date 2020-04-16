@@ -38,7 +38,7 @@ const promptSignificanceLevel = async (): Promise<string> => {
     .then(prop('level'))
 }
 
-const promptContinue = async (workspace: string, significanceLevel?: string) => {
+const promptContinue = (workspace: string, significanceLevel?: string) => {
   return significanceLevel
     ? promptConfirm(
         `You are about to start an A/B test between workspaces \
