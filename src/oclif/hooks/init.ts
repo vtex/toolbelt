@@ -25,12 +25,11 @@ const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
-const checkLogin = async args => {
-  const first = args[0]
+const checkLogin = async command => {
   const whitelist = [undefined, 'config', 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version', 'release']
   const token = new Token(conf.getToken())
-  if (!token.isValid() && whitelist.indexOf(first) === -1) {
-    log.debug('Requesting login before command:', args.join(' '))
+  if (!token.isValid() && whitelist.indexOf(command) === -1) {
+    log.debug('Requesting login before command:', command)
     await authLogin({})
   }
 }
@@ -53,7 +52,7 @@ const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: bool
   log.debug('node %s - %s %s', process.version, os.platform(), os.release())
   log.debug(args)
 
-  await checkLogin(args)
+  await checkLogin(options.id)
 
   await checkAndOpenNPSLink()
 
