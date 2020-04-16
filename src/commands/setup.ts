@@ -4,7 +4,7 @@ import { CustomCommand } from '../oclif/CustomCommand'
 import setup from '../modules/setup'
 
 export default class Setup extends CustomCommand {
-  static description = 'Download react app typings, graphql app typings, lint config and tsconfig'
+  static description = 'Setup development enviroment'
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
