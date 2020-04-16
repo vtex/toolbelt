@@ -13,9 +13,11 @@ export default class Deprecate extends CustomCommand {
     yes: oclifFlags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
   }
 
+  static strict = false
+
   static args = [
     { name: 'appId', required: false },
-    { name: 'ithAppId', required: false, multipple: true },
+    { name: 'ithAppId', required: false, multiple: true },
   ]
 
   async run() {
