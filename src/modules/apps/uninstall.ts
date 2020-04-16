@@ -13,9 +13,7 @@ const promptAppUninstall = (appsList: string[]): Promise<boolean> =>
     `Are you sure you want to uninstall ${appsList.join(', ')} from account ${chalk.blue(
       getAccount()
     )}, workspace ${chalk.green(getWorkspace())}?`
-  ).then(answer => {
-    return answer
-  })
+  )
 
 const uninstallApps = async (appsList: string[]): Promise<void> => {
   for (const app of appsList) {
