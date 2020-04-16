@@ -6,7 +6,7 @@ import { CustomCommand } from '../../oclif/CustomCommand'
 export default class WorkspaceUse extends CustomCommand {
   static description = 'Use a workspace to perform operations'
 
-  static examples = ['vtex workspace use workspaceName', 'vtex use worspaceName']
+  static examples = ['vtex workspace use workspaceName', 'vtex use workspaceName']
 
   static aliases = ['use']
 
