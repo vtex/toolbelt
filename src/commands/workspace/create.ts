@@ -4,7 +4,7 @@ import workspaceCreate from '../../modules/workspace/create'
 import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class WorkspaceCreate extends CustomCommand {
-  static description = 'Create a new workspace with this name'
+  static description = 'Create a new workspace'
 
   static examples = ['vtex workspace create workspaceName']
 
