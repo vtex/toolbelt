@@ -1,5 +1,6 @@
 import axios from 'axios'
 import os from 'os'
+import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
 
 import { Token } from '../../lib/auth/Token'
 import { envCookies } from '../../env'
@@ -34,7 +35,7 @@ const checkLogin = async args => {
   }
 }
 
-const main = async (options?, calculateInitTime?: boolean) => {
+const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: boolean) => {
   const cliPreTasksStart = process.hrtime()
   CLIPreTasks.getCLIPreTasks(pkg).runTasks()
   TelemetryCollector.getCollector().registerMetric({
@@ -153,7 +154,7 @@ export const onError = async (e: any) => {
   process.exit(1)
 }
 
-export default async function(options) {
+export default async function(options: HookKeyOrOptions<'init'>) {
   axios.interceptors.request.use(config => {
     if (envCookies()) {
       config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
