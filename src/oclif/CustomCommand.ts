@@ -1,5 +1,5 @@
-import OclifCommand from '@oclif/command'
-import { flags as oclifFlags } from '@oclif/command'
+import OclifCommand, { flags as oclifFlags } from '@oclif/command'
+
 import { ParsingToken } from '@oclif/parser/lib/parse'
 
 import { hrTimeToMs } from '../lib/utils/hrTimeToMs'
@@ -8,7 +8,6 @@ import { Metric } from '../lib/metrics/MetricReport'
 import { onError } from './hooks/init'
 
 export abstract class CustomCommand extends OclifCommand {
-
   public static globalFlags = {
     verbose: oclifFlags.boolean({ char: 'v', description: 'Show debug level logs', default: false }),
     help: oclifFlags.help({ char: 'h' }),

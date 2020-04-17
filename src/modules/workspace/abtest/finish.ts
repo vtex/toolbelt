@@ -36,12 +36,13 @@ export default async () => {
   await installedABTester()
   const workspace = await promptWorkspaceToFinishABTest()
   const promptAnswer = await promptContinue(workspace)
-  if (promptAnswer) {
-    log.info('Finishing A/B tests')
-    log.info(`Latest results:`)
-    await abTestStatus()
-    await abtester.finish(workspace)
-    log.info(`A/B testing with workspace ${chalk.blue(workspace)} is now finished`)
-    log.info(`No traffic currently directed to ${chalk.blue(workspace)}`)
+  if (!promptAnswer) {
+    return
   }
+  log.info('Finishing A/B tests')
+  log.info(`Latest results:`)
+  await abTestStatus()
+  await abtester.finish(workspace)
+  log.info(`A/B testing with workspace ${chalk.blue(workspace)} is now finished`)
+  log.info(`No traffic currently directed to ${chalk.blue(workspace)}`)
 }

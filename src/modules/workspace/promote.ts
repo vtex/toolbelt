@@ -36,10 +36,11 @@ export default async () => {
   log.debug('Promoting workspace', currentWorkspace)
   await isPromotable(currentWorkspace)
   const promptAnswer = await promptPromoteConfirm(currentWorkspace)
-  if (promptAnswer) {
-    await promote(account, currentWorkspace)
-
-    log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`)
-    await useCmd('master')
+  if (!promptAnswer) {
+    return
   }
+  await promote(account, currentWorkspace)
+
+  log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`)
+  await useCmd('master')
 }
