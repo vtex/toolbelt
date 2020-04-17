@@ -27,27 +27,30 @@ const switchToPreviousAccount = async (previousAccount: string, previousWorkspac
   }
 }
 
-const deployRelease = async (app: string): Promise<void> => {
+const deployRelease = async (app: string): Promise<boolean> => {
   const { vendor, name, version } = parseLocator(app)
   const account = getAccount()
   if (vendor !== account) {
     const canSwitchToVendor = await promptConfirm(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
-      return
+      return false
     }
     await switchAccount(vendor, {})
   }
   const context = { account: vendor, workspace: 'master', authToken: getToken() }
   const { registry } = createClients(context)
-  return registry.validateApp(`${vendor}.${name}`, version)
+  registry.validateApp(`${vendor}.${name}`, version)
+  return true
 }
 
 const prepareDeploy = async (app, originalAccount, originalWorkspace: string): Promise<void> => {
   app = await ManifestValidator.validateApp(app)
   try {
     log.debug('Starting to deploy app:', app)
-    await deployRelease(app)
-    log.info('Successfully deployed', app)
+    const deployed = await deployRelease(app)
+    if (deployed) {
+      log.info('Successfully deployed', app)
+    }
   } catch (e) {
     const data = e.response?.data
     const code = data?.code
