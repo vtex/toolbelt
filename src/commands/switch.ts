@@ -13,14 +13,12 @@ export default class Switch extends CustomCommand {
     workspace: oclifFlags.string({ char: 'w', description: 'Specify login workspace' }),
   }
 
-  static args = [
-    { name: 'account', required: true },
-  ]
+  static args = [{ name: 'account', required: true }]
 
   async run() {
     const {
       args: { account },
-      flags: { workspace }
+      flags: { workspace },
     } = this.parse(Switch)
 
     await authSwitch(account, { workspace })
