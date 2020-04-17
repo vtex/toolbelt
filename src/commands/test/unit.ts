@@ -11,7 +11,7 @@ export default class UnitTest extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     unsafe: oclifFlags.boolean({ char: 'u', description: 'Allow tests with Typescript errors', default: false }),
   }
 

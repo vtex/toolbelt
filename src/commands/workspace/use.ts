@@ -11,7 +11,7 @@ export default class WorkspaceUse extends CustomCommand {
   static aliases = ['use']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     production: oclifFlags.boolean({
       char: 'p',
       description: 'Create the workspace as production if it does not exist or is reset',

@@ -9,7 +9,7 @@ export default class WorkspaceDelete extends CustomCommand {
   static examples = ['vtex workspace delete workspaceName', 'vtex workspace delete workspaceName1 workspaceName2']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     force: oclifFlags.string({ char: 'f', description: "Ignore if you're currently using the workspace" }),
     yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }

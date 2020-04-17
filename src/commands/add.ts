@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../oclif/CustomCommand'
 import appsAdd from '../modules/apps/add'
 
@@ -9,7 +7,7 @@ export default class Add extends CustomCommand {
   static examples = ['vtex add vtex.service-example@0.x']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static strict = false

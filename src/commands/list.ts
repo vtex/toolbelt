@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../oclif/CustomCommand'
 import appsList from '../modules/apps/list'
 
@@ -11,7 +9,7 @@ export default class List extends CustomCommand {
   static aliases = ['ls']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = []

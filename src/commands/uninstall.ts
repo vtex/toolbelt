@@ -9,7 +9,7 @@ export default class Uninstall extends CustomCommand {
   static examples = ['vtex uninstall', 'vtex uninstall vtex.service-example', 'vtex uninstall vtex.service-example@0.x']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     yes: oclifFlags.boolean({ char: 'y', description: 'Auto confirm prompts' }),
   }
 

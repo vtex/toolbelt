@@ -9,7 +9,7 @@ export default class Login extends CustomCommand {
   static examples = ['vtex login', 'vtex login storecomponents']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     workspace: oclifFlags.string({ char: 'w', description: 'Workspace to login into' }),
   }
 

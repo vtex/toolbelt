@@ -9,7 +9,7 @@ export default class Switch extends CustomCommand {
   static examples = ['vtex switch storecomponents', 'vtex switch storecomponents myworkspace']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     workspace: oclifFlags.string({ char: 'w', description: 'Specify login workspace' }),
   }
 

@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import editionGet from '../../modules/sponsor/getEdition'
 import { CustomCommand } from '../../oclif/CustomCommand'
 
@@ -9,7 +7,7 @@ export default class EditionGet extends CustomCommand {
   static examples = ['vtex edition get']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = []

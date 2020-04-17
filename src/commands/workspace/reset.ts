@@ -9,7 +9,7 @@ export default class WorkspaceReset extends CustomCommand {
   static examples = ['vtex workspace reset', 'vtex workspace reset workspaceName']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     production: oclifFlags.boolean({
       char: 'p',
       description: 'Re-create the workspace as a production one',

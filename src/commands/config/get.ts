@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../../oclif/CustomCommand'
 import configGet from '../../modules/config/get'
 
@@ -11,7 +9,7 @@ export default class ConfigGet extends CustomCommand {
   static examples = ['vtex config get env', 'vtex config get cluster']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = [{ name: 'configName', required: true, options: ['env', 'cluster'] }]

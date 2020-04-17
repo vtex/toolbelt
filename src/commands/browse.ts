@@ -9,7 +9,7 @@ export default class Browse extends CustomCommand {
   static examples = ['vtex browse', 'vtex browse admin']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     qr: oclifFlags.boolean({ char: 'q', description: 'Outputs a QR Code on the terminal' }),
   }
 

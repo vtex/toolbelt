@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../oclif/CustomCommand'
 import workspaceUpdate from '../modules/housekeeper/update'
 
@@ -9,7 +7,7 @@ export default class Update extends CustomCommand {
   static examples = ['vtex update']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = []

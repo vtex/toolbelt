@@ -9,7 +9,7 @@ export default class E2E extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     report: oclifFlags.string({
       char: 'r',
       description: 'Check the results and state of a previously started test given its ID',

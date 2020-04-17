@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../oclif/CustomCommand'
 import appsRelease, { releaseTypeAliases, supportedReleaseTypes, supportedTagNames } from '../modules/release'
 
@@ -16,7 +14,7 @@ export default class Release extends CustomCommand {
   ]
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = [

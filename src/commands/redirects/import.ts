@@ -9,7 +9,7 @@ export default class RedirectsImport extends CustomCommand {
   static examples = ['vtex redirects import csvPath']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     reset: oclifFlags.boolean({ char: 'r', description: 'Remove all previous redirects', default: false }),
   }
 

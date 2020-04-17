@@ -9,7 +9,7 @@ export default class Deploy extends CustomCommand {
   static examples = ['vtex deploy', 'vtex deploy vtex.service-example@0.0.1']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 

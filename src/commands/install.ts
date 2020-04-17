@@ -9,7 +9,7 @@ export default class Install extends CustomCommand {
   static examples = ['vtex install', 'vtex install vtex.service-example@0.x', 'vtex install vtex.service-example@0.0.1']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     force: oclifFlags.boolean({
       char: 'f',
       description: 'Install app without checking for route conflicts',

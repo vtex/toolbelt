@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../../oclif/CustomCommand'
 import authAccount from '../../modules/local/account'
 
@@ -9,7 +7,7 @@ export default class LocalAccount extends CustomCommand {
   static examples = ['vtex local account']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = []

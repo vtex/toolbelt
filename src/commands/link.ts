@@ -9,7 +9,7 @@ export default class Link extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     clean: oclifFlags.boolean({ char: 'c', description: 'Clean builder cache', default: false }),
     setup: oclifFlags.boolean({
       char: 's',

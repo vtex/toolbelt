@@ -7,7 +7,7 @@ export default class Setup extends CustomCommand {
   static description = 'Setup development enviroment'
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     'ignore-linked': oclifFlags.boolean({
       char: 'i',
       description: 'Add only types from apps published',

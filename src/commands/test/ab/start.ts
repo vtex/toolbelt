@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import testAbStart from '../../../modules/workspace/abtest/start'
 import { CustomCommand } from '../../../oclif/CustomCommand'
 
@@ -9,7 +7,7 @@ export default class ABTestStart extends CustomCommand {
   static examples = []
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = []

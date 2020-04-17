@@ -11,7 +11,7 @@ export default class InfraList extends CustomCommand {
   static examples = ['vtex infra list', 'vtex infra ls']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     filter: oclifFlags.string({ char: 'f', description: 'Only list versions containing this word' }),
     available: oclifFlags.boolean({ char: 'a', description: 'List services available to install' }),
   }

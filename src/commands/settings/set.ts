@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../../oclif/CustomCommand'
 import appsSettingsSet from '../../modules/apps/settings/set'
 
@@ -9,7 +7,7 @@ export default class SettingsSet extends CustomCommand {
   static examples = ['vtex settings set vtex.service-example fieldName fieldValue']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = [

@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../../oclif/CustomCommand'
 import { getWorkspace } from '../../conf'
 import workspaceDepsDiff from '../../modules/deps/diff'
@@ -11,7 +9,7 @@ export default class DepsDiff extends CustomCommand {
   static examples = ['vtex deps diff workspace1 workspace2']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = [

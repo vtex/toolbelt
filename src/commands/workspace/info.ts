@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import workspaceInfo from '../../modules/workspace/info'
 import { CustomCommand } from '../../oclif/CustomCommand'
 
@@ -9,7 +7,7 @@ export default class WorkspaceInfo extends CustomCommand {
   static examples = ['vtex workspace info']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = []

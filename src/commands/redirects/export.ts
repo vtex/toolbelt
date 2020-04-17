@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../../oclif/CustomCommand'
 import redirectsExport from '../../modules/rewriter/export'
 
@@ -9,7 +7,7 @@ export default class RedirectsExport extends CustomCommand {
   static examples = ['vtex redirects export csvPath']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = [{ name: 'csvPath', required: true }]

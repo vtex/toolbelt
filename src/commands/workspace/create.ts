@@ -9,7 +9,7 @@ export default class WorkspaceCreate extends CustomCommand {
   static examples = ['vtex workspace create workspaceName']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     production: oclifFlags.boolean({ char: 'p', description: 'Create a production workspace', default: false }),
   }
 

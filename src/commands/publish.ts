@@ -9,7 +9,7 @@ export default class Publish extends CustomCommand {
   static examples = ['vtex publish']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
     tag: oclifFlags.string({ char: 't', description: 'Apply a tag to the release' }),
     workspace: oclifFlags.string({ char: 'w', description: 'Specify the workspace for the app registry' }),
     force: oclifFlags.boolean({

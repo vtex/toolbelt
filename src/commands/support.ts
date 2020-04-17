@@ -1,5 +1,3 @@
-import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../oclif/CustomCommand'
 import authSupport from '../modules/support/login'
 
@@ -9,7 +7,7 @@ export default class Support extends CustomCommand {
   static examples = ['vtex support storecomponents']
 
   static flags = {
-    help: oclifFlags.help({ char: 'h' }),
+    ...CustomCommand.globalFlags,
   }
 
   static args = [{ name: 'account', required: true }]
