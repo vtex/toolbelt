@@ -16,9 +16,9 @@ interface SetupOpts {
 
 export default async (opts: SetupOpts) => {
   const all = opts.all || (!opts.tooling && !opts.typings && !opts.tsconfig)
-  const tooling = opts.tooling || opts.all
-  const typings = opts.typings || opts.all
-  const tsconfig = opts.tsconfig || opts.all
+  const tooling = opts.tooling || all
+  const typings = opts.typings || all
+  const tsconfig = opts.tsconfig || all
   const ignoreLinked = opts.i || opts['ignore-linked']
 
   if (ignoreLinked && !(all || typings)) {
@@ -28,6 +28,7 @@ export default async (opts: SetupOpts) => {
   }
 
   const manifest = await getManifest()
+
   if (tooling) {
     setupTooling(manifest)
   }

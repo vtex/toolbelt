@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Increase ErrorReport serialization depth.
+- [vtex setup] Not running when flag `--all` was omited.
 
 ## [2.97.0] - 2020-04-09
 ### Changed
