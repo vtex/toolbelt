@@ -4,9 +4,7 @@ import { CustomCommand } from '../../oclif/CustomCommand'
 import debugDotnet from '../../modules/debug/dotnet'
 
 export default class DotnetDebug extends CustomCommand {
-  static description = 'Debug for .NET applications'
-
-  static examples = ['vtex debug dotnet debugInst']
+  static description = 'Debug .NET applications (IDEs only)'
 
   static flags = {
     help: oclifFlags.help({ char: 'h' }),
