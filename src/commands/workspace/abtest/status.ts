@@ -4,7 +4,7 @@ import { CustomCommand } from '../../../oclif/CustomCommand'
 export default class ABTestStatus extends CustomCommand {
   static description = 'Display currently running AB tests results'
 
-  static examples = []
+  static examples = ['vtex workspace abtest status']
 
   static flags = {
     ...CustomCommand.globalFlags,
