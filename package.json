@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.97.1-0",
+  "version": "2.97.2-beta",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "scripts": {
