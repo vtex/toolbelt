@@ -75,11 +75,11 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
   }
 }
 
-export default async (optionalApp: string, options) => {
+export default async (optionalApps: string[], options) => {
   const preConfirm = options.y || options.yes
   originalAccount = getAccount()
   originalWorkspace = getWorkspace()
-  const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator, ...parseArgs(options._)]
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
 
   if (!preConfirm && !(await promptUndeprecate(appsList))) {
     return
