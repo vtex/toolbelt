@@ -1,8 +1,10 @@
+import ora from 'ora'
 import chalk from 'chalk'
 
 import log from '../../logger'
 import { lighthouse, workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
+import { TableGenerator } from './TableGenerator'
 
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
 
@@ -11,42 +13,26 @@ async function isProdutionWorkspace(): Promise<boolean> {
   return meta.production
 }
 
-const cols = ['Performance', 'Accessibility', 'Best Practices', 'SEO']
-
-interface TableRow {
-  [title: string]: number
-}
-
-function addScoresToRow(report: any[], row: TableRow) {
-  report.forEach(audit => (row[audit.title] = audit.score))
-}
-
-function printScoreTable(report: any[]) {
-  const rows = []
-  const row: TableRow = {}
-
-  addScoresToRow(report, row)
-  rows.push(row)
-
-  console.table(rows, cols)
-}
-
 export default async (url: string, option) => {
   if (await isProdutionWorkspace()) {
     log.error(`You can not run lighthoust audits on production workspaces.`)
     return
   }
 
-  log.info(`Lighthouse audit on: ${chalk.blue(url)}`)
+  const spinner = ora(`Running Lighthouse on url: ${chalk.blue(url)}`).start()
   try {
     const report: any[] = await lighthouse.runAudit(url)
+    spinner.stop()
 
     if (option.j || option.json) {
       console.log(JSON.stringify(report, null, 1))
     } else {
-      printScoreTable(report)
+      const table = new TableGenerator()
+      table.addReportScores(report)
+      table.show()
     }
   } catch (error) {
+    spinner.stop()
     log.error(error)
   }
 }

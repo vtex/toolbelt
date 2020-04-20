@@ -1,9 +1,6 @@
-import { lighthouse } from '../../clients'
+import { showReports } from './showReports'
 
 export default async (url: string, options) => {
   const app = options
-
-  const reports = await lighthouse.getReports(app, url)
-
-  console.log(reports)
+  await showReports(app, url)
 }
