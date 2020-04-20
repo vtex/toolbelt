@@ -6,7 +6,7 @@ import log from '../../logger'
 import switchAccount from '../auth/switch'
 import { promptConfirm } from '../prompts'
 import { parseLocator } from '../../locator'
-import { parseArgs, switchAccountMessage } from './utils'
+import { switchAccountMessage } from './utils'
 
 let originalAccount
 let originalWorkspace
