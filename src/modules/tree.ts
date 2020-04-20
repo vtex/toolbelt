@@ -192,6 +192,32 @@ export default {
     description: 'List your installed VTEX apps',
     handler: './apps/list',
   },
+  lighthouse: {
+    alias: 'lh',
+    description: 'Execute lighthouse audit on an url',
+    handler: './lighthouse/auditUrl',
+    requiredArgs: ['url'],
+    options: [
+      {
+        description: 'Return the report as json by stdout',
+        long: 'json',
+        short: 'j',
+        type: 'boolean',
+      },
+    ],
+    app: {
+      description: 'List recent lighthouse reports of an app. It is possible to filter the results by an url',
+      handler: './lighthouse/histApp',
+      requiredArgs: ['app'],
+      optionalArgs: ['url'],
+    },
+    url: {
+      description: 'List recent lighthouse reports of an url. It is possible to filter the results by an app',
+      handler: './lighthouse/histUrl',
+      requiredArgs: ['url'],
+      optionalArgs: ['app'],
+    },
+  },
   local: {
     account: {
       description: 'Show current account and copy it to clipboard',
