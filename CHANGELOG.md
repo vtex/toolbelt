@@ -5,24 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
-## [2.98.0-beta.5] - 2020-04-20
-
-## [2.98.0-beta.4] - 2020-04-17
-
-## [2.98.0-beta.3] - 2020-04-17
-
-## [2.98.0-beta.2] - 2020-04-17
-
-## [2.98.0-beta.1] - 2020-04-17
-
-## [2.98.0-beta.0] - 2020-04-17
-
-## [2.98.0-beta] - 2020-04-17
-
-## [2.97.2-beta] - 2020-04-17
-
-## [2.97.1-0] - 2020-04-17
+### Changed
+- Improve error logging in install command.
 
 ## [2.97.0] - 2020-04-09
 ### Changed
