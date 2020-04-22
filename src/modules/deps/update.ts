@@ -1,19 +1,18 @@
 import chalk from 'chalk'
 import { diffJson } from 'diff'
-import { compose, keys, map, path, prepend } from 'ramda'
+import { compose, keys, map, path } from 'ramda'
 
 import { apps } from '../../clients'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
-import { parseArgs } from '../apps/utils'
 import { removeNpm } from './utils'
 
 const { getDependencies, updateDependencies, updateDependency } = apps
 
 const cleanDeps = compose(keys, removeNpm)
 
-export default async (optionalApp: string, options) => {
-  const appsList = prepend(optionalApp, parseArgs(options._)).filter(arg => arg && arg !== '')
+export default async (optionalApps: string[]) => {
+  const appsList = optionalApps.filter(arg => arg && arg !== '')
   try {
     log.debug('Starting update process')
     const previousDeps = await getDependencies()

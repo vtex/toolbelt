@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.98.0] - 2020-04-22
+### Added
+- [telemetry:reporter] Create and send reporter meta metrics.
+
+### Changed
+- Migrate to framework `oclif`.
+- [vtex install] Improve error logging.
+- [telemetry:reporter] Refactor reporting.
+
+### Fixed
+- [telemetry:ErrorReport] Increase ErrorReport serialization depth.
+- [telemetry:reporter] File locking error.
+- [vtex setup] Not running when flag `--all` is omitted.
+
 ## [2.97.0] - 2020-04-09
 ### Changed
 - [local-data] Use new paths on `~/.vtex` for persisting data. (older session path at ~/.config/configstore/vtex.json will still be updated).

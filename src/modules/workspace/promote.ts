@@ -2,7 +2,7 @@ import chalk from 'chalk'
 
 import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
-import { CommandError, UserCancelledError } from '../../errors'
+import { CommandError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import useCmd from './use'
@@ -29,19 +29,16 @@ const isPromotable = async (workspace: string) => {
     )
   }
 }
-const promptPromoteConfirm = (workspace: string): Promise<any> =>
-  promptConfirm(`Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`, true).then(
-    answer => {
-      if (!answer) {
-        throw new UserCancelledError()
-      }
-    }
-  )
+const promptPromoteConfirm = (workspace: string): Promise<boolean> =>
+  promptConfirm(`Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`, true)
 
 export default async () => {
   log.debug('Promoting workspace', currentWorkspace)
   await isPromotable(currentWorkspace)
-  await promptPromoteConfirm(currentWorkspace)
+  const promptAnswer = await promptPromoteConfirm(currentWorkspace)
+  if (!promptAnswer) {
+    return
+  }
   await promote(account, currentWorkspace)
 
   log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`)

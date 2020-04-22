@@ -23,6 +23,9 @@ export default class Billing {
       data: { data, errors },
     } = await this.http.postRaw<any>(`/_v/graphql`, { query: graphQLQuery })
     if (errors) {
+      if (errors.length === 1 && errors[0].extensions?.exception?.response?.data) {
+        throw errors[0].extensions.exception.response.data
+      }
       throw new GraphQlError(errors)
     }
     return data.install

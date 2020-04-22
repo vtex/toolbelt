@@ -3,14 +3,15 @@
     "types": ["node", "jest"],
     "target": "es2018",
     "lib": ["es2018"],
-    "outDir": "lib",
+    "outDir": "build",
     "sourceMap": false,
     "module": "commonjs",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
-    "skipLibCheck": true, 
-    "jsx": "react"
+    "skipLibCheck": true,
+    "jsx": "react",
+    "importHelpers": true
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.ts", "**/__tests__"]

@@ -7,6 +7,11 @@ export interface Metric {
   [metricName: string]: number | string
 }
 
+export interface MetricReportObj {
+  metric: Metric
+  env: MetricEnv
+}
+
 interface MetricEnv {
   account: string
   workspace: string
@@ -43,10 +48,20 @@ export class MetricReport {
     this.env = env
   }
 
-  public readonly metric: Metric
   public readonly env: MetricEnv
+  public metric: Metric
 
-  public toObject() {
+  public addMetric(metricName: string, value: number | string) {
+    this.metric[metricName] = value
+  }
+
+  public addMetrics(metrics: Record<string, number | string>) {
+    Object.entries(metrics).forEach(([metricName, metricValue]) => {
+      this.metric[metricName] = metricValue
+    })
+  }
+
+  public toObject(): MetricReportObj {
     return {
       metric: this.metric,
       env: this.env,

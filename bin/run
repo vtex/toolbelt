@@ -1,0 +1,8 @@
+#!/usr/bin/env node
+
+exports.initTimeStartTime = process.hrtime()
+require('v8-compile-cache')
+
+require('@oclif/command').run()
+.then(require('@oclif/command/flush'))
+.catch(require('@oclif/errors/handle'))

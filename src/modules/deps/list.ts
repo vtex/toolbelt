@@ -4,11 +4,11 @@ import { removeNpm } from './utils'
 
 const { getDependencies } = apps
 
-export default async ({ n, npm, k, keys }) => {
+export default async (flags: { keys: boolean; npm: boolean }) => {
   log.debug('Starting to list dependencies')
   const deps = await getDependencies()
-  const keysOnly = k || keys
-  if (!(n || npm)) {
+  const keysOnly = flags.keys
+  if (!flags.npm) {
     removeNpm(deps, !keysOnly)
   }
   const result = keysOnly ? Object.keys(deps) : deps

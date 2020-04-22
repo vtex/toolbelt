@@ -12,9 +12,9 @@ import log from '../logger'
 import { getAppRoot } from '../manifest'
 import { logAll, onEvent } from '../sse'
 import { createTable } from '../table'
-import envTimeout from '../timeout'
 import userAgent from '../user-agent'
 import { promptConfirm } from './prompts'
+import { envTimeout } from '../env'
 
 interface BuildListeningOptions {
   context?: Context

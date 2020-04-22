@@ -6,7 +6,7 @@ import { compose, concat, contains, curry, drop, head, last, prop, propSatisfies
 import semverDiff from 'semver-diff'
 import { apps, createClients, workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
-import { CommandError, UserCancelledError } from '../../errors'
+import { CommandError } from '../../errors'
 import { ManifestEditor } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
@@ -47,7 +47,7 @@ export const promptWorkspaceMaster = async account => {
     false
   )
   if (!confirm) {
-    throw new UserCancelledError()
+    return
   }
   log.warn(`Using ${chalk.green('master')} workspace. I hope you know what you're doing. 💥`)
 }

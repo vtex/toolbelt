@@ -9,7 +9,7 @@ import { TelemetryCollector } from './lib/telemetry/TelemetryCollector'
 import { removeVersion } from './locator'
 import log from './logger'
 import userAgent from './user-agent'
-import { isVerbose } from './utils'
+import { isVerbose } from './verbose'
 
 const levelAdapter = { warning: 'warn' }
 
