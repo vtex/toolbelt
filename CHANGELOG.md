@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrate to framework `oclif`.
 - Improve error logging in install command.
 
+### Fixed
+- Increase ErrorReport serialization depth.
+
 ## [2.97.0] - 2020-04-09
 ### Changed
 - [local-data] Use new paths on `~/.vtex` for persisting data. (older session path at ~/.config/configstore/vtex.json will still be updated).
