@@ -18,7 +18,6 @@ export default class Link extends CustomCommand {
     }),
     'no-watch': oclifFlags.boolean({ description: "Don't watch for file changes after initial link", default: false }),
     unsafe: oclifFlags.boolean({ char: 'u', description: 'Allow links with Typescript errors', default: false }),
-    verbose: oclifFlags.boolean({ char: 'v', description: 'Show more logs', default: false }),
   }
 
   static args = []
