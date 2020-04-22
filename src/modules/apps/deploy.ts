@@ -39,7 +39,7 @@ const deployRelease = async (app: string): Promise<boolean> => {
   }
   const context = { account: vendor, workspace: 'master', authToken: getToken() }
   const { registry } = createClients(context)
-  registry.validateApp(`${vendor}.${name}`, version)
+  await registry.validateApp(`${vendor}.${name}`, version)
   return true
 }
 
