@@ -1,5 +1,7 @@
 {
-  "extends": "vtex",
+  "extends": [
+    "vtex"
+  ],
   "root": true,
   "env": {
     "node": true,
@@ -14,7 +16,8 @@
     "default-case": "off",
     "global-require": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "_+" }],
-    "@typescript-eslint/interface-name-prefix": "off"
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/ban-ts-ignore": "warn"
   },
   "overrides": [
     {
@@ -30,9 +33,9 @@
       }
     },
     {
-      "files": ["./src/cli.ts"],
+      "files": ["./src/oclif/CustomCommand.ts"],
       "rules": {
-        "import/first": "off"
+        "@typescript-eslint/no-var-requires": "warn"
       }
     }
   ]

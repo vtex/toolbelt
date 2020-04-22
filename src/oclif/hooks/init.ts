@@ -1,50 +1,50 @@
-#!/usr/bin/env node
-const initTimeStartTime = process.hrtime()
-
-import 'v8-compile-cache'
-
 import axios from 'axios'
-import chalk from 'chalk'
-import { all as clearCachedModules } from 'clear-module'
-import { CommandNotFoundError, find, MissingRequiredArgsError, run as unboundRun } from 'findhelp'
 import os from 'os'
-import path from 'path'
-import { without } from 'ramda'
-import * as pkg from '../package.json'
-import { CLIPreTasks } from './CLIPreTasks/CLIPreTasks'
-import * as conf from './conf'
-import { envCookies } from './env'
-import { CommandError, SSEConnectionError, UserCancelledError } from './errors'
-import { Token } from './lib/auth/Token'
-import { TelemetryCollector } from './lib/telemetry/TelemetryCollector'
-import log from './logger'
-import tree from './modules/tree'
-import { checkAndOpenNPSLink } from './nps'
-import notify from './update'
-import { isVerbose, VERBOSE } from './utils'
-import { Metric } from './lib/metrics/MetricReport'
-import { hrTimeToMs } from './lib/utils/hrTimeToMs'
+import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
 
-const run = command => Promise.resolve(unboundRun.call(tree, command, path.join(__dirname, 'modules')))
+import { Token } from '../../lib/auth/Token'
+import { envCookies } from '../../env'
+import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
+import { updateNotify } from '../../update'
+import log from '../../logger'
+import * as pkg from '../../../package.json'
+import * as conf from '../../conf'
+import { checkAndOpenNPSLink } from '../../nps'
+import { Metric } from '../../lib/metrics/MetricReport'
+import authLogin from '../../modules/auth/login'
+import { CommandError, SSEConnectionError } from '../../errors'
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { initTimeStartTime } = require('../../../bin/run')
+
+let loginPending = false
 
 const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
-const loginCmd = tree.login
-let loginPending = false
-
-const checkLogin = args => {
-  const first = args[0]
+const checkLogin = async command => {
   const whitelist = [undefined, 'config', 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version', 'release']
   const token = new Token(conf.getToken())
-  if (!token.isValid() && whitelist.indexOf(first) === -1) {
-    log.debug('Requesting login before command:', args.join(' '))
-    return run({ command: loginCmd })
+  if (!token.isValid() && whitelist.indexOf(command) === -1) {
+    log.debug('Requesting login before command:', command)
+    await authLogin({})
   }
 }
 
-const main = async (calculateInitTime = false) => {
+const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: boolean) => {
+  const cliPreTasksStart = process.hrtime()
+  CLIPreTasks.getCLIPreTasks(pkg).runTasks()
+  TelemetryCollector.getCollector().registerMetric({
+    command: 'not-applicable',
+    cliPreTasksLatency: hrTimeToMs(process.hrtime(cliPreTasksStart)),
+  })
+
+  // Show update notification if newer version is available
+  updateNotify()
+
   const args = process.argv.slice(2)
   conf.saveEnvironment(conf.Environment.Production) // Just to be backwards compatible with who used staging previously
 
@@ -52,39 +52,21 @@ const main = async (calculateInitTime = false) => {
   log.debug('node %s - %s %s', process.version, os.platform(), os.release())
   log.debug(args)
 
-  await checkLogin(args)
-
-  const command = await find(tree, without([VERBOSE], args))
-
-  if (isVerbose) {
-    const findWhoami = await find(tree, ['whoami'])
-    if (command.command !== findWhoami.command) {
-      await run(findWhoami)
-    }
-  }
+  await checkLogin(options.id)
 
   await checkAndOpenNPSLink()
 
   if (calculateInitTime) {
     const initTime = process.hrtime(initTimeStartTime)
     const initTimeMetric: Metric = {
-      command: command.command.alias || command.command.path,
+      command: options.id,
       initTime: hrTimeToMs(initTime),
     }
     TelemetryCollector.getCollector().registerMetric(initTimeMetric)
   }
-
-  const commandStartTime = process.hrtime()
-  await run(command)
-  const commandLatency = process.hrtime(commandStartTime)
-  const commandLatencyMetric: Metric = {
-    command: command.command.alias || command.command.path,
-    latency: hrTimeToMs(commandLatency),
-  }
-  TelemetryCollector.getCollector().registerMetric(commandLatencyMetric)
 }
 
-const onError = async (e: any) => {
+export const onError = async (e: any) => {
   const status = e?.response?.status
   const statusText = e?.response?.statusText
   const headers = e?.response?.headers
@@ -100,8 +82,7 @@ const onError = async (e: any) => {
       log.error('There was an authentication error. Please login again')
       // Try to login and re-issue the command.
       loginPending = true
-      return run({ command: loginCmd }).then(() => {
-        clearCachedModules()
+      authLogin({}).then(() => {
         main()
       }) // TODO: catch with different handler for second error
     }
@@ -150,12 +131,6 @@ const onError = async (e: any) => {
     }
   } else {
     switch (e.name) {
-      case MissingRequiredArgsError.name:
-        log.error('Missing required arguments:', chalk.blue(e.message))
-        break
-      case CommandNotFoundError.name:
-        log.error('Command not found:', chalk.blue(...process.argv.slice(2)))
-        break
       case CommandError.name:
         if (e.message && e.message !== '') {
           log.error(e.message)
@@ -164,13 +139,10 @@ const onError = async (e: any) => {
       case SSEConnectionError.name:
         log.error(e.message ?? 'Connection to login server has failed')
         break
-      case UserCancelledError.name:
-        log.debug('User Cancelled')
-        break
       default:
         log.error('Unhandled exception')
         log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
-        log.error('Raw error:', e)
+        log.error('Raw error: ', e)
     }
   }
 
@@ -181,35 +153,19 @@ const onError = async (e: any) => {
   process.exit(1)
 }
 
-axios.interceptors.request.use(config => {
-  if (envCookies()) {
-    config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
-  }
-  return config
-})
-
-process.on('unhandledRejection', onError)
-
-process.on('exit', () => {
-  TelemetryCollector.getCollector().flush()
-})
-
-const start = async () => {
-  const cliPreTasksStart = process.hrtime()
-  CLIPreTasks.getCLIPreTasks(pkg).runTasks()
-  TelemetryCollector.getCollector().registerMetric({
-    command: 'not-applicable',
-    cliPreTasksLatency: hrTimeToMs(process.hrtime(cliPreTasksStart)),
+export default async function(options: HookKeyOrOptions<'init'>) {
+  axios.interceptors.request.use(config => {
+    if (envCookies()) {
+      config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
+    }
+    return config
   })
 
-  // Show update notification if newer version is available
-  notify()
+  process.on('unhandledRejection', onError)
 
-  try {
-    await main(true)
-  } catch (err) {
-    await onError(err)
-  }
+  process.on('exit', () => {
+    TelemetryCollector.getCollector().flush()
+  })
+
+  await main(options, true)
 }
-
-start()

@@ -5,7 +5,7 @@ import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
 import log from '../../logger'
-import { isVerbose } from '../../utils'
+import { isVerbose } from '../../verbose'
 import {
   accountAndWorkspace,
   deleteMetainfo,

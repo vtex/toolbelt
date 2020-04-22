@@ -19,11 +19,11 @@ import {
   updateChangelog,
 } from './utils'
 
-const releaseTypeAliases = {
+export const releaseTypeAliases = {
   pre: 'prerelease',
 }
-const supportedReleaseTypes = ['major', 'minor', 'patch', 'prerelease']
-const supportedTagNames = ['stable', 'beta', 'hkignore']
+export const supportedReleaseTypes = ['major', 'minor', 'patch', 'prerelease']
+export const supportedTagNames = ['stable', 'beta', 'hkignore']
 const releaseTypesToUpdateChangelog = ['major', 'minor', 'patch']
 const tagNamesToUpdateChangelog = ['stable']
 

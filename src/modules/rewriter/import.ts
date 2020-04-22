@@ -9,7 +9,7 @@ import { resolve } from 'path'
 import { rewriter } from '../../clients'
 import { RedirectInput } from '../../clients/rewriter'
 import log from '../../logger'
-import { isVerbose } from '../../utils'
+import { isVerbose } from '../../verbose'
 import { default as deleteRedirects } from './delete'
 import {
   accountAndWorkspace,

@@ -2,7 +2,6 @@ import { InstanceOptions, IOContext, Workspaces } from '@vtex/api'
 import { dummyLogger } from '../../clients/dummyLogger'
 import { TelemetryClient } from '../../clients/telemetryClient'
 import * as env from '../../env'
-import envTimeout from '../../timeout'
 
 interface DefaultIOContextRequirements {
   account: string
@@ -16,7 +15,7 @@ const clusterHeader = env.cluster() ? { 'x-vtex-upstream-target': env.cluster() 
 const DEFAULT_TIMEOUT = 15000
 
 const defaultOptions = {
-  timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
+  timeout: (env.envTimeout || DEFAULT_TIMEOUT) as number,
   headers: {
     ...clusterHeader,
   },

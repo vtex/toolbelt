@@ -3,7 +3,6 @@ import retry from 'async-retry'
 import chalk from 'chalk'
 import * as conf from '../../conf'
 import { region } from '../../env'
-import { UserCancelledError } from '../../errors'
 import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
 import { ManifestEditor } from '../../lib/manifest'
 import { toAppLocator } from '../../locator'
@@ -82,7 +81,7 @@ const publisher = (workspace = 'master') => {
       )}?`
       const canSwitchToVendor = await promptConfirm(switchToVendorMsg)
       if (!canSwitchToVendor) {
-        throw new UserCancelledError()
+        return
       }
       await switchAccount(manifest.vendor, {})
     }
