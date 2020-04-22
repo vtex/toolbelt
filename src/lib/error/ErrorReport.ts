@@ -71,6 +71,8 @@ export class ErrorReport extends Error {
     ? parseInt(process.env.MAX_ERROR_STRING_LENGTH, 10)
     : 1024
 
+  private static readonly MAX_SERIALIZATION_DEPTH = 5
+
   public static createGenericErrorKind(error: AxiosError | Error | any) {
     if (error.config) {
       return ErrorKinds.REQUEST_ERROR
@@ -167,7 +169,8 @@ export class ErrorReport extends Error {
         env: this.env,
         ...(this.originalError.code ? { code: this.originalError.code } : null),
       },
-      ErrorReport.MAX_ERROR_STRING_LENGTH
+      ErrorReport.MAX_ERROR_STRING_LENGTH,
+      ErrorReport.MAX_SERIALIZATION_DEPTH
     )
   }
 
