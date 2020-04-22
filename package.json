@@ -4,7 +4,6 @@
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "scripts": {
-    "prepack": "rm -rf build && yarn tsc -b && OCLIF_COMPILATION=true yarn oclif-dev manifest",
     "exe": "node scripts/make-executable.js",
     "watch": "bash ./scripts/symlink.sh && yarn nodemon && yarn oclif-dev manifest",
     "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
