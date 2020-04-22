@@ -37,6 +37,12 @@
       "rules": {
         "@typescript-eslint/no-var-requires": "warn"
       }
+    },
+    {
+      "files": ["./src/lib/telemetry/TelemetryReporter/report.ts"],
+      "rules": {
+        "import/first": "off"
+      }
     }
   ]
 }
