@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Migrate to framework `oclif`.
-- Improve error logging in install command.
+- [vtex install] Improve error logging.
 - [telemetry:reporter] Refactor reporting.
 
 ### Fixed
