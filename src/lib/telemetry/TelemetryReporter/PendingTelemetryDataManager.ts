@@ -90,6 +90,7 @@ export class PendingTelemetryDataManager {
         try {
           await writeJson(this.newPendingFilePath(), fileContent)
         } catch (err) {
+          // At this point there's nothing much we can do, we just console.error for when the child_process is being investigated
           console.error(err)
         }
       })

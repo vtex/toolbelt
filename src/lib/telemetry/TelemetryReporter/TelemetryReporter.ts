@@ -91,8 +91,7 @@ export class TelemetryReporter {
     try {
       await this.telemetryClient.reportErrors(errors)
     } catch (err) {
-      this.pendingDataManager.registerPendingFile({ errors })
-      this.registerMetaError(err)
+      this.handleReportingError({ errors }, err)
     }
   }
 
@@ -104,9 +103,13 @@ export class TelemetryReporter {
     try {
       await this.telemetryClient.reportMetrics(metrics)
     } catch (err) {
-      this.pendingDataManager.registerPendingFile({ metrics })
-      this.registerMetaError(err)
+      this.handleReportingError({ metrics }, err)
     }
+  }
+
+  private handleReportingError(pendingObject: TelemetryFile, reportingError: Error | any) {
+    this.pendingDataManager.registerPendingFile(pendingObject)
+    this.registerMetaError(reportingError)
   }
 
   private registerMetaError(error: Error | any) {
