@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
+- Migrate to framework `oclif`.
 - Improve error logging in install command.
 
 ## [2.97.0] - 2020-04-09
