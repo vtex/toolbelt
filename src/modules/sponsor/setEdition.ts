@@ -21,34 +21,34 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
 
 export default async (edition: string) => {
   const previousConf = conf.getAll()
-  const previousAccount = previousConf.account
-  const previousWorkspace = previousConf.workspace
+  const targetAccount = previousConf.account
+  const targetWorkspace = previousConf.workspace
 
-  const workspaceNotice = previousWorkspace === 'master' ? '' : ` in workspace ${chalk.blue(previousWorkspace)}`
-  log.info(`Changing edition of account ${chalk.blue(previousAccount)}${workspaceNotice}.`)
+  const workspaceNotice = targetWorkspace === 'master' ? '' : ` in workspace ${chalk.blue(targetWorkspace)}`
+  log.info(`Changing edition of account ${chalk.blue(targetAccount)}${workspaceNotice}.`)
 
   const sponsorClient = new Sponsor(getIOContext(), IOClientOptions)
   const sponsorAccount = await sponsorClient.getSponsorAccount()
 
   if (!sponsorAccount) {
-    if (previousWorkspace !== 'master') {
+    if (targetWorkspace !== 'master') {
       throw new CommandError('Can only set initial edition in master workspace')
     }
     await promptSwitchToAccount('vtex', true)
   } else {
-    if (previousWorkspace === 'master') {
-      await promptWorkspaceMaster(previousAccount)
+    if (targetWorkspace === 'master') {
+      await promptWorkspaceMaster(targetWorkspace)
     }
     await promptSwitchToAccount(sponsorAccount, false)
   }
 
   try {
     const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
-    await sponsorClientForSponsorAccount.setEdition(previousAccount, previousWorkspace, edition)
+    await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
 
-    log.info(`Successfully changed edition${workspaceNotice} of account ${chalk.blue(previousAccount)}.`)
+    log.info(`Successfully changed edition${workspaceNotice} of account ${chalk.blue(targetAccount)}.`)
   } catch (ex) {
-    log.error(`Failed to change edition of account ${chalk.blue(previousAccount)}.`)
+    log.error(`Failed to change edition of account ${chalk.blue(targetAccount)}.`)
     throw ex
   } finally {
     await switchToPreviousAccount(previousConf)
