@@ -25,7 +25,11 @@ const shouldPromptProduction = (production: boolean): boolean => {
 const recommendedEdition = "vtex.edition-store@2.x"
 
 const getCurrEdition = () => {
-  const sponsor = new Sponsor(getIOContext(), IOClientOptions)
+  const ctx = {
+    ...getIOContext(),
+    workspace: 'master',
+  }
+  const sponsor = new Sponsor(ctx, IOClientOptions)
   return sponsor.getEdition()
 }
 
