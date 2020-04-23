@@ -19,7 +19,7 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
   await switchAccount(account, {})
 }
 
-export default async function setEdition(edition: string, workspace?: string, autoSwitchBack: boolean = false) {
+export default async function setEdition(edition: string, workspace?: string, autoSwitchBack = false) {
   const previousConf = conf.getAll()
   const targetAccount = previousConf.account
   const targetWorkspace = workspace ?? previousConf.workspace
