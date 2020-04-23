@@ -43,7 +43,7 @@ const promptSwitchEdition = (currEditionId: string) => {
 export default async (name: string, options?) => {
   const reset = options ? options.r || options.reset : null
   let production = options ? options.p || options.production : null
-  let confirm
+  let created = false
   const accountName = getAccount()
 
   if (name === '-') {
@@ -57,30 +57,33 @@ export default async (name: string, options?) => {
     await workspaces.get(accountName, name)
   } catch (err) {
     if (err.response && err.response.status === 404) {
-      confirm = await promptWorkspaceCreation(name)
-      if (!confirm) {
+      const shouldCreate = await promptWorkspaceCreation(name)
+      if (!shouldCreate) {
         return
       }
       if (shouldPromptProduction(production)) {
         production = await promptWorkspaceProductionFlag()
       }
       await createCmd(name, { production })
+      created = true
     } else {
       throw err
     }
   }
   await saveWorkspace(name)
 
-  if (reset && !confirm) {
+  if (reset && !created) {
     await resetWks(name, { production })
   }
   log.info(`You're now using the workspace ${chalk.green(name)} on account ${chalk.blue(accountName)}!`)
 
-  const edition = await getCurrEdition()
-  if (edition && edition.vendor === 'vtex' && edition.name === 'edition-business') {
-    const shouldSwitch = await promptSwitchEdition(edition.id)
-    if (shouldSwitch) {
-      await setEditionCmd(recommendedEdition)
+  if (reset || created) {
+    const edition = await getCurrEdition()
+    if (edition && edition.vendor === 'vtex' && edition.name === 'edition-business') {
+      const shouldSwitch = await promptSwitchEdition(edition.id)
+      if (shouldSwitch) {
+        await setEditionCmd(recommendedEdition)
+      }
     }
   }
 }
