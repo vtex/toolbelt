@@ -1,5 +1,4 @@
 import chalk from 'chalk'
-import R from 'ramda'
 import { Sponsor } from '../../clients/sponsor'
 import * as conf from '../../conf'
 import { CommandError } from '../../errors'
@@ -29,8 +28,7 @@ export default async (edition: string) => {
   log.info(`Changing edition of account ${chalk.blue(previousAccount)}${workspaceNotice}.`)
 
   const sponsorClient = new Sponsor(getIOContext(), IOClientOptions)
-  const data = await sponsorClient.getSponsorAccount()
-  const sponsorAccount = R.prop('sponsorAccount', data)
+  const sponsorAccount = await sponsorClient.getSponsorAccount()
 
   if (!sponsorAccount) {
     if (previousWorkspace !== 'master') {
