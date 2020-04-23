@@ -7,9 +7,6 @@ import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import createCmd from './create'
 import resetWks from './reset'
-import { Sponsor } from '../../clients/sponsor'
-import { getIOContext, IOClientOptions } from '../utils'
-import setEditionCmd from '../sponsor/setEdition'
 
 const promptWorkspaceCreation = (name: string) => {
   console.log(chalk.blue('!'), `Workspace ${chalk.green(name)} doesn't exist`)
@@ -20,24 +17,6 @@ const promptWorkspaceProductionFlag = () => promptConfirm('Should the workspace 
 
 const shouldPromptProduction = (production: boolean): boolean => {
   return production === undefined || production === null
-}
-
-const recommendedEdition = "vtex.edition-store@2.x"
-
-const getCurrEdition = () => {
-  const ctx = {
-    ...getIOContext(),
-    workspace: 'master',
-  }
-  const sponsor = new Sponsor(ctx, IOClientOptions)
-  return sponsor.getEdition()
-}
-
-const promptSwitchEdition = (currEditionId: string) => {
-  log.warn(`This account is using the edition ${chalk.blue(currEditionId)}.`)
-  log.warn(`If you are developing your store in IO, it is strongly recommended that you switch to the ${chalk.blue(recommendedEdition)}.`)
-  log.warn(`For more information, visit ${chalk.blue('https://some.doc/about/edition/store')}`)
-  return promptConfirm(`Would you like to change the edition to ${chalk.blue(recommendedEdition)} now?`, false)
 }
 
 export default async (name: string, options?) => {
@@ -76,14 +55,4 @@ export default async (name: string, options?) => {
     await resetWks(name, { production })
   }
   log.info(`You're now using the workspace ${chalk.green(name)} on account ${chalk.blue(accountName)}!`)
-
-  if (reset || created) {
-    const edition = await getCurrEdition()
-    if (edition && edition.vendor === 'vtex' && edition.name === 'edition-business') {
-      const shouldSwitch = await promptSwitchEdition(edition.id)
-      if (shouldSwitch) {
-        await setEditionCmd(recommendedEdition)
-      }
-    }
-  }
 }
