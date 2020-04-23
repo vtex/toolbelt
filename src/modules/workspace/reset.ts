@@ -30,7 +30,7 @@ export default async (name: string, options) => {
           `production=${production}`
         )}`
       )
-      await ensureValidEdition()
+      await ensureValidEdition(workspace)
     } catch (err) {
       log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
       if (err.response) {

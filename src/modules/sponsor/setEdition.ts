@@ -19,10 +19,10 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
   await switchAccount(account, {})
 }
 
-export default async (edition: string) => {
+export default async function setEdition(edition: string, workspace?: string, autoSwitchBack: boolean = false) {
   const previousConf = conf.getAll()
   const targetAccount = previousConf.account
-  const targetWorkspace = previousConf.workspace
+  const targetWorkspace = workspace ?? previousConf.workspace
 
   const workspaceNotice = targetWorkspace === 'master' ? '' : ` in workspace ${chalk.blue(targetWorkspace)}`
   log.info(`Changing edition of account ${chalk.blue(targetAccount)}${workspaceNotice}.`)
@@ -51,6 +51,10 @@ export default async (edition: string) => {
     log.error(`Failed to change edition of account ${chalk.blue(targetAccount)}.`)
     throw ex
   } finally {
-    await switchToPreviousAccount(previousConf)
+    if (autoSwitchBack) {
+      conf.saveAll(previousConf)
+    } else {
+      await switchToPreviousAccount(previousConf)
+    }
   }
 }

@@ -23,12 +23,12 @@ const promptSwitchEdition = (currEditionId: string) => {
   return promptConfirm(`Would you like to change the edition to ${chalk.blue(recommendedEdition)} now?`, false)
 }
 
-export async function ensureValidEdition() {
+export async function ensureValidEdition(workspace: string) {
   const edition = await getCurrEdition()
   if (edition && edition.vendor === 'vtex' && edition.name === 'edition-business') {
     const shouldSwitch = await promptSwitchEdition(edition.id)
     if (shouldSwitch) {
-      await setEditionCmd(recommendedEdition)
+      await setEditionCmd(recommendedEdition, workspace, true)
     }
   }
 }

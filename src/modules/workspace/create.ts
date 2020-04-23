@@ -33,7 +33,7 @@ export default async (name: string, options: any) => {
         `production=${production}`
       )}`
     )
-    await ensureValidEdition()
+    await ensureValidEdition(name)
     // First request on a brand new workspace takes very long because of route map generation, so we warm it up.
     await warmUpRouteMap(name)
   } catch (err) {
