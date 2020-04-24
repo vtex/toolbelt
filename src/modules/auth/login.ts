@@ -36,12 +36,12 @@ const promptAccount = async promptPreviousAcc => {
 }
 
 const notifyRelease = () => {
-  const RELEASE_NOTES_DATE = 'February 2020'
-  const RELEASE_NOTES_URL = 'https://bit.ly/2IQ2rSP'
+  const RELEASE_NOTES_DATE = 'March 2020'
+  const RELEASE_NOTES_URL = 'https://bit.ly/2VBxyr3'
 
   const msg = [
-    `${chalk.bold.green(`${RELEASE_NOTES_DATE} Release Notes`)} is now available!`,
-    `${emojic.memo} Be up-to-date with the VTEX IO latest news now:`,
+    `${chalk.bold.green(`${RELEASE_NOTES_DATE} Release Notes`)} are now available!`,
+    `${emojic.memo} Be up-to-date with the latest news on VTEX IO now:`,
     `${chalk.blueBright(RELEASE_NOTES_URL)}`,
   ].join('\n')
 
