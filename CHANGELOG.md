@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - [redirects] Encode delimiter before exporing `.csv` file to avoid conflicts.
+- [redirects:delete] Deletes routes according to their respective binding
 
 ## [2.98.0] - 2020-04-22
 ### Added
