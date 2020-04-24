@@ -50,9 +50,10 @@ export const promptWorkspaceMaster = async account => {
     return false
   }
   log.warn(`Using ${chalk.green('master')} workspace. I hope you know what you're doing. 💥`)
+  return true
 }
 
-export const validateAppAction = async (operation: string, app?) => {
+export const validateAppAction = async (operation: string, app?): Promise<boolean> => {
   const account = getAccount()
   const workspace = getWorkspace()
 
@@ -79,6 +80,7 @@ export const validateAppAction = async (operation: string, app?) => {
       `No app was found, please fix your manifest.json${app ? ' or use <vendor>.<name>[@<version>]' : ''}`
     )
   }
+  return true
 }
 
 export const wildVersionByMajor = compose<string, string[], string, string>(concat(__, '.x'), head, split('.'))
