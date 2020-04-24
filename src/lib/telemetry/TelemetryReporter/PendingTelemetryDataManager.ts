@@ -29,7 +29,7 @@ export class PendingTelemetryDataManager {
   private dataPendingLock: FileLock
 
   constructor(private pendingDataDir: string) {
-    const dataPendingLockName = 'reporter.lock'
+    const dataPendingLockName = 'reporterLock'
     const dataPendingLockPath = join(pendingDataDir, dataPendingLockName)
     this.dataPendingLock = new FileLock(dataPendingLockPath)
 
