@@ -1,5 +1,7 @@
 import EventSource from 'eventsource'
-import { forEach } from 'ramda'
+import { cluster, envCookies } from '../../env'
+import userAgent from '../../user-agent'
+import { SessionManager } from '../session/SessionManager'
 
 // Colossus ping is set at 45s
 const COLOSSUS_PING = 45000
@@ -11,13 +13,69 @@ const CONNECTION_CLOSED = 2
 const DEFAULT_RECONNECT_INTERVAL = 1000
 const MAX_RETRIES = 3
 
-export default class CustomEventSource {
-  public esOnError: (err: any) => void
-  public esOnMessage: () => void
-  public esOnOpen: () => void
+interface EventSourceInfo {
+  url: string
+  readyState: number
+  eventsCount: number
+  errorCount: number
+  pingEventsCount: number
+  restartCount: number
+  config: any
+  connectionInProgress: boolean
+}
+
+export class EventSourceError extends Error {
+  public event: any
+  public eventSourceInfo: EventSourceInfo
+  public isEventSourceError = true
+  constructor(event: any, eventSourceInfo: EventSourceInfo) {
+    super(`SSE error on endpoint ${eventSourceInfo.url}`)
+    this.eventSourceInfo = eventSourceInfo
+    this.event = { ...event }
+  }
+
+  public getErrorDetailsObject() {
+    return {
+      event: this.event,
+      eventSourceInfo: this.eventSourceInfo,
+    }
+  }
+}
+
+interface EventListeners {
+  event: string
+  handler: any
+}
+
+type OnMessageHandler = (data: any) => void
+type OnErrorHandler = (err: EventSourceError) => void
+type OnOpenHandler = () => void
+
+export class CustomEventSource {
+  public static create(source: string, closeOnInvalidToken = false) {
+    let token
+    if (closeOnInvalidToken) {
+      token = SessionManager.getSessionManager().checkAndGetToken(closeOnInvalidToken)
+    } else {
+      token = SessionManager.getSessionManager().token
+    }
+
+    return new CustomEventSource(source, {
+      headers: {
+        authorization: `bearer ${token}`,
+        cookie: envCookies(),
+        'user-agent': userAgent,
+        ...(cluster() ? { 'x-vtex-upstream-target': cluster() } : null),
+      },
+    })
+  }
+
+  public esOnError: OnErrorHandler
+  public esOnMessage: OnMessageHandler
+  public esOnOpen: OnOpenHandler
 
   private configuration: any
-  private events: any
+  private events: EventListeners[]
   private eventSource: EventSource
   private isClosed: boolean
   private nRetries: number
@@ -27,7 +85,11 @@ export default class CustomEventSource {
   private timerAfterNextPing: any
   private timerBeforeNextPing: any
 
-  constructor(source, configuration) {
+  private restartCount = 0
+  private errorCount = 0
+  private pingEventsCount = 0
+
+  constructor(source: string, configuration: EventSource.EventSourceInitDict) {
     this.source = source
     this.configuration = configuration
 
@@ -43,10 +105,11 @@ export default class CustomEventSource {
 
     this.connectEventSource()
     this.addColossusPing()
-    this.reconnectInterval = (this.eventSource && this.eventSource.reconnectInterval) || DEFAULT_RECONNECT_INTERVAL
+    this.reconnectInterval =
+      (this.eventSource && (this.eventSource as any).reconnectInterval) || DEFAULT_RECONNECT_INTERVAL
   }
 
-  set onopen(newOnOpen) {
+  set onopen(newOnOpen: OnOpenHandler) {
     this.esOnOpen = newOnOpen
     this.esOnOpen = this.esOnOpen.bind(this)
     if (this.eventSource) {
@@ -54,7 +117,7 @@ export default class CustomEventSource {
     }
   }
 
-  set onmessage(newOnMessage) {
+  set onmessage(newOnMessage: OnMessageHandler) {
     this.esOnMessage = newOnMessage
     this.esOnMessage = this.esOnMessage.bind(this)
     if (this.eventSource) {
@@ -62,7 +125,7 @@ export default class CustomEventSource {
     }
   }
 
-  set onerror(newOnError) {
+  set onerror(newOnError: OnErrorHandler) {
     this.esOnError = newOnError
     this.esOnError = this.esOnError.bind(this)
     if (this.eventSource) {
@@ -84,9 +147,10 @@ export default class CustomEventSource {
     this.isClosed = true
   }
 
-  public handleError(err) {
+  public handleError(err: any) {
+    this.errorCount += 1
     if (typeof this.esOnError === 'function') {
-      this.esOnError(err)
+      this.esOnError(this.createError(err))
     }
 
     this.nRetries += 1
@@ -94,9 +158,22 @@ export default class CustomEventSource {
       this.close()
     }
 
-    if (!this.eventSource || (this.eventSource && this.eventSource.readyState === CONNECTION_CLOSED)) {
+    if (!this.eventSource || this.eventSource?.readyState === CONNECTION_CLOSED) {
       setTimeout(this.reconnect, this.reconnectInterval)
     }
+  }
+
+  private createError(err: any) {
+    return new EventSourceError(err, {
+      readyState: this.eventSource.readyState,
+      url: this.eventSource.url,
+      eventsCount: (this.eventSource as any)._eventsCount,
+      errorCount: this.errorCount,
+      pingEventsCount: this.pingEventsCount,
+      restartCount: this.restartCount,
+      config: this.configuration,
+      connectionInProgress: (this.eventSource as any).connectionInProgress,
+    })
   }
 
   private addColossusPing() {
@@ -111,13 +188,14 @@ export default class CustomEventSource {
       this.eventSource.onopen = this.esOnOpen
       this.eventSource.onerror = this.handleError
 
-      forEach(({ event, handler }) => {
+      this.events.forEach(({ event, handler }) => {
         this.eventSource.addEventListener(event, handler)
-      }, this.events)
+      })
     }
   }
 
   private checkPing() {
+    this.pingEventsCount += 1
     this.nRetries = 0
     this.pingStatus = true
     this.timerBeforeNextPing = setTimeout(() => {
@@ -144,6 +222,7 @@ export default class CustomEventSource {
 
   private reconnect() {
     if (!this.isClosed) {
+      this.restartCount += 1
       this.connectEventSource()
       this.addColossusPing()
       this.addMethods()
