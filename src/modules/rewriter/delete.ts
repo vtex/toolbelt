@@ -1,6 +1,6 @@
 import { createHash } from 'crypto'
 import { readFile, readJson } from 'fs-extra'
-import { length, map } from 'ramda'
+import { length } from 'ramda'
 import { createInterface } from 'readline'
 
 import { rewriter } from '../../clients'
@@ -9,17 +9,17 @@ import { isVerbose } from '../../verbose'
 import {
   accountAndWorkspace,
   deleteMetainfo,
+  handleReadError,
   MAX_RETRIES,
   METAINFO_FILE,
   progressBar,
   readCSV,
+  RETRY_INTERVAL_S,
   saveMetainfo,
+  showGraphQLErrors,
   sleep,
   splitJsonArray,
   validateInput,
-  handleReadError,
-  RETRY_INTERVAL_S,
-  showGraphQLErrors,
 } from './utils'
 
 const DELETES = 'deletes'
@@ -31,6 +31,9 @@ const inputSchema = {
     type: 'object',
     properties: {
       from: {
+        type: 'string',
+      },
+      binding: {
         type: 'string',
       },
     },
@@ -52,11 +55,11 @@ const handleDelete = async (csvPath: string) => {
   const routes = await readCSV(csvPath)
   validateInput(inputSchema, routes)
 
-  const allPaths = map(({ from }) => from, routes)
+  const allLocators = routes?.map(({ from, binding }) => ({ from, binding }))
 
-  const separatedPaths = splitJsonArray(allPaths)
+  const separatedLocators = splitJsonArray(allLocators)
 
-  const bar = progressBar('Deleting routes...', counter, length(separatedPaths))
+  const bar = progressBar('Deleting routes...', counter, length(separatedLocators))
 
   const listener = createInterface({ input: process.stdin, output: process.stdout }).on('SIGINT', () => {
     saveMetainfo(metainfo, DELETES, fileHash, counter)
@@ -64,10 +67,21 @@ const handleDelete = async (csvPath: string) => {
     process.exit()
   })
 
-  for (const paths of separatedPaths.splice(counter)) {
+  for (const batch of separatedLocators.splice(counter)) {
     try {
+      const { paths, locators } = batch.reduce(
+        (acc: any, curr: any) => {
+          if (curr.binding) {
+            acc.locators.push(curr)
+          } else {
+            acc.paths.push(curr.from)
+          }
+          return acc
+        },
+        { paths: [], locators: [] }
+      )
       // eslint-disable-next-line no-await-in-loop
-      await rewriter.deleteRedirects(paths)
+      await rewriter.deleteRedirects(paths, locators)
     } catch (e) {
       // eslint-disable-next-line no-await-in-loop
       await saveMetainfo(metainfo, 'deletes', fileHash, counter)

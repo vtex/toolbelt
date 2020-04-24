@@ -17,6 +17,8 @@ export interface Redirect {
   binding: string
 }
 
+type RouteLocator = Pick<Redirect, 'binding' | 'from'>
+
 export enum RedirectTypes {
   PERMANENT = 'PERMANENT',
   TEMPORARY = 'TEMPORARY',
@@ -84,18 +86,21 @@ export class Rewriter extends AppGraphQLClient {
       )
       .then(res => res.data?.redirect?.saveMany) as Promise<boolean>
 
-  public deleteRedirects = (paths: string[]): Promise<boolean> =>
+  public deleteRedirects = (paths: string[], locators?: RouteLocator): Promise<boolean> =>
     this.graphql
-      .mutate<{ redirect: { deleteMany: boolean } }, { paths: string[] }>(
+      .mutate<{ redirect: { deleteMany: boolean } }, { paths: string[]; locators?: RouteLocator }>(
         {
           mutate: `
-      mutation DeleteMany($paths: [String!]!) {
+      mutation DeleteMany($paths: [String!]!, $locators: [RouteLocator!]) {
         redirect {
-          deleteMany(paths: $paths)
+          deleteMany(paths: $paths, locators: $locators)
         }
       }
       `,
-          variables: { paths },
+          variables: {
+            paths,
+            locators,
+          },
         },
         {
           metric: 'rewriter-delete-redirects',
