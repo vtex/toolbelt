@@ -40,7 +40,6 @@ const prepareNewPendingFiles = async () => {
 
 const start = async () => {
   const store = new TelemetryLocalStore(process.argv[2])
-
   PendingTelemetryDataManager.getSingleton().registerPendingMetaMetric(
     TelemetryMetaMetrics.START_TIME,
     process.hrtime(initTime)
@@ -53,5 +52,6 @@ const start = async () => {
 }
 
 if (require.main === module) {
+  process.on('exit', () => console.log("Finished reporting telemetry"))
   start()
 }
