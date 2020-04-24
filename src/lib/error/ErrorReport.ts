@@ -4,6 +4,7 @@ import { randomBytes } from 'crypto'
 import * as pkg from '../../../package.json'
 import logger from '../../logger'
 import { SessionManager } from '../session/SessionManager'
+import { EventSourceError } from '../sse/CustomEventSource'
 import { getPlatform } from '../utils/getPlatform'
 import { truncateStringsFromObject } from '../utils/truncateStringsFromObject'
 import { ErrorKinds } from './ErrorKinds'
@@ -114,11 +115,7 @@ export class ErrorReport extends Error {
     })
   }
 
-  private static getRequestErrorMetadata(err: AxiosError): RequestErrorDetails | null {
-    if (!err.config) {
-      return null
-    }
-
+  private static parseAxiosError(err: AxiosError): RequestErrorDetails {
     const { url, method, headers: requestHeaders, params, data: requestData, timeout: requestTimeout } = err.config
     const { status, statusText, headers: responseHeaders, data: responseData } = err.response || {}
 
@@ -142,6 +139,18 @@ export class ErrorReport extends Error {
     }
   }
 
+  private static getErrorDetails(err: any): any | null {
+    if (err.isAxiosError || err.config) {
+      return this.parseAxiosError(err)
+    }
+
+    if (err instanceof EventSourceError) {
+      return err.getErrorDetailsObject()
+    }
+
+    return null
+  }
+
   public readonly kind: string
   public readonly originalError: Error | any
   public readonly errorDetails?: any
@@ -158,7 +167,7 @@ export class ErrorReport extends Error {
     this.stack = originalError.stack
     this.env = env
 
-    this.errorDetails = ErrorReport.getRequestErrorMetadata(this.originalError as AxiosError)
+    this.errorDetails = ErrorReport.getErrorDetails(this.originalError as AxiosError)
     if (tryToParseError) {
       if (this.errorDetails?.response?.data?.message) {
         this.message = this.errorDetails.response.data.message
