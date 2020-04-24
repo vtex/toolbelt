@@ -1,6 +1,6 @@
 import chalk from 'chalk'
-import { spawn } from 'child_process'
 import { join } from 'path'
+import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
 import { DeprecationCheckerStore, IDeprecationCheckerStore, VersionDeprecationInfo } from './DeprecationCheckerStore'
 
 export class DeprecationChecker {
@@ -47,14 +47,12 @@ export class DeprecationChecker {
   }
 
   public startCheckerProcess() {
-    spawn(
-      process.execPath,
-      [join(__dirname, 'checkForDeprecate.js'), this.store.storeFilePath, this.pkg.name, this.pkg.version],
-      {
-        detached: true,
-        stdio: 'ignore',
-      }
-    ).unref()
+    spawnUnblockingChildProcess(process.execPath, [
+      join(__dirname, 'checkForDeprecate.js'),
+      this.store.storeFilePath,
+      this.pkg.name,
+      this.pkg.version,
+    ])
   }
 
   public isDeprecated() {
