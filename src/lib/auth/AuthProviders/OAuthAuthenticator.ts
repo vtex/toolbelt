@@ -5,7 +5,7 @@ import opn from 'opn'
 import { join } from 'path'
 import randomstring from 'randomstring'
 import { clusterIdDomainInfix, publicEndpoint } from '../../../env'
-import { onAuth } from '../../../sse'
+import { onAuth } from '../../sse'
 import { AuthProviderBase } from './AuthProviderBase'
 
 export class OAuthAuthenticator extends AuthProviderBase {
