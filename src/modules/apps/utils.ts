@@ -47,7 +47,7 @@ export const promptWorkspaceMaster = async account => {
     false
   )
   if (!confirm) {
-    return
+    return false
   }
   log.warn(`Using ${chalk.green('master')} workspace. I hope you know what you're doing. 💥`)
 }
@@ -60,7 +60,10 @@ export const validateAppAction = async (operation: string, app?) => {
     if (!contains(operation, workspaceMasterAllowedOperations)) {
       throw new CommandError(workspaceMasterMessage)
     } else {
-      await promptWorkspaceMaster(account)
+      const confirm = await promptWorkspaceMaster(account)
+      if (!confirm) {
+        return false
+      }
     }
   }
 
