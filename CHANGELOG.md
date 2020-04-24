@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.98.1-beta] - 2020-04-24
+
 ## [2.98.0] - 2020-04-22
 ### Added
 - [telemetry:reporter] Create and send reporter meta metrics.
