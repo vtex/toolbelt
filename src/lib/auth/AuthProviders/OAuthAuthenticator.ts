@@ -1,11 +1,11 @@
 import axios from 'axios'
-import childProcess from 'child_process'
 import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import { join } from 'path'
 import randomstring from 'randomstring'
 import { clusterIdDomainInfix, publicEndpoint } from '../../../env'
 import { onAuth } from '../../../sse'
+import { spawnUnblockingChildProcess } from '../../utils/spawnUnblockingChildProcess'
 import { AuthProviderBase } from './AuthProviderBase'
 
 export class OAuthAuthenticator extends AuthProviderBase {
@@ -21,11 +21,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
 
   private closeChromeTabIfMac(returnUrl: string) {
     if (process.platform === 'darwin') {
-      const cp = childProcess.spawn('osascript', [join(__dirname, '../../../../scripts/closeChrome.scpt'), returnUrl], {
-        stdio: 'ignore',
-        detached: true,
-      })
-      cp.unref()
+      spawnUnblockingChildProcess('osascript', [join(__dirname, '../../../../scripts/closeChrome.scpt'), returnUrl])
     }
   }
 
