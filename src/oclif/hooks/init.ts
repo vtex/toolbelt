@@ -158,12 +158,12 @@ export const onError = async (e: any) => {
 
 export default async function(options: HookKeyOrOptions<'init'>) {
   // overwrite Help#showCommandHelp to customize help formating
-  help.prototype.showCommandHelp = function (command: Config.Command, topics: Config.Topic[]) {
+  help.prototype.showCommandHelp = function(command: Config.Command, topics: Config.Topic[]) {
     const name = command.id
     const depth = name.split(':').length
-    topics = topics.filter(t => t.name.startsWith(name + ':') && t.name.split(':').length === depth + 1)
+    topics = topics.filter(t => t.name.startsWith(`${name}:`) && t.name.split(':').length === depth + 1)
     const title = command.description && this.render(command.description).split('\n')[0]
-    if (title) console.log('\n' + title + '\n')
+    if (title) console.log(`\n${title}\n`)
     console.log(this.command(command))
     console.log('')
     if (topics.length > 0) {
