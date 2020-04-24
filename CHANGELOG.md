@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - [redirects] Encode delimiter before exporing `.csv` file to avoid conflicts.
+- [vtex install] Behaviour when action is cancelled by the user.
 
 ### Added
 - [hooks:init] Allow to customize help.
