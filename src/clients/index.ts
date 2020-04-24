@@ -1,7 +1,6 @@
 import { Apps, Events, InstanceOptions, IOContext, Logger, Registry, Router, Workspaces } from '@vtex/api'
 import { getAccount, getToken, getWorkspace } from '../conf'
 import * as env from '../env'
-import envTimeout from '../timeout'
 import userAgent from '../user-agent'
 import Billing from './billingClient'
 import { Builder } from './Builder'
@@ -9,6 +8,7 @@ import { dummyLogger } from './dummyLogger'
 import { Rewriter } from './rewriter'
 import { Tester } from './Tester'
 import { Lighthouse } from './Lighthouse'
+import { envTimeout } from '../env'
 
 const DEFAULT_TIMEOUT = 15000
 const context: IOContext = {

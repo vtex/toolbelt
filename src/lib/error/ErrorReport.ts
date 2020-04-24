@@ -15,6 +15,17 @@ export interface ErrorCreationArguments {
   tryToParseError?: boolean
 }
 
+export interface ErrorReportObj {
+  errorId: string
+  timestamp: string
+  kind: string
+  message: string
+  stack: string
+  env: ErrorEnv
+  errorDetails?: any
+  code?: string
+}
+
 interface ErrorReportArguments {
   kind: string
   message: string
@@ -70,6 +81,8 @@ export class ErrorReport extends Error {
   private static readonly MAX_ERROR_STRING_LENGTH = process.env.MAX_ERROR_STRING_LENGTH
     ? parseInt(process.env.MAX_ERROR_STRING_LENGTH, 10)
     : 1024
+
+  private static readonly MAX_SERIALIZATION_DEPTH = 5
 
   public static createGenericErrorKind(error: AxiosError | Error | any) {
     if (error.config) {
@@ -131,7 +144,7 @@ export class ErrorReport extends Error {
 
   public readonly kind: string
   public readonly originalError: Error | any
-  public readonly errorDetails: any
+  public readonly errorDetails?: any
   public readonly timestamp: string
   public readonly errorId: string
   public readonly env: ErrorEnv
@@ -155,20 +168,23 @@ export class ErrorReport extends Error {
     }
   }
 
-  public toObject() {
+  public toObject(): ErrorReportObj {
+    const errorReportObj: ErrorReportObj = {
+      errorId: this.errorId,
+      timestamp: this.timestamp,
+      kind: this.kind,
+      message: this.message,
+      stack: this.stack,
+      env: this.env,
+      ...(this.errorDetails ? { errorDetails: this.errorDetails } : null),
+      ...(this.originalError.code ? { code: this.originalError.code } : null),
+    }
+
     return truncateStringsFromObject(
-      {
-        errorId: this.errorId,
-        timestamp: this.timestamp,
-        kind: this.kind,
-        message: this.message,
-        errorDetails: this.errorDetails,
-        stack: this.stack,
-        env: this.env,
-        ...(this.originalError.code ? { code: this.originalError.code } : null),
-      },
-      ErrorReport.MAX_ERROR_STRING_LENGTH
-    )
+      errorReportObj,
+      ErrorReport.MAX_ERROR_STRING_LENGTH,
+      ErrorReport.MAX_SERIALIZATION_DEPTH
+    ) as ErrorReportObj
   }
 
   public stringify(pretty = false) {

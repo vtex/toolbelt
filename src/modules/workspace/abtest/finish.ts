@@ -3,7 +3,6 @@ import enquirer from 'enquirer'
 import { map, prop } from 'ramda'
 
 import { getAccount } from '../../../conf'
-import { UserCancelledError } from '../../../errors'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import { default as abTestStatus } from './status'
@@ -11,15 +10,12 @@ import { abtester, installedABTester } from './utils'
 
 const [account] = [getAccount()]
 
-const promptContinue = async (workspace: string) => {
-  const proceed = await promptConfirm(
+const promptContinue = (workspace: string) => {
+  return promptConfirm(
     `You are about to finish A/B testing in workspace \
 ${chalk.blue(workspace)}, account ${chalk.green(account)}. Are you sure?`,
     false
   )
-  if (!proceed) {
-    throw new UserCancelledError()
-  }
 }
 
 const promptWorkspaceToFinishABTest = () =>
@@ -39,7 +35,10 @@ const promptWorkspaceToFinishABTest = () =>
 export default async () => {
   await installedABTester()
   const workspace = await promptWorkspaceToFinishABTest()
-  await promptContinue(workspace)
+  const promptAnswer = await promptContinue(workspace)
+  if (!promptAnswer) {
+    return
+  }
   log.info('Finishing A/B tests')
   log.info(`Latest results:`)
   await abTestStatus()

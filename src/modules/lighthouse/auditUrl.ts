@@ -13,7 +13,7 @@ async function isProdutionWorkspace(): Promise<boolean> {
   return meta.production
 }
 
-export default async (url: string, option) => {
+export default async (url: string, option: any) => {
   if (await isProdutionWorkspace()) {
     log.error(`You can not run lighthoust audits on production workspaces.`)
     return

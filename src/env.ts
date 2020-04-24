@@ -1,5 +1,7 @@
 import { Region, getCluster } from './conf'
 
+export const envTimeout = process.env.VTEX_API_TIMEOUT as number | string
+
 export function colossusEndpoint() {
   return process.env.VTEX_COLOSSUS_ENDPOINT || `https://infra.io.vtex.com/colossus/v0`
 }

@@ -1,13 +1,12 @@
 import chalk from 'chalk'
 import { createClients } from '../../clients'
 import { getAccount, getToken, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import switchAccount from '../auth/switch'
 import { promptConfirm } from '../prompts'
 import { parseLocator } from '../../locator'
-import { parseArgs, switchAccountMessage } from './utils'
+import { switchAccountMessage } from './utils'
 
 let originalAccount
 let originalWorkspace
@@ -41,7 +40,7 @@ const undeprecateApp = async (app: string): Promise<void> => {
   if (vendor !== account) {
     const canSwitchToVendor = await promptUndeprecateOnVendor(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
-      throw new UserCancelledError()
+      return
     }
     await switchAccount(vendor, {})
   }
@@ -76,14 +75,14 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
   }
 }
 
-export default async (optionalApp: string, options) => {
+export default async (optionalApps: string[], options) => {
   const preConfirm = options.y || options.yes
   originalAccount = getAccount()
   originalWorkspace = getWorkspace()
-  const appsList = [optionalApp || (await ManifestEditor.getManifestEditor()).appLocator, ...parseArgs(options._)]
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
 
   if (!preConfirm && !(await promptUndeprecate(appsList))) {
-    throw new UserCancelledError()
+    return
   }
   log.debug(`Undeprecating app ${appsList.length > 1 ? 's' : ''} : ${appsList.join(', ')}`)
   return prepareUndeprecate(appsList)

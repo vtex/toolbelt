@@ -1,11 +1,10 @@
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
 import { apps, billing } from '../../clients'
-import { UserCancelledError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
-import { optionsFormatter, parseArgs, validateAppAction } from './utils'
+import { optionsFormatter, validateAppAction } from './utils'
 
 const { installApp } = billing
 const { installApp: legacyInstallApp } = apps
@@ -32,7 +31,7 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
   )
   const confirm = await promptPolicies()
   if (!confirm) {
-    throw new UserCancelledError()
+    return
   }
 
   log.info('Starting to install app with accepted Terms')
@@ -74,9 +73,6 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
       }
       log.info(`Installed app ${chalk.green(app)} successfully`)
     } catch (e) {
-      if (e.name === UserCancelledError.name) {
-        throw new UserCancelledError()
-      }
       if (isNotFoundError(e)) {
         log.warn(
           `Billing app not found in current workspace. Please install it with ${chalk.green(
@@ -108,11 +104,10 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
   }
 }
 
-export default async (optionalApp: string, options) => {
+export default async (optionalApps: string[], options) => {
   const force = options.f || options.force
-  await validateAppAction('install', optionalApp)
-  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-  const appsList = [app, ...parseArgs(options._)]
+  await validateAppAction('install', optionalApps)
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   log.debug(`Installing app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return prepareInstall(appsList, force)
 }

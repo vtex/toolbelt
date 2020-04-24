@@ -3,7 +3,7 @@ import updateNotifier from 'update-notifier'
 
 import * as pkg from '../package.json'
 
-export default function notify() {
+export function updateNotify() {
   const notifier = updateNotifier({ pkg, updateCheckInterval: 1000 * 60 * 60 * 1 })
   if (notifier.update && notifier.update.latest !== pkg.version) {
     const oldVersion = notifier.update.current

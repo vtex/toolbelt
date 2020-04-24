@@ -1,19 +1,18 @@
 {
   "name": "vtex",
-  "version": "2.97.0",
+  "version": "2.98.0",
   "description": "The platform for e-commerce apps",
-  "main": "lib/index.js",
-  "bin": "lib/cli.js",
+  "bin": "bin/run",
   "scripts": {
     "exe": "node scripts/make-executable.js",
-    "watch": "bash ./scripts/symlink.sh && yarn build-clean && yarn nodemon",
+    "watch": "bash ./scripts/symlink.sh && yarn nodemon && yarn oclif-dev manifest",
     "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
-    "lint:node": "eslint ./src --cache --ext ts --config .eslintrc",
-    "lint:react": "eslint ./src --cache --cache-location .eslintcache-react --ext tsx --config .eslintrc-react",
+    "lint:node": "yarn eslint ./src --cache --ext ts --config .eslintrc",
+    "lint:react": "yarn eslint ./src --cache --cache-location .eslintcache-react --ext tsx --config .eslintrc-react",
     "format-lint": "yarn format && yarn lint:node && yarn lint:react",
-    "build-clean": "rm -rf lib",
-    "build-incremental": "tsc --incremental && yarn exe",
-    "build": "yarn build-clean && tsc && yarn exe",
+    "build-clean": "rm -rf build",
+    "build-incremental": "yarn tsc --incremental && OCLIF_COMPILATION=true yarn oclif-dev manifest",
+    "build": "yarn build-clean && yarn tsc && OCLIF_COMPILATION=true yarn oclif-dev manifest",
     "test": "jest",
     "prepublishOnly": "bash ./scripts/publishLock.sh",
     "ci:test": "yarn test --ci",
@@ -24,8 +23,10 @@
     "node": ">=10"
   },
   "files": [
-    "scripts/closeChrome.scpt",
-    "lib/"
+    "/scripts/closeChrome.scpt",
+    "/build",
+    "/bin",
+    "/oclif.manifest.json"
   ],
   "repository": {
     "type": "git",
@@ -40,13 +41,18 @@
     "platform",
     "react",
     "toolbelt",
-    "apps"
+    "apps",
+    "oclif"
   ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
+    "@oclif/command": "^1.0.0",
+    "@oclif/config": "^1.0.0",
+    "@oclif/plugin-help": "^2.0.0",
+    "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.5",
     "@vtex/api": "3.71.1",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "~6.10.2",
@@ -58,7 +64,6 @@
     "chalk": "~2.3.2",
     "child-process-es6-promise": "~1.2.1",
     "chokidar": "~3.3.0",
-    "clear-module": "~4.0.0",
     "cli-table": "~0.3.1",
     "cli-table2": "~0.2.0",
     "clipboardy": "~2.1.0",
@@ -70,7 +75,6 @@
     "enquirer": "~2.3.2",
     "eventsource": "~1.0.7",
     "extendable-error": "~0.1.5",
-    "findhelp": "~1.1.0",
     "fs-extra": "~7.0.0",
     "get-stream": "~4.0.0",
     "globby": "~8.0.1",
@@ -82,7 +86,6 @@
     "json2csv": "~4.5.4",
     "jsonwebtoken": "~8.5.1",
     "latest-version": "^4.0.0",
-    "lockfile": "^1.0.4",
     "moment": "~2.24.0",
     "node-notifier": "^6.0.0",
     "numbro": "2.1.0",
@@ -94,6 +97,7 @@
     "progress": "~2.0.3",
     "prompt-confirm": "^2.0.4",
     "prompts": "~2.3.0",
+    "proper-lockfile": "^4.1.1",
     "qrcode-terminal": "~0.12.0",
     "ramda": "~0.25.0",
     "ramda-adjunct": "~2.23.0",
@@ -103,6 +107,7 @@
     "semver": "~7.1.1",
     "semver-diff": "~2.1.0",
     "tar": "~4.4.10",
+    "tslib": "^1.0.0",
     "unzip-stream": "~0.3.0",
     "update-notifier": "~3.0.1",
     "v8-compile-cache": "^2.1.0",
@@ -112,6 +117,7 @@
     "yarn": "~1.21.0"
   },
   "devDependencies": {
+    "@oclif/dev-cli": "^1",
     "@types/async-retry": "1.4.1",
     "@types/configstore": "^4.0.0",
     "@types/debounce": "^1.2.0",
@@ -121,6 +127,7 @@
     "@types/node": "10.12.12",
     "@types/node-notifier": "^5.4.0",
     "@types/prompts": "^2.0.3",
+    "@types/proper-lockfile": "^4.1.1",
     "@types/ramda": "types/npm-ramda#dist",
     "@types/randomstring": "^1.1.6",
     "@types/react": "^16.9.23",
@@ -135,6 +142,50 @@
     "nodemon-notifier-cli": "https://github.com/Slessi/nodemon-notifier-cli.git",
     "prettier": "^1.19.1",
     "ts-jest": "24.2.0",
+    "ts-node": "^8.0.0",
     "typescript": "^3.8.2"
+  },
+  "oclif": {
+    "commands": "./build/commands",
+    "bin": "vtex",
+    "plugins": [
+      "@oclif/plugin-help",
+      "@tiagonapoli/oclif-plugin-spaced-commands"
+    ],
+    "hooks": {
+      "init": "./build/oclif/hooks/init"
+    },
+    "topics": {
+      "config": {
+        "description": "Config commands. Run 'vtex config' to see all subcommands"
+      },
+      "debug": {
+        "description": "Debug commands. Run 'vtex debug' to see all subcommands"
+      },
+      "deps": {
+        "description": "Dependencies commands. Run 'vtex deps' to see all subcommands"
+      },
+      "edition": {
+        "description": "Edition commands. Run 'vtex edition' to see all subcommands"
+      },
+      "infra": {
+        "description": "Infra commands. Run 'vtex infra' to see all subcommands"
+      },
+      "local": {
+        "description": "Local commands. Run 'vtex local' to see all subcommands"
+      },
+      "redirects": {
+        "description": "Redirects commands. Run 'vtex redirects' to see all subcommands"
+      },
+      "settings": {
+        "description": "Settings commands. Run 'vtex settings' to see all subcommands"
+      },
+      "test": {
+        "description": "Test commands. Run 'vtex test' to see all subcommands"
+      },
+      "workspace": {
+        "description": "Workspace commands. Run 'vtex workspace' to see all subcommands"
+      }
+    }
   }
 }
