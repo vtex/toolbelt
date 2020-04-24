@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Update release notes message.
+- Improve SSE errors logs.
 
 ## [2.98.1-beta] - 2020-04-24
 
