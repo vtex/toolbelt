@@ -21,7 +21,7 @@ export default async (url: string, option: any) => {
 
   const spinner = ora(`Running Lighthouse on url: ${chalk.blue(url)}`).start()
   try {
-    const report: any[] = await lighthouse.runAudit(url)
+    const report = await lighthouse.runAudit(url)
     spinner.stop()
 
     if (option.j || option.json) {

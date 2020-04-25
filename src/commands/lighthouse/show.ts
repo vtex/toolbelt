@@ -2,7 +2,6 @@ import { flags as oclifFlags } from '@oclif/command'
 
 import { CustomCommand } from '../../oclif/CustomCommand'
 import { showReports } from '../../modules/lighthouse/showReports'
-// import auditUrl from '../../modules/lighthouse/auditUrl'
 
 export default class ShowReports extends CustomCommand {
   static description = 'Show previous saved audit reports, filtering by app and/or url'
