@@ -5,8 +5,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- [redirects] Encode delimiter before exporing `.csv` file to avoid conflicts.
+- [vtex install, vtex uninstall] Behaviour when action is cancelled by the user.
+
 ### Added
+- [hooks:init] Allow to customize help.
+- [child-processes] `DEBUG_CP` environment variable for debugging child processes.
 - Command `vtex lighthouse` for vtex internal Google's Lighthouse tool
+
+### Changed
+- Update release notes message.
+- Improve SSE errors logs.
 
 ## [2.98.0] - 2020-04-22
 ### Added

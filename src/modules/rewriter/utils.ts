@@ -10,6 +10,7 @@ import { getAccount, getWorkspace } from '../../conf'
 import { Redirect } from '../../clients/rewriter'
 import log from '../../logger'
 
+export const DELIMITER = ';'
 export const LAST_CHANGE_DATE = 'lastChangeDate'
 export const MAX_ENTRIES_PER_REQUEST = 10
 export const METAINFO_FILE = '.vtex_redirects_metainfo.json'
@@ -51,7 +52,9 @@ const sortFunction = (redirect: Redirect) =>
 
 export const readCSV = async (path: string) => {
   try {
-    const result = (await csv({ delimiter: ';', ignoreEmpty: true, checkType: true }).fromFile(path)) as Redirect[]
+    const result = (await csv({ delimiter: DELIMITER, ignoreEmpty: true, checkType: true }).fromFile(
+      path
+    )) as Redirect[]
     return sortBy(sortFunction, result)
   } catch (e) {
     handleReadError(path)(e)
@@ -106,3 +109,10 @@ export const deleteMetainfo = (metainfo: any, metainfoType: string, fileHash: st
   delete metainfo[metainfoType][fileHash]
   writeJsonSync(METAINFO_FILE, metainfo, { spaces: 2 })
 }
+
+const createEncoder = (delimiter: string) => {
+  const encoded = encodeURIComponent(delimiter)
+  return (x: string) => x.replace(delimiter, encoded)
+}
+
+export const encode = createEncoder(DELIMITER)

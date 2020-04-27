@@ -106,7 +106,8 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
 
 export default async (optionalApps: string[], options) => {
   const force = options.f || options.force
-  await validateAppAction('install', optionalApps)
+  const confirm = await validateAppAction('install', optionalApps)
+  if (!confirm) return
   const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   log.debug(`Installing app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return prepareInstall(appsList, force)
