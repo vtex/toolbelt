@@ -1,7 +1,7 @@
 import { currentContext } from '../conf'
 import { BuildFailError } from '../errors'
 import log, { fileLoggerLevel } from '../logger'
-import { logAll, onEvent } from '../sse'
+import { logAll, onEvent } from '../lib/sse'
 
 interface ListeningOptions {
   context?: Context
