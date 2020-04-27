@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update release notes message.
 - Improve SSE errors logs.
+- [vtex setup] Add GraphQL files to `lint-staged` config.
 
 ## [2.98.0] - 2020-04-22
 ### Added
