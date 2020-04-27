@@ -3,7 +3,7 @@ import { pathExistsSync, removeSync } from 'fs-extra'
 import { join } from 'path'
 import semver from 'semver'
 import { configDir } from '../conf'
-import { PathConstants } from '../lib/constants/PathConstants'
+import { PathConstants } from '../lib/constants/Paths'
 import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 
 export class CLIPreTasks {

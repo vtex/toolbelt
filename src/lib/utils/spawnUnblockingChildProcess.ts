@@ -1,5 +1,5 @@
 import { spawn } from 'child_process'
-import { EnvVariablesConstants } from '../constants/EnvVariablesConstants'
+import { EnvVariablesConstants } from '../constants/EnvVariables'
 
 export function spawnUnblockingChildProcess(path: string, args: string[]) {
   const debugMode = !!process.env[EnvVariablesConstants.DEBUG_CP]
