@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update release notes message.
 - Improve SSE errors logs.
 - [vtex setup] Add GraphQL files to `lint-staged` config.
-- [vtex workspace] Auto-switch to edition-store when creating new workspace
+- [vtex workspace] Auto-switch to edition-store when creating new workspace.
 
 ## [2.98.0] - 2020-04-22
 ### Added
