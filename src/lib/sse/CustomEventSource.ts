@@ -77,8 +77,7 @@ export class CustomEventSource {
 
     this.connectEventSource()
     this.addColossusPing()
-    this.reconnectInterval =
-      (this.eventSource && (this.eventSource as any).reconnectInterval) || DEFAULT_RECONNECT_INTERVAL
+    this.reconnectInterval = (this.eventSource as any)?.reconnectInterval || DEFAULT_RECONNECT_INTERVAL
   }
 
   set onopen(newOnOpen: OnOpenHandler) {
