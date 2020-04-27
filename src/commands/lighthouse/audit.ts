@@ -15,7 +15,7 @@ export default class AuditUrl extends CustomCommand {
     json: oclifFlags.boolean({ char: 'j', description: 'Return the report as json on stdout', default: false }),
   }
 
-  static args = [{ name: 'url' }]
+  static args = [{ name: 'url', required: true }]
 
   async run() {
     const {

@@ -3,19 +3,21 @@ import chalk from 'chalk'
 
 import log from '../../logger'
 import { lighthouse, workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
+import { SessionManager } from '../../lib/session/SessionManager'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+
 import { TableGenerator } from './TableGenerator'
 
-const [account, currentWorkspace] = [getAccount(), getWorkspace()]
-
-async function isProdutionWorkspace(): Promise<boolean> {
-  const meta = await workspaces.get(account, currentWorkspace)
+async function isProdutionWorkspace(account: string, workspace: string): Promise<boolean> {
+  const meta = await workspaces.get(account, workspace)
   return meta.production
 }
 
 export default async (url: string, option: any) => {
-  if (await isProdutionWorkspace()) {
-    log.error(`You can not run lighthoust audits on production workspaces.`)
+  const { workspace, account } = SessionManager.getSessionManager()
+
+  if (await isProdutionWorkspace(account, workspace)) {
+    log.error(`You cannot run lighthouse audits on production workspaces.`)
     return
   }
 
@@ -24,7 +26,7 @@ export default async (url: string, option: any) => {
     const report = await lighthouse.runAudit(url)
     spinner.stop()
 
-    if (option.j || option.json) {
+    if (option.json) {
       console.log(JSON.stringify(report, null, 1))
     } else {
       const table = new TableGenerator()
@@ -33,6 +35,8 @@ export default async (url: string, option: any) => {
     }
   } catch (error) {
     spinner.stop()
+
+    TelemetryCollector.createAndRegisterErrorReport({ originalError: error })
     log.error(error)
   }
 }

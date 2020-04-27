@@ -1,13 +1,13 @@
 import { AppClient, IOContext, InstanceOptions } from '@vtex/api'
 import { stringify } from 'querystring'
 
-const LH_TIMEOUT_MS = 1e5
-
 export class Lighthouse extends AppClient {
+  private static readonly TIMEOUT_MS = 60 * 1000
+
   constructor(ioContext: IOContext, opts?: InstanceOptions) {
     super('vtex.lighthouse@0.x', ioContext, {
       ...opts,
-      timeout: LH_TIMEOUT_MS,
+      timeout: Lighthouse.TIMEOUT_MS,
     })
   }
 
@@ -26,15 +26,10 @@ export class Lighthouse extends AppClient {
    * @param app App name to filter query results
    * @param url Url to filter query results
    */
-  public getReports(app: string, url: string): Promise<ShortReportObject[]> {
-    const params: Record<string, string> = {}
-
-    if (app) {
-      params.app = app
-    }
-
-    if (url) {
-      params.url = url
+  public getReports(app: string, url: string): Promise<LighthouseReportDoc[]> {
+    const params = {
+      ...(app ? { app } : null),
+      ...(url ? { url } : null),
     }
 
     const path = `/_v/toolbelt/reports?${stringify(params)}`

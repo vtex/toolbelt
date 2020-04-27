@@ -7,12 +7,12 @@ export default class ShowReports extends CustomCommand {
   static description = 'Show previous saved audit reports, filtering by app and/or url'
 
   static examples = [
-    'vtex lighthouse show -app=vtex.awesome-app',
+    'vtex lighthouse show --app=vtex.awesome-app',
     'vtex lighthouse show -u https://awesome.store.com',
-    'vtex lighthouse show -a=vtex.awesome-app --url=https://awesome.store.com',
-    'vtex lh show -app=vtex.awesome-app',
+    'vtex lighthouse show -a vtex.awesome-app --url=https://awesome.store.com',
+    'vtex lh show --app=vtex.awesome-app',
     'vtex lh show -u https://awesome.store.com',
-    'vtex lh show -a=vtex.awesome-app --url=https://awesome.store.com',
+    'vtex lh show -a vtex.awesome-app --url=https://awesome.store.com',
   ]
 
   static aliases = ['lh:show']

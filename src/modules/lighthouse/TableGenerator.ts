@@ -15,10 +15,10 @@ export class TableGenerator {
    * @param report ShortReportObject array representing the scores of this report
    */
   public addReportScores(report: ShortReportObject[]) {
-    const row = {}
-    report.forEach(audit => {
-      row[audit.title] = audit.score
-    })
+    const row = report.reduce((acc, audit) => {
+      acc[audit.title] = audit.score
+      return acc
+    }, {})
     this.rows.push(row)
   }
 
@@ -31,7 +31,7 @@ export class TableGenerator {
    * @param value Column value for those rows without this information
    */
   public addColumn(title: string, value: string) {
-    if (this.addedCols.indexOf(title) === -1) {
+    if (!this.addedCols.includes(title)) {
       this.addedCols.push(title)
     }
 
@@ -43,7 +43,7 @@ export class TableGenerator {
   }
 
   /**
-   * It add all reports as rows in the current table
+   * It adds all reports as rows in the current table
    *
    * @param reports List of LighthouseReportDoc of masterdata docs
    */
