@@ -7,6 +7,7 @@ import { Builder } from './Builder'
 import { dummyLogger } from './dummyLogger'
 import { Rewriter } from './rewriter'
 import { Tester } from './Tester'
+import { Lighthouse } from './Lighthouse'
 import { envTimeout } from '../env'
 
 const DEFAULT_TIMEOUT = 15000
@@ -59,7 +60,7 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
   }
 }
 
-const [apps, router, workspaces, logger, events, billing, rewriter, tester] = getToken()
+const [apps, router, workspaces, logger, events, billing, rewriter, tester, lighthouse] = getToken()
   ? [
       new Apps(context, options),
       new Router(context, options),
@@ -69,6 +70,7 @@ const [apps, router, workspaces, logger, events, billing, rewriter, tester] = ge
       new Billing(context, options),
       new Rewriter(context, options),
       new Tester(context, options),
+      new Lighthouse(context, options),
     ]
   : [
       interceptor<Apps>('apps'),
@@ -79,6 +81,7 @@ const [apps, router, workspaces, logger, events, billing, rewriter, tester] = ge
       interceptor<Billing>('billing'),
       interceptor<Rewriter>('rewriter'),
       interceptor<Tester>('Tester'),
+      interceptor<Lighthouse>('Lighthouse'),
     ]
 
-export { apps, router, workspaces, logger, events, createClients, billing, rewriter, tester }
+export { apps, router, workspaces, logger, events, createClients, billing, rewriter, tester, lighthouse }

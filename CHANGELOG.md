@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - [hooks:init] Allow to customize help.
 - [child-processes] `DEBUG_CP` environment variable for debugging child processes.
+- Command `vtex lighthouse` for vtex internal Google's Lighthouse tool
 
 ### Changed
 - Update release notes message.
