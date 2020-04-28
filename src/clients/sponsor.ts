@@ -1,4 +1,4 @@
-import { AuthType, InstanceOptions, IOClient, IOContext } from '@vtex/api'
+import { AuthType, InstanceOptions, IOClient, IOContext, AppManifest } from '@vtex/api'
 
 export class Sponsor extends IOClient {
   private account: string
@@ -14,11 +14,16 @@ export class Sponsor extends IOClient {
     this.workspace = workspace
   }
 
-  public getSponsorAccount = async () => this.http.get(this.routes.getSponsorAccount, { metric: 'get-sponsor-account' })
+  public async getSponsorAccount() {
+    const res = await this.http.get(this.routes.getSponsorAccount, { metric: 'get-sponsor-account' })
+    return res?.sponsorAccount as string
+  }
 
-  public getEdition = async () => this.http.get(this.routes.getEdition, { metric: 'get-edition' })
+  public getEdition() {
+    return this.http.get<AppManifest>(this.routes.getEdition, { metric: 'get-edition' })
+  }
 
-  public setEdition = async (account: string, workspace: string, editionApp: string) => {
+  public setEdition(account: string, workspace: string, editionApp: string) {
     const [edition, version] = editionApp.split('@')
     const [sponsor, editionName] = edition.split('.')
     return this.http.post(
@@ -28,15 +33,12 @@ export class Sponsor extends IOClient {
     )
   }
 
-  public runHouseKeeper = async () => this.http.post(this.routes.runHouseKeeper, {}, { metric: 'run-house-keeper' })
-
   private get routes() {
     return {
       getSponsorAccount: `https://platform.io.vtex.com/_account/${this.account}`,
       getEdition: `https://infra.io.vtex.com/apps/v0/${this.account}/${this.workspace}/edition`,
       setEdition: (account: string, workspace: string) =>
         `https://app.io.vtex.com/vtex.tenant-provisioner/v0/${this.account}/master/tenants/${account}/migrate?tenantWorkspace=${workspace}`,
-      runHouseKeeper: `https://infra.io.vtex.com/housekeeper/v0/${this.account}/master/_housekeeping/perform`,
     }
   }
 }
