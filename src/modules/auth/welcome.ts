@@ -89,13 +89,12 @@ export default async () => {
 
   /** General information */
   renderTable(`${chalk.yellow('General')}`, [
-      ['Account', account],
-      ['Workspace', workspace],
-      ['Edition', edition.title],
-      ['Edition id', edition.id],
-      ['Edition activated', edition._activationDate],
-    ]
-  )
+    ['Account', account],
+    ['Workspace', workspace],
+    ['Edition', edition.title],
+    ['Edition id', edition.id],
+    ['Edition activated', edition._activationDate],
+  ])
 
   /** APPS LIST */
   renderAppsTable({
