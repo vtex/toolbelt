@@ -2,7 +2,7 @@ import { CustomCommand } from '../../oclif/CustomCommand'
 import welcome from '../../modules/auth/welcome'
 
 export default class Welcome extends CustomCommand {
-  static description = "Gives some commonly sought-after info after you log in"
+  static description = 'Gives some commonly sought-after info after you log in'
 
   static examples = ['vtex welcome', 'vtex local welcome']
 
