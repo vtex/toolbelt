@@ -11,4 +11,6 @@ export const enum ErrorKinds {
   SETUP_TYPINGS_ERROR = 'SetupTypingsError',
   SSE_ERROR = 'SSEError',
   TELEMETRY_REPORTER_ERROR = 'TelemetryReporterError',
+  MESSAGES_LOCAL_CACHE_ERROR = 'MessagesLocalCacheError',
+  LOCAL_CACHE_UPDATER_ERROR = 'LocalCacheUpdaterError'
 }

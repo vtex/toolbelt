@@ -1,6 +1,6 @@
 import Configstore from 'configstore'
 import { join } from 'path'
-import { PathConstants } from '../../lib/PathConstants'
+import { PathConstants } from '../../lib/constants/Paths'
 
 export interface ILocalCacheUpdaterStore {
   storeFilePath: string

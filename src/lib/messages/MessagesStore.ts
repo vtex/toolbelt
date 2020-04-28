@@ -4,8 +4,8 @@ import { join } from 'path'
 import { ToolbeltConfigClient } from '../../clients/toolbeltConfigClient'
 import { ErrorKinds } from '../error/ErrorKinds'
 import { ErrorReport } from '../error/ErrorReport'
-import { PathConstants } from '../PathConstants'
 import { TelemetryCollector } from '../telemetry/TelemetryCollector'
+import { PathConstants } from '../constants/Paths'
 
 export interface IMessagesStore {
   storeDir: string
@@ -42,7 +42,7 @@ export class MessagesStore implements IMessagesStore {
   constructor(public readonly storeDir: string) {}
 
   public async getMessage(messageName: string) {
-    if (this.messages[messageName]) {
+    if (this.messages?.[messageName]) {
       return this.messages[messageName]
     }
 
