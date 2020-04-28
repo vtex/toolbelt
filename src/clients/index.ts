@@ -8,6 +8,7 @@ import { dummyLogger } from './dummyLogger'
 import { Rewriter } from './rewriter'
 import { Tester } from './Tester'
 import { Lighthouse } from './Lighthouse'
+import { EvolutionManager } from './evolutionManager'
 import { envTimeout } from '../env'
 
 const DEFAULT_TIMEOUT = 15000
@@ -60,7 +61,7 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
   }
 }
 
-const [apps, router, workspaces, logger, events, billing, rewriter, tester, lighthouse] = getToken()
+const [apps, router, workspaces, logger, events, billing, rewriter, tester, lighthouse, evolutionManager] = getToken()
   ? [
       new Apps(context, options),
       new Router(context, options),
@@ -71,6 +72,7 @@ const [apps, router, workspaces, logger, events, billing, rewriter, tester, ligh
       new Rewriter(context, options),
       new Tester(context, options),
       new Lighthouse(context, options),
+      new EvolutionManager(context, options),
     ]
   : [
       interceptor<Apps>('apps'),
@@ -82,6 +84,19 @@ const [apps, router, workspaces, logger, events, billing, rewriter, tester, ligh
       interceptor<Rewriter>('rewriter'),
       interceptor<Tester>('Tester'),
       interceptor<Lighthouse>('Lighthouse'),
+      interceptor<EvolutionManager>('EvolutionManager'),
     ]
 
-export { apps, router, workspaces, logger, events, createClients, billing, rewriter, tester, lighthouse }
+export {
+  apps,
+  router,
+  workspaces,
+  logger,
+  events,
+  createClients,
+  billing,
+  rewriter,
+  tester,
+  lighthouse,
+  evolutionManager,
+}

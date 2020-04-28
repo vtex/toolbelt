@@ -1,11 +1,12 @@
 import chalk from 'chalk'
 
-import { workspaces } from '../../clients'
+import { evolutionManager, workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import useCmd from './use'
+import { SessionManager } from '../../lib/session/SessionManager'
 
 const { promote, get } = workspaces
 const [account, currentWorkspace] = [getAccount(), getWorkspace()]
@@ -40,6 +41,10 @@ export default async () => {
     return
   }
   await promote(account, currentWorkspace)
+
+  const sessionManager = SessionManager.getSessionManager()
+  const userEmail = sessionManager.userLogged
+  await evolutionManager.saveWorkspacePromotion(userEmail, currentWorkspace)
 
   log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`)
   await useCmd('master')
