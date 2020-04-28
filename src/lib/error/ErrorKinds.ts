@@ -1,5 +1,6 @@
 export const enum ErrorKinds {
   DEPRECATION_CHECK_ERROR = 'DeprecationCheckError',
+  EVOLUTION_MANAGER_REPORT_ERROR = 'EvolutionManagerReportError',
   GENERIC_ERROR = 'GenericError',
   INVALID_OR_EXPIRED_TOKEN_ERROR = 'InvalidOrExpiredTokenError',
   REQUEST_ERROR = 'RequestError',
