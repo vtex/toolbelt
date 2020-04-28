@@ -23,7 +23,7 @@ const promptSwitchEdition = (currEditionId: string) => {
       recommendedEdition
     )}.`
   )
-  log.warn(`For more information, visit ${chalk.blue('https://some.doc/about/edition/store')}`)
+  log.warn(`For more information about editions, check ${chalk.blue('https://vtex.io/docs/concepts/edition-app/')}`)
   return promptConfirm(`Would you like to change the edition to ${chalk.blue(recommendedEdition)} now?`, false)
 }
 
