@@ -1,5 +1,6 @@
-import { InstanceOptions, IOContext, AppGraphQLClient } from '@vtex/api'
+import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
 import { GraphQlError } from '../errors'
+import { TelemetryCollector } from '../lib/telemetry/TelemetryCollector'
 
 export class EvolutionManager extends AppGraphQLClient {
   constructor(context: IOContext, options: InstanceOptions) {
@@ -23,13 +24,24 @@ export class EvolutionManager extends AppGraphQLClient {
         return res.data?.saveWorkspacePromotion
       })
       .catch(res => {
+        if (res.response?.data?.code === 'NotFound') {
+          TelemetryCollector.createAndRegisterErrorReport({
+            originalError: res,
+            message: 'vtex.evolution-manager-graphql@0.x not installed in the current account/workspace',
+          })
+
+          return false
+        }
+
         const errors = res.response?.data?.errors
         if (!errors) {
-          throw new Error('Unknown error while saving promotion in evolution manager.')
+          throw res
         }
+
         if (errors.length === 1 && errors[0].extensions?.exception?.response?.data) {
           throw errors[0].extensions.exception.response.data
         }
+
         throw new GraphQlError(errors)
       })
   }
