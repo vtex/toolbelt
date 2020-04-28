@@ -114,7 +114,7 @@
     "winston": "~3.2.1",
     "winston-transport": "~4.3.0",
     "ws": "^7.2.3",
-    "yarn": "~1.21.0"
+    "yarn": "^1.22.4"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
