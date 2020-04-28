@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import chalk from 'chalk'
-import { compose, equals, filter, head, prop, split } from 'ramda'
+import { compose, equals, filter, prop } from 'ramda'
+import { removeBuild } from '@vtex/api'
 
 import { Sponsor } from '../../clients/sponsor'
 import { parseLocator } from '../../locator'
@@ -21,8 +22,6 @@ type Edition = {
   _activationDate: string
 }
 
-const cleanVersion = compose<string, string[], string>(head, split('+build'))
-
 const filterBySource = (source: string) => filter(compose<any, string, boolean>(equals(source), prop('_source')))
 
 const renderTable = (title: string, rows: string[][]): void => {
@@ -31,7 +30,9 @@ const renderTable = (title: string, rows: string[][]): void => {
   const table = createTable()
 
   rows.forEach(([name, value]) => {
-    table.push([chalk.blue(name), value])
+    if (value) {
+      table.push([chalk.blue(name), value])
+    }
   })
 
   console.log(`${table.toString()}\n`)
@@ -57,7 +58,7 @@ const renderAppsTable = ({
   appArray.forEach(({ app }) => {
     const { vendor, name, version } = parseLocator(app)
 
-    const cleanedVersion = cleanVersion(version)
+    const cleanedVersion = removeBuild(version)
 
     const formattedName = `${chalk.blue(vendor)}${chalk.gray.bold('.')}${name}`
 
@@ -72,7 +73,12 @@ export default async () => {
   const { apps } = require('../../clients')
   const { account, workspace } = sessionManager
   const sponsorClient = new Sponsor(getIOContext(sessionManager), IOClientOptions)
-  const edition = (await sponsorClient.getEdition()) as Edition
+  let edition
+  try {
+    edition = (await sponsorClient.getEdition()) as Edition
+  } catch (e) {
+    edition = {}
+  }
   const appArray = await apps.listApps().then(prop('data'))
 
   log.info(`Welcome to VTEX IO!`)
@@ -85,12 +91,13 @@ export default async () => {
 
   /** General information */
   renderTable(`${chalk.yellow('General')}`, [
-    ['Account', account],
-    ['Workspace', workspace],
-    ['Edition', edition.title],
-    ['Edition id', edition.id],
-    ['Edition activated', edition._activationDate],
-  ])
+      ['Account', account],
+      ['Workspace', workspace],
+      ['Edition', edition.title],
+      ['Edition id', edition.id],
+      ['Edition activated', edition._activationDate],
+    ]
+  )
 
   /** APPS LIST */
   renderAppsTable({
