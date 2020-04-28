@@ -6,8 +6,8 @@ export class EvolutionManager extends AppGraphQLClient {
     super('vtex.evolution-manager-graphql@0.x', context, options)
   }
 
-  public saveWorkspacePromotion = (user: string, workspace: string): Promise<boolean> =>
-    this.graphql
+  public saveWorkspacePromotion(user: string, workspace: string): Promise<boolean> {
+    return this.graphql
       .mutate<{ saveWorkspacePromotion: boolean }, { user: string; workspace: string }>(
         {
           mutate: `mutation {
@@ -32,4 +32,5 @@ export class EvolutionManager extends AppGraphQLClient {
         }
         throw new GraphQlError(errors)
       })
+  }
 }
