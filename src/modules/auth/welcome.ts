@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-var-requires */
 import chalk from 'chalk'
 import { compose, equals, filter, prop } from 'ramda'
 import { removeBuild } from '@vtex/api'
