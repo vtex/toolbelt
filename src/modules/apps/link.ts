@@ -291,7 +291,7 @@ export default async options => {
   try {
     const buildTrigger = performInitialLink.bind(this, projectUploader, extraData, unsafe)
     const [subject] = appId.split('@')
-    if (options.watch === false) {
+    if (options.noWatch) {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
       return
     }
