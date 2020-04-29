@@ -63,7 +63,10 @@ export default async (vendor: string, app: string, options) => {
     }
 
     es.addEventListener('message', msg => {
-      console.log(JSON.stringify(JSON.parse(msg.data).data, null, 2))
+      try {
+        console.log(JSON.stringify(JSON.parse(msg.data).data, null, 2))
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
     })
   }
 
