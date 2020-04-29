@@ -4,6 +4,8 @@ import log from '../../../logger'
 import chalk from 'chalk'
 import { promptConfirm } from '../../prompts'
 import setEditionCmd from '../../sponsor/setEdition'
+import { TelemetryCollector } from '../../../lib/telemetry/TelemetryCollector'
+import { ErrorKinds } from '../../../lib/error/ErrorKinds'
 
 const recommendedEdition = 'vtex.edition-store@2.x'
 
@@ -17,8 +19,14 @@ const getCurrEdition = async () => {
     return await sponsor.getEdition()
   } catch (err) {
     if (err.response?.status !== 404) {
+      TelemetryCollector.createAndRegisterErrorReport({
+        kind: ErrorKinds.EDITION_REQUEST_ERROR,
+        originalError: err,
+      })
+
       log.warn(`Non-fatal error checking account edition: ${err.message}`)
     }
+
     return null
   }
 }
