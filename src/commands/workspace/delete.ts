@@ -10,7 +10,7 @@ export default class WorkspaceDelete extends CustomCommand {
 
   static flags = {
     ...CustomCommand.globalFlags,
-    force: oclifFlags.string({ char: 'f', description: "Ignore if you're currently using the workspace" }),
+    force: oclifFlags.boolean({ char: 'f', description: "Ignore if you're currently using the workspace" }),
     yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
   }
 
