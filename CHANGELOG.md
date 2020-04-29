@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.99.0] - 2020-04-29
+### Fixed
+- [redirects] Encode delimiter before exporing `.csv` file to avoid conflicts.
+- [vtex install, vtex uninstall] Behaviour when action is cancelled by the user.
+
+### Added
+- [hooks:init] Allow to customize help.
+- [child-processes] `DEBUG_CP` environment variable for debugging child processes.
+- Command `vtex lighthouse` for vtex internal Google's Lighthouse tool
+- [vtex promote] Save workspace promotion info in evolution manager.
+
+### Changed
+- Update release notes message.
+- Improve SSE errors logs.
+- [vtex setup] Add GraphQL files to `lint-staged` config.
+- [vtex workspace] Auto-switch to edition-store when creating new workspace.
+- [dependencies] Update yarn from `~1.21.0` to `^1.22.4`.
+
 ## [2.98.0] - 2020-04-22
 ### Added
 - [telemetry:reporter] Create and send reporter meta metrics.
@@ -33,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [clients:sponsor, vtex support] Use HTTPS and new URL `app.io.vtex.com` format.
 - [telemetry:collector] Flush just before exiting process.
 - [sse] Check if token is valid before creating connection.
-- [sse] Abort process on 401 or 403 server errors. 
+- [sse] Abort process on 401 or 403 server errors.
 - [sse:telemetry] Register sse errors with errorKind `SSEError`.
 - Update release notes message.
 
@@ -53,7 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
  - Command `vtex test e2e` for end-to-end testing.
- 
+
 ## [2.94.0] - 2020-03-31
 ### Added
 - [vtex init] Show `checkout-ui-settings` template for users outside VTEX.

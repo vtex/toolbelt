@@ -5,6 +5,7 @@ import { workspaces, createClients } from '../../clients'
 import { getAccount } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
+import { ensureValidEdition } from './common/edition'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 
@@ -32,6 +33,7 @@ export default async (name: string, options: any) => {
         `production=${production}`
       )}`
     )
+    await ensureValidEdition(name)
     // First request on a brand new workspace takes very long because of route map generation, so we warm it up.
     await warmUpRouteMap(name)
   } catch (err) {

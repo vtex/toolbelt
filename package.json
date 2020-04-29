@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.98.0",
+  "version": "2.99.0",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "scripts": {
@@ -114,13 +114,14 @@
     "winston": "~3.2.1",
     "winston-transport": "~4.3.0",
     "ws": "^7.2.3",
-    "yarn": "~1.21.0"
+    "yarn": "^1.22.4"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
     "@types/async-retry": "1.4.1",
     "@types/configstore": "^4.0.0",
     "@types/debounce": "^1.2.0",
+    "@types/eventsource": "^1.1.2",
     "@types/fs-extra": "5.0.4",
     "@types/jest": "24.0.23",
     "@types/jsonwebtoken": "8.3.5",

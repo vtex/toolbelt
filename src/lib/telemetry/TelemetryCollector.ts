@@ -1,12 +1,12 @@
-import { spawn } from 'child_process'
 import { randomBytes } from 'crypto'
 import { ensureFileSync, writeJsonSync } from 'fs-extra'
 import { join } from 'path'
 import * as pkgJson from '../../../package.json'
 import logger from '../../logger'
+import { PathConstants } from '../constants/Paths'
 import { ErrorCreationArguments, ErrorReport, ErrorReportObj } from '../error/ErrorReport'
 import { Metric, MetricReport, MetricReportObj } from '../metrics/MetricReport'
-import { PathConstants } from '../PathConstants'
+import { spawnUnblockingChildProcess } from '../utils/spawnUnblockingChildProcess'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 
 export interface TelemetryFile {
@@ -88,15 +88,11 @@ export class TelemetryCollector {
     try {
       ensureFileSync(objFilePath)
       writeJsonSync(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
-
-      spawn(
-        process.execPath,
-        [join(__dirname, 'TelemetryReporter', 'report.js'), this.store.storeFilePath, objFilePath],
-        {
-          detached: true,
-          stdio: 'ignore',
-        }
-      ).unref()
+      spawnUnblockingChildProcess(process.execPath, [
+        join(__dirname, 'TelemetryReporter', 'report.js'),
+        this.store.storeFilePath,
+        objFilePath,
+      ])
     } catch (e) {
       logger.error('Error writing telemetry file. Error: ', e)
     }

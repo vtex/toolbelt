@@ -3,6 +3,7 @@ import { workspaces } from '../../clients'
 import { getAccount, getWorkspace } from '../../conf'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
+import { ensureValidEdition } from './common/edition'
 
 const promptWorkspaceReset = (name: string, account: string) =>
   promptConfirm(`Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`)
@@ -29,6 +30,7 @@ export default async (name: string, options) => {
           `production=${production}`
         )}`
       )
+      await ensureValidEdition(workspace)
     } catch (err) {
       log.warn(`Workspace ${chalk.green(workspace)} was ${chalk.red('not')} reset`)
       if (err.response) {

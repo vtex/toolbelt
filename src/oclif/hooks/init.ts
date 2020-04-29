@@ -1,5 +1,7 @@
 import axios from 'axios'
 import os from 'os'
+import help from '@oclif/plugin-help'
+import * as Config from '@oclif/config'
 import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
 
 import { Token } from '../../lib/auth/Token'
@@ -155,6 +157,21 @@ export const onError = async (e: any) => {
 }
 
 export default async function(options: HookKeyOrOptions<'init'>) {
+  // overwrite Help#showCommandHelp to customize help formating
+  help.prototype.showCommandHelp = function(command: Config.Command, topics: Config.Topic[]) {
+    const name = command.id
+    const depth = name.split(':').length
+    topics = topics.filter(t => t.name.startsWith(`${name}:`) && t.name.split(':').length === depth + 1)
+    const title = command.description && this.render(command.description).split('\n')[0]
+    if (title) console.log(`\n${title}\n`)
+    console.log(this.command(command))
+    console.log('')
+    if (topics.length > 0) {
+      console.log(this.topics(topics))
+      console.log('')
+    }
+  }
+
   axios.interceptors.request.use(config => {
     if (envCookies()) {
       config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
