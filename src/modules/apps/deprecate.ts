@@ -1,12 +1,11 @@
 import chalk from 'chalk'
 import { createClients } from '../../clients'
-import { getAccount, getToken, getWorkspace } from '../../conf'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import switchAccount from '../auth/switch'
-import { promptConfirm } from '../prompts'
+import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator } from '../../locator'
-import { switchAccountMessage } from './utils'
+import log from '../../logger'
+import { returnToPreviousAccount, switchAccount } from '../auth/switch'
+import { promptConfirm } from '../prompts'
 
 let originalAccount
 let originalWorkspace
@@ -22,34 +21,22 @@ const promptDeprecate = (appsList: string[]) =>
     `Are you sure you want to deprecate app${appsList.length > 1 ? 's' : ''} ${chalk.green(appsList.join(', '))}?`
   )
 
-const promptDeprecateOnVendor = (msg: string) => promptConfirm(msg)
-
-const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
-  const currentAccount = getAccount()
-  if (previousAccount !== currentAccount) {
-    const canSwitchToPrevious = await promptDeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
-    if (canSwitchToPrevious) {
-      return switchAccount(previousAccount, { workspace: previousWorkspace })
-    }
-  }
-}
-
 const deprecateApp = async (app: string): Promise<void> => {
   const { vendor, name, version } = parseLocator(app)
-  const account = getAccount()
-  if (vendor !== account) {
-    const canSwitchToVendor = await promptDeprecateOnVendor(switchToVendorMessage(vendor))
+  const session = SessionManager.getSingleton()
+  if (vendor !== session.account) {
+    const canSwitchToVendor = await promptConfirm(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
       return
     }
     await switchAccount(vendor, {})
   }
-  const context = { account: vendor, workspace: 'master', authToken: getToken() }
+  const context = { account: vendor, workspace: 'master', authToken: session.token }
   const { registry } = createClients(context)
   return registry.deprecateApp(`${vendor}.${name}`, version)
 }
 
-const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
+const prepareAndDeprecateApps = async (appsList: string[]): Promise<any> => {
   for (const app of appsList) {
     ManifestValidator.validateApp(app)
     log.debug('Starting to deprecate app:', app)
@@ -63,23 +50,25 @@ const prepareAndDeprecateApps = async (appsList: string[]): Promise<void> => {
         log.error(`Error deprecating ${app}. App not found`)
       } else if (e.message && e.response.statusText) {
         log.error(`Error deprecating ${app}. ${e.message}. ${e.response.statusText}`)
-        return switchToPreviousAccount(originalAccount, originalWorkspace)
+        return returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
       } else {
         // eslint-disable-next-line no-await-in-loop
-        await switchToPreviousAccount(originalAccount, originalWorkspace)
+        await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
         throw e
       }
     }
   }
 
-  await switchToPreviousAccount(originalAccount, originalWorkspace)
+  await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
 }
 
 export default async (optionalApps: string[], options) => {
   const preConfirm = options.y || options.yes
 
-  originalAccount = getAccount()
-  originalWorkspace = getWorkspace()
+  const { account, workspace } = SessionManager.getSingleton()
+  originalAccount = account
+  originalWorkspace = workspace
+
   const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
 
   if (!preConfirm && !(await promptDeprecate(appsList))) {
