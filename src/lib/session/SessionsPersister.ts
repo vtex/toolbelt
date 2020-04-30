@@ -9,8 +9,14 @@ export abstract class SessionsPersisterBase {
   public abstract getAccount(): string
   public abstract saveAccount(account: string): void
 
+  public abstract getLastAccount(): string
+  public abstract saveLastAccount(account: string): void
+
   public abstract getWorkspace(): string
   public abstract saveWorkspace(workspace: string): void
+
+  public abstract getLastWorkspace(): string
+  public abstract saveLastWorkspace(workspace: string): void
 
   public abstract getToken(): string
   public abstract saveToken(token: string): void
@@ -62,13 +68,31 @@ export class SessionsPersister extends SessionsPersisterBase {
     this.sessionStore.set('account', account)
   }
 
+  public getLastAccount() {
+    return this.sessionStore.get('lastAccount')
+  }
+
+  public saveLastAccount(account: string) {
+    this.oldConfigstore.set('_lastUsedAccount', account)
+    this.sessionStore.set('lastAccount', account)
+  }
+
   public getWorkspace() {
-    return this.workspaceMetadataStore.get('current.workspace')
+    return this.workspaceMetadataStore.get('currentWorkspace')
   }
 
   public saveWorkspace(workspace: string) {
     this.oldConfigstore.set('workspace', workspace)
-    this.workspaceMetadataStore.set('current.workspace', workspace)
+    this.workspaceMetadataStore.set('currentWorkspace', workspace)
+  }
+
+  public getLastWorkspace() {
+    return this.workspaceMetadataStore.get('lastWorkspace')
+  }
+
+  public saveLastWorkspace(workspace: string) {
+    this.oldConfigstore.set('_lastUsedWorkspace', workspace)
+    this.workspaceMetadataStore.set('lastWorkspace', workspace)
   }
 
   public getToken() {
@@ -90,8 +114,7 @@ export class SessionsPersister extends SessionsPersisterBase {
   }
 
   public getAccountToken(account: string) {
-    const tokens = this.tokenCacheStore.get('tokens') || {}
-    return tokens[account]
+    return this.tokenCacheStore.get(account)
   }
 
   public saveAccountToken(account: string, token: string) {
