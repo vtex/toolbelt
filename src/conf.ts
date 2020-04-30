@@ -11,52 +11,15 @@ export enum Environment {
   Production = 'prod',
 }
 
-export const saveAll = (config: any): void => {
-  conf.all = config
-}
-
-export const getAccount = (): string => conf.get('account')
-
-export const saveAccount = (account: string): void => {
-  const lastUsedAccount = getAccount()
-  if (lastUsedAccount !== account) {
-    conf.set('_lastUsedAccount', lastUsedAccount)
-    conf.delete('_lastUsedWorkspace')
-  }
-  conf.set('account', account)
-}
-
-export const saveToken = (token: string): void => conf.set('token', token)
-
-export const getWorkspace = (): string => conf.get('workspace')
-
-export const saveWorkspace = (workspace = 'master') => {
-  const lastUsedWorkspace = getWorkspace()
-  if (lastUsedWorkspace !== workspace) {
-    conf.set('_lastUsedWorkspace', lastUsedWorkspace)
-  }
-  conf.set('workspace', workspace)
-}
-
 export const saveEnvironment = (env: Environment) => conf.set('env', env)
 
 export const saveStickyHost = (appName: string, stickyHost: string) =>
   conf.set(`apps.${appName}.sticky-host`, { stickyHost, lastUpdated: Date.now() })
 
-export const getAll = (): any => conf.all
-
-export const getLogin = (): string => conf.get('login')
-
-export const getToken = (): string => conf.get('token')
-
 export const getStickyHost = (appName: string): { stickyHost: string; lastUpdated: Date } =>
   conf.get(`apps.${appName}.sticky-host`)
 
 export const hasStickyHost = (appName: string): boolean => conf.has(`apps.${appName}.sticky-host`)
-
-export const getLastUsedAccount = (): string => conf.get('_lastUsedAccount')
-
-export const getLastUsedWorkspace = (): string => conf.get('_lastUsedWorkspace')
 
 export const getNextFeedbackDate = (): string => conf.get('_nextFeedbackDate')
 
@@ -70,11 +33,6 @@ export const getEnvironment = (): Environment => {
   const env = envFromProcessEnv[process.env.VTEX_ENV]
   const persisted = conf.get('env') || Environment.Production
   return env || persisted
-}
-
-export const currentContext: Context = {
-  account: getAccount(),
-  workspace: getWorkspace(),
 }
 
 export enum Region {
