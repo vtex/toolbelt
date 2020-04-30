@@ -1,4 +1,23 @@
-export function truncateStringsFromObject(element: any, maxStrSize: number, depth = 3, seenObjects: any[] = []) {
+const tokenFields = ['authorization', 'authtoken', 'auth', 'token']
+
+export function sanitizeJwtToken(token: string): string {
+  const tokenParts = token.split('.')
+
+  // Not JWT token
+  if (tokenParts.length !== 3) {
+    return token
+  }
+
+  return `${tokenParts[0]}.${tokenParts[1]}`
+}
+
+export function truncateAndSanitizeStringsFromObject(
+  element: any,
+  maxStrSize: number,
+  depth = 3,
+  seenObjects: any[] = [],
+  currentKey: string = null
+) {
   if (element == null) {
     return element
   }
@@ -17,13 +36,18 @@ export function truncateStringsFromObject(element: any, maxStrSize: number, dept
     seenObjects.push(element)
     Object.keys(element).forEach(key => {
       // seenObjects.slice creates a copy of seenObjects at the current state
-      element[key] = truncateStringsFromObject(element[key], maxStrSize, depth - 1, seenObjects.slice())
+      element[key] = truncateAndSanitizeStringsFromObject(element[key], maxStrSize, depth - 1, seenObjects.slice(), key)
     })
 
     return element
   }
 
   if (objType === 'string') {
+    const currentKeyNormalized = currentKey?.toLowerCase()
+    if (tokenFields.includes(currentKeyNormalized)) {
+      element = sanitizeJwtToken(element)
+    }
+
     return element.length <= maxStrSize ? element : `${element.substr(0, maxStrSize)}[...TRUNCATED]`
   }
 
