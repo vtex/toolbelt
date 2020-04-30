@@ -30,8 +30,7 @@ const logToolbeltVersion = () => {
 
 const checkLogin = async command => {
   const whitelist = [undefined, 'config', 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version', 'release']
-  const { tokenObj } = SessionManager.getSingleton()
-  if (!tokenObj.isValid() && whitelist.indexOf(command) === -1) {
+  if (!SessionManager.getSingleton().checkValidCredentials() && whitelist.indexOf(command) === -1) {
     log.debug('Requesting login before command:', command)
     await authLogin({})
   }
