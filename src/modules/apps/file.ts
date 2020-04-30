@@ -1,11 +1,8 @@
-import chokidar from 'chokidar'
-import { createReadStream, lstat, readFileSync } from 'fs-extra'
+import { lstat, readFileSync } from 'fs-extra'
 import glob from 'globby'
-import { join, resolve as resolvePath, sep } from 'path'
+import { join } from 'path'
 import { reject } from 'ramda'
 import log from '../../logger'
-
-type AnyFunction = (...args: any[]) => any
 
 const defaultIgnored = [
   '.DS_Store',
@@ -61,41 +58,3 @@ export const listLocalFiles = (root: string, test = false, folder?: string): Pro
         return acc
       }, [])
     )
-
-export const addChangeContent = (changes: Change[]): Batch[] =>
-  changes.map(({ path: filePath, action }) => {
-    return {
-      content: action === 'save' ? createReadStream(resolvePath(process.cwd(), filePath)) : null,
-      path: filePath.split(sep).join('/'),
-    }
-  })
-
-const sendSaveChanges = (file: string, sendChanges: AnyFunction): void =>
-  sendChanges(addChangeContent([{ path: file, action: 'save' }]))
-
-const sendRemoveChanges = (file: string, sendChanges: AnyFunction): void =>
-  sendChanges(addChangeContent([{ path: file, action: 'remove' }]))
-
-export const watch = (root: string, sendChanges: AnyFunction, folder?: string) => {
-  const watcher = chokidar.watch([`${safeFolder(folder)}`, '*.json'], {
-    atomic: true,
-    awaitWriteFinish: {
-      stabilityThreshold: 500,
-    },
-    cwd: root,
-    ignoreInitial: true,
-    ignored: getIgnoredPaths(root),
-    persistent: true,
-    usePolling: true,
-  })
-  return new Promise((resolve, reject) => {
-    watcher
-      .on('add', (file, { size }) => (size > 0 ? sendSaveChanges(file, sendChanges) : null))
-      .on('change', (file, { size }) => {
-        return size > 0 ? sendSaveChanges(file, sendChanges) : sendRemoveChanges(file, sendChanges)
-      })
-      .on('unlink', file => sendRemoveChanges(file, sendChanges))
-      .on('error', reject)
-      .on('ready', resolve)
-  })
-}

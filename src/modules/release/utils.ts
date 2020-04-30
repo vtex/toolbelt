@@ -1,18 +1,8 @@
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
-import {
-  close,
-  existsSync,
-  openSync,
-  pathExistsSync,
-  readFileSync,
-  readJsonSync,
-  writeJsonSync,
-  writeSync,
-} from 'fs-extra'
-import { safeLoad } from 'js-yaml'
+import { close, existsSync, openSync, readFileSync, readJsonSync, writeJsonSync, writeSync } from 'fs-extra'
 import { resolve } from 'path'
-import { find, path } from 'ramda'
+import { path } from 'ramda'
 import semver from 'semver'
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
@@ -144,15 +134,6 @@ export const confirmRelease = async (): Promise<boolean> => {
     return false
   }
   return true
-}
-
-export const getOptionsFile = () => {
-  const possibleFiles = ['_releasy.yaml', '_releasy.yml', '_releasy.json']
-  const optionsFile = find(pathExistsSync)(possibleFiles)
-  if (!optionsFile) {
-    return {}
-  }
-  return safeLoad(readFileSync(optionsFile))
 }
 
 export const checkGit = () => {

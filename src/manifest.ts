@@ -77,17 +77,6 @@ export const validateAppManifest = (manifest: any) => {
   }
 }
 
-const appName = new RegExp(`^${vendorPattern}\\.${namePattern}$`)
-const appLocator = new RegExp(`^${vendorPattern}\\.${namePattern}(?:@${wildVersionPattern})?$`)
-
-export const validateApp = (app: string, skipVersion = false) => {
-  const regex = skipVersion ? appName : appLocator
-  if (!regex.test(app)) {
-    throw new CommandError(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`)
-  }
-  return app
-}
-
 export const getManifest = memoize(
   async (): Promise<Manifest> => {
     const manifest = parseManifest(await readFileUtf(getManifestPath()))
