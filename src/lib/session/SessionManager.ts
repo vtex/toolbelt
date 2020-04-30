@@ -132,6 +132,10 @@ export class SessionManager {
     this.sessionPersister.clearData()
   }
 
+  public checkValidCredentials(): boolean {
+    return this.tokenObj.isValid() && !!this.state.account && !!this.state.workspace
+  }
+
   public workspaceSwitch(newWorkspace: string) {
     if (this.state.workspace === newWorkspace) {
       return
