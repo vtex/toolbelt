@@ -5,15 +5,30 @@ import { ErrorKinds } from '../error/ErrorKinds'
 import { ErrorReport } from '../error/ErrorReport'
 import { SessionsPersister, SessionsPersisterBase } from './SessionsPersister'
 
-interface SessionManagerArguments {
-  sessionsPersister: SessionsPersisterBase
-  authProviders: Record<string, AuthProviderBase>
-}
-
-interface LoginOptions {
+export interface LoginOptions {
   targetWorkspace?: string
   authMethod?: string
   useCachedToken?: boolean
+}
+
+export interface ISessionManager {
+  account: string
+  token: string
+  tokenObj: Token
+  workspace: string
+  userLogged: string
+  lastUsedAccount: string
+  lastUsedWorkspace: string
+  checkValidCredentials: () => boolean
+  checkAndGetToken: (exitOnInvalid?: boolean) => string
+  login: (newAccount: string, opts: LoginOptions) => Promise<void>
+  logout: () => void
+  workspaceSwitch: (newWorkspace: string) => void
+}
+
+interface SessionManagerArguments {
+  sessionsPersister: SessionsPersisterBase
+  authProviders: Record<string, AuthProviderBase>
 }
 
 interface SessionState {
@@ -24,7 +39,7 @@ interface SessionState {
   lastWorkspace: string
 }
 
-export class SessionManager {
+export class SessionManager implements ISessionManager {
   private static singleton: SessionManager
 
   public static getSingleton(): SessionManager {
