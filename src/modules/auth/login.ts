@@ -1,37 +1,29 @@
+import boxen from 'boxen'
 import chalk from 'chalk'
+import emojic from 'emojic'
 import enquirer from 'enquirer'
-import { prop } from 'ramda'
-import * as conf from '../../conf'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
-import boxen from 'boxen'
-import emojic from 'emojic'
 
-const [cachedAccount, cachedLogin, cachedWorkspace] = [conf.getAccount(), conf.getLogin(), conf.getWorkspace()]
-const details =
-  cachedAccount && `${chalk.green(cachedLogin)} @ ${chalk.green(cachedAccount)} / ${chalk.green(cachedWorkspace)}`
+const promptUsePreviousLogin = (account: string, userLogged: string, workspace: string) => {
+  const details = `${chalk.green(userLogged)} @ ${chalk.green(account)} / ${chalk.green(workspace)}`
+  return promptConfirm(`Do you want to use the previous login details? (${details})`)
+}
 
-const promptUsePrevious = () => promptConfirm(`Do you want to use the previous login details? (${details})`)
+const promptUsePreviousAccount = (previousAccount: string) => {
+  return promptConfirm(`Use previous account? (${chalk.blue(previousAccount)})`)
+}
 
-const promptAccount = async promptPreviousAcc => {
-  if (promptPreviousAcc) {
-    const confirm = await promptConfirm(`Use previous account? (${chalk.blue(cachedAccount)})`)
-    if (confirm) {
-      return cachedAccount
-    }
-  }
+const promptDesiredAccount = async () => {
+  const { account } = await enquirer.prompt({
+    type: 'input',
+    result: s => s.trim(),
+    message: 'Account:',
+    name: 'account',
+    validate: s => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
+  })
 
-  const account = prop(
-    'account',
-    await enquirer.prompt({
-      type: 'input',
-      result: s => s.trim(),
-      message: 'Account:',
-      name: 'account',
-      validate: s => /^\s*[\w-]+\s*$/.test(s) || 'Please enter a valid account.',
-    })
-  )
   return account
 }
 
@@ -56,22 +48,48 @@ const notifyRelease = () => {
   console.log(boxen(msg, boxOptions))
 }
 
-export default async options => {
-  const defaultArgumentAccount = options?._?.[0]
-  const optionAccount = options ? options.a || options.account || defaultArgumentAccount : null
-  const optionWorkspace = options ? options.w || options.workspace : null
-  const usePrevious = !(optionAccount || optionWorkspace) && details && (await promptUsePrevious())
-  const account =
-    optionAccount || (usePrevious && cachedAccount) || (await promptAccount(cachedAccount && optionWorkspace))
-  const workspace = optionWorkspace || (usePrevious && cachedWorkspace) || 'master'
+interface LoginOptions {
+  account?: string
+  workspace?: string
+}
 
-  const sessionManager = SessionManager.getSessionManager()
+const getTargetLogin = async ({ account: optionAccount, workspace: optionWorkspace }: LoginOptions) => {
+  const {
+    account: previousAccount,
+    workspace: previousWorkspace,
+    userLogged: previousUserLogged,
+  } = SessionManager.getSingleton()
+
+  const targetWorkspace = optionWorkspace || 'master'
+
+  if (optionAccount) {
+    return { targetAccount: optionAccount, targetWorkspace }
+  }
+
+  if (!previousAccount) {
+    return { targetAccount: await promptDesiredAccount(), targetWorkspace }
+  }
+
+  if (previousWorkspace && !optionWorkspace) {
+    if (await promptUsePreviousLogin(previousAccount, previousUserLogged, previousWorkspace)) {
+      return { targetAccount: previousAccount, targetWorkspace: previousWorkspace }
+    }
+  } else if (await promptUsePreviousAccount(previousAccount)) {
+    return { targetAccount: previousAccount, targetWorkspace }
+  }
+
+  return { targetAccount: await promptDesiredAccount(), targetWorkspace }
+}
+
+export default async (opts: LoginOptions) => {
+  const { targetAccount, targetWorkspace } = await getTargetLogin(opts)
+  const sessionManager = SessionManager.getSingleton()
   try {
-    await sessionManager.login(account, { targetWorkspace: workspace, useCachedToken: false })
-    log.debug('Login successful', sessionManager.userLogged, account, sessionManager.token, workspace)
+    await sessionManager.login(targetAccount, { targetWorkspace, useCachedToken: false })
+    log.debug('Login successful', sessionManager.userLogged, targetAccount, sessionManager.token, targetWorkspace)
     log.info(
-      `Logged into ${chalk.blue(account)} as ${chalk.green(sessionManager.userLogged)} at workspace ${chalk.green(
-        workspace
+      `Logged into ${chalk.blue(targetAccount)} as ${chalk.green(sessionManager.userLogged)} at workspace ${chalk.green(
+        targetWorkspace
       )}`
     )
     notifyRelease()
