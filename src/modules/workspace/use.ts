@@ -1,8 +1,7 @@
 import chalk from 'chalk'
-
 import { workspaces } from '../../clients'
-import { getAccount, saveWorkspace, getLastUsedWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import createCmd from './create'
@@ -23,10 +22,13 @@ export default async (name: string, options?) => {
   const reset = options ? options.r || options.reset : null
   let production = options ? options.p || options.production : null
   let created = false
-  const accountName = getAccount()
+
+  const session = SessionManager.getSingleton()
+
+  const accountName = session.account
 
   if (name === '-') {
-    name = getLastUsedWorkspace()
+    name = session.lastUsedWorkspace
     if (name == null) {
       throw new CommandError('No last used workspace was found')
     }
@@ -49,7 +51,8 @@ export default async (name: string, options?) => {
       throw err
     }
   }
-  await saveWorkspace(name)
+
+  session.workspaceSwitch(name)
 
   if (reset && !created) {
     await resetWks(name, { production })

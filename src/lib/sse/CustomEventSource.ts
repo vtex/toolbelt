@@ -27,9 +27,9 @@ export class CustomEventSource {
   public static create(source: string, closeOnInvalidToken = false) {
     let token
     if (closeOnInvalidToken) {
-      token = SessionManager.getSessionManager().checkAndGetToken(closeOnInvalidToken)
+      token = SessionManager.getSingleton().checkAndGetToken(closeOnInvalidToken)
     } else {
-      token = SessionManager.getSessionManager().token
+      token = SessionManager.getSingleton().token
     }
 
     return new CustomEventSource(source, {

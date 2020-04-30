@@ -2,11 +2,10 @@ import chalk from 'chalk'
 import moment from 'moment'
 import numbro from 'numbro'
 import R from 'ramda'
-
-import { getAccount } from '../../../conf'
+import { SessionManager } from '../../../lib/session/SessionManager'
 import log from '../../../logger'
 import { createTable } from '../../../table'
-import { abtester, installedABTester, formatDuration } from './utils'
+import { abtester, formatDuration, installedABTester } from './utils'
 
 interface ABTestStatus {
   ABTestBeginning: string
@@ -113,11 +112,12 @@ const printResultsTable = (testInfo: ABTestStatus) => {
 }
 
 export default async () => {
+  const { account } = SessionManager.getSingleton()
   await installedABTester()
   let abTestInfo = []
   abTestInfo = await abtester.status()
   if (!abTestInfo || abTestInfo.length === 0) {
-    return log.info(`No AB Tests running in account ${chalk.blue(getAccount())}\n`)
+    return log.info(`No AB Tests running in account ${chalk.blue(account)}\n`)
   }
   R.map(printResultsTable, abTestInfo)
 }

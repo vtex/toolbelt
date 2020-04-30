@@ -2,28 +2,27 @@ import { createHash } from 'crypto'
 import { readFile, readJson } from 'fs-extra'
 import { length, map } from 'ramda'
 import { createInterface } from 'readline'
-
 import { rewriter } from '../../clients'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
 import {
-  accountAndWorkspace,
   deleteMetainfo,
+  handleReadError,
   MAX_RETRIES,
   METAINFO_FILE,
   progressBar,
   readCSV,
+  RETRY_INTERVAL_S,
   saveMetainfo,
+  showGraphQLErrors,
   sleep,
   splitJsonArray,
   validateInput,
-  handleReadError,
-  RETRY_INTERVAL_S,
-  showGraphQLErrors,
 } from './utils'
 
 const DELETES = 'deletes'
-const [account, workspace] = accountAndWorkspace
+const { account, workspace } = SessionManager.getSingleton()
 
 const inputSchema = {
   type: 'array',

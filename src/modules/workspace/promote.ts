@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 
 import { evolutionManager, workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
@@ -11,7 +10,7 @@ import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
 
 const { promote, get } = workspaces
-const [account, currentWorkspace] = [getAccount(), getWorkspace()]
+const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
 
 const throwIfIsMaster = (workspace: string) => {
   if (workspace === 'master') {
@@ -44,7 +43,7 @@ export default async () => {
   }
   await promote(account, currentWorkspace)
 
-  const sessionManager = SessionManager.getSessionManager()
+  const sessionManager = SessionManager.getSingleton()
   const userEmail = sessionManager.userLogged
 
   try {

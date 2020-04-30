@@ -14,7 +14,7 @@ async function isProdutionWorkspace(account: string, workspace: string): Promise
 }
 
 export default async (url: string, option: any) => {
-  const { workspace, account } = SessionManager.getSessionManager()
+  const { workspace, account } = SessionManager.getSingleton()
 
   if (await isProdutionWorkspace(account, workspace)) {
     log.error(`You cannot run lighthouse audits on production workspaces.`)

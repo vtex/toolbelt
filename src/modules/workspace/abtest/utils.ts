@@ -3,16 +3,12 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import numbro from 'numbro'
 import { compose, filter, map, prop } from 'ramda'
-
 import { workspaces } from '../../../clients'
 import { ABTester } from '../../../clients/abTester'
-import { getAccount, getToken } from '../../../conf'
 import * as env from '../../../env'
 import { CommandError } from '../../../errors'
-import userAgent from '../../../user-agent'
-import { dummyLogger } from '../../../clients/dummyLogger'
-
-const account = getAccount()
+import { createIOContext } from '../../../lib/clients'
+import { SessionManager } from '../../../lib/session/SessionManager'
 
 const DEFAULT_TIMEOUT = 15000
 
@@ -22,23 +18,9 @@ export const SIGNIFICANCE_LEVELS = {
   high: 0.9,
 }
 
-const contextForMaster = {
-  account,
-  authToken: getToken(),
-  production: false,
-  product: '',
-  region: env.region(),
-  route: {
-    id: '',
-    params: {},
-  },
-  userAgent,
-  workspace: 'master',
-  requestId: '',
-  operationId: '',
-  logger: dummyLogger,
-  platform: '',
-}
+const { account } = SessionManager.getSingleton()
+
+const contextForMaster = createIOContext({ workspace: 'master' })
 
 const options = { timeout: (env.envTimeout || DEFAULT_TIMEOUT) as number }
 

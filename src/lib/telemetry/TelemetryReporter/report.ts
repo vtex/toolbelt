@@ -10,7 +10,7 @@ const reportTelemetry = async () => {
   const reportTime = process.hrtime()
   const telemetryObjFilePath = process.argv[3]
   const reporter = TelemetryReporter.getTelemetryReporter()
-  const { account, workspace, tokenObj } = SessionManager.getSessionManager()
+  const { account, workspace, tokenObj } = SessionManager.getSingleton()
 
   if (!account || !workspace || !tokenObj.isValid()) {
     await reporter.moveTelemetryFileToPendingData(telemetryObjFilePath)

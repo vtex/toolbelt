@@ -1,7 +1,6 @@
 import { readJson, remove } from 'fs-extra'
 import { TelemetryClient } from '../../../clients/telemetryClient'
 import { region } from '../../../env'
-import userAgent from '../../../user-agent'
 import { createIOContext, createTelemetryClient } from '../../clients'
 import { ErrorKinds } from '../../error/ErrorKinds'
 import { ErrorReport, ErrorReportObj } from '../../error/ErrorReport'
@@ -14,13 +13,12 @@ export class TelemetryReporter {
   private static readonly RETRIES = 3
   private static readonly TIMEOUT = 30 * 1000
   public static getTelemetryReporter() {
-    const { account, workspace, token } = SessionManager.getSessionManager()
+    const { account, workspace, token } = SessionManager.getSingleton()
     const telemetryClient = createTelemetryClient(
       createIOContext({
         account,
         workspace,
         authToken: token,
-        userAgent,
         region: region(),
       }),
       { retries: TelemetryReporter.RETRIES, timeout: TelemetryReporter.TIMEOUT }
