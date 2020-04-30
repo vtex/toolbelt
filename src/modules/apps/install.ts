@@ -39,7 +39,7 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
   log.debug('Installed after accepted terms')
 }
 
-export const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
+const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
   for (const app of appsList) {
     ManifestValidator.validateApp(app)
     try {
