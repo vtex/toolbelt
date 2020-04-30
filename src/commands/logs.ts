@@ -14,17 +14,14 @@ export default class Logs extends CustomCommand {
     ghost: oclifFlags.boolean({ char: 'g', description: 'Show logs of all apps of this vendor', default: false }),
   }
 
-  static args = [
-    { name: 'vendor', required: false },
-    { name: 'app', required: false },
-  ]
+  static args = [{ name: 'app', required: false }]
 
   async run() {
     const {
-      args: { app, vendor },
+      args: { app },
       flags,
     } = this.parse(Logs)
 
-    await appsLogs(vendor, app, flags)
+    await appsLogs(app, flags)
   }
 }

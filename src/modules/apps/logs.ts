@@ -5,7 +5,7 @@ import log from '../../logger'
 import { AuthType } from '@vtex/api'
 import { CustomEventSource } from '../../lib/sse/CustomEventSource'
 
-export default async (vendor: string, app: string, options) => {
+export default async (app: string, options) => {
   const account = getAccount()
   const workspace = 'master'
   const skidderMajor = 1
@@ -19,13 +19,11 @@ export default async (vendor: string, app: string, options) => {
 
   try {
     const manifest = await getManifest()
-    vendor = vendor || manifest.vendor
     app = app || manifest.name
   } catch (err) {
     // manifest file was not found
-    vendor = vendor || account
 
-    if (!vendor) {
+    if (!account) {
       console.error('vendor could not be specified, are you logged in?')
       throw err
     }
@@ -40,14 +38,14 @@ export default async (vendor: string, app: string, options) => {
     app = ''
   }
 
-  let uri = `http://infra.io.vtex.com/skidder/v${skidderMajor}/${vendor}/${workspace}/logs/stream`
+  let uri = `http://infra.io.vtex.com/skidder/v${skidderMajor}/${account}/${workspace}/logs/stream`
   if (app) {
     uri += `/${app}`
   }
 
   function createEventSource() {
     const es = new CustomEventSource(uri, conf)
-    console.info(`Listening ${vendor}${app ? `.${app}` : ''} logs`)
+    console.info(`Listening ${account}${app ? `.${app}` : ''} logs`)
 
     es.onopen = () => {
       log.info(`Open with ${uri} is open`)
