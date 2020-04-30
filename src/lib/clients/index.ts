@@ -1,14 +1,15 @@
 import { InstanceOptions, IOContext, Workspaces } from '@vtex/api'
-import { dummyLogger } from '../../clients/dummyLogger'
+import { createDummyLogger } from '../../clients/dummyLogger'
 import { TelemetryClient } from '../../clients/telemetryClient'
 import * as env from '../../env'
+import userAgent from '../../user-agent'
+import { SessionManager } from '../session/SessionManager'
 
-interface DefaultIOContextRequirements {
-  account: string
-  authToken: string
-  region: string
-  userAgent: string
-  workspace: string
+interface IOContextOptions {
+  account?: string
+  authToken?: string
+  region?: string
+  workspace?: string
 }
 
 const clusterHeader = env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null
@@ -21,13 +22,15 @@ const defaultOptions = {
   },
 }
 
-export const createIOContext = ({
-  account,
-  authToken,
-  region,
-  userAgent,
-  workspace,
-}: DefaultIOContextRequirements): IOContext => {
+export const createIOContext = (opts?: IOContextOptions): IOContext => {
+  const session = SessionManager.getSingleton()
+  const {
+    account = session.account,
+    authToken = session.token,
+    region = env.region(),
+    workspace = session.workspace || 'master',
+  } = opts ?? {}
+
   return {
     account,
     userAgent,
@@ -43,7 +46,7 @@ export const createIOContext = ({
     requestId: '',
     operationId: '',
     platform: '',
-    logger: dummyLogger,
+    logger: createDummyLogger(),
   }
 }
 
