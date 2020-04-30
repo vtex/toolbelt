@@ -1,5 +1,5 @@
 import { Runtime } from '../../clients/runtime'
-import { getIOContext } from '../utils'
+import { createIOContext } from '../../lib/clients'
 import { ManifestEditor } from '../../lib/manifest'
 import logger from '../../logger'
 
@@ -11,6 +11,6 @@ export default async (debugInst: string) => {
     return
   }
 
-  const runtimeClient = new Runtime(getIOContext())
+  const runtimeClient = new Runtime(createIOContext())
   await runtimeClient.debugDotnetApp(name, vendor, manifest.major, debugInst)
 }

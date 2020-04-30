@@ -1,35 +1,33 @@
 import { createHash } from 'crypto'
 import { readFile, readJson, remove, writeFile } from 'fs-extra'
+import { Parser } from 'json2csv'
+import { resolve } from 'path'
 import { difference, isEmpty, length, map, pluck } from 'ramda'
 import { createInterface } from 'readline'
-import { Parser } from 'json2csv'
-
-import { resolve } from 'path'
-
 import { rewriter } from '../../clients'
 import { RedirectInput } from '../../clients/rewriter'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
 import { default as deleteRedirects } from './delete'
 import {
-  accountAndWorkspace,
   deleteMetainfo,
+  DELIMITER,
+  handleReadError,
   MAX_RETRIES,
   METAINFO_FILE,
   progressBar,
   readCSV,
+  RETRY_INTERVAL_S,
   saveMetainfo,
   showGraphQLErrors,
   sleep,
   splitJsonArray,
   validateInput,
-  handleReadError,
-  RETRY_INTERVAL_S,
-  DELIMITER,
 } from './utils'
 
 const IMPORTS = 'imports'
-const [account, workspace] = accountAndWorkspace
+const { account, workspace } = SessionManager.getSingleton()
 
 const inputSchema = {
   type: 'array',

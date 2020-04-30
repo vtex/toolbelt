@@ -3,13 +3,12 @@ import { readJson, writeFile } from 'fs-extra'
 import { Parser } from 'json2csv'
 import ora from 'ora'
 import { createInterface } from 'readline'
-
 import { rewriter } from '../../clients'
+import { Redirect } from '../../clients/rewriter'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
-import { Redirect } from '../../clients/rewriter'
 import {
-  accountAndWorkspace,
   deleteMetainfo,
   DELIMITER,
   encode,
@@ -23,7 +22,7 @@ import {
 
 const EXPORTS = 'exports'
 
-const [account, workspace] = accountAndWorkspace
+const { account, workspace } = SessionManager.getSingleton()
 
 const COLORS = ['cyan', 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', 'gray']
 const FIELDS = ['from', 'to', 'type', 'endDate', 'binding']

@@ -1,14 +1,14 @@
 import chalk from 'chalk'
-
 import { workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 
 const workspaceState = (meta: WorkspaceResponse) => (meta.production ? 'production' : 'dev')
 
 export default async (name: string): Promise<void> => {
-  const account = getAccount()
-  const workspace = name || getWorkspace()
+  const session = SessionManager.getSingleton()
+  const { account } = session
+  const workspace = name || session.workspace
 
   const meta = await workspaces.get(account, workspace)
 

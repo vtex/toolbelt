@@ -3,7 +3,6 @@ import { NodeToRender } from '@vtex/toolbelt-message-renderer'
 import { region } from '../env'
 import { createIOContext, mergeCustomOptionsWithDefault } from '../lib/clients'
 import { SessionManager } from '../lib/session/SessionManager'
-import userAgent from '../user-agent'
 
 interface VersionCheckRes {
   minVersion: string
@@ -28,11 +27,11 @@ export class ToolbeltConfigClient extends IOClient {
   }
 
   public static createDefaultClient(customOptions: InstanceOptions = {}) {
-    const { account, workspace, token } = SessionManager.getSessionManager()
-    return ToolbeltConfigClient.create(
-      createIOContext({ account, workspace, authToken: token, userAgent, region: region() }),
-      { timeout: ToolbeltConfigClient.DEFAULT_TIMEOUT, ...customOptions }
-    )
+    const { account, workspace, token } = SessionManager.getSingleton()
+    return ToolbeltConfigClient.create(createIOContext({ account, workspace, authToken: token, region: region() }), {
+      timeout: ToolbeltConfigClient.DEFAULT_TIMEOUT,
+      ...customOptions,
+    })
   }
 
   constructor(context: IOContext, options?: InstanceOptions) {

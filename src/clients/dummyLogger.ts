@@ -1,16 +1,19 @@
 import { Logger } from '@vtex/api/lib/service/logger'
-import { getAccount, getWorkspace } from '../conf'
+import { SessionManager } from '../lib/session/SessionManager'
 
 const noop = () => {}
 
-export const dummyLogger = ({
-  account: getAccount(),
-  workspace: getWorkspace(),
-  operationId: '',
-  requestId: '',
-  debug: noop,
-  info: noop,
-  warn: noop,
-  error: noop,
-  sendLog: noop,
-} as unknown) as Logger
+export function createDummyLogger() {
+  const { account, workspace } = SessionManager.getSingleton()
+  return ({
+    account,
+    workspace,
+    operationId: '',
+    requestId: '',
+    debug: noop,
+    info: noop,
+    warn: noop,
+    error: noop,
+    sendLog: noop,
+  } as unknown) as Logger
+}

@@ -2,10 +2,10 @@ import chalk from 'chalk'
 import { compose, equals, filter, head, prop, split } from 'ramda'
 
 import { apps } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
+import { SessionManager } from '../../lib/session/SessionManager'
 
 const { listApps } = apps
 
@@ -44,8 +44,7 @@ const renderTable = ({
 }
 
 export default async () => {
-  const account = getAccount()
-  const workspace = getWorkspace()
+  const { account, workspace } = SessionManager.getSingleton()
   log.debug('Starting to list apps')
   const appArray = await listApps().then(prop('data'))
   renderTable({
