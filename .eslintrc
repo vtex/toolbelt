@@ -1,7 +1,5 @@
 {
-  "extends": [
-    "vtex"
-  ],
+  "extends": ["vtex"],
   "root": true,
   "env": {
     "node": true,
@@ -39,7 +37,10 @@
       }
     },
     {
-      "files": ["./src/lib/telemetry/TelemetryReporter/report.ts"],
+      "files": [
+        "./src/lib/telemetry/TelemetryReporter/report.ts",
+        "./src/CLIPreTasks/OutdatedChecker/checkForOutdated.ts"
+      ],
       "rules": {
         "import/first": "off"
       }
