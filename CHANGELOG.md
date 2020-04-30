@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [vtex link] `no-watch` flag behaviour.
 - [vtex workspace delete] `force` flag type.
 
+### Added
+- [CLIPreTasks] Outdated version checking.
+
 ## [2.99.1] - 2020-04-29
 ### Fixed
 - Treat errors when checking edition of account on a workspace command.
