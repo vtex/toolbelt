@@ -1,13 +1,12 @@
 import chalk from 'chalk'
 import { createClients } from '../../clients'
-import { getAccount, getToken, getWorkspace } from '../../conf'
 import { ManifestValidator } from '../../lib/manifest'
+import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getManifest } from '../../manifest'
-import switchAccount from '../auth/switch'
+import { switchAccount, returnToPreviousAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { switchAccountMessage } from './utils'
 
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to deploy this app in an account that differs from the indicated vendor. Do you want to deploy in account ${chalk.blue(
@@ -17,34 +16,24 @@ const switchToVendorMessage = (vendor: string): string => {
 
 const promptDeploy = (app: string) => promptConfirm(`Are you sure you want to deploy app ${app}`)
 
-const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
-  const currentAccount = getAccount()
-  if (previousAccount !== currentAccount) {
-    const canSwitchToPrevious = await promptConfirm(switchAccountMessage(previousAccount, currentAccount))
-    if (canSwitchToPrevious) {
-      return switchAccount(previousAccount, { workspace: previousWorkspace })
-    }
-  }
-}
-
 const deployRelease = async (app: string): Promise<boolean> => {
   const { vendor, name, version } = parseLocator(app)
-  const account = getAccount()
-  if (vendor !== account) {
+  const session = SessionManager.getSingleton()
+  if (vendor !== session.account) {
     const canSwitchToVendor = await promptConfirm(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
       return false
     }
     await switchAccount(vendor, {})
   }
-  const context = { account: vendor, workspace: 'master', authToken: getToken() }
+  const context = { account: vendor, workspace: 'master', authToken: session.token }
   const { registry } = createClients(context)
   await registry.validateApp(`${vendor}.${name}`, version)
   return true
 }
 
 const prepareDeploy = async (app, originalAccount, originalWorkspace: string): Promise<void> => {
-  app = await ManifestValidator.validateApp(app)
+  app = ManifestValidator.validateApp(app)
   try {
     log.debug('Starting to deploy app:', app)
     const deployed = await deployRelease(app)
@@ -59,18 +48,18 @@ const prepareDeploy = async (app, originalAccount, originalWorkspace: string): P
     } else if (data?.message) {
       log.error(data.message)
     } else {
-      await switchToPreviousAccount(originalAccount, originalWorkspace)
+      await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
       throw e
     }
   }
 
-  await switchToPreviousAccount(originalAccount, originalWorkspace)
+  await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
 }
 
 export default async (optionalApp: string, options) => {
   const preConfirm = options.y || options.yes
-  const originalAccount = getAccount()
-  const originalWorkspace = getWorkspace()
+
+  const { account: originalAccount, workspace: originalWorkspace } = SessionManager.getSingleton()
   const app = optionalApp || toAppLocator(await getManifest())
 
   if (!preConfirm && !(await promptDeploy(app))) {

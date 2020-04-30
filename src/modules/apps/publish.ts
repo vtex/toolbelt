@@ -8,13 +8,14 @@ import { ManifestEditor } from '../../lib/manifest'
 import { toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getAppRoot } from '../../manifest'
-import switchAccount from '../auth/switch'
+import { switchAccount, returnToPreviousAccount } from '../auth/switch'
 import { listenBuild } from '../build'
 import { promptConfirm } from '../prompts'
-import { runYarnIfPathExists, switchToPreviousAccount } from '../utils'
+import { runYarnIfPathExists } from '../utils'
 import { listLocalFiles } from './file'
 import { ProjectUploader } from './ProjectUploader'
 import { checkBuilderHubMessage, showBuilderHubMessage } from './utils'
+import { SessionManager } from '../../lib/session/SessionManager'
 
 const root = getAppRoot()
 const buildersToRunLocalYarn = ['node', 'react']
@@ -65,17 +66,17 @@ const publisher = (workspace = 'master') => {
   }
 
   const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {
-    const previousConf = conf.getAll() // Store previous configuration in memory
-
+    const session = SessionManager.getSingleton()
     const manifest = await ManifestEditor.getManifestEditor()
-    const account = conf.getAccount()
 
     const builderHubMessage = await checkBuilderHubMessage('publish')
     if (builderHubMessage != null) {
       await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
     }
 
-    if (manifest.vendor !== account) {
+    const { account: previousAccount, workspace: previousWorkspace } = session
+
+    if (manifest.vendor !== session.account) {
       const switchToVendorMsg = `You are trying to publish this app in an account that differs from the indicated vendor. Do you want to publish in account ${chalk.blue(
         manifest.vendor
       )}?`
@@ -88,7 +89,7 @@ const publisher = (workspace = 'master') => {
 
     const pubTag = tag || automaticTag(manifest.version)
     const appId = toAppLocator(manifest)
-    const context = { account: manifest.vendor, workspace, region: region(), authToken: conf.getToken() }
+    const context = { account: manifest.vendor, workspace, region: region(), authToken: session.token }
     const projectUploader = ProjectUploader.getProjectUploader(appId, context)
 
     try {
@@ -105,9 +106,7 @@ const publisher = (workspace = 'master') => {
       log.error(`Failed to publish ${appId}`)
     }
 
-    await switchToPreviousAccount(previousConf)
-
-    Promise.resolve()
+    await returnToPreviousAccount({ previousAccount, previousWorkspace })
   }
 
   return { publishApp, publishApps }
@@ -116,7 +115,7 @@ const publisher = (workspace = 'master') => {
 export default async (path: string, options) => {
   log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
 
-  const account = conf.getAccount()
+  const { account } = SessionManager.getSingleton()
   const manifest = await ManifestEditor.getManifestEditor()
   const versionMsg = chalk.bold.yellow(manifest.version)
   const appNameMsg = chalk.bold.yellow(`${manifest.vendor}.${manifest.name}`)

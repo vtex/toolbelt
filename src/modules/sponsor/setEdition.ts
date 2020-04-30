@@ -1,12 +1,13 @@
 import chalk from 'chalk'
 import { Sponsor } from '../../clients/sponsor'
-import * as conf from '../../conf'
 import { CommandError } from '../../errors'
+import { createIOContext } from '../../lib/clients'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptWorkspaceMaster } from '../apps/utils'
-import { default as switchAccount } from '../auth/switch'
+import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { switchToPreviousAccount, getIOContext, IOClientOptions } from '../utils'
+import { IOClientOptions } from '../utils'
 
 const promptSwitchToAccount = async (account: string, initial: boolean) => {
   const reason = initial
@@ -20,14 +21,16 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
 }
 
 export default async function setEdition(edition: string, workspace?: string, autoSwitchBack = false) {
-  const previousConf = conf.getAll()
-  const targetAccount = previousConf.account
-  const targetWorkspace = workspace ?? previousConf.workspace
+  const session = SessionManager.getSingleton()
+  const { account: previousAccount, workspace: previousWorkspace } = session
+
+  const targetAccount = session.account
+  const targetWorkspace = workspace ?? session.workspace
 
   const workspaceNotice = targetWorkspace === 'master' ? '' : ` in workspace ${chalk.blue(targetWorkspace)}`
   log.info(`Changing edition of account ${chalk.blue(targetAccount)}${workspaceNotice}.`)
 
-  const sponsorClient = new Sponsor(getIOContext(), IOClientOptions)
+  const sponsorClient = new Sponsor(createIOContext(), IOClientOptions)
   const sponsorAccount = await sponsorClient.getSponsorAccount()
 
   if (!sponsorAccount) {
@@ -43,7 +46,7 @@ export default async function setEdition(edition: string, workspace?: string, au
   }
 
   try {
-    const sponsorClientForSponsorAccount = new Sponsor(getIOContext(), IOClientOptions)
+    const sponsorClientForSponsorAccount = new Sponsor(createIOContext(), IOClientOptions)
     await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
 
     log.info(`Successfully changed edition${workspaceNotice} of account ${chalk.blue(targetAccount)}.`)
@@ -52,9 +55,9 @@ export default async function setEdition(edition: string, workspace?: string, au
     throw ex
   } finally {
     if (autoSwitchBack) {
-      conf.saveAll(previousConf)
+      await returnToPreviousAccount({ previousAccount, previousWorkspace, promptConfirmation: false })
     } else {
-      await switchToPreviousAccount(previousConf)
+      await returnToPreviousAccount({ previousAccount, previousWorkspace })
     }
   }
 }

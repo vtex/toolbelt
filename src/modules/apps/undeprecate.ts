@@ -1,12 +1,11 @@
 import chalk from 'chalk'
 import { createClients } from '../../clients'
-import { getAccount, getToken, getWorkspace } from '../../conf'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import switchAccount from '../auth/switch'
-import { promptConfirm } from '../prompts'
+import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator } from '../../locator'
-import { switchAccountMessage } from './utils'
+import log from '../../logger'
+import { returnToPreviousAccount, switchAccount } from '../auth/switch'
+import { promptConfirm } from '../prompts'
 
 let originalAccount
 let originalWorkspace
@@ -22,30 +21,18 @@ const promptUndeprecate = (appsList: string[]) =>
     `Are you sure you want to undeprecate app${appsList.length > 1 ? 's' : ''} ${chalk.green(appsList.join(', '))}?`
   )
 
-const promptUndeprecateOnVendor = (msg: string) => promptConfirm(msg)
-
-const switchToPreviousAccount = async (previousAccount: string, previousWorkspace: string) => {
-  const currentAccount = getAccount()
-  if (previousAccount !== currentAccount) {
-    const canSwitchToPrevious = await promptUndeprecateOnVendor(switchAccountMessage(previousAccount, currentAccount))
-    if (canSwitchToPrevious) {
-      await switchAccount(previousAccount, { workspace: previousWorkspace })
-    }
-  }
-}
-
 const undeprecateApp = async (app: string): Promise<void> => {
   const { vendor, name, version } = parseLocator(app)
-  const account = getAccount()
+  const { account, token } = SessionManager.getSingleton()
   if (vendor !== account) {
-    const canSwitchToVendor = await promptUndeprecateOnVendor(switchToVendorMessage(vendor))
+    const canSwitchToVendor = await promptConfirm(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
       return
     }
     await switchAccount(vendor, {})
   }
 
-  const context = { account: vendor, workspace: 'master', authToken: getToken() }
+  const context = { account: vendor, workspace: 'master', authToken: token }
   const { registry } = createClients(context)
   return registry.undeprecateApp(`${vendor}.${name}`, version)
 }
@@ -64,11 +51,11 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
       } else if (e.message && e.response.statusText) {
         log.error(`Error undeprecating ${app}. ${e.message}. ${e.response.statusText}`)
         // eslint-disable-next-line no-await-in-loop
-        await switchToPreviousAccount(originalAccount, originalWorkspace)
+        await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
         return
       } else {
         // eslint-disable-next-line no-await-in-loop
-        await switchToPreviousAccount(originalAccount, originalWorkspace)
+        await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
         throw e
       }
     }
@@ -77,8 +64,9 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
 
 export default async (optionalApps: string[], options) => {
   const preConfirm = options.y || options.yes
-  originalAccount = getAccount()
-  originalWorkspace = getWorkspace()
+  const { account, workspace } = SessionManager.getSingleton()
+  originalAccount = account
+  originalWorkspace = workspace
   const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
 
   if (!preConfirm && !(await promptUndeprecate(appsList))) {
