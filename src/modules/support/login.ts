@@ -3,13 +3,14 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
-import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../../conf'
 import * as env from '../../env'
 import log from '../../logger'
+import { SessionManager } from '../../lib/session/SessionManager'
 
 const getAvailableRoles = async (token: string, supportedAccount: string): Promise<string[]> => {
+  const { account, workspace } = SessionManager.getSingleton()
   const response = await axios.get(
-    `https://app.io.vtex.com/vtex.support-authority/v0/${getAccount()}/${getWorkspace()}/${supportedAccount}/roles`,
+    `https://app.io.vtex.com/vtex.support-authority/v0/${account}/${workspace}/${supportedAccount}/roles`,
     {
       headers: {
         Authorization: token,
@@ -40,8 +41,9 @@ const promptRoles = async (roles: string[]): Promise<string> => {
 }
 
 const loginAsRole = async (token: string, supportedAccount: string, role: string): Promise<string> => {
+  const { account, workspace } = SessionManager.getSingleton()
   const response = await axios.get(
-    `https://app.io.vtex.com/vtex.support-authority/v0/${getAccount()}/${getWorkspace()}/${supportedAccount}/login/${role}`,
+    `https://app.io.vtex.com/vtex.support-authority/v0/${account}/${workspace}/${supportedAccount}/login/${role}`,
     {
       headers: {
         Authorization: token,
@@ -60,9 +62,10 @@ const assertToken = (raw: string): void => {
 }
 
 const saveSupportCredentials = (account: string, token: string): void => {
-  saveAccount(account)
-  saveWorkspace('master')
-  saveToken(token)
+  const session = SessionManager.getSingleton()
+  session.DEPRECATEDchangeAccount(account)
+  session.workspaceSwitch('master')
+  session.DEPRECATEDchangeToken(token)
 }
 
 export default async (account: string) => {
@@ -70,7 +73,7 @@ export default async (account: string) => {
     log.error(`Please specify the account that will receive support. type vtex --help for more information.`)
     return
   }
-  const actualToken = getToken()
+  const actualToken = SessionManager.getSingleton().token
   try {
     const roles = await getAvailableRoles(actualToken, account)
     if (roles.length === 0) {

@@ -3,9 +3,9 @@ import { render } from 'ink'
 
 import { apps, tester } from '../../../clients'
 import { RealTimeReport } from './report/index'
-import { getToken } from '../../../conf'
 import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
 import { TestRequest } from '../../../clients/Tester'
+import { SessionManager } from '../../../lib/session/SessionManager'
 
 class EndToEndCommand {
   constructor(private options) {}
@@ -32,7 +32,11 @@ class EndToEndCommand {
     const testRequest = this.options.report
       ? null
       : await tester.test(
-          { integration: true, monitoring: true, authToken: this.options.token ? getToken() : undefined },
+          {
+            integration: true,
+            monitoring: true,
+            authToken: this.options.token ? SessionManager.getSingleton().token : undefined,
+          },
           appItem.id
         )
 
@@ -45,7 +49,7 @@ class EndToEndCommand {
       : await tester.test({
           integration: true,
           monitoring: true,
-          authToken: this.options.token ? getToken() : undefined,
+          authToken: this.options.token ? SessionManager.getSingleton().token : undefined,
         })
 
     this.render(testRequest)

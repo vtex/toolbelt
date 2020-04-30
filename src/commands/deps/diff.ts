@@ -1,6 +1,6 @@
 import { CustomCommand } from '../../oclif/CustomCommand'
-import { getWorkspace } from '../../conf'
 import workspaceDepsDiff from '../../modules/deps/diff'
+import { SessionManager } from '../../lib/session/SessionManager'
 
 export default class DepsDiff extends CustomCommand {
   static description =
@@ -13,7 +13,7 @@ export default class DepsDiff extends CustomCommand {
   }
 
   static args = [
-    { name: 'workspace1', required: false, default: getWorkspace() },
+    { name: 'workspace1', required: false, default: SessionManager.getSingleton().workspace },
     { name: 'workspace2', required: false, default: 'master' },
   ]
 

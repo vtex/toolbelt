@@ -2,15 +2,15 @@ import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import R from 'ramda'
-import * as conf from '../conf'
 import { clusterIdDomainInfix, publicEndpoint } from '../env'
+import { SessionManager } from '../lib/session/SessionManager'
 // Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯
 const QRCode = require('qrcode-terminal') // eslint-disable-line @typescript-eslint/no-var-requires
 
 const isSupportRole = (role: string): boolean => role?.startsWith('vtex.support-authority')
 
 const isSupportSession = (): boolean => {
-  const token = conf.getToken()
+  const { token } = SessionManager.getSingleton()
   const decoded = jwt.decode(token)
   if (!decoded || typeof decoded === 'string') {
     return false
@@ -20,7 +20,7 @@ const isSupportSession = (): boolean => {
 }
 
 const prepareSupportBrowser = async (account: string, workspace: string): Promise<string> => {
-  const token = conf.getToken()
+  const { token } = SessionManager.getSingleton()
 
   const uri = `https://${workspace}--${account}.${publicEndpoint()}/_v/private/support-login/prepare`
   const response = await axios.get(uri, {
@@ -32,7 +32,7 @@ const prepareSupportBrowser = async (account: string, workspace: string): Promis
 }
 
 export default async (endpointInput, { q, qr }) => {
-  const { account, workspace } = conf.currentContext
+  const { account, workspace } = SessionManager.getSingleton()
   let endpoint = endpointInput ?? ''
   if (isSupportSession()) {
     const token = await prepareSupportBrowser(account, workspace)

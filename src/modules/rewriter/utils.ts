@@ -6,19 +6,14 @@ import jsonSplit from 'json-array-split'
 import ProgressBar from 'progress'
 import { compose, keys, join, map, match, pluck, prop, replace, sortBy, toLower } from 'ramda'
 
-import { getAccount, getWorkspace } from '../../conf'
 import { Redirect } from '../../clients/rewriter'
 import log from '../../logger'
 
 export const DELIMITER = ';'
-export const LAST_CHANGE_DATE = 'lastChangeDate'
 export const MAX_ENTRIES_PER_REQUEST = 10
 export const METAINFO_FILE = '.vtex_redirects_metainfo.json'
 export const MAX_RETRIES = 10
 export const RETRY_INTERVAL_S = 5
-export const accountAndWorkspace = [getAccount(), getWorkspace()]
-
-export const progressString = (message: string) => `${message} [:bar] :current/:total :percent`
 
 export const sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 

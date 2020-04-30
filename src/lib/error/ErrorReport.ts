@@ -98,7 +98,7 @@ export class ErrorReport extends Error {
     const message = args.message ?? args.originalError.message
     const tryToParseError = args.tryToParseError ?? true
 
-    const { workspace, account } = SessionManager.getSessionManager()
+    const { workspace, account } = SessionManager.getSingleton()
     return new ErrorReport({
       kind,
       message,

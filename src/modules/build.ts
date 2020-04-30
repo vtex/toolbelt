@@ -1,7 +1,7 @@
-import { currentContext } from '../conf'
 import { BuildFailError } from '../errors'
 import log, { fileLoggerLevel } from '../logger'
 import { logAll, onEvent } from '../lib/sse'
+import { SessionManager } from '../lib/session/SessionManager'
 
 interface ListeningOptions {
   context?: Context
@@ -61,7 +61,8 @@ const runErrorAction = (code, message, errorActions) => {
 
 const listen = (appOrKey: string, options: ListeningOptions = {}): Promise<Unlisten> => {
   const listenPromise = new Promise((resolve, reject) => {
-    const { waitCompletion, onError = {}, onBuild = false, context = currentContext, senders = null } = options
+    const { account, workspace } = SessionManager.getSingleton()
+    const { waitCompletion, onError = {}, onBuild = false, context = { account, workspace }, senders = null } = options
     const callback = (eventType, eventData) => {
       if (eventType === 'build.status') {
         const {

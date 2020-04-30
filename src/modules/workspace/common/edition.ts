@@ -1,20 +1,17 @@
-import { getIOContext, IOClientOptions } from '../../utils'
-import { Sponsor } from '../../../clients/sponsor'
-import log from '../../../logger'
 import chalk from 'chalk'
+import { Sponsor } from '../../../clients/sponsor'
+import { createIOContext } from '../../../lib/clients'
+import { ErrorKinds } from '../../../lib/error/ErrorKinds'
+import { TelemetryCollector } from '../../../lib/telemetry/TelemetryCollector'
+import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import setEditionCmd from '../../sponsor/setEdition'
-import { TelemetryCollector } from '../../../lib/telemetry/TelemetryCollector'
-import { ErrorKinds } from '../../../lib/error/ErrorKinds'
+import { IOClientOptions } from '../../utils'
 
 const recommendedEdition = 'vtex.edition-store@2.x'
 
 const getCurrEdition = async () => {
-  const ctx = {
-    ...getIOContext(),
-    workspace: 'master',
-  }
-  const sponsor = new Sponsor(ctx, IOClientOptions)
+  const sponsor = new Sponsor(createIOContext({ workspace: 'master' }), IOClientOptions)
   try {
     return await sponsor.getEdition()
   } catch (err) {

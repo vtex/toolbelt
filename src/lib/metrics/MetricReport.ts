@@ -30,7 +30,7 @@ export class MetricReport {
     if (env) {
       return new MetricReport({ metric, env })
     }
-    const { workspace, account } = SessionManager.getSessionManager()
+    const { workspace, account } = SessionManager.getSingleton()
     return new MetricReport({
       metric,
       env: {

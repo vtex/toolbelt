@@ -1,13 +1,12 @@
 import chalk from 'chalk'
-
-import { createTable } from '../../table'
 import { workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
-
-const [account, currentWorkspace] = [getAccount(), getWorkspace()]
+import { createTable } from '../../table'
 
 export default () => {
+  const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
+
   log.debug('Listing workspaces')
   const table = createTable({ head: ['Name', 'Weight', 'Production'] })
   return workspaces

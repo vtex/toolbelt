@@ -1,16 +1,12 @@
 import chalk from 'chalk'
 
 import { workspaces } from './clients'
-import { getAccount, getLogin, getWorkspace } from './conf'
 import log from './logger'
-
-const login = getLogin()
-const account = getAccount()
-const workspace = getWorkspace()
+import { SessionManager } from './lib/session/SessionManager'
 
 const workspaceState = (meta: WorkspaceResponse) => (meta.production ? 'production' : 'dev')
 
-const getWorkspaceState = async (): Promise<string> => {
+const getWorkspaceState = async (account: string, workspace: string): Promise<string> => {
   try {
     const meta = await workspaces.get(account, workspace)
 
@@ -23,15 +19,17 @@ const getWorkspaceState = async (): Promise<string> => {
 }
 
 export const greeting = async (): Promise<string[]> => {
-  if (account && login && workspace) {
+  const { account, userLogged, workspace } = SessionManager.getSingleton()
+
+  if (account && userLogged && workspace) {
     let loggedMessage = 'Logged into'
-    let state = await getWorkspaceState()
+    let state = await getWorkspaceState(account, workspace)
     if (!state) {
       loggedMessage = `${chalk.red('Not logged in')}. Previously logged into`
       state = ''
     }
     return [
-      `${loggedMessage} ${chalk.blue(account)} as ${chalk.green(login)} at ${chalk.yellowBright(
+      `${loggedMessage} ${chalk.blue(account)} as ${chalk.green(userLogged)} at ${chalk.yellowBright(
         state
       )}workspace ${chalk.green(workspace)}`,
     ]
