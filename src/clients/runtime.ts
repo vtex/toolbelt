@@ -2,8 +2,8 @@ import { IOContext } from '@vtex/api'
 import { cluster } from '../env'
 import * as url from 'url'
 import WebSocket from 'ws'
-import { getToken } from '../conf'
 import logger from '../logger'
+import { SessionManager } from '../lib/session/SessionManager'
 
 const EOT = '\x04'
 
@@ -24,7 +24,7 @@ export class Runtime {
 
     const clientOptions = {
       headers: {
-        Authorization: getToken(),
+        Authorization: SessionManager.getSingleton().token,
         Host: host,
         'X-Vtex-Runtime-Api': 'true',
         ...clusterHeader,
