@@ -46,7 +46,7 @@ export class CustomEventSource {
   public esOnMessage: OnMessageHandler
   public esOnOpen: OnOpenHandler
   public esOnClose: () => void
-  
+
   private configuration: EventSource.EventSourceInitDict
   private events: EventListeners[]
   private eventSource: EventSource
@@ -93,7 +93,7 @@ export class CustomEventSource {
     this.esOnClose = newOnClose
     this.esOnClose = this.esOnClose.bind(this)
     if (this.eventSource) {
-      this.eventSource.onclose = this.esOnClose
+      (this.eventSource as any).onclose = this.esOnClose
     }
   }
 
