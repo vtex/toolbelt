@@ -1,9 +1,9 @@
 import { getAccount, getToken } from '../../conf'
 import { getManifest } from '../../manifest'
-import CustomEventSource from '../../eventsource'
 import userAgent from '../../user-agent'
 import log from '../../logger'
 import { AuthType } from '@vtex/api'
+import { CustomEventSource } from '../../lib/sse/CustomEventSource'
 
 export default async (vendor: string, app: string, options) => {
   const account = getAccount()
