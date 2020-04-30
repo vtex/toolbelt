@@ -6,11 +6,6 @@ export const toMajorRange = (version: string): string => {
   return `${versionMajor(version)}.x`
 }
 
-export const toMajorLocator = ({ vendor, name, version }: Manifest): string => {
-  const majorRange = toMajorRange(version)
-  return `${vendor}.${name}@${majorRange}`
-}
-
 export const toAppLocator = ({ vendor, name, version }: Manifest): string => {
   return `${vendor}.${name}@${version}`
 }

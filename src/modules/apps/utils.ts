@@ -2,12 +2,12 @@ import axios from 'axios'
 import chalk from 'chalk'
 import Table from 'cli-table2'
 import enquirer from 'enquirer'
-import { compose, concat, contains, curry, drop, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
+import { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
 import { apps, createClients, workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
 import { CommandError } from '../../errors'
 import { ManifestEditor } from '../../lib/manifest'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 
@@ -35,10 +35,6 @@ export const workspaceProductionMessage = workspace =>
     workspaceExampleName
   )} by running ${chalk.blue(`vtex use ${workspaceExampleName} -r`)}`
 
-export const parseArgs = (args: string[]): string[] => {
-  return drop(1, args)
-}
-
 export const promptWorkspaceMaster = async account => {
   const confirm = await promptConfirm(
     `Are you sure you want to force this operation on the ${chalk.green(
@@ -54,8 +50,7 @@ export const promptWorkspaceMaster = async account => {
 }
 
 export const validateAppAction = async (operation: string, app?): Promise<boolean> => {
-  const account = getAccount()
-  const workspace = getWorkspace()
+  const { account, workspace } = SessionManager.getSingleton()
 
   if (workspace === 'master') {
     if (!contains(operation, workspaceMasterAllowedOperations)) {
@@ -238,12 +233,6 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
       log.info(message)
     }
   }
-}
-
-export const switchAccountMessage = (previousAccount: string, currentAccount: string): string => {
-  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(
-    previousAccount
-  )} account?`
 }
 
 export const resolveAppId = (appName: string, appVersion: string): Promise<string> =>
