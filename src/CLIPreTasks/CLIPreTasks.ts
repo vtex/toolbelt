@@ -6,10 +6,10 @@ import { configDir } from '../conf'
 import { PathConstants } from '../lib/constants/Paths'
 import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 import { OutdatedChecker } from './OutdatedChecker/OutdatedChecker'
+import { EnvVariablesConstants } from '../lib/constants/EnvVariables'
 
 export class CLIPreTasks {
   public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER
-  private static readonly BYPASS_LOCKS_FLAG = 'BYPASS_LOCKS'
 
   public static getCLIPreTasks(pkgJson: any) {
     return new CLIPreTasks(pkgJson)
@@ -50,12 +50,13 @@ export class CLIPreTasks {
   }
 
   public runTasks() {
-    if (process.env[CLIPreTasks.BYPASS_LOCKS_FLAG] !== 'false') {
-      this.ensureCompatibleNode()
-      this.removeOutdatedPaths()
-      DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
+    if (process.env[EnvVariablesConstants.IGNORE_CLIPRETASKS]) {
+      return
     }
 
+    this.ensureCompatibleNode()
+    this.removeOutdatedPaths()
+    DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
     OutdatedChecker.checkForOutdate(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
   }
 }
