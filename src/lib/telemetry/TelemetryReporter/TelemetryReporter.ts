@@ -4,7 +4,7 @@ import { region } from '../../../env'
 import userAgent from '../../../user-agent'
 import { createIOContext, createTelemetryClient } from '../../clients'
 import { ErrorKinds } from '../../error/ErrorKinds'
-import { ErrorReport, ErrorReportObj } from '../../error/ErrorReport'
+import { ErrorCreationArguments, ErrorReport, ErrorReportObj } from '../../error/ErrorReport'
 import { MetricReportObj } from '../../metrics/MetricReport'
 import { SessionManager } from '../../session/SessionManager'
 import { TelemetryFile } from '../TelemetryCollector'
@@ -72,7 +72,7 @@ export class TelemetryReporter {
             await this.reportMetrics(metrics)
             await remove(pendingFilePath)
           } catch (err) {
-            this.registerMetaError(err)
+            this.registerMetaError(err, { step: 'sendPendingData', pendingFilePath })
           }
         })
       )
@@ -112,14 +112,16 @@ export class TelemetryReporter {
     this.registerMetaError(reportingError)
   }
 
-  private registerMetaError(error: Error | any) {
+  private registerMetaError(error: Error, details?: ErrorCreationArguments['details']) {
+    const errObj = ErrorReport.create({
+      kind: ErrorKinds.TELEMETRY_REPORTER_ERROR,
+      originalError: error,
+      details,
+    }).toObject()
+    console.error(`Registering ${ErrorKinds.TELEMETRY_REPORTER_ERROR}: ${errObj.message}`)
+
     this.pendingDataManager.registerPendingFile({
-      errors: [
-        ErrorReport.create({
-          kind: ErrorKinds.TELEMETRY_REPORTER_ERROR,
-          originalError: error,
-        }).toObject(),
-      ],
+      errors: [errObj],
     })
   }
 }

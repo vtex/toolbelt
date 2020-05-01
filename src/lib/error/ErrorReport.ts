@@ -4,35 +4,36 @@ import { randomBytes } from 'crypto'
 import * as pkg from '../../../package.json'
 import logger from '../../logger'
 import { SessionManager } from '../session/SessionManager'
-import { EventSourceError } from '../sse/EventSourceError'
 import { getPlatform } from '../utils/getPlatform'
 import { truncateAndSanitizeStringsFromObject } from '../utils/truncateAndSanitizeStringsFromObject'
 import { ErrorKinds } from './ErrorKinds'
-
-export interface ErrorCreationArguments {
-  kind?: string
-  message?: string
-  originalError: Error | null
-  tryToParseError?: boolean
-}
-
-export interface ErrorReportObj {
-  errorId: string
-  timestamp: string
-  kind: string
-  message: string
-  stack: string
-  env: ErrorEnv
-  errorDetails?: any
-  code?: string
-}
+import { parseError } from './errorParsing'
 
 interface ErrorReportArguments {
   kind: string
-  message: string
-  originalError: Error | null
-  tryToParseError: boolean
+  originalError: Error
   env: ErrorEnv
+  message?: string
+  details?: Record<string, any>
+}
+
+export interface ErrorCreationArguments {
+  kind?: ErrorReportArguments['kind']
+  message?: ErrorReportArguments['message']
+  details?: ErrorReportArguments['details']
+  originalError: ErrorReportArguments['originalError']
+}
+
+export interface ErrorReportObj {
+  kind: ErrorReportArguments['kind']
+  message: ErrorReportArguments['message']
+  env: ErrorReportArguments['env']
+  details?: ErrorReportArguments['details']
+  errorId: string
+  timestamp: string
+  stack: string
+  parsedInfo?: Record<string, any>
+  code?: string
 }
 
 interface ErrorEnv {
@@ -42,23 +43,6 @@ interface ErrorEnv {
   nodeVersion: string
   platform: string
   command: string
-}
-
-interface RequestErrorDetails {
-  requestConfig: {
-    url?: string
-    method?: string
-    params?: any
-    headers?: Record<string, any>
-    data?: any
-    timeout?: string | number
-  }
-  response: {
-    status?: number
-    statusText?: string
-    headers?: Record<string, any>
-    data?: any
-  }
 }
 
 type ErrorLogLevel = 'error' | 'debug'
@@ -83,7 +67,7 @@ export class ErrorReport extends Error {
     ? parseInt(process.env.MAX_ERROR_STRING_LENGTH, 10)
     : 1024
 
-  private static readonly MAX_SERIALIZATION_DEPTH = 5
+  private static readonly MAX_SERIALIZATION_DEPTH = 8
 
   public static createGenericErrorKind(error: AxiosError | Error | any) {
     if (error.config) {
@@ -96,14 +80,13 @@ export class ErrorReport extends Error {
   public static create(args: ErrorCreationArguments) {
     const kind = args.kind ?? this.createGenericErrorKind(args.originalError)
     const message = args.message ?? args.originalError.message
-    const tryToParseError = args.tryToParseError ?? true
 
     const { workspace, account } = SessionManager.getSessionManager()
     return new ErrorReport({
       kind,
       message,
-      tryToParseError,
       originalError: args.originalError,
+      details: args.details,
       env: {
         account,
         workspace,
@@ -115,66 +98,24 @@ export class ErrorReport extends Error {
     })
   }
 
-  private static parseAxiosError(err: AxiosError): RequestErrorDetails {
-    const { url, method, headers: requestHeaders, params, data: requestData, timeout: requestTimeout } = err.config
-    const { status, statusText, headers: responseHeaders, data: responseData } = err.response || {}
-
-    return {
-      requestConfig: {
-        url,
-        method,
-        params,
-        headers: requestHeaders,
-        data: requestData,
-        timeout: requestTimeout,
-      },
-      response: err.response
-        ? {
-            status,
-            statusText,
-            headers: responseHeaders,
-            data: responseData,
-          }
-        : undefined,
-    }
-  }
-
-  private static getErrorDetails(err: any): any | null {
-    if (err.isAxiosError || err.config) {
-      return this.parseAxiosError(err)
-    }
-
-    if (err instanceof EventSourceError) {
-      return err.getErrorDetailsObject()
-    }
-
-    return null
-  }
-
-  public readonly kind: string
-  public readonly originalError: Error | any
-  public readonly errorDetails?: any
+  public readonly kind: ErrorReportArguments['kind']
+  public readonly originalError: ErrorReportArguments['originalError']
+  public readonly env: ErrorReportArguments['env']
+  public readonly details?: ErrorReportArguments['details']
+  public readonly parsedInfo?: Record<string, any>
   public readonly timestamp: string
   public readonly errorId: string
-  public readonly env: ErrorEnv
 
-  constructor({ kind, message, originalError, tryToParseError = false, env }: ErrorReportArguments) {
-    super(message)
+  constructor({ kind, message, originalError, env, details }: ErrorReportArguments) {
+    super(message ?? originalError.message)
     this.timestamp = new Date().toISOString()
     this.kind = kind
     this.originalError = originalError
     this.errorId = randomBytes(8).toString('hex')
     this.stack = originalError.stack
     this.env = env
-
-    this.errorDetails = ErrorReport.getErrorDetails(this.originalError)
-    if (tryToParseError) {
-      if (this.errorDetails?.response?.data?.message) {
-        this.message = this.errorDetails.response.data.message
-      } else {
-        this.message = this.originalError.message
-      }
-    }
+    this.parsedInfo = parseError(this.originalError)
+    this.details = details
   }
 
   public toObject(): ErrorReportObj {
@@ -185,8 +126,9 @@ export class ErrorReport extends Error {
       message: this.message,
       stack: this.stack,
       env: this.env,
-      ...(this.errorDetails ? { errorDetails: this.errorDetails } : null),
-      ...(this.originalError.code ? { code: this.originalError.code } : null),
+      ...(this.details ? { details: this.details } : null),
+      ...(this.parsedInfo ? { parsedInfo: this.parsedInfo } : null),
+      ...((this.originalError as any).code ? { code: (this.originalError as any).code } : null),
     }
 
     return truncateAndSanitizeStringsFromObject(
@@ -194,14 +136,6 @@ export class ErrorReport extends Error {
       ErrorReport.MAX_ERROR_STRING_LENGTH,
       ErrorReport.MAX_SERIALIZATION_DEPTH
     ) as ErrorReportObj
-  }
-
-  public stringify(pretty = false) {
-    if (pretty) {
-      return JSON.stringify(this.toObject(), null, 2)
-    }
-
-    return JSON.stringify(this.toObject())
   }
 
   public logErrorForUser(opts?: LogToUserOptions) {
@@ -227,12 +161,12 @@ export class ErrorReport extends Error {
     logger[coreLogLevels.errorMessage](chalk`{bold Message:} ${this.message}`)
     logger[coreLogLevels.errorId](chalk`{bold ErrorID:} ${this.errorId}`)
 
-    if (this.errorDetails?.requestConfig) {
-      const { method, url } = this.errorDetails.requestConfig
+    if (this.parsedInfo?.requestConfig) {
+      const { method, url } = this.parsedInfo.requestConfig
       logger[requestDataLogLevels.requestInfo](chalk`{bold Request:} ${method} ${url}`)
 
-      if (this.errorDetails?.response) {
-        const { status } = this.errorDetails.response
+      if (this.parsedInfo?.response) {
+        const { status } = this.parsedInfo.response
         logger[requestDataLogLevels.requestStatus](chalk`{bold Status:} ${status}`)
       }
     }
