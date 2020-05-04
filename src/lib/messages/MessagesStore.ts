@@ -1,11 +1,11 @@
 import { NodeToRender } from '@vtex/toolbelt-message-renderer'
-import { pathExistsSync, readdirSync, readJsonSync, writeJsonSync } from 'fs-extra'
+import { ensureDirSync, readJsonSync, writeJsonSync } from 'fs-extra'
 import { join } from 'path'
 import { ToolbeltConfigClient } from '../../clients/toolbeltConfigClient'
+import { PathConstants } from '../constants/Paths'
 import { ErrorKinds } from '../error/ErrorKinds'
 import { ErrorReport } from '../error/ErrorReport'
 import { TelemetryCollector } from '../telemetry/TelemetryCollector'
-import { PathConstants } from '../constants/Paths'
 
 export interface IMessagesStore {
   storeDir: string
@@ -22,20 +22,9 @@ export class MessagesStore implements IMessagesStore {
       return MessagesStore.singleton
     }
 
+    ensureDirSync(MessagesStore.MESSAGES_FOLDER)
     MessagesStore.singleton = new MessagesStore(MessagesStore.MESSAGES_FOLDER)
     return MessagesStore.singleton
-  }
-
-  public static hasLocalCache() {
-    if (!pathExistsSync(MessagesStore.MESSAGES_FOLDER)) {
-      return false
-    }
-
-    if (readdirSync(MessagesStore.MESSAGES_FOLDER).length === 0) {
-      return false
-    }
-
-    return true
   }
 
   private messages: Record<string, NodeToRender>

@@ -15,7 +15,7 @@ export class LocalCacheUpdaterStore implements ILocalCacheUpdaterStore {
 
   private store: Configstore
   constructor(public storeFilePath: string) {
-    this.store = new Configstore('', {}, { configPath: storeFilePath })
+    this.store = new Configstore('', null, { configPath: storeFilePath })
   }
 
   public getLastUpdate() {

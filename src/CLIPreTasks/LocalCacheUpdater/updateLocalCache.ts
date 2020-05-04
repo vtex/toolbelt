@@ -7,13 +7,10 @@ import { LocalCacheUpdaterStore } from './LocalCacheUpdaterStore'
 const update = async (storageWithCacheInfo: StorageWithCacheInfo) => {
   try {
     const store = LocalCacheUpdaterStore.getStore(storageWithCacheInfo.id)
-    const { updateCache } = require(storageWithCacheInfo.cacheUpdaterPath) as CacheUpdater
-
+    const { updateCache } = require(storageWithCacheInfo.cacheUpdaterPath).default as CacheUpdater
     await updateCache()
 
     store.setLastUpdate(Date.now())
-
-    process.exit()
   } catch (err) {
     const telemetryCollector = TelemetryCollector.getCollector()
     telemetryCollector.registerError(
@@ -23,8 +20,7 @@ const update = async (storageWithCacheInfo: StorageWithCacheInfo) => {
       })
     )
 
-    await telemetryCollector.flush()
-    process.exit(1)
+    telemetryCollector.flush()
   }
 }
 

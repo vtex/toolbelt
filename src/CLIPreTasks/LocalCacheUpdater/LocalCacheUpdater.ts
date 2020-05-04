@@ -1,5 +1,7 @@
-import { spawn } from 'child_process'
+import { ensureDirSync } from 'fs-extra'
 import { join } from 'path'
+import { PathConstants } from '../../lib/constants/Paths'
+import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
 import { LocalCacheUpdaterStore } from './LocalCacheUpdaterStore'
 
 export interface CacheUpdater {
@@ -14,8 +16,10 @@ export interface StorageWithCacheInfo {
 
 export class LocalCacheUpdater {
   public static maybeUpdateCaches(storagesWithCache: StorageWithCacheInfo[]) {
+    ensureDirSync(PathConstants.CACHE_FOLDER)
     storagesWithCache.forEach(storageToCheck => {
-      const updater: CacheUpdater = require(storageToCheck.cacheUpdaterPath)
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const updater: CacheUpdater = require(storageToCheck.cacheUpdaterPath).default
       const store = LocalCacheUpdaterStore.getStore(storageToCheck.id)
       if (updater.shouldUpdateCache(store.getLastUpdate())) {
         LocalCacheUpdater.startUpdaterProcess(storageToCheck)
@@ -24,13 +28,10 @@ export class LocalCacheUpdater {
   }
 
   private static startUpdaterProcess(storageToCheck: StorageWithCacheInfo) {
-    spawn(
-      process.execPath,
-      [join(__dirname, 'updateLocalCache.js'), storageToCheck.id, storageToCheck.cacheUpdaterPath],
-      {
-        detached: true,
-        stdio: 'ignore',
-      }
-    ).unref()
+    spawnUnblockingChildProcess(process.execPath, [
+      join(__dirname, 'updateLocalCache.js'),
+      storageToCheck.id,
+      storageToCheck.cacheUpdaterPath,
+    ])
   }
 }

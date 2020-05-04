@@ -7,6 +7,7 @@ import { PathConstants } from '../lib/constants/Paths'
 import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 import { OutdatedChecker } from './OutdatedChecker/OutdatedChecker'
 import { EnvVariablesConstants } from '../lib/constants/EnvVariables'
+import { LocalCacheUpdater } from './LocalCacheUpdater/LocalCacheUpdater'
 
 export class CLIPreTasks {
   public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER
@@ -58,5 +59,12 @@ export class CLIPreTasks {
     this.removeOutdatedPaths()
     DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
     OutdatedChecker.checkForOutdate(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
+
+    LocalCacheUpdater.maybeUpdateCaches([
+      {
+        id: 'toolbelt-messages',
+        cacheUpdaterPath: join(__dirname, '..', 'lib', 'messages', 'MessagesCacheUpdater.js'),
+      },
+    ])
   }
 }
