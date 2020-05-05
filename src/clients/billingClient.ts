@@ -1,18 +1,12 @@
-import { HttpClient, InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 import { GraphQlError } from '../errors'
 
-export default class Billing {
-  private http: HttpClient
-
+export default class Billing extends AppClient {
   constructor(ioContext: IOContext, opts: InstanceOptions) {
-    this.http = HttpClient.forWorkspace('billing.vtex', ioContext, opts)
+    super('vtex.billing@0.x', ioContext, opts)
   }
 
-  public installApp = async (
-    appName: string,
-    termsOfUseAccepted: boolean,
-    force: boolean
-  ): Promise<InstallResponse> => {
+  public installApp = async (appName: string, termsOfUseAccepted: boolean, force: boolean): Promise<InstallResponse> => {
     const graphQLQuery = `mutation InstallApps{
       install(appName:"${appName}", termsOfUseAccepted:${termsOfUseAccepted}, force:${force}) {
         code
