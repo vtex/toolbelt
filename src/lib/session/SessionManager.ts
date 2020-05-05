@@ -130,7 +130,7 @@ export class SessionManager implements ISessionManager {
       this.state.account = newAccount
       this.state.workspace = targetWorkspace
       this.state.tokenObj = cachedToken
-      this.flushState()
+      this.saveState()
       return
     }
 
@@ -139,7 +139,7 @@ export class SessionManager implements ISessionManager {
     this.state.account = newAccount
     this.state.workspace = targetWorkspace
     this.state.tokenObj = new Token(token)
-    this.flushState()
+    this.saveState()
     this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token)
   }
 
@@ -158,35 +158,35 @@ export class SessionManager implements ISessionManager {
 
     this.state.lastWorkspace = this.state.workspace
     this.state.workspace = newWorkspace
-    this.flushWorkspaceData()
+    this.saveWorkspaceData()
   }
 
   /* This should not be used - implement another login method instead */
   public DEPRECATEDchangeAccount(account: string) {
     this.state.lastAccount = this.state.account
     this.state.account = account
-    this.flushState()
+    this.saveState()
   }
 
   /* This should not be used - implement another login method instead */
   public DEPRECATEDchangeToken(token: string) {
     this.state.tokenObj = new Token(token)
-    this.flushState()
+    this.saveState()
   }
 
-  private flushState() {
-    this.flushAccountData()
-    this.flushWorkspaceData()
+  private saveState() {
+    this.saveAccountData()
+    this.saveWorkspaceData()
     this.sessionPersister.saveLogin(this.state.tokenObj.login)
     this.sessionPersister.saveToken(this.state.tokenObj.token)
   }
 
-  private flushWorkspaceData() {
+  private saveWorkspaceData() {
     this.sessionPersister.saveWorkspace(this.state.workspace)
     this.sessionPersister.saveLastWorkspace(this.state.lastWorkspace)
   }
 
-  private flushAccountData() {
+  private saveAccountData() {
     this.sessionPersister.saveAccount(this.state.account)
     this.sessionPersister.saveLastAccount(this.state.lastAccount)
   }
