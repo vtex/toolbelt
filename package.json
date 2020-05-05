@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.99.2",
+  "version": "2.99.3",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "scripts": {
@@ -79,6 +79,7 @@
     "fs-extra": "~7.0.0",
     "get-stream": "~4.0.0",
     "globby": "~8.0.1",
+    "graphql": "^14.2.1",
     "ink": "^2.7.1",
     "is-docker": "^2.0.0",
     "is-wsl": "^2.1.1",

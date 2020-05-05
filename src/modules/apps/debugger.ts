@@ -30,7 +30,7 @@ function webSocketTunnelHandler(host: string, path: string, server: net.Server):
     socket.setKeepAlive(true, keepAliveDelayMs)
     const ws = new WebSocket(`wss://${host}${path}`, {
       headers: {
-        Authorization: SessionManager.getSessionManager().checkAndGetToken(true),
+        Authorization: SessionManager.getSingleton().checkAndGetToken(true),
         Host: host,
         'user-agent': userAgent,
         'X-Vtex-Runtime-Api': 'true',
@@ -105,7 +105,7 @@ export default function startDebuggerTunnel(
     return
   }
 
-  const { account, workspace } = SessionManager.getSessionManager()
+  const { account, workspace } = SessionManager.getSingleton()
   const appMajor = versionMajor(version)
   const host = 'app.io.vtex.com'
   const path = `/${vendor}.${name}/v${appMajor}/${account}/${workspace}/_debug/attach`

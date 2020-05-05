@@ -4089,7 +4089,7 @@ graphql@^0.13.2:
   dependencies:
     iterall "^1.2.1"
 
-graphql@^14.5.3:
+graphql@^14.2.1, graphql@^14.5.3:
   version "14.6.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-14.6.0.tgz#57822297111e874ea12f5cd4419616930cd83e49"
   integrity sha512-VKzfvHEKybTKjQVpTFrA5yUq2S9ihcZvfJAtsDBBCuV6wauPu1xl/f9ehgVf0FcEJJs4vz6ysb/ZMkGigQZseg==

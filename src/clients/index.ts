@@ -1,35 +1,20 @@
-import { Apps, Events, InstanceOptions, IOContext, Logger, Registry, Router, Workspaces } from '@vtex/api'
-import { getAccount, getToken, getWorkspace } from '../conf'
+import { Apps, InstanceOptions, IOContext, Registry, Router, Workspaces } from '@vtex/api'
 import * as env from '../env'
-import userAgent from '../user-agent'
+import { envTimeout } from '../env'
+import { createIOContext } from '../lib/clients'
+import { SessionManager } from '../lib/session/SessionManager'
 import Billing from './billingClient'
 import { Builder } from './Builder'
-import { dummyLogger } from './dummyLogger'
+import { EvolutionManager } from './evolutionManager'
+import { Lighthouse } from './Lighthouse'
 import { Rewriter } from './rewriter'
 import { Tester } from './Tester'
-import { Lighthouse } from './Lighthouse'
-import { EvolutionManager } from './evolutionManager'
-import { envTimeout } from '../env'
 
 const DEFAULT_TIMEOUT = 15000
-const context: IOContext = {
-  account: getAccount(),
-  authToken: getToken(),
-  production: false,
-  product: '',
-  region: env.region(),
-  route: {
-    id: '',
-    params: {},
-  },
-  userAgent,
-  workspace: getWorkspace() || 'master',
-  requestId: '',
-  operationId: '',
-  logger: dummyLogger,
-  platform: '',
-}
 
+const { token } = SessionManager.getSingleton()
+
+const context: IOContext = createIOContext()
 const clusterHeader = env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null
 
 const options = {
@@ -54,20 +39,16 @@ const createClients = (customContext: Partial<IOContext> = {}, customOptions: In
   const mergedOptions = { ...options, ...customOptions }
   return {
     builder: new Builder(mergedContext, mergedOptions),
-    logger: new Logger(mergedContext, mergedOptions),
     registry: new Registry(mergedContext, mergedOptions),
     rewriter: new Rewriter(mergedContext, mergedOptions),
-    events: new Events(mergedContext, mergedOptions),
   }
 }
 
-const [apps, router, workspaces, logger, events, billing, rewriter, tester, lighthouse, evolutionManager] = getToken()
+const [apps, router, workspaces, billing, rewriter, tester, lighthouse, evolutionManager] = token
   ? [
       new Apps(context, options),
       new Router(context, options),
       new Workspaces(context, options),
-      new Logger(context, { headers: clusterHeader }),
-      new Events(context, { headers: clusterHeader }),
       new Billing(context, options),
       new Rewriter(context, options),
       new Tester(context, options),
@@ -78,8 +59,6 @@ const [apps, router, workspaces, logger, events, billing, rewriter, tester, ligh
       interceptor<Apps>('apps'),
       interceptor<Router>('router'),
       interceptor<Workspaces>('workspaces'),
-      interceptor<Logger>('logger'),
-      interceptor<Events>('events'),
       interceptor<Billing>('billing'),
       interceptor<Rewriter>('rewriter'),
       interceptor<Tester>('Tester'),
@@ -87,16 +66,4 @@ const [apps, router, workspaces, logger, events, billing, rewriter, tester, ligh
       interceptor<EvolutionManager>('EvolutionManager'),
     ]
 
-export {
-  apps,
-  router,
-  workspaces,
-  logger,
-  events,
-  createClients,
-  billing,
-  rewriter,
-  tester,
-  lighthouse,
-  evolutionManager,
-}
+export { apps, router, workspaces, createClients, billing, rewriter, tester, lighthouse, evolutionManager }

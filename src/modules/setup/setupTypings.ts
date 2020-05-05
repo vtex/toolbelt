@@ -2,7 +2,6 @@ import chalk from 'chalk'
 import R from 'ramda'
 
 import { createClients } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
 import { publicEndpoint } from '../../env'
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
@@ -12,11 +11,14 @@ import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
 import { BUILDERS_WITH_TYPES } from './consts'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { SessionManager } from '../../lib/session/SessionManager'
 
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/
 
 const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLinked: boolean): Promise<string> => {
+  const { workspace, account } = SessionManager.getSingleton()
+
   const appId = ignoreLinked
     ? await appIdFromRegistry(appName, appMajorLocator)
     : await resolveAppId(appName, appMajorLocator)
@@ -29,7 +31,7 @@ const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLin
 
   const base =
     linked && !ignoreLinked
-      ? `https://${getWorkspace()}--${getAccount()}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/public`
+      ? `https://${workspace}--${account}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/public`
       : `http://${vendor}.vtexassets.com/_v/public/typings/v1/${appId}/public`
 
   log.info(`Checking if ${chalk.bold(appId)} has new types format`)

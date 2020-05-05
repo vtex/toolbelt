@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.99.3] - 2020-05-05
+### Fixed
+- [telemetry] Sanitize jwt tokens and simplify buffers serializtion.
+- [dependencies] Add graphql - @vtex/api's peer dependency.
+- Session management.
+
 ## [2.99.2] - 2020-04-30
 ### Fixed
 - [vtex link] `no-watch` flag behaviour.

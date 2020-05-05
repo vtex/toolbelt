@@ -6,7 +6,7 @@ import logger from '../../logger'
 import { SessionManager } from '../session/SessionManager'
 import { EventSourceError } from '../sse/EventSourceError'
 import { getPlatform } from '../utils/getPlatform'
-import { truncateStringsFromObject } from '../utils/truncateStringsFromObject'
+import { truncateAndSanitizeStringsFromObject } from '../utils/truncateAndSanitizeStringsFromObject'
 import { ErrorKinds } from './ErrorKinds'
 
 export interface ErrorCreationArguments {
@@ -98,7 +98,7 @@ export class ErrorReport extends Error {
     const message = args.message ?? args.originalError.message
     const tryToParseError = args.tryToParseError ?? true
 
-    const { workspace, account } = SessionManager.getSessionManager()
+    const { workspace, account } = SessionManager.getSingleton()
     return new ErrorReport({
       kind,
       message,
@@ -189,7 +189,7 @@ export class ErrorReport extends Error {
       ...(this.originalError.code ? { code: this.originalError.code } : null),
     }
 
-    return truncateStringsFromObject(
+    return truncateAndSanitizeStringsFromObject(
       errorReportObj,
       ErrorReport.MAX_ERROR_STRING_LENGTH,
       ErrorReport.MAX_SERIALIZATION_DEPTH

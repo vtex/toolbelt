@@ -2,13 +2,13 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { map, prop } from 'ramda'
 
-import { getAccount } from '../../../conf'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import { default as abTestStatus } from './status'
 import { abtester, installedABTester } from './utils'
+import { SessionManager } from '../../../lib/session/SessionManager'
 
-const [account] = [getAccount()]
+const { account } = SessionManager.getSingleton()
 
 const promptContinue = (workspace: string) => {
   return promptConfirm(

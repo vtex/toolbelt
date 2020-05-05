@@ -4,7 +4,6 @@ import help from '@oclif/plugin-help'
 import * as Config from '@oclif/config'
 import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
 
-import { Token } from '../../lib/auth/Token'
 import { envCookies } from '../../env'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
@@ -18,6 +17,7 @@ import { Metric } from '../../lib/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
 import { CommandError, SSEConnectionError } from '../../errors'
 import { MetricNames } from '../../lib/metrics/MetricNames'
+import { SessionManager } from '../../lib/session/SessionManager'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -30,8 +30,7 @@ const logToolbeltVersion = () => {
 
 const checkLogin = async command => {
   const whitelist = [undefined, 'config', 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version', 'release']
-  const token = new Token(conf.getToken())
-  if (!token.isValid() && whitelist.indexOf(command) === -1) {
+  if (!SessionManager.getSingleton().checkValidCredentials() && whitelist.indexOf(command) === -1) {
     log.debug('Requesting login before command:', command)
     await authLogin({})
   }
@@ -150,6 +149,10 @@ export const onError = async (e: any) => {
   }
 
   process.removeListener('unhandledRejection', onError)
+
+  if (e instanceof CommandError) {
+    process.exit(1)
+  }
 
   const errorReport = TelemetryCollector.getCollector().registerError(e)
   log.error(`ErrorID: ${errorReport.errorId}`)

@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { workspaces } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { ensureValidEdition } from './common/edition'
@@ -9,8 +9,9 @@ const promptWorkspaceReset = (name: string, account: string) =>
   promptConfirm(`Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`)
 
 export default async (name: string, options) => {
-  const account = getAccount()
-  const workspace = name || getWorkspace()
+  const session = SessionManager.getSingleton()
+  const { account } = session
+  const workspace = name || session.workspace
   const preConfirm = options.y || options.yes
   const production = !!(options.p || options.production)
 
