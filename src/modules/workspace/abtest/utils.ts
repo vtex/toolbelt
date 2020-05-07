@@ -3,9 +3,9 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import numbro from 'numbro'
 import { compose, filter, map, prop } from 'ramda'
-import { ABTester } from '../../../clients/abTester'
 import * as env from '../../../env'
 import { CommandError } from '../../../errors'
+import { ABTester } from '../../../lib/clients/ABTester'
 import { createAppsClient } from '../../../lib/clients/Apps'
 import { createWorkspacesClient } from '../../../lib/clients/Workspaces'
 import { SessionManager } from '../../../lib/session/SessionManager'
@@ -23,7 +23,7 @@ const { account } = SessionManager.getSingleton()
 const options = { timeout: (env.envTimeout || DEFAULT_TIMEOUT) as number }
 
 // Clients for the 'master' workspace
-export const abtester = new ABTester(contextForMaster, { ...options, retries: 3 })
+export const abtester = ABTester.createClient({ workspace: 'master' }, { ...options, retries: 3 })
 export const apps = createAppsClient({ workspace: 'master' })
 
 export const formatDays = (days: number) => {
