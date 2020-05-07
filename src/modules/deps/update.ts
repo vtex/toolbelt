@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { diffJson } from 'diff'
 import { compose, keys, map, path } from 'ramda'
-import { createAppsClient } from '../../lib/clients/Apps'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { removeNpm } from './utils'

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { Sponsor } from '../../lib/clients/Sponsor'
+import { Sponsor } from '../../lib/clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 

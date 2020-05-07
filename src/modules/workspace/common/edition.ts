@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { Sponsor } from '../../../lib/clients/Sponsor'
+import { Sponsor } from '../../../lib/clients/IOClients/apps/Sponsor'
 import { ErrorKinds } from '../../../lib/error/ErrorKinds'
 import { TelemetryCollector } from '../../../lib/telemetry/TelemetryCollector'
 import log from '../../../logger'

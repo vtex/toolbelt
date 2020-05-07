@@ -1,6 +1,6 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 import { stringify } from 'querystring'
-import { IOClientFactory } from './IOClientFactory'
+import { IOClientFactory } from '../IOClientFactory'
 
 export class Lighthouse extends AppClient {
   private static readonly TIMEOUT_MS = 60 * 1000

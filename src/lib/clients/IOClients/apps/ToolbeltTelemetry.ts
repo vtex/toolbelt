@@ -1,7 +1,7 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
-import { ErrorReportObj } from '../error/ErrorReport'
-import { MetricReportObj } from '../metrics/MetricReport'
-import { IOClientFactory } from './IOClientFactory'
+import { ErrorReportObj } from '../../../error/ErrorReport'
+import { MetricReportObj } from '../../../metrics/MetricReport'
+import { IOClientFactory } from '../IOClientFactory'
 
 export class ToolbeltTelemetry extends AppClient {
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {

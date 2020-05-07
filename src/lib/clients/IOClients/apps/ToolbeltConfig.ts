@@ -1,6 +1,6 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import { NodeToRender } from '@vtex/toolbelt-message-renderer'
-import { IOClientFactory } from './IOClientFactory'
+import { IOClientFactory } from '../IOClientFactory'
 
 interface VersionCheckRes {
   minVersion: string

@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { compose, equals, filter, head, prop, split } from 'ramda'
-import { createAppsClient } from '../../lib/clients/Apps'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator } from '../../locator'
 import log from '../../logger'

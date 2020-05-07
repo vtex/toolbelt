@@ -1,8 +1,8 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import { Logger } from '@vtex/api/lib/service/logger'
-import * as env from '../../env'
-import userAgent from '../../user-agent'
-import { SessionManager } from '../session/SessionManager'
+import * as env from '../../../env'
+import userAgent from '../../../user-agent'
+import { SessionManager } from '../../session/SessionManager'
 
 interface IOContextOptions {
   account?: string

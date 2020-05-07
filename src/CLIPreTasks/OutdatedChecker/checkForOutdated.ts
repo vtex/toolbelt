@@ -1,6 +1,6 @@
 const initTime = process.hrtime()
 
-import { ToolbeltConfig } from '../../lib/clients/ToolbeltConfig'
+import { ToolbeltConfig } from '../../lib/clients/IOClients/apps/ToolbeltConfig'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
 import { ErrorReport } from '../../lib/error/ErrorReport'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'

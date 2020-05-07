@@ -4,7 +4,7 @@ import { CommandError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from './utils'
-import { createRouterClient } from '../../lib/clients/Router'
+import { createRouterClient } from '../../lib/clients/IOClients/infra/Router'
 
 const unprefixName = (str: string) => {
   return str.split(':').pop()

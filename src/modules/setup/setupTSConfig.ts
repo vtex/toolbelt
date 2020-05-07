@@ -1,5 +1,5 @@
 import R from 'ramda'
-import { Builder } from '../../lib/clients/Builder'
+import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
