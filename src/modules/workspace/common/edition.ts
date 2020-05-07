@@ -1,6 +1,6 @@
 import chalk from 'chalk'
-import { Sponsor } from '../../../clients/sponsor'
 import { createIOContext } from '../../../lib/clients'
+import { Sponsor } from '../../../lib/clients/Sponsor'
 import { ErrorKinds } from '../../../lib/error/ErrorKinds'
 import { TelemetryCollector } from '../../../lib/telemetry/TelemetryCollector'
 import log from '../../../logger'
