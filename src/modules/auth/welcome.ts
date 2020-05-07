@@ -6,8 +6,9 @@ import { Sponsor } from '../../clients/sponsor'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
-import { getIOContext, IOClientOptions } from '../utils'
+import { IOClientOptions } from '../utils'
 import { SessionManager } from '../../lib/session/SessionManager'
+import { createIOContext } from '../../lib/clients'
 
 type Edition = {
   id: string
@@ -67,13 +68,14 @@ const renderAppsTable = ({
 }
 
 export default async () => {
-  const sessionManager = SessionManager.getSessionManager()
+  const sessionManager = SessionManager.getSingleton()
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { apps } = require('../../clients')
   const { account, workspace } = sessionManager
-  const sponsorClient = new Sponsor(getIOContext(sessionManager), IOClientOptions)
+  const sponsorClient = new Sponsor(createIOContext(sessionManager), IOClientOptions)
   let edition
   try {
-    edition = (await sponsorClient.getEdition()) as Edition
+    edition = ((await sponsorClient.getEdition()) as unknown) as Edition
   } catch (e) {
     edition = {}
   }
