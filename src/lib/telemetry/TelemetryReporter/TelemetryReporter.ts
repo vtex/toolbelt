@@ -1,11 +1,8 @@
 import { readJson, remove } from 'fs-extra'
-import { TelemetryClient } from '../../../clients/telemetryClient'
-import { region } from '../../../env'
-import { createIOContext, createTelemetryClient } from '../../clients'
+import { ToolbeltTelemetry } from '../../clients/ToolbeltTelemetry'
 import { ErrorKinds } from '../../error/ErrorKinds'
 import { ErrorReport, ErrorReportObj } from '../../error/ErrorReport'
 import { MetricReportObj } from '../../metrics/MetricReport'
-import { SessionManager } from '../../session/SessionManager'
 import { TelemetryFile } from '../TelemetryCollector'
 import { PendingTelemetryDataManager } from './PendingTelemetryDataManager'
 
@@ -13,14 +10,8 @@ export class TelemetryReporter {
   private static readonly RETRIES = 3
   private static readonly TIMEOUT = 30 * 1000
   public static getTelemetryReporter() {
-    const { account, workspace, token } = SessionManager.getSingleton()
-    const telemetryClient = createTelemetryClient(
-      createIOContext({
-        account,
-        workspace,
-        authToken: token,
-        region: region(),
-      }),
+    const telemetryClient = ToolbeltTelemetry.createClient(
+      {},
       { retries: TelemetryReporter.RETRIES, timeout: TelemetryReporter.TIMEOUT }
     )
 
@@ -29,7 +20,7 @@ export class TelemetryReporter {
 
   private pendingDataManager: PendingTelemetryDataManager
 
-  constructor(private telemetryClient: TelemetryClient) {
+  constructor(private telemetryClient: ToolbeltTelemetry) {
     this.pendingDataManager = PendingTelemetryDataManager.getSingleton()
   }
 
