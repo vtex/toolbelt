@@ -2,13 +2,13 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { curry, path } from 'ramda'
 import semver from 'semver'
-
-import { router } from '../../clients'
 import { Region } from '../../conf'
+import { createRouterClient } from '../../lib/clients/Router'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { diffVersions, getTag } from './utils'
 
+const router = createRouterClient()
 const { getAvailableVersions, listInstalledServices, installService } = router
 
 const promptInstall = () => Promise.resolve(promptConfirm('Continue with the installation?'))
