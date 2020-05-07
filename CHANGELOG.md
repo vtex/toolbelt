@@ -5,14 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Fixed
+### Changed
+- Refactor clients organization and instantiation.
+
+## Fixed
 - [clients:billing] Use new URL format.
+- [vtex test e2e] Show screenshot and videos assets URLs received from `vtex.tester-hub` new API.
 
 ### Updated
 - [oclif] `oclif-plugin-spaced-commands` to fix alias documentation.
-
-## Fixed
-- [vtex test e2e] Show screenshot and videos assets URLs received from `vtex.tester-hub` new API.
 
 ## [2.99.3] - 2020-05-05
 ### Fixed
