@@ -1,8 +1,8 @@
-import { apps } from '../../clients'
+import { createAppsClient } from '../../lib/clients/Apps'
 import log from '../../logger'
 import { removeNpm } from './utils'
 
-const { getDependencies } = apps
+const { getDependencies } = createAppsClient()
 
 export default async (flags: { keys: boolean; npm: boolean }) => {
   log.debug('Starting to list dependencies')

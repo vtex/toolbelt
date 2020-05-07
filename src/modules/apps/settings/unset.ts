@@ -1,8 +1,8 @@
 import { dissocPath } from 'ramda'
-
-import { apps } from '../../../clients'
+import { createAppsClient } from '../../../lib/clients/Apps'
 
 export default async (app: string, field: string) => {
+  const apps = createAppsClient()
   const newSettingsJson = await apps
     .getAppSettings(app)
     .then(dissocPath([field]))
