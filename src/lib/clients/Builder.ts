@@ -1,5 +1,6 @@
 import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
-import { ChangeToSend } from '../modules/apps/ProjectUploader'
+import { ChangeToSend } from '../../modules/apps/ProjectUploader'
+import { IOClientFactory } from './IOClientFactory'
 
 interface StickyOptions {
   sticky?: boolean
@@ -40,6 +41,10 @@ const routes = {
 }
 
 export class Builder extends AppClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<Builder>(Builder, customContext, customOptions)
+  }
+
   private stickyHost!: string
 
   constructor(ioContext: IOContext, opts?: InstanceOptions) {

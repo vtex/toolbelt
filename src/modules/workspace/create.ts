@@ -1,8 +1,11 @@
 import chalk from 'chalk'
 
-import { workspaces, createClients } from '../../clients'
+import { workspaces } from '../../clients'
 
 import { CommandError } from '../../errors'
+import { Builder } from '../../lib/clients/Builder'
+import { createWorkspacesClient } from '../../lib/clients/Workspaces'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { ensureValidEdition } from './common/edition'
 import { SessionManager } from '../../lib/session/SessionManager'
@@ -11,7 +14,7 @@ const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 
 const warmUpRouteMap = async (workspace: string) => {
   try {
-    const { builder } = createClients({ workspace })
+    const builder = Builder.createClient({ workspace })
     await builder.availability('vtex.builder-hub@0.x', null)
     log.debug('Warmed up route map')
   } catch (err) {} // eslint-disable-line no-empty
