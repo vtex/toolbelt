@@ -4,7 +4,7 @@ import Table from 'cli-table2'
 import enquirer from 'enquirer'
 import { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
-import { apps, createClients } from '../../clients'
+import { apps } from '../../clients'
 import { CommandError } from '../../errors'
 import { ManifestEditor } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
@@ -103,8 +103,8 @@ export const handleError = curry((app: string, err: any) => {
 })
 
 export const appLatestVersion = (app: string, version = 'x'): Promise<string | never> => {
-  return createClients()
-    .registry.getAppManifest(app, version)
+  return createRegistryClient()
+    .getAppManifest(app, version)
     .then<string>(prop('id'))
     .then<string>(extractVersionFromId)
     .catch(handleError(app))
@@ -115,8 +115,8 @@ export const appLatestMajor = (app: string): Promise<string | never> => {
 }
 
 export const appIdFromRegistry = (app: string, majorLocator: string) => {
-  return createClients()
-    .registry.getAppManifest(app, majorLocator)
+  return createRegistryClient()
+    .getAppManifest(app, majorLocator)
     .then<string>(prop('id'))
     .catch(handleError(app))
 }
