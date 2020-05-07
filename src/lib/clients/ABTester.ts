@@ -1,4 +1,5 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+import { IOClientFactory } from './IOClientFactory'
 
 const routes = {
   Abort: (workspace: string) => `${routes.ABTester}/finish/${workspace}`,
@@ -13,6 +14,10 @@ const routes = {
 }
 
 export class ABTester extends AppClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<ABTester>(ABTester, customContext, customOptions)
+  }
+
   constructor(context: IOContext, options: InstanceOptions) {
     super('vtex.ab-tester@0.x', context, options)
   }
