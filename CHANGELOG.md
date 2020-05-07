@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.99.4-beta] - 2020-05-07
+
 ## [2.99.3] - 2020-05-05
 ### Fixed
 - [telemetry] Sanitize jwt tokens and simplify buffers serializtion.
