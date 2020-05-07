@@ -1,4 +1,4 @@
-import { ShortReportObject, LighthouseReportDoc } from '../../clients/Lighthouse'
+import { LighthouseReportDoc, ShortReportObject } from '../../lib/clients/Lighthouse'
 
 export interface TableRow {
   [title: string]: any
