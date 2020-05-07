@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { createClients } from '../../clients'
+import { createRegistryClient } from '../../lib/clients/Registry'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator } from '../../locator'
@@ -33,7 +33,7 @@ const undeprecateApp = async (app: string): Promise<void> => {
   }
 
   const context = { account: vendor, workspace: 'master', authToken: token }
-  const { registry } = createClients(context)
+  const registry = createRegistryClient(context)
   return registry.undeprecateApp(`${vendor}.${name}`, version)
 }
 
