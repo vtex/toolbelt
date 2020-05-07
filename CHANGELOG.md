@@ -14,9 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Fixed
 - [vtex test e2e] Show screenshot and videos assets URLs received from `vtex.tester-hub` new API.
 
-## Fixed
-- [vtex test e2e] Show screenshot and videos assets URLs received from `vtex.tester-hub` new API.
-
 ## [2.99.3] - 2020-05-05
 ### Fixed
 - [telemetry] Sanitize jwt tokens and simplify buffers serializtion.
