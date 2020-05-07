@@ -1,5 +1,5 @@
 import { Apps, InstanceOptions, IOContext } from '@vtex/api'
-import { IOClientFactory } from './IOClientFactory'
+import { IOClientFactory } from '../IOClientFactory'
 
 export const createAppsClient = (
   customContext: Partial<IOContext> = {},

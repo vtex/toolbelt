@@ -1,5 +1,5 @@
 import { AppClient, CacheType, inflightURL, InstanceOptions, IOContext } from '@vtex/api'
-import { IOClientFactory } from './IOClientFactory'
+import { IOClientFactory } from '../IOClientFactory'
 
 export interface SpecTestReport {
   testId: string

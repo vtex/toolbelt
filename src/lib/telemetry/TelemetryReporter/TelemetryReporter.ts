@@ -1,5 +1,5 @@
 import { readJson, remove } from 'fs-extra'
-import { ToolbeltTelemetry } from '../../clients/ToolbeltTelemetry'
+import { ToolbeltTelemetry } from '../../clients/IOClients/apps/ToolbeltTelemetry'
 import { ErrorKinds } from '../../error/ErrorKinds'
 import { ErrorReport, ErrorReportObj } from '../../error/ErrorReport'
 import { MetricReportObj } from '../../metrics/MetricReport'

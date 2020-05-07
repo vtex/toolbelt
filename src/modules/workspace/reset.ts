@@ -3,7 +3,7 @@ import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { ensureValidEdition } from './common/edition'
-import { createWorkspacesClient } from '../../lib/clients/Workspaces'
+import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
 
 const promptWorkspaceReset = (name: string, account: string) =>
   promptConfirm(`Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`)

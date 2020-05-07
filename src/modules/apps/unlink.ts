@@ -1,4 +1,4 @@
-import { createAppsClient } from '../../lib/clients/Apps'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { validateAppAction } from './utils'

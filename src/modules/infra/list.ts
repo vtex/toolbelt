@@ -1,7 +1,7 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
 import chalk from 'chalk'
 import semver from 'semver'
-import { createRouterClient } from '../../lib/clients/Router'
+import { createRouterClient } from '../../lib/clients/IOClients/infra/Router'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { createTable } from '../../table'

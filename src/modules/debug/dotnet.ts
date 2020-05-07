@@ -1,4 +1,4 @@
-import { Runtime } from '../../lib/clients/Runtime'
+import { Runtime } from '../../lib/clients/IOClients/infra/Runtime'
 import { ManifestEditor } from '../../lib/manifest'
 import logger from '../../logger'
 

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { createAppsClient } from '../../lib/clients/Apps'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'

@@ -5,9 +5,9 @@ import numbro from 'numbro'
 import { compose, filter, map, prop } from 'ramda'
 import * as env from '../../../env'
 import { CommandError } from '../../../errors'
-import { ABTester } from '../../../lib/clients/ABTester'
-import { createAppsClient } from '../../../lib/clients/Apps'
-import { createWorkspacesClient } from '../../../lib/clients/Workspaces'
+import { ABTester } from '../../../lib/clients/IOClients/apps/ABTester'
+import { createAppsClient } from '../../../lib/clients/IOClients/infra/Apps'
+import { createWorkspacesClient } from '../../../lib/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../../lib/session/SessionManager'
 
 const DEFAULT_TIMEOUT = 15000

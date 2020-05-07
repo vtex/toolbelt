@@ -3,7 +3,7 @@ import ora from 'ora'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
 import { TableGenerator } from './TableGenerator'
-import { Lighthouse } from '../../lib/clients/Lighthouse'
+import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
 
 function allWhenUndefined(atribute: string | undefined): string {
   return atribute ?? '<all>'
