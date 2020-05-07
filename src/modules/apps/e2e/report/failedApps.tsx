@@ -35,8 +35,8 @@ interface SpecProps {
 }
 
 export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report, hubTestId }) => {
-  const logId = report.logId
-  const specId = report.specId
+  const { logId } = report
+  const { specId } = report
 
   const video = report.report?.video
   const screenshots = report.report?.screenshots
@@ -92,10 +92,15 @@ const ErrorVisualization: React.FunctionComponent<ErrorVisualizationProps> = ({
   testScreenshots,
   testVideo,
   specId,
-  testId
+  testId,
 }) => {
   const { account, workspace } = SessionManager.getSingleton()
-  const testScreenshotsUrl = testScreenshots.map(curScreenshot => `${workspace}--${account}.myvtex.com/_v/screenshot/${testId}/${specId}/${curScreenshot.screenshotId}`).join('\n')
+  const testScreenshotsUrl = testScreenshots
+    .map(
+      curScreenshot =>
+        `${workspace}--${account}.myvtex.com/_v/screenshot/${testId}/${specId}/${curScreenshot.screenshotId}`
+    )
+    .join('\n')
   const videoUrl = testVideo === 'true' ? `${workspace}--${account}.myvtex.com/_v/video/${testId}/${specId}` : 'false'
   return (
     <Box key={title.join('')} flexDirection="column">
