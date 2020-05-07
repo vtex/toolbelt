@@ -113,7 +113,7 @@ const ErrorVisualization: React.FunctionComponent<ErrorVisualizationProps> = ({
       {testScreenshots.length > 0 && (
         <FailedSpecDetail label="Screenshots" text={testScreenshotsUrl} indented={testScreenshots.length > 1} />
       )}
-      {testVideo && <FailedSpecDetail label="Video" text={videoUrl} indented={false} />}
+      {testVideo === 'true' && <FailedSpecDetail label="Video" text={videoUrl} indented={false} />}
     </Box>
   )
 }
