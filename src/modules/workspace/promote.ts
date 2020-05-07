@@ -1,15 +1,15 @@
 import chalk from 'chalk'
-
-import { evolutionManager, workspaces } from '../../clients'
+import { evolutionManager } from '../../clients'
 import { CommandError } from '../../errors'
+import { createWorkspacesClient } from '../../lib/clients/Workspaces'
+import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { SessionManager } from '../../lib/session/SessionManager'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import useCmd from './use'
-import { SessionManager } from '../../lib/session/SessionManager'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
 
-const { promote, get } = workspaces
+const { promote, get } = createWorkspacesClient()
 const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
 
 const throwIfIsMaster = (workspace: string) => {

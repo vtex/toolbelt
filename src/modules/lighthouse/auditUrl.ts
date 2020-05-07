@@ -2,13 +2,15 @@ import ora from 'ora'
 import chalk from 'chalk'
 
 import log from '../../logger'
-import { lighthouse, workspaces } from '../../clients'
+import { lighthouse } from '../../clients'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 
 import { TableGenerator } from './TableGenerator'
+import { createWorkspacesClient } from '../../lib/clients/Workspaces'
 
 async function isProdutionWorkspace(account: string, workspace: string): Promise<boolean> {
+  const workspaces = createWorkspacesClient()
   const meta = await workspaces.get(account, workspace)
   return meta.production
 }

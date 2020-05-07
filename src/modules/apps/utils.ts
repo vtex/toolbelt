@@ -4,12 +4,13 @@ import Table from 'cli-table2'
 import enquirer from 'enquirer'
 import { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
-import { apps, createClients, workspaces } from '../../clients'
+import { apps, createClients } from '../../clients'
 import { CommandError } from '../../errors'
 import { ManifestEditor } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
+import { createWorkspacesClient } from '../../lib/clients/Workspaces'
 
 const workspaceExampleName = process.env.USER || 'example'
 
@@ -63,6 +64,7 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
     }
   }
 
+  const workspaces = createWorkspacesClient()
   const workspaceMeta = await workspaces.get(account, workspace)
   if (workspaceMeta.production && !contains(operation, workspaceProductionAllowedOperatios)) {
     throw new CommandError(workspaceProductionMessage(workspace))

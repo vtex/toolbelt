@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { workspaces } from '../../clients'
+import { createWorkspacesClient } from '../../lib/clients/Workspaces'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { createTable } from '../../table'
@@ -9,6 +9,9 @@ export default () => {
 
   log.debug('Listing workspaces')
   const table = createTable({ head: ['Name', 'Weight', 'Production'] })
+
+  const workspaces = createWorkspacesClient()
+
   return workspaces
     .list(account)
     .then((workspaceArray: WorkspaceResponse[]) =>

@@ -1,11 +1,11 @@
+import { Workspaces } from '@vtex/api'
 import chalk from 'chalk'
 import { contains, flatten, head, tail } from 'ramda'
-
-import { workspaces } from '../../clients'
+import { createWorkspacesClient } from '../../lib/clients/Workspaces'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import workspaceUse from './use'
-import { SessionManager } from '../../lib/session/SessionManager'
 
 const promptWorkspaceDeletion = (names: string[]) =>
   promptConfirm(
@@ -13,7 +13,11 @@ const promptWorkspaceDeletion = (names: string[]) =>
     true
   )
 
-export const deleteWorkspaces = async (account: string, names = []): Promise<string[]> => {
+export const deleteWorkspaces = async (
+  workspacesClient: Workspaces,
+  account: string,
+  names = []
+): Promise<string[]> => {
   const name = head(names)
   const decNames = tail(names)
 
@@ -23,14 +27,14 @@ export const deleteWorkspaces = async (account: string, names = []): Promise<str
 
   log.debug('Starting to delete workspace', name)
   try {
-    await workspaces.delete(account, name)
+    await workspacesClient.delete(account, name)
     log.info(`Workspace ${chalk.green(name)} deleted ${chalk.green('successfully')}`)
 
-    return flatten([name, await deleteWorkspaces(account, decNames)])
+    return flatten([name, await deleteWorkspaces(workspacesClient, account, decNames)])
   } catch (err) {
     log.warn(`Workspace ${chalk.green(name)} was ${chalk.red('not')} deleted`)
     log.error(`Error ${err.response.status}: ${err.response.statusText}. ${err.response.data.message}`)
-    return deleteWorkspaces(account, decNames)
+    return deleteWorkspaces(workspacesClient, account, decNames)
   }
 }
 
@@ -51,7 +55,8 @@ export default async (names: string[], options) => {
     return
   }
 
-  const deleted = await deleteWorkspaces(account, names)
+  const workspacesClient = createWorkspacesClient()
+  const deleted = await deleteWorkspaces(workspacesClient, account, names)
   if (contains(workspace, deleted)) {
     log.warn(`The workspace you were using was deleted`)
     return workspaceUse('master')
