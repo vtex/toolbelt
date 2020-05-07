@@ -14,7 +14,7 @@ export interface Screenshot {
   name?: string
   testId: string
   takenAt: string
-  path: string
+  path?: string
   height: number
   width: number
 }
@@ -33,10 +33,10 @@ export interface SpecReport {
     }
     tests: SpecTestReport[]
     video?: string
-    logs?: string
     screenshots: Screenshot[]
   }
   logId?: string
+  specId?: string
   lastUpdate: number
 }
 

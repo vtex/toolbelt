@@ -24,19 +24,21 @@ interface AppTest {
 export interface ReportProps {
   completedAppTests: AppTest[]
   runningAppTests: AppTest[]
+  testId?: string
 }
 
 export interface AppProps {
   appId: string
   specs: AppReport
+  testId?: string
 }
 
-const Report: React.FunctionComponent<ReportProps> = ({ completedAppTests, runningAppTests }) => {
+const Report: React.FunctionComponent<ReportProps> = ({ completedAppTests, runningAppTests, testId }) => {
   return (
     <Box flexDirection="column">
       <Static>
         {completedAppTests.map(({ appId, specs }) => (
-          <Completed key={appId} appId={appId} specs={specs} />
+          <Completed key={appId} appId={appId} specs={specs} testId={testId} />
         ))}
       </Static>
 
@@ -110,7 +112,7 @@ export const RealTimeReport: React.FunctionComponent<RealTimeReport> = ({
 
   return (
     <Box flexDirection="column">
-      <Report {...report} />
+      <Report {...report} testId={testId} />
       <Box marginTop={1}>
         <Summary {...report} testId={testId} requestedAt={requestedAt} />
       </Box>
