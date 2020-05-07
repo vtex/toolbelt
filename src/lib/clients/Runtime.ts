@@ -1,13 +1,18 @@
 import { IOContext } from '@vtex/api'
-import { cluster } from '../env'
 import * as url from 'url'
 import WebSocket from 'ws'
-import logger from '../logger'
-import { SessionManager } from '../lib/session/SessionManager'
+import { cluster } from '../../env'
+import logger from '../../logger'
+import { SessionManager } from '../session/SessionManager'
+import { IOClientFactory } from './IOClientFactory'
 
 const EOT = '\x04'
 
 export class Runtime {
+  public static createClient() {
+    return new Runtime(IOClientFactory.createIOContext())
+  }
+
   private account: string
   private workspace: string
 
