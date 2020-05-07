@@ -3,8 +3,7 @@ import chalk from 'chalk'
 import getStream from 'get-stream'
 import { Readable } from 'stream'
 import { ZlibOptions } from 'zlib'
-import { createClients } from '../../clients'
-import { Builder, BuildResult, RequestParams } from '../../clients/Builder'
+import { Builder, BuildResult, RequestParams } from '../../lib/clients/Builder'
 import { getSavedOrMostAvailableHost } from '../../host'
 import logger from '../../logger'
 
@@ -64,7 +63,7 @@ export class ProjectUploader {
     if (contextOrClient instanceof Builder) {
       builderHubClient = contextOrClient
     } else {
-      builderHubClient = createClients(contextOrClient, { timeout: clientTimeout }).builder
+      builderHubClient = Builder.createClient(contextOrClient, { timeout: clientTimeout })
     }
 
     const projectUploader = new ProjectUploader(appId, builderHubClient)
