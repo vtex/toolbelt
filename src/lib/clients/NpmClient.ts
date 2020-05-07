@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { PackageJson } from '../lib/packageJson'
+import { PackageJson } from '../packageJson'
 
 interface PackageMetadata extends PackageJson {
   deprecated?: string
