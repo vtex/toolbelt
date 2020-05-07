@@ -1,6 +1,6 @@
 import chalk from 'chalk'
-import { evolutionManager } from '../../clients'
 import { CommandError } from '../../errors'
+import { EvolutionManager } from '../../lib/clients/EvolutionManager'
 import { createWorkspacesClient } from '../../lib/clients/Workspaces'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
 import { SessionManager } from '../../lib/session/SessionManager'
@@ -46,6 +46,7 @@ export default async () => {
   const sessionManager = SessionManager.getSingleton()
   const userEmail = sessionManager.userLogged
 
+  const evolutionManager = EvolutionManager.createClient()
   try {
     await evolutionManager.saveWorkspacePromotion(userEmail, currentWorkspace)
   } catch (err) {
