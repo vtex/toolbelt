@@ -1,6 +1,6 @@
 import chalk from 'chalk'
-import { workspaces } from '../../clients'
 import { CommandError } from '../../errors'
+import { createWorkspacesClient } from '../../lib/clients/Workspaces'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
@@ -35,6 +35,7 @@ export default async (name: string, options?) => {
   }
 
   try {
+    const workspaces = createWorkspacesClient()
     await workspaces.get(accountName, name)
   } catch (err) {
     if (err.response && err.response.status === 404) {
