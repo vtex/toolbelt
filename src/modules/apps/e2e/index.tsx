@@ -1,14 +1,16 @@
 import { render } from 'ink'
 import React from 'react'
-import { tester } from '../../../clients'
-import { TestRequest } from '../../../clients/Tester'
 import { createAppsClient } from '../../../lib/clients/Apps'
+import { Tester, TestRequest } from '../../../lib/clients/Tester'
 import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
 import { SessionManager } from '../../../lib/session/SessionManager'
 import { RealTimeReport } from './report/index'
 
 class EndToEndCommand {
-  constructor(private options) {}
+  private tester: Tester
+  constructor(private options) {
+    this.tester = Tester.createClient()
+  }
 
   public run() {
     if (this.options.workspace) {
@@ -32,7 +34,7 @@ class EndToEndCommand {
 
     const testRequest = this.options.report
       ? null
-      : await tester.test(
+      : await this.tester.test(
           {
             integration: true,
             monitoring: true,
@@ -47,7 +49,7 @@ class EndToEndCommand {
   private async runWorkspaceTests() {
     const testRequest = this.options.report
       ? null
-      : await tester.test({
+      : await this.tester.test({
           integration: true,
           monitoring: true,
           authToken: this.options.token ? SessionManager.getSingleton().token : undefined,
@@ -60,13 +62,13 @@ class EndToEndCommand {
     const testId = testRequest ? testRequest.testId : (this.options.report as string)
     const requestedAt = testRequest ? testRequest.requestedAt : null
 
-    const initialReport = await tester.report(testId)
+    const initialReport = await this.tester.report(testId)
 
     render(
       <RealTimeReport
         initialReport={initialReport}
         testId={testId}
-        poll={() => tester.report(testId)}
+        poll={() => this.tester.report(testId)}
         interval={2000}
         requestedAt={requestedAt}
       />

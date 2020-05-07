@@ -4,7 +4,7 @@ import { sum } from 'ramda'
 
 import { ReportProps } from './index'
 import { passedApp, passedSpec } from './specsState'
-import { AppReport } from '../../../../clients/Tester'
+import { AppReport } from '../../../../lib/clients/Tester'
 
 interface SummaryProps extends ReportProps {
   testId: string
