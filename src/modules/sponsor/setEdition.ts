@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import { Sponsor } from '../../clients/sponsor'
 import { CommandError } from '../../errors'
 import { createIOContext } from '../../lib/clients'
+import { Sponsor } from '../../lib/clients/Sponsor'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptWorkspaceMaster } from '../apps/utils'
