@@ -1,14 +1,10 @@
 import chalk from 'chalk'
-
-import { workspaces } from '../../clients'
-
 import { CommandError } from '../../errors'
 import { Builder } from '../../lib/clients/Builder'
 import { createWorkspacesClient } from '../../lib/clients/Workspaces'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { ensureValidEdition } from './common/edition'
-import { SessionManager } from '../../lib/session/SessionManager'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 
@@ -30,6 +26,7 @@ export default async (name: string, options: any) => {
     production = true
   }
   try {
+    const workspaces = createWorkspacesClient()
     await workspaces.create(SessionManager.getSingleton().account, name, production)
     log.info(
       `Workspace ${chalk.green(name)} created ${chalk.green('successfully')} with ${chalk.green(

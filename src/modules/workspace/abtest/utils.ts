@@ -3,11 +3,11 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import numbro from 'numbro'
 import { compose, filter, map, prop } from 'ramda'
-import { workspaces } from '../../../clients'
 import { ABTester } from '../../../clients/abTester'
 import * as env from '../../../env'
 import { CommandError } from '../../../errors'
 import { createIOContext } from '../../../lib/clients'
+import { createWorkspacesClient } from '../../../lib/clients/Workspaces'
 import { SessionManager } from '../../../lib/session/SessionManager'
 
 const DEFAULT_TIMEOUT = 15000
@@ -58,6 +58,7 @@ testing functionality`)
 }
 
 export const promptProductionWorkspace = async (promptMessage: string): Promise<string> => {
+  const workspaces = createWorkspacesClient()
   const productionWorkspaces = await workspaces.list(account).then(
     compose<any, any, any>(
       map(({ name }) => name),

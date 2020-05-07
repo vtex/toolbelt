@@ -1,9 +1,9 @@
 import chalk from 'chalk'
-import { workspaces } from '../../clients'
+import { createWorkspacesClient } from '../../lib/clients/Workspaces'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 
-const { get } = workspaces
+const { get } = createWorkspacesClient()
 
 const pretty = p => (p ? chalk.green('true') : chalk.red('false'))
 
