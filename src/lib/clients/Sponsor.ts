@@ -1,6 +1,11 @@
-import { AuthType, InstanceOptions, IOClient, IOContext, AppManifest } from '@vtex/api'
+import { AppManifest, AuthType, InstanceOptions, IOClient, IOContext } from '@vtex/api'
+import { IOClientFactory } from './IOClientFactory'
 
 export class Sponsor extends IOClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<Sponsor>(Sponsor, customContext, customOptions)
+  }
+
   private account: string
   private workspace: string
 
