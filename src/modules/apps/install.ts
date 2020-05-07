@@ -1,13 +1,13 @@
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
-import { billing } from '../../clients'
 import { createAppsClient } from '../../lib/clients/Apps'
+import Billing from '../../lib/clients/Billing'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { optionsFormatter, validateAppAction } from './utils'
 
-const { installApp } = billing
+const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
 
 const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
