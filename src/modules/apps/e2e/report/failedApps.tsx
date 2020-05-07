@@ -3,6 +3,7 @@ import { Box, Color, Text } from 'ink'
 
 import { SpecReport, SpecTestReport, Screenshot } from '../../../../clients/Tester'
 import { SessionManager } from '../../../../lib/session/SessionManager'
+import { publicEndpoint } from '../../../../env'
 
 interface SpecDetailProps {
   label: string
@@ -35,8 +36,7 @@ interface SpecProps {
 }
 
 export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report, hubTestId }) => {
-  const { logId } = report
-  const { specId } = report
+  const { logId, specId } = report
 
   const video = report.report?.video
   const screenshots = report.report?.screenshots
@@ -72,6 +72,11 @@ export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report, h
   )
 }
 
+const workspaceBaseURL = () => {
+  const { account, workspace } = SessionManager.getSingleton()
+  return `${workspace}--${account}.${publicEndpoint()}`
+}
+
 interface ErrorVisualizationProps {
   title: SpecTestReport['title']
   body: SpecTestReport['body']
@@ -94,14 +99,11 @@ const ErrorVisualization: React.FunctionComponent<ErrorVisualizationProps> = ({
   specId,
   testId,
 }) => {
-  const { account, workspace } = SessionManager.getSingleton()
+  const baseURL = workspaceBaseURL()
   const testScreenshotsUrl = testScreenshots
-    .map(
-      curScreenshot =>
-        `${workspace}--${account}.myvtex.com/_v/screenshot/${testId}/${specId}/${curScreenshot.screenshotId}`
-    )
+    .map(curScreenshot => `${baseURL}/_v/screenshot/${testId}/${specId}/${curScreenshot.screenshotId}`)
     .join('\n')
-  const videoUrl = testVideo === 'true' ? `${workspace}--${account}.myvtex.com/_v/video/${testId}/${specId}` : 'false'
+  const videoUrl = testVideo === 'true' ? `${baseURL}/_v/video/${testId}/${specId}` : ''
   return (
     <Box key={title.join('')} flexDirection="column">
       <FailedSpecDetail label="Test" text={title.join(' ')} indented={false} />
