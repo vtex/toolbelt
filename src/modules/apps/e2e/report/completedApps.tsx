@@ -19,7 +19,7 @@ interface SpecResult {
   specReport: SpecReport
 }
 
-export const Completed: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
+export const Completed: React.FunctionComponent<AppProps> = ({ appId, specs, testId }) => {
   const failedSpecs = Object.keys(specs).reduce((acum, curSpecName) => {
     if (specs[curSpecName].state !== 'passed') {
       acum.push({ specName: curSpecName, specReport: specs[curSpecName] })
@@ -40,7 +40,7 @@ export const Completed: React.FunctionComponent<AppProps> = ({ appId, specs }) =
       </Box>
       <Box flexDirection="column" marginLeft={2}>
         {failedSpecs.map(({ specReport, specName }) => (
-          <FailedSpec key={specName} spec={specName} report={specReport} />
+          <FailedSpec key={specName} spec={specName} report={specReport} hubTestId={testId} />
         ))}
       </Box>
     </Box>

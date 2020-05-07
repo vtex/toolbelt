@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Box, Color, Text } from 'ink'
 
 import { SpecReport, SpecTestReport, Screenshot } from '../../../../clients/Tester'
+import { SessionManager } from '../../../../lib/session/SessionManager'
 
 interface SpecDetailProps {
   label: string
@@ -30,11 +31,14 @@ const FailedSpecDetail: React.FunctionComponent<SpecDetailProps> = ({ label, tex
 interface SpecProps {
   spec: string
   report: SpecReport
+  hubTestId: string
 }
 
-export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report }) => {
+export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report, hubTestId }) => {
+  const logId = report.logId
+  const specId = report.specId
+
   const video = report.report?.video
-  const logs = report.report?.logs
   const screenshots = report.report?.screenshots
   const notPassedSpecs = (report.report?.tests ?? []).filter(({ state }) => state !== 'passed')
 
@@ -48,6 +52,9 @@ export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report })
         error={error}
         stack={stack}
         testScreenshots={testScreenshots}
+        testVideo={video}
+        specId={specId}
+        testId={hubTestId}
       />
     )
   })
@@ -58,8 +65,8 @@ export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report })
       <Box flexDirection="column" marginLeft={2}>
         {report.error && <FailedSpecDetail label="Error" text={report.error} indented />}
         {errorsVisualization}
-        {video && <FailedSpecDetail label="Video" text={video} indented={false} />}
-        {logs && <FailedSpecDetail label="Logs" text={logs} indented={false} />}
+        {specId && <FailedSpecDetail label="SpecId" text={specId} indented={false} />}
+        {logId && <FailedSpecDetail label="LogId" text={logId} indented={false} />}
       </Box>
     </Box>
   )
@@ -72,6 +79,9 @@ interface ErrorVisualizationProps {
   stack: SpecTestReport['stack']
 
   testScreenshots: Screenshot[]
+  testVideo: string
+  specId: string
+  testId: string
 }
 
 const ErrorVisualization: React.FunctionComponent<ErrorVisualizationProps> = ({
@@ -80,8 +90,13 @@ const ErrorVisualization: React.FunctionComponent<ErrorVisualizationProps> = ({
   error,
   stack,
   testScreenshots,
+  testVideo,
+  specId,
+  testId
 }) => {
-  const testScreenshotsText = testScreenshots.map(curScreenshot => ` ${curScreenshot.path}`).join('\n')
+  const { account, workspace } = SessionManager.getSingleton()
+  const testScreenshotsUrl = testScreenshots.map(curScreenshot => `${workspace}--${account}.myvtex.com/_v/screenshot/${testId}/${specId}/${curScreenshot.screenshotId}`).join('\n')
+  const videoUrl = testVideo === 'true' ? `${workspace}--${account}.myvtex.com/_v/video/${testId}/${specId}` : 'false'
   return (
     <Box key={title.join('')} flexDirection="column">
       <FailedSpecDetail label="Test" text={title.join(' ')} indented={false} />
@@ -89,8 +104,9 @@ const ErrorVisualization: React.FunctionComponent<ErrorVisualizationProps> = ({
       {stack && <FailedSpecDetail label="Stack" text={stack} indented />}
       {error && <FailedSpecDetail label="Error" text={error} indented />}
       {testScreenshots.length > 0 && (
-        <FailedSpecDetail label="Screenshots" text={testScreenshotsText} indented={testScreenshots.length > 1} />
+        <FailedSpecDetail label="Screenshots" text={testScreenshotsUrl} indented={testScreenshots.length > 1} />
       )}
+      {testVideo && <FailedSpecDetail label="Video" text={videoUrl} indented={false} />}
     </Box>
   )
 }
