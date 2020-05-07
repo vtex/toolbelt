@@ -1,7 +1,12 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
-import { GraphQlError } from '../errors'
+import { GraphQlError } from '../../errors'
+import { IOClientFactory } from './IOClientFactory'
 
 export default class Billing extends AppClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<Billing>(Billing, customContext, customOptions)
+  }
+
   constructor(ioContext: IOContext, opts: InstanceOptions) {
     super('vtex.billing@0.x', ioContext, opts)
   }
