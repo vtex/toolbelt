@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Box, Color, Text } from 'ink'
 
-import { SpecReport, SpecTestReport, Screenshot } from '../../../../clients/Tester'
+import { SpecReport, SpecTestReport, Screenshot } from '../../../../lib/clients/Tester'
 import { SessionManager } from '../../../../lib/session/SessionManager'
 import { publicEndpoint } from '../../../../env'
 
