@@ -1,13 +1,12 @@
 import chalk from 'chalk'
 import { compose, equals, filter, head, prop, split } from 'ramda'
-
-import { apps } from '../../clients'
+import { createAppsClient } from '../../lib/clients/Apps'
+import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
-import { SessionManager } from '../../lib/session/SessionManager'
 
-const { listApps } = apps
+const { listApps } = createAppsClient()
 
 const cleanVersion = compose<string, string[], string>(head, split('+build'))
 

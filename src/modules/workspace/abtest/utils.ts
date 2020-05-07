@@ -1,4 +1,4 @@
-import { AppManifest, Apps } from '@vtex/api'
+import { AppManifest } from '@vtex/api'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
 import numbro from 'numbro'
@@ -6,7 +6,7 @@ import { compose, filter, map, prop } from 'ramda'
 import { ABTester } from '../../../clients/abTester'
 import * as env from '../../../env'
 import { CommandError } from '../../../errors'
-import { createIOContext } from '../../../lib/clients'
+import { createAppsClient } from '../../../lib/clients/Apps'
 import { createWorkspacesClient } from '../../../lib/clients/Workspaces'
 import { SessionManager } from '../../../lib/session/SessionManager'
 
@@ -20,13 +20,11 @@ export const SIGNIFICANCE_LEVELS = {
 
 const { account } = SessionManager.getSingleton()
 
-const contextForMaster = createIOContext({ workspace: 'master' })
-
 const options = { timeout: (env.envTimeout || DEFAULT_TIMEOUT) as number }
 
 // Clients for the 'master' workspace
 export const abtester = new ABTester(contextForMaster, { ...options, retries: 3 })
-export const apps = new Apps(contextForMaster, options)
+export const apps = createAppsClient({ workspace: 'master' })
 
 export const formatDays = (days: number) => {
   let suffix = 'days'

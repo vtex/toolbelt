@@ -1,7 +1,9 @@
-import { __, merge } from 'ramda'
-import { apps } from '../../../clients'
+import { merge, __ } from 'ramda'
+import { createAppsClient } from '../../../lib/clients/Apps'
 
 export default async (app: string, field, value) => {
+  const apps = createAppsClient()
+
   const newSetting = {}
   newSetting[field] = value
   const newSettingsJson = await apps
