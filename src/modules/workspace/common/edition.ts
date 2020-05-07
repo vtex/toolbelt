@@ -1,17 +1,15 @@
 import chalk from 'chalk'
-import { createIOContext } from '../../../lib/clients'
 import { Sponsor } from '../../../lib/clients/Sponsor'
 import { ErrorKinds } from '../../../lib/error/ErrorKinds'
 import { TelemetryCollector } from '../../../lib/telemetry/TelemetryCollector'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import setEditionCmd from '../../sponsor/setEdition'
-import { IOClientOptions } from '../../utils'
 
 const recommendedEdition = 'vtex.edition-store@2.x'
 
 const getCurrEdition = async () => {
-  const sponsor = new Sponsor(createIOContext({ workspace: 'master' }), IOClientOptions)
+  const sponsor = Sponsor.createClient({ workspace: 'master' })
   try {
     return await sponsor.getEdition()
   } catch (err) {
