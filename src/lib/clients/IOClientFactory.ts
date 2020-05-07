@@ -1,5 +1,5 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
-import { createDummyLogger } from '../../clients/dummyLogger'
+import { Logger } from '@vtex/api/lib/service/logger'
 import * as env from '../../env'
 import userAgent from '../../user-agent'
 import { SessionManager } from '../session/SessionManager'
@@ -11,8 +11,25 @@ interface IOContextOptions {
   workspace?: string
 }
 
+const noop = () => {}
+
 export class IOClientFactory {
   public static DEFAULT_TIMEOUT = 15000
+
+  private static createDummyLogger() {
+    const { account, workspace } = SessionManager.getSingleton()
+    return ({
+      account,
+      workspace,
+      operationId: '',
+      requestId: '',
+      debug: noop,
+      info: noop,
+      warn: noop,
+      error: noop,
+      sendLog: noop,
+    } as unknown) as Logger
+  }
 
   public static createIOContext(opts?: IOContextOptions): IOContext {
     const session = SessionManager.getSingleton()
@@ -38,7 +55,7 @@ export class IOClientFactory {
       requestId: '',
       operationId: '',
       platform: '',
-      logger: createDummyLogger(),
+      logger: IOClientFactory.createDummyLogger(),
     }
   }
 
