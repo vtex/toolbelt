@@ -1,11 +1,11 @@
-import React from 'react'
 import { render } from 'ink'
-
-import { apps, tester } from '../../../clients'
-import { RealTimeReport } from './report/index'
-import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
+import React from 'react'
+import { tester } from '../../../clients'
 import { TestRequest } from '../../../clients/Tester'
+import { createAppsClient } from '../../../lib/clients/Apps'
+import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
 import { SessionManager } from '../../../lib/session/SessionManager'
+import { RealTimeReport } from './report/index'
 
 class EndToEndCommand {
   constructor(private options) {}
@@ -22,6 +22,7 @@ class EndToEndCommand {
     const manifestEditor = await ManifestEditor.getManifestEditor()
     const cleanAppId = manifestEditor.appLocator
 
+    const apps = createAppsClient()
     const { data: workspaceAppsList } = await apps.listApps()
     const appItem = workspaceAppsList.find(({ app }) => app.startsWith(cleanAppId))
 
