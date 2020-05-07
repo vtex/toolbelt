@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { readFile, readJson } from 'fs-extra'
 import { length, map } from 'ramda'
 import { createInterface } from 'readline'
-import { rewriter } from '../../clients'
+import { Rewriter } from '../../lib/clients/Rewriter'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
@@ -63,6 +63,7 @@ const handleDelete = async (csvPath: string) => {
     process.exit()
   })
 
+  const rewriter = Rewriter.createClient()
   for (const paths of separatedPaths.splice(counter)) {
     try {
       // eslint-disable-next-line no-await-in-loop
