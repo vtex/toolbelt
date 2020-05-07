@@ -1,5 +1,5 @@
 import { InstanceOptions, IOContext, Router } from '@vtex/api'
-import { IOClientFactory } from './IOClientFactory'
+import { IOClientFactory } from '../IOClientFactory'
 
 export const createRouterClient = (
   customContext: Partial<IOContext> = {},

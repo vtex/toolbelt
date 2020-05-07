@@ -1,5 +1,5 @@
 import { InstanceOptions, IOContext, Registry } from '@vtex/api'
-import { IOClientFactory } from './IOClientFactory'
+import { IOClientFactory } from '../IOClientFactory'
 
 export const createRegistryClient = (
   customContext: Partial<IOContext> = {},

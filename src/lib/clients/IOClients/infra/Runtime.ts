@@ -1,10 +1,10 @@
 import { IOContext } from '@vtex/api'
 import * as url from 'url'
 import WebSocket from 'ws'
-import { cluster } from '../../env'
-import logger from '../../logger'
-import { SessionManager } from '../session/SessionManager'
-import { IOClientFactory } from './IOClientFactory'
+import { cluster } from '../../../../env'
+import logger from '../../../../logger'
+import { SessionManager } from '../../../session/SessionManager'
+import { IOClientFactory } from '../IOClientFactory'
 
 const EOT = '\x04'
 

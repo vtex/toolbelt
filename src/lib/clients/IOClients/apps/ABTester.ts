@@ -1,5 +1,5 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
-import { IOClientFactory } from './IOClientFactory'
+import { IOClientFactory } from '../IOClientFactory'
 
 const routes = {
   Abort: (workspace: string) => `${routes.ABTester}/finish/${workspace}`,

@@ -1,6 +1,6 @@
 import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
-import { ChangeToSend } from '../../modules/apps/ProjectUploader'
-import { IOClientFactory } from './IOClientFactory'
+import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
+import { IOClientFactory } from '../IOClientFactory'
 
 interface StickyOptions {
   sticky?: boolean

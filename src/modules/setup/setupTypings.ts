@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import R from 'ramda'
 import { publicEndpoint } from '../../env'
-import { Builder } from '../../lib/clients/Builder'
+import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'

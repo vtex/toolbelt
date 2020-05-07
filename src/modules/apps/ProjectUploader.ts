@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import getStream from 'get-stream'
 import { Readable } from 'stream'
 import { ZlibOptions } from 'zlib'
-import { Builder, BuildResult, RequestParams } from '../../lib/clients/Builder'
+import { Builder, BuildResult, RequestParams } from '../../lib/clients/IOClients/apps/Builder'
 import { getSavedOrMostAvailableHost } from '../../host'
 import logger from '../../logger'
 

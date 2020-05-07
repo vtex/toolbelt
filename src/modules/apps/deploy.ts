@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { createRegistryClient } from '../../lib/clients/Registry'
+import { createRegistryClient } from '../../lib/clients/IOClients/infra/Registry'
 import { ManifestValidator } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator, toAppLocator } from '../../locator'
