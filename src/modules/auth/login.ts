@@ -3,8 +3,8 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { ToolbeltConfig } from '../../lib/clients/IOClients/apps/ToolbeltConfig'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import { SessionManager } from '../../lib/session/SessionManager'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import welcome from './welcome'
@@ -37,7 +37,7 @@ const notifyRelease = async () => {
     const { messages } = await configClient.getGlobalConfig()
     console.log(messageRenderer.renderNode(messages.releaseNotes))
   } catch (err) {
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndRegisterOnTelemetry({
       kind: ErrorKinds.TOOLBELT_CONFIG_MESSAGES_ERROR,
       originalError: err,
     }).logErrorForUser({ coreLogLevelDefault: 'debug' })

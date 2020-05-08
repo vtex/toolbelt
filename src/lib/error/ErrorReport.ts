@@ -1,39 +1,16 @@
-import { AxiosError } from 'axios'
+import {
+  createErrorReportBaseArgs,
+  ErrorReportBase,
+  ErrorReportBaseConstructorArgs,
+  ErrorReportCreateArgs,
+  isRequestInfo,
+} from '@vtex/node-error-report'
 import chalk from 'chalk'
-import { randomBytes } from 'crypto'
 import * as pkg from '../../../package.json'
 import logger from '../../logger'
 import { SessionManager } from '../session/SessionManager'
-import { EventSourceError } from '../sse/EventSourceError'
 import { getPlatform } from '../utils/getPlatform'
-import { truncateAndSanitizeStringsFromObject } from '../utils/truncateAndSanitizeStringsFromObject'
-import { ErrorKinds } from './ErrorKinds'
-
-export interface ErrorCreationArguments {
-  kind?: string
-  message?: string
-  originalError: Error | null
-  tryToParseError?: boolean
-}
-
-export interface ErrorReportObj {
-  errorId: string
-  timestamp: string
-  kind: string
-  message: string
-  stack: string
-  env: ErrorEnv
-  errorDetails?: any
-  code?: string
-}
-
-interface ErrorReportArguments {
-  kind: string
-  message: string
-  originalError: Error | null
-  tryToParseError: boolean
-  env: ErrorEnv
-}
+import { TelemetryCollector } from '../telemetry/TelemetryCollector'
 
 interface ErrorEnv {
   account: string
@@ -42,23 +19,6 @@ interface ErrorEnv {
   nodeVersion: string
   platform: string
   command: string
-}
-
-interface RequestErrorDetails {
-  requestConfig: {
-    url?: string
-    method?: string
-    params?: any
-    headers?: Record<string, any>
-    data?: any
-    timeout?: string | number
-  }
-  response: {
-    status?: number
-    statusText?: string
-    headers?: Record<string, any>
-    data?: any
-  }
 }
 
 type ErrorLogLevel = 'error' | 'debug'
@@ -78,130 +38,34 @@ interface LogToUserOptions {
   }
 }
 
-export class ErrorReport extends Error {
-  private static readonly MAX_ERROR_STRING_LENGTH = process.env.MAX_ERROR_STRING_LENGTH
-    ? parseInt(process.env.MAX_ERROR_STRING_LENGTH, 10)
-    : 1024
-
-  private static readonly MAX_SERIALIZATION_DEPTH = 5
-
-  public static createGenericErrorKind(error: AxiosError | Error | any) {
-    if (error.config) {
-      return ErrorKinds.REQUEST_ERROR
-    }
-
-    return ErrorKinds.GENERIC_ERROR
+export class ErrorReport extends ErrorReportBase {
+  public static create(args: ErrorReportCreateArgs) {
+    return new ErrorReport(createErrorReportBaseArgs(args))
   }
 
-  public static create(args: ErrorCreationArguments) {
-    const kind = args.kind ?? this.createGenericErrorKind(args.originalError)
-    const message = args.message ?? args.originalError.message
-    const tryToParseError = args.tryToParseError ?? true
+  public static createAndRegisterOnTelemetry(args: ErrorReportCreateArgs) {
+    return ErrorReport.create(args).sendToTelemetry()
+  }
 
+  constructor(args: ErrorReportBaseConstructorArgs) {
     const { workspace, account } = SessionManager.getSingleton()
-    return new ErrorReport({
-      kind,
-      message,
-      tryToParseError,
-      originalError: args.originalError,
-      env: {
-        account,
-        workspace,
-        toolbeltVersion: pkg.version,
-        nodeVersion: process.version,
-        platform: getPlatform(),
-        command: process.argv.slice(2).join(' '),
+
+    const env: ErrorEnv = {
+      account,
+      workspace,
+      toolbeltVersion: pkg.version,
+      nodeVersion: process.version,
+      platform: getPlatform(),
+      command: process.argv.slice(2).join(' '),
+    }
+
+    super({
+      ...args,
+      details: {
+        ...args.details,
+        env,
       },
     })
-  }
-
-  private static parseAxiosError(err: AxiosError): RequestErrorDetails {
-    const { url, method, headers: requestHeaders, params, data: requestData, timeout: requestTimeout } = err.config
-    const { status, statusText, headers: responseHeaders, data: responseData } = err.response || {}
-
-    return {
-      requestConfig: {
-        url,
-        method,
-        params,
-        headers: requestHeaders,
-        data: requestData,
-        timeout: requestTimeout,
-      },
-      response: err.response
-        ? {
-            status,
-            statusText,
-            headers: responseHeaders,
-            data: responseData,
-          }
-        : undefined,
-    }
-  }
-
-  private static getErrorDetails(err: any): any | null {
-    if (err.isAxiosError || err.config) {
-      return this.parseAxiosError(err)
-    }
-
-    if (err instanceof EventSourceError) {
-      return err.getErrorDetailsObject()
-    }
-
-    return null
-  }
-
-  public readonly kind: string
-  public readonly originalError: Error | any
-  public readonly errorDetails?: any
-  public readonly timestamp: string
-  public readonly errorId: string
-  public readonly env: ErrorEnv
-
-  constructor({ kind, message, originalError, tryToParseError = false, env }: ErrorReportArguments) {
-    super(message)
-    this.timestamp = new Date().toISOString()
-    this.kind = kind
-    this.originalError = originalError
-    this.errorId = randomBytes(8).toString('hex')
-    this.stack = originalError.stack
-    this.env = env
-
-    this.errorDetails = ErrorReport.getErrorDetails(this.originalError)
-    if (tryToParseError) {
-      if (this.errorDetails?.response?.data?.message) {
-        this.message = this.errorDetails.response.data.message
-      } else {
-        this.message = this.originalError.message
-      }
-    }
-  }
-
-  public toObject(): ErrorReportObj {
-    const errorReportObj: ErrorReportObj = {
-      errorId: this.errorId,
-      timestamp: this.timestamp,
-      kind: this.kind,
-      message: this.message,
-      stack: this.stack,
-      env: this.env,
-      ...(this.errorDetails ? { errorDetails: this.errorDetails } : null),
-      ...(this.originalError.code ? { code: this.originalError.code } : null),
-    }
-
-    return truncateAndSanitizeStringsFromObject(
-      errorReportObj,
-      ErrorReport.MAX_ERROR_STRING_LENGTH,
-      ErrorReport.MAX_SERIALIZATION_DEPTH
-    ) as ErrorReportObj
-  }
-
-  public stringify(pretty = false) {
-    if (pretty) {
-      return JSON.stringify(this.toObject(), null, 2)
-    }
-
-    return JSON.stringify(this.toObject())
   }
 
   public logErrorForUser(opts?: LogToUserOptions) {
@@ -225,16 +89,25 @@ export class ErrorReport extends Error {
 
     logger[coreLogLevels.errorKind](chalk`{bold ErrorKind:} ${this.kind}`)
     logger[coreLogLevels.errorMessage](chalk`{bold Message:} ${this.message}`)
-    logger[coreLogLevels.errorId](chalk`{bold ErrorID:} ${this.errorId}`)
+    logger[coreLogLevels.errorId](chalk`{bold ErrorID:} ${this.metadata.errorId}`)
 
-    if (this.errorDetails?.requestConfig) {
-      const { method, url } = this.errorDetails.requestConfig
+    if (isRequestInfo(this.parsedInfo)) {
+      const { method, url } = this.parsedInfo.requestConfig
       logger[requestDataLogLevels.requestInfo](chalk`{bold Request:} ${method} ${url}`)
 
-      if (this.errorDetails?.response) {
-        const { status } = this.errorDetails.response
-        logger[requestDataLogLevels.requestStatus](chalk`{bold Status:} ${status}`)
+      if (this.parsedInfo.response) {
+        const { status } = this.parsedInfo.response
+        logger[requestDataLogLevels.requestStatus](chalk`{bold Status:} ${status.toString()}`)
       }
+    }
+
+    return this
+  }
+
+  public sendToTelemetry() {
+    if (!this.isErrorReported()) {
+      TelemetryCollector.getCollector().registerError(this)
+      this.markErrorAsReported()
     }
 
     return this
