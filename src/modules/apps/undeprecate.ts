@@ -25,8 +25,8 @@ const promptUndeprecate = (appsList: string[]) =>
 
 const undeprecateApp = async (app: string): Promise<void> => {
   const { vendor, name, version } = parseLocator(app)
-  const { account, token } = SessionManager.getSingleton()
-  if (vendor !== account) {
+  const session = SessionManager.getSingleton()
+  if (vendor !== session.account) {
     const canSwitchToVendor = await promptConfirm(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
       return
@@ -34,7 +34,7 @@ const undeprecateApp = async (app: string): Promise<void> => {
     await switchAccount(vendor, {})
   }
 
-  const context = { account: vendor, workspace: 'master', authToken: token }
+  const context = { account: vendor, workspace: 'master', authToken: session.token }
   const { registry } = createClients(context)
   return registry.undeprecateApp(`${vendor}.${name}`, version)
 }
