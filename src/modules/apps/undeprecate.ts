@@ -7,6 +7,7 @@ import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 
 let originalAccount
 let originalWorkspace
@@ -24,8 +25,8 @@ const promptUndeprecate = (appsList: string[]) =>
 
 const undeprecateApp = async (app: string): Promise<void> => {
   const { vendor, name, version } = parseLocator(app)
-  const { account, token } = SessionManager.getSingleton()
-  if (vendor !== account) {
+  const session = SessionManager.getSingleton()
+  if (vendor !== session.account) {
     const canSwitchToVendor = await promptConfirm(switchToVendorMessage(vendor))
     if (!canSwitchToVendor) {
       return
@@ -33,7 +34,7 @@ const undeprecateApp = async (app: string): Promise<void> => {
     await switchAccount(vendor, {})
   }
 
-  const context = { account: vendor, workspace: 'master', authToken: token }
+  const context = { account: vendor, workspace: 'master', authToken: session.token }
   const registry = createRegistryClient(context)
   return registry.undeprecateApp(`${vendor}.${name}`, version)
 }
@@ -47,16 +48,16 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
       await undeprecateApp(app)
       log.info('Successfully undeprecated', app)
     } catch (e) {
-      const errReport = ErrorReport.create({
-        originalError: e,
-      })
-
+      const errReport = ErrorReport.create({ originalError: e })
+      
       if (e.response && e.response.status && e.response.status === 404) {
         log.error(`Error undeprecating ${app}. App not found.`)
-        log.error(`ErrorID: ${errReport.errorId}`)
+        errReport.logErrorForUser({ coreLogLevelDefault: 'debug' })
+        TelemetryCollector.getCollector().registerError(errReport)
       } else if (e.message && e.response.statusText) {
         log.error(`Error undeprecating ${app}. ${e.message}. ${e.response.statusText}`)
-        log.error(`ErrorID: ${errReport.errorId}`)
+        errReport.logErrorForUser({ coreLogLevelDefault: 'debug' })
+        TelemetryCollector.getCollector().registerError(errReport)
         // eslint-disable-next-line no-await-in-loop
         await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
         return
