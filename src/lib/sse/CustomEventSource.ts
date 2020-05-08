@@ -1,6 +1,7 @@
 import EventSource from 'eventsource'
 import { cluster, envCookies } from '../../env'
 import userAgent from '../../user-agent'
+import { Headers } from '../constants/Headers'
 import { SessionManager } from '../session/SessionManager'
 import { EventSourceError } from './EventSourceError'
 
@@ -37,7 +38,7 @@ export class CustomEventSource {
         authorization: `bearer ${token}`,
         'user-agent': userAgent,
         ...(envCookies() ? { cookie: envCookies() } : null),
-        ...(cluster() ? { 'x-vtex-upstream-target': cluster() } : null),
+        ...(cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: cluster() } : null),
       },
     })
   }
