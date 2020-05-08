@@ -2,6 +2,7 @@ import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import { Logger } from '@vtex/api/lib/service/logger'
 import * as env from '../../../env'
 import userAgent from '../../../user-agent'
+import { Headers } from '../../constants/Headers'
 import { SessionManager } from '../../session/SessionManager'
 
 interface IOContextOptions {
@@ -64,7 +65,7 @@ export class IOClientFactory {
     customContext: Partial<IOContext> = {},
     customOptions: Partial<InstanceOptions> = {}
   ): T {
-    const clusterHeader = env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null
+    const clusterHeader = env.cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: env.cluster() } : null
 
     const defaultOptions = {
       timeout: (env.envTimeout || IOClientFactory.DEFAULT_TIMEOUT) as number,

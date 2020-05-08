@@ -1,5 +1,6 @@
 import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
 import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
+import { Headers } from '../../../constants/Headers'
 import { IOClientFactory } from '../IOClientFactory'
 
 interface StickyOptions {
@@ -58,12 +59,12 @@ export class Builder extends AppClient {
         : `request:${this.context.account}:${this.context.workspace}:${app}:${hintIndex}`
     const headers = {
       'Content-Type': 'application/json',
-      'x-vtex-sticky-host': stickyHint,
+      [Headers.VTEX_STICKY_HOST]: stickyHint,
     }
     const metric = 'bh-availability'
     const {
       data: { availability },
-      headers: { 'x-vtex-sticky-host': host },
+      headers: { [Headers.VTEX_STICKY_HOST]: host },
     } = await this.http.getRaw(routes.availability(app), { headers, metric, cacheable: CacheType.None })
     const { hostname, score } = availability as AvailabilityResponse
     return { host, hostname, score }
@@ -72,7 +73,7 @@ export class Builder extends AppClient {
   public clean = (app: string) => {
     const headers = {
       'Content-Type': 'application/json',
-      ...(this.stickyHost && { 'x-vtex-sticky-host': this.stickyHost }),
+      ...(this.stickyHost && { [Headers.VTEX_STICKY_HOST]: this.stickyHost }),
     }
     const metric = 'bh-clean'
     return this.http.post<BuildResult>(routes.clean(app), { headers, metric })
@@ -112,7 +113,7 @@ export class Builder extends AppClient {
   public relinkApp = (app: string, changes: ChangeToSend[], params: RequestParams = {}) => {
     const headers = {
       'Content-Type': 'application/json',
-      ...(this.stickyHost && { 'x-vtex-sticky-host': this.stickyHost }),
+      ...(this.stickyHost && { [Headers.VTEX_STICKY_HOST]: this.stickyHost }),
     }
     const metric = 'bh-relink'
     return this.http.put<BuildResult>(routes.relink(app), changes, { headers, metric, params })
@@ -139,12 +140,12 @@ export class Builder extends AppClient {
     const params = tag ? { ...requestParams, tag } : requestParams
     const {
       data,
-      headers: { 'x-vtex-sticky-host': host },
+      headers: { [Headers.VTEX_STICKY_HOST]: host },
     } = await this.http.postRaw<BuildResult>(route, zipFile, {
       headers: {
         'Content-length': zipFile.byteLength,
         'Content-Type': 'application/octet-stream',
-        ...(sticky && { 'x-vtex-sticky-host': this.stickyHost || hint }),
+        ...(sticky && { [Headers.VTEX_STICKY_HOST]: this.stickyHost || hint }),
       },
       metric,
       params,

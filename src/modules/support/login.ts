@@ -4,8 +4,9 @@ import enquirer from 'enquirer'
 import jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
 import * as env from '../../env'
-import log from '../../logger'
+import { Headers } from '../../lib/constants/Headers'
 import { SessionManager } from '../../lib/session/SessionManager'
+import log from '../../logger'
 
 const getAvailableRoles = async (token: string, supportedAccount: string): Promise<string[]> => {
   const { account, workspace } = SessionManager.getSingleton()
@@ -14,8 +15,8 @@ const getAvailableRoles = async (token: string, supportedAccount: string): Promi
     {
       headers: {
         Authorization: token,
-        'X-Vtex-Original-Credential': token,
-        ...(env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null),
+        [Headers.VTEX_ORIGINAL_CREDENTIAL]: token,
+        ...(env.cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: env.cluster() } : null),
       },
     }
   )
@@ -47,8 +48,8 @@ const loginAsRole = async (token: string, supportedAccount: string, role: string
     {
       headers: {
         Authorization: token,
-        'X-Vtex-Original-Credential': token,
-        ...(env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null),
+        [Headers.VTEX_ORIGINAL_CREDENTIAL]: token,
+        ...(env.cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: env.cluster() } : null),
       },
     }
   )
