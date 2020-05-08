@@ -7,6 +7,7 @@ import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 
 let originalAccount
 let originalWorkspace
@@ -54,9 +55,11 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
       if (e.response && e.response.status && e.response.status === 404) {
         log.error(`Error undeprecating ${app}. App not found.`)
         log.error(`ErrorID: ${errReport.errorId}`)
+        TelemetryCollector.getCollector().registerError(errReport)
       } else if (e.message && e.response.statusText) {
         log.error(`Error undeprecating ${app}. ${e.message}. ${e.response.statusText}`)
         log.error(`ErrorID: ${errReport.errorId}`)
+        TelemetryCollector.getCollector().registerError(errReport)
         // eslint-disable-next-line no-await-in-loop
         await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
         return
