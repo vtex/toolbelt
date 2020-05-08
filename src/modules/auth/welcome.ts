@@ -1,27 +1,17 @@
+import { AppsListItem, removeBuild } from '@vtex/api'
 import chalk from 'chalk'
-import { compose, equals, filter, prop } from 'ramda'
-import { removeBuild } from '@vtex/api'
-
-import { Sponsor } from '../../clients/sponsor'
+import { EditionInfo, Sponsor } from '../../lib/clients/IOClients/apps/Sponsor'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
+import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { SessionManager } from '../../lib/session/SessionManager'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
-import { IOClientOptions } from '../utils'
-import { SessionManager } from '../../lib/session/SessionManager'
-import { createIOContext } from '../../lib/clients'
 
-type Edition = {
-  id: string
-  vendor: string
-  name: string
-  version: string
-  title: string
-  description: string
-  _publicationDate: string
-  _activationDate: string
+const filterBySource = (method: 'edition' | 'installation') => {
+  return (el: any) => el?._source === method
 }
-
-const filterBySource = (source: string) => filter(compose<any, string, boolean>(equals(source), prop('_source')))
 
 const renderTable = (title: string, rows: string[][]): void => {
   console.log(title)
@@ -44,7 +34,7 @@ const renderAppsTable = ({
 }: {
   title: string
   emptyMessage: string
-  appArray: any
+  appArray: AppsListItem[]
 }): void => {
   console.log(title)
 
@@ -67,41 +57,93 @@ const renderAppsTable = ({
   console.log(`${table.toString()}\n`)
 }
 
+interface EditionStatus {
+  isEditionSet: boolean | null
+  edition: EditionInfo | null
+}
+
+const getEditionStatus = async (): Promise<EditionStatus> => {
+  const sponsorClient = Sponsor.createClient()
+  let isEditionSet: boolean | null = null
+  let edition: EditionInfo | null
+  try {
+    edition = await sponsorClient.getEdition()
+    isEditionSet = true
+  } catch (err) {
+    if (err.response?.data?.code === 'resource_not_found') {
+      isEditionSet = false
+    } else {
+      TelemetryCollector.createAndRegisterErrorReport({
+        kind: ErrorKinds.EDITION_REQUEST_ERROR,
+        originalError: err,
+      }).logErrorForUser({ coreLogLevelDefault: 'debug' })
+    }
+
+    edition = null
+  }
+
+  return {
+    isEditionSet,
+    edition,
+  }
+}
+
+const createEditionInfoRows = ({ edition, isEditionSet }: EditionStatus) => {
+  if (isEditionSet === false) {
+    return [['Edition', 'not set']]
+  }
+
+  if (edition == null) {
+    return []
+  }
+
+  return [
+    ['Edition', edition.title],
+    ['Edition id', edition.id],
+    ['Edition activated', edition._activationDate],
+  ]
+}
+
 export default async () => {
   const sessionManager = SessionManager.getSingleton()
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { apps } = require('../../clients')
   const { account, workspace } = sessionManager
-  const sponsorClient = new Sponsor(createIOContext(sessionManager), IOClientOptions)
-  let edition
+
+  const apps = createAppsClient()
+  const editionStatus = await getEditionStatus()
+
+  let appArray: AppsListItem[] | null
   try {
-    edition = ((await sponsorClient.getEdition()) as unknown) as Edition
-  } catch (e) {
-    edition = {}
+    const { data } = await apps.listApps()
+    appArray = data
+  } catch (err) {
+    TelemetryCollector.createAndRegisterErrorReport({
+      originalError: err,
+    }).logErrorForUser({ coreLogLevelDefault: 'debug' })
+
+    appArray = null
   }
-  const appArray = await apps.listApps().then(prop('data'))
 
   log.info(`Welcome to VTEX IO!`)
-
-  /** RUNNING TESTS */
-  // log.info(`// RUNNING TESTS`)
-
-  /** LATEST WORKSPACES */
-  // log.info(`// LATEST WORKSPACES can we add links to commands? vtex://use/{workspace}`)
 
   /** General information */
   renderTable(`${chalk.yellow('General')}`, [
     ['Account', account],
     ['Workspace', workspace],
-    ['Edition', edition.title],
-    ['Edition id', edition.id],
-    ['Edition activated', edition._activationDate],
+    ...createEditionInfoRows(editionStatus),
   ])
 
+  /** RUNNING TESTS */
+  // We could add here the ab tests running
+
+  /** LATEST WORKSPACES */
+  // We could add here the lastest workspaces used on this account
+
   /** APPS LIST */
-  renderAppsTable({
-    title: `${chalk.yellow('Installed Apps')}`,
-    emptyMessage: 'You have no installed apps',
-    appArray: filterBySource('installation')(appArray),
-  })
+  if (appArray != null) {
+    renderAppsTable({
+      title: `${chalk.yellow('Installed Apps')}`,
+      emptyMessage: 'You have no installed apps',
+      appArray: appArray.filter(filterBySource('installation')),
+    })
+  }
 }
