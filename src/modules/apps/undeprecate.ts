@@ -49,7 +49,7 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
       log.info('Successfully undeprecated', app)
     } catch (e) {
       const errReport = ErrorReport.create({ originalError: e })
-      
+
       if (e.response && e.response.status && e.response.status === 404) {
         log.error(`Error undeprecating ${app}. App not found.`)
         errReport.logErrorForUser({ coreLogLevelDefault: 'debug' })
@@ -68,6 +68,8 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
       }
     }
   }
+
+  await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
 }
 
 export default async (optionalApps: string[], options) => {
