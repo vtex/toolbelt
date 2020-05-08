@@ -1,7 +1,8 @@
+import { ErrorReportSerializableObj } from '@vtex/node-error-report'
 import { readJson, remove } from 'fs-extra'
 import { ToolbeltTelemetry } from '../../clients/IOClients/apps/ToolbeltTelemetry'
 import { ErrorKinds } from '../../error/ErrorKinds'
-import { ErrorReport, ErrorReportObj } from '../../error/ErrorReport'
+import { ErrorReport } from '../../error/ErrorReport'
 import { MetricReportObj } from '../../metrics/MetricReport'
 import { TelemetryFile } from '../TelemetryCollector'
 import { PendingTelemetryDataManager } from './PendingTelemetryDataManager'
@@ -72,7 +73,7 @@ export class TelemetryReporter {
     }
   }
 
-  private async reportErrors(errors: ErrorReportObj[]) {
+  private async reportErrors(errors: ErrorReportSerializableObj[]) {
     if (!errors?.length) {
       return
     }

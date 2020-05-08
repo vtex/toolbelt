@@ -3,8 +3,8 @@ import { CommandError } from '../../errors'
 import { EvolutionManager } from '../../lib/clients/IOClients/apps/EvolutionManager'
 import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import { SessionManager } from '../../lib/session/SessionManager'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import useCmd from './use'
@@ -51,7 +51,7 @@ export default async () => {
     await evolutionManager.saveWorkspacePromotion(userEmail, currentWorkspace)
   } catch (err) {
     log.error('Failed to report workspace promotion to Evolution Manager')
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndRegisterOnTelemetry({
       originalError: err,
       kind: ErrorKinds.EVOLUTION_MANAGER_REPORT_ERROR,
     })

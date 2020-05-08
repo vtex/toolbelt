@@ -2,10 +2,11 @@ import chalk from 'chalk'
 import ora from 'ora'
 import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
 import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import { SessionManager } from '../../lib/session/SessionManager'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
 import { TableGenerator } from './TableGenerator'
+
 
 async function isProdutionWorkspace(account: string, workspace: string): Promise<boolean> {
   const workspaces = createWorkspacesClient()
@@ -37,7 +38,7 @@ export default async (url: string, option: any) => {
   } catch (error) {
     spinner.stop()
 
-    TelemetryCollector.createAndRegisterErrorReport({ originalError: error })
+    ErrorReport.createAndRegisterOnTelemetry({ originalError: error })
     log.error(error)
   }
 }

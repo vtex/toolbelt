@@ -3,7 +3,7 @@ import { execSync } from 'child_process'
 import { resolve } from 'path'
 import { mergeDeepRight } from 'ramda'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import { default as log, default as logger } from '../../logger'
 import { getAppRoot } from '../../manifest'
 import { yarnPath } from '../utils'
@@ -160,7 +160,7 @@ export function setupTooling(manifest: Manifest, buildersWithTooling = BUILDERS_
     setupBuilderTools(builders)
     logger.info('Finished setting up tooling')
   } catch (err) {
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TOOLING_ERROR,
       originalError: err,
     }).logErrorForUser()

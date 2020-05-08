@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { Sponsor } from '../../../lib/clients/IOClients/apps/Sponsor'
 import { ErrorKinds } from '../../../lib/error/ErrorKinds'
-import { TelemetryCollector } from '../../../lib/telemetry/TelemetryCollector'
+import { ErrorReport } from '../../../lib/error/ErrorReport'
 import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import setEditionCmd from '../../sponsor/setEdition'
@@ -14,7 +14,7 @@ const getCurrEdition = async () => {
     return await sponsor.getEdition()
   } catch (err) {
     if (err.response?.status !== 404) {
-      TelemetryCollector.createAndRegisterErrorReport({
+      ErrorReport.createAndRegisterOnTelemetry({
         kind: ErrorKinds.EDITION_REQUEST_ERROR,
         originalError: err,
       })
