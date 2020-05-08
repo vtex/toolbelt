@@ -65,7 +65,6 @@
     "chalk": "~2.3.2",
     "child-process-es6-promise": "~1.2.1",
     "chokidar": "~3.3.0",
-    "clear-module": "^4.1.1",
     "cli-table": "~0.3.1",
     "cli-table2": "~0.2.0",
     "clipboardy": "~2.1.0",
