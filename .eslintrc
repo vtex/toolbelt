@@ -44,13 +44,6 @@
       "rules": {
         "import/first": "off"
       }
-    },
-    {
-      "files": ["./src/modules/auth/welcome.ts"],
-      "rules": {
-        "@typescript-eslint/no-require-imports": "warn",
-        "@typescript-eslint/no-var-requires": "warn"
-      }
     }
   ]
 }
