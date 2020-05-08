@@ -1,13 +1,13 @@
 import chalk from 'chalk'
 import { split } from 'ramda'
-import { all as clearCachedModules } from 'clear-module'
 import { CommandError } from '../../errors'
 import { SessionManager } from '../../lib/session/SessionManager'
-import welcome from './welcome'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
+import welcome from './welcome'
 
 interface SwitchOptions {
+  showWelcomeMessage?: boolean
   workspace?: string
   gracefulAccountCheck?: boolean
   initialPrompt?: {
@@ -71,8 +71,11 @@ export const switchAccount = async (account: string, options: SwitchOptions): Pr
 
   await checkAndSwitch(parsedAccount, options.workspace || 'master')
   log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(parsedAccount)}`)
-  clearCachedModules()
-  welcome()
+
+  if (options.showWelcomeMessage) {
+    await welcome()
+  }
+
   return true
 }
 
@@ -84,6 +87,7 @@ export function returnToPreviousAccount({
   return switchAccount(previousAccount, {
     workspace: previousWorkspace,
     gracefulAccountCheck: true,
+    showWelcomeMessage: false,
     ...(promptConfirmation
       ? {
           initialPrompt: {

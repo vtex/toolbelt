@@ -15,6 +15,6 @@ export default class Welcome extends CustomCommand {
   static args = []
 
   async run() {
-    welcome()
+    return welcome()
   }
 }

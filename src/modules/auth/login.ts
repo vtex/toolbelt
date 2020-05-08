@@ -5,7 +5,6 @@ import enquirer from 'enquirer'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
-import { all as clearCachedModules } from 'clear-module'
 import welcome from './welcome'
 
 const promptUsePreviousLogin = (account: string, userLogged: string, workspace: string) => {
@@ -94,8 +93,8 @@ export default async (opts: LoginOptions) => {
         targetWorkspace
       )}`
     )
-    clearCachedModules()
-    welcome()
+
+    await welcome()
     notifyRelease()
   } catch (err) {
     if (err.statusCode === 404) {
