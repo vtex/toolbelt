@@ -1,7 +1,9 @@
 import chalk from 'chalk'
 import { createRegistryClient } from '../../lib/clients/IOClients/infra/Registry'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
@@ -46,15 +48,21 @@ const prepareAndDeprecateApps = async (appsList: string[]): Promise<any> => {
       await deprecateApp(app)
       log.info('Successfully deprecated', app)
     } catch (e) {
+      const errReport = ErrorReport.create({ originalError: e })
+
       if (e.response && e.response.status && e.response.status === 404) {
         log.error(`Error deprecating ${app}. App not found`)
+        errReport.logErrorForUser({ coreLogLevelDefault: 'debug' })
+        TelemetryCollector.getCollector().registerError(errReport)
       } else if (e.message && e.response.statusText) {
         log.error(`Error deprecating ${app}. ${e.message}. ${e.response.statusText}`)
+        errReport.logErrorForUser({ coreLogLevelDefault: 'debug' })
+        TelemetryCollector.getCollector().registerError(errReport)
         return returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
       } else {
         // eslint-disable-next-line no-await-in-loop
         await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
-        throw e
+        throw errReport
       }
     }
   }
