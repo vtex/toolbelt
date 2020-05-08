@@ -74,7 +74,7 @@ export const FailedSpec: React.FunctionComponent<SpecProps> = ({ spec, report, h
 
 const workspaceBaseURL = () => {
   const { account, workspace } = SessionManager.getSingleton()
-  return `${workspace}--${account}.${publicEndpoint()}`
+  return `https://${workspace}--${account}.${publicEndpoint()}`
 }
 
 interface ErrorVisualizationProps {
