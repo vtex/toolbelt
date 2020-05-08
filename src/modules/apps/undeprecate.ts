@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import { createClients } from '../../clients'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator } from '../../locator'
@@ -46,17 +47,23 @@ const prepareUndeprecate = async (appsList: string[]): Promise<void> => {
       await undeprecateApp(app)
       log.info('Successfully undeprecated', app)
     } catch (e) {
+      const errReport = ErrorReport.create({
+        originalError: e
+      })
+
       if (e.response && e.response.status && e.response.status === 404) {
-        log.error(`Error undeprecating ${app}. App not found`)
+        log.error(`Error undeprecating ${app}. App not found.`)
+        log.error(`ErrorID: ${errReport.errorId}`)
       } else if (e.message && e.response.statusText) {
         log.error(`Error undeprecating ${app}. ${e.message}. ${e.response.statusText}`)
+        log.error(`ErrorID: ${errReport.errorId}`)
         // eslint-disable-next-line no-await-in-loop
         await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
         return
       } else {
         // eslint-disable-next-line no-await-in-loop
         await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
-        throw e
+        throw errReport
       }
     }
   }
