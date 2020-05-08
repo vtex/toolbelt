@@ -6,9 +6,9 @@ import { removeVersion } from '../../locator'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
 import { ErrorKinds } from '../error/ErrorKinds'
-import { TelemetryCollector } from '../telemetry/TelemetryCollector'
 import { CustomEventSource } from './CustomEventSource'
 import { EventSourceError } from './EventSourceError'
+import { ErrorReport } from '../error/ErrorReport'
 
 const levelAdapter = { warning: 'warn' }
 
@@ -16,7 +16,7 @@ const onOpen = (type: string) => () => log.debug(`Connected to ${type} server`)
 
 const onError = (type: string) => (err: EventSourceError) => {
   log.error(`Connection to ${type} server has failed with status ${err.event.status}`)
-  TelemetryCollector.createAndRegisterErrorReport({
+  ErrorReport.createAndRegisterOnTelemetry({
     kind: ErrorKinds.SSE_ERROR,
     originalError: err,
   }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })
@@ -174,7 +174,7 @@ export const onAuth = (
       const errMessage = `Connection to login server has failed${
         err.event.status ? ` with status ${err.event.status}` : ''
       }`
-      TelemetryCollector.createAndRegisterErrorReport({
+      ErrorReport.createAndRegisterOnTelemetry({
         kind: ErrorKinds.SSE_ERROR,
         originalError: err,
       }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })

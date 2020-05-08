@@ -1,3 +1,5 @@
+import { ParseableError } from '@vtex/node-error-report/build/errorParsing'
+
 interface EventSourceInfo {
   url: string
   readyState: number
@@ -8,7 +10,7 @@ interface EventSourceInfo {
   config: any
 }
 
-export class EventSourceError extends Error {
+export class EventSourceError extends Error implements ParseableError {
   public event: any
   public eventSourceInfo: EventSourceInfo
   constructor(event: any, eventSourceInfo: EventSourceInfo) {
@@ -17,7 +19,7 @@ export class EventSourceError extends Error {
     this.event = { ...event }
   }
 
-  public getErrorDetailsObject() {
+  public getDetailsObject() {
     return {
       event: this.event,
       eventSourceInfo: this.eventSourceInfo,

@@ -1,5 +1,5 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
-import { ErrorReportObj } from '../../../error/ErrorReport'
+import { ErrorReportSerializableObj } from '@vtex/node-error-report'
 import { MetricReportObj } from '../../../metrics/MetricReport'
 import { IOClientFactory } from '../IOClientFactory'
 
@@ -12,7 +12,7 @@ export class ToolbeltTelemetry extends AppClient {
     super('vtex.toolbelt-telemetry@0.x', ioContext, opts)
   }
 
-  public reportErrors(errors: ErrorReportObj[]) {
+  public reportErrors(errors: ErrorReportSerializableObj[]) {
     const errorsBuffer = Buffer.from(JSON.stringify(errors))
     return this.http.post('/errorReport', errorsBuffer, {
       headers: {

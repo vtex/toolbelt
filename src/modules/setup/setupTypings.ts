@@ -3,8 +3,8 @@ import R from 'ramda'
 import { publicEndpoint } from '../../env'
 import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import { SessionManager } from '../../lib/session/SessionManager'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { toMajorRange } from '../../locator'
 import log from '../../logger'
 import { appIdFromRegistry, isLinked, resolveAppId } from '../apps/utils'
@@ -52,7 +52,7 @@ const appsWithTypingsURLs = async (appDependencies: Record<string, any>, ignoreL
         result[appName] = await appTypingsURL(appName, appVersion, ignoreLinked)
       } catch (err) {
         log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
-        TelemetryCollector.createAndRegisterErrorReport({
+        ErrorReport.createAndRegisterOnTelemetry({
           kind: ErrorKinds.SETUP_TYPINGS_ERROR,
           originalError: err,
         }).logErrorForUser({
@@ -105,7 +105,7 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLi
       runYarn(builder, true)
     } catch (e) {
       log.error(`Error running Yarn in ${builder}.`)
-      TelemetryCollector.createAndRegisterErrorReport({
+      ErrorReport.createAndRegisterOnTelemetry({
         kind: ErrorKinds.SETUP_TSCONFIG_ERROR,
         originalError: e,
       })
@@ -146,7 +146,7 @@ export const setupTypings = async (
     )
     log.info('Finished setting up typings')
   } catch (err) {
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TYPINGS_ERROR,
       originalError: err,
     }).logErrorForUser()
