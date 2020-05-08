@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- [welcome, login, switch] Add welcome command
+- [welcome, login, switch] Add welcome command.
 
 ### Changed
 - Refactor clients organization and instantiation.
