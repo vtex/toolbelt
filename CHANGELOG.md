@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Refactor clients organization and instantiation.
 - [edition-check] Change error log from `warn` to `debug` level.
+- [vtex login] Get release notes message from `vtex.toolbelt-config-server`.
 
 ## Fixed
 - [clients:billing] Use new URL format.
