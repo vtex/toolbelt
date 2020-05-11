@@ -11,6 +11,10 @@ export enum Environment {
   Production = 'prod',
 }
 
+export const CLUSTER_DEFAULT_VALUE = ''
+
+export const ENV_DEFAULT_VALUE = Environment.Production
+
 export const saveEnvironment = (env: Environment) => conf.set('env', env)
 
 export const saveStickyHost = (appName: string, stickyHost: string) =>
@@ -31,7 +35,7 @@ const envFromProcessEnv = {
 
 export const getEnvironment = (): Environment => {
   const env = envFromProcessEnv[process.env.VTEX_ENV]
-  const persisted = conf.get('env') || Environment.Production
+  const persisted = conf.get('env') || ENV_DEFAULT_VALUE
   return env || persisted
 }
 
@@ -44,5 +48,5 @@ export const saveCluster = (cluster: string) => {
 }
 
 export const getCluster = () => {
-  return conf.get('cluster') || ''
+  return conf.get('cluster') || CLUSTER_DEFAULT_VALUE
 }
