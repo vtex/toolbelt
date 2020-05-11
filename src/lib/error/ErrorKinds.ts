@@ -1,4 +1,5 @@
 import { ErrorKindsBase } from '@vtex/node-error-report'
+
 export const ErrorKinds = {
   ...ErrorKindsBase,
   DEPRECATION_CHECK_ERROR: 'DeprecationCheckError',

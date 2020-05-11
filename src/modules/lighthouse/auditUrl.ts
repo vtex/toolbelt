@@ -7,7 +7,6 @@ import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { TableGenerator } from './TableGenerator'
 
-
 async function isProdutionWorkspace(account: string, workspace: string): Promise<boolean> {
   const workspaces = createWorkspacesClient()
   const meta = await workspaces.get(account, workspace)
