@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { workspaces } from '../../clients'
+import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 
@@ -10,6 +10,7 @@ export default async (name: string): Promise<void> => {
   const { account } = session
   const workspace = name || session.workspace
 
+  const workspaces = createWorkspacesClient()
   const meta = await workspaces.get(account, workspace)
 
   log.info(

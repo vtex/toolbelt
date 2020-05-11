@@ -1,14 +1,14 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
 import chalk from 'chalk'
 import semver from 'semver'
-
-import { createTable } from '../../table'
-import { router } from '../../clients'
-import log from '../../logger'
-import { getLastStableAndPrerelease } from './utils'
+import { createRouterClient } from '../../lib/clients/IOClients/infra/Router'
 import { SessionManager } from '../../lib/session/SessionManager'
+import log from '../../logger'
+import { createTable } from '../../table'
+import { getLastStableAndPrerelease } from './utils'
 
 const { account, workspace } = SessionManager.getSingleton()
+const router = createRouterClient()
 const { listAvailableServices, listInstalledServices, getAvailableVersions } = router
 
 const printAvailableServices = () =>

@@ -4,23 +4,11 @@ import { diffArrays } from 'diff'
 import { existsSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import R from 'ramda'
-import * as env from '../env'
-import { envTimeout } from '../env'
 import log from '../logger'
 import { getAppRoot } from '../manifest'
 import { createTable } from '../table'
 
 export const yarnPath = `"${require.resolve('yarn/bin/yarn')}"`
-
-const DEFAULT_TIMEOUT = 10000
-
-export const IOClientOptions = {
-  timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
-  retries: 3,
-  headers: {
-    ...(env.cluster() ? { 'x-vtex-upstream-target': env.cluster() } : null),
-  },
-}
 
 export const formatNano = (nanoseconds: number): string =>
   `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(0)}ms`

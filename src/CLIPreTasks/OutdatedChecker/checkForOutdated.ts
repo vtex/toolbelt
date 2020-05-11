@@ -1,6 +1,6 @@
 const initTime = process.hrtime()
 
-import { ToolbeltConfigClient } from '../../clients/toolbeltConfigClient'
+import { ToolbeltConfig } from '../../lib/clients/IOClients/apps/ToolbeltConfig'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
 import { ErrorReport } from '../../lib/error/ErrorReport'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
@@ -9,7 +9,7 @@ import { IOutdatedCheckerStore, OutdatedCheckerStore } from './OutdatedCheckerSt
 
 export const checkForOutdated = async (store: IOutdatedCheckerStore, pkgVersion: string) => {
   try {
-    const client = ToolbeltConfigClient.createDefaultClient({ retries: 3 })
+    const client = ToolbeltConfig.createClient({}, { retries: 3 })
     const { validVersion } = await client.versionValidate(pkgVersion)
     store.setOutdatedInfo({
       versionChecked: pkgVersion,

@@ -1,13 +1,12 @@
 import chalk from 'chalk'
 import { diffJson } from 'diff'
 import { compose, keys, map, path } from 'ramda'
-
-import { apps } from '../../clients'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { removeNpm } from './utils'
 
-const { getDependencies, updateDependencies, updateDependency } = apps
+const { getDependencies, updateDependencies, updateDependency } = createAppsClient()
 
 const cleanDeps = compose(keys, removeNpm)
 

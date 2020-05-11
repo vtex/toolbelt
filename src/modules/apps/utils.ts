@@ -4,8 +4,10 @@ import Table from 'cli-table2'
 import enquirer from 'enquirer'
 import { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
-import { apps, createClients, workspaces } from '../../clients'
 import { CommandError } from '../../errors'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
+import { createRegistryClient } from '../../lib/clients/IOClients/infra/Registry'
+import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
 import { ManifestEditor } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
@@ -63,6 +65,7 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
     }
   }
 
+  const workspaces = createWorkspacesClient()
   const workspaceMeta = await workspaces.get(account, workspace)
   if (workspaceMeta.production && !contains(operation, workspaceProductionAllowedOperatios)) {
     throw new CommandError(workspaceProductionMessage(workspace))
@@ -101,8 +104,8 @@ export const handleError = curry((app: string, err: any) => {
 })
 
 export const appLatestVersion = (app: string, version = 'x'): Promise<string | never> => {
-  return createClients()
-    .registry.getAppManifest(app, version)
+  return createRegistryClient()
+    .getAppManifest(app, version)
     .then<string>(prop('id'))
     .then<string>(extractVersionFromId)
     .catch(handleError(app))
@@ -113,8 +116,8 @@ export const appLatestMajor = (app: string): Promise<string | never> => {
 }
 
 export const appIdFromRegistry = (app: string, majorLocator: string) => {
-  return createClients()
-    .registry.getAppManifest(app, majorLocator)
+  return createRegistryClient()
+    .getAppManifest(app, majorLocator)
     .then<string>(prop('id'))
     .catch(handleError(app))
 }
@@ -235,7 +238,9 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
   }
 }
 
-export const resolveAppId = (appName: string, appVersion: string): Promise<string> =>
-  apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
+export const resolveAppId = (appName: string, appVersion: string): Promise<string> => {
+  const apps = createAppsClient()
+  return apps.getApp(`${appName}@${appVersion}`).then(prop('id'))
+}
 
 export const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')

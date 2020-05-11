@@ -1,14 +1,14 @@
-import ora from 'ora'
 import chalk from 'chalk'
-
-import log from '../../logger'
-import { lighthouse, workspaces } from '../../clients'
+import ora from 'ora'
+import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
+import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
-
+import log from '../../logger'
 import { TableGenerator } from './TableGenerator'
 
 async function isProdutionWorkspace(account: string, workspace: string): Promise<boolean> {
+  const workspaces = createWorkspacesClient()
   const meta = await workspaces.get(account, workspace)
   return meta.production
 }
@@ -23,6 +23,7 @@ export default async (url: string, option: any) => {
 
   const spinner = ora(`Running Lighthouse on url: ${chalk.blue(url)}`).start()
   try {
+    const lighthouse = Lighthouse.createClient()
     const report = await lighthouse.runAudit(url)
     spinner.stop()
 

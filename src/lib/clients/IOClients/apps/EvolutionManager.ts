@@ -1,8 +1,13 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
-import { GraphQlError } from '../errors'
-import { TelemetryCollector } from '../lib/telemetry/TelemetryCollector'
+import { GraphQlError } from '../../../../errors'
+import { TelemetryCollector } from '../../../telemetry/TelemetryCollector'
+import { IOClientFactory } from '../IOClientFactory'
 
 export class EvolutionManager extends AppGraphQLClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<EvolutionManager>(EvolutionManager, customContext, customOptions)
+  }
+
   constructor(context: IOContext, options: InstanceOptions) {
     super('vtex.evolution-manager-graphql@0.x', context, options)
   }

@@ -1,5 +1,5 @@
-import { Apps } from '@vtex/api'
 import { compose, keys } from 'ramda'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 
 const isNpm = dep => dep.startsWith('npm:')
 
@@ -17,6 +17,8 @@ export const removeNpm = (deps, inValues?) => {
 
 const cleanDeps = compose(keys, removeNpm)
 
-export const getCleanDependencies = async context => {
-  return (await new Apps(context).getDependencies().then(cleanDeps)) as string[]
+export const getCleanDependencies = async (workspace: string) => {
+  return (await createAppsClient({ workspace })
+    .getDependencies()
+    .then(cleanDeps)) as string[]
 }

@@ -1,11 +1,11 @@
 import chalk from 'chalk'
-import { createClients } from '../../clients'
+import { createRegistryClient } from '../../lib/clients/IOClients/infra/Registry'
 import { ManifestValidator } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { parseLocator, toAppLocator } from '../../locator'
 import log from '../../logger'
 import { getManifest } from '../../manifest'
-import { switchAccount, returnToPreviousAccount } from '../auth/switch'
+import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
 
 const switchToVendorMessage = (vendor: string): string => {
@@ -27,7 +27,7 @@ const deployRelease = async (app: string): Promise<boolean> => {
     await switchAccount(vendor, {})
   }
   const context = { account: vendor, workspace: 'master', authToken: session.token }
-  const { registry } = createClients(context)
+  const registry = createRegistryClient(context)
   await registry.validateApp(`${vendor}.${name}`, version)
   return true
 }

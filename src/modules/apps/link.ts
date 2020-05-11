@@ -7,9 +7,8 @@ import moment from 'moment'
 import { join, resolve as resolvePath, sep } from 'path'
 import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
-import { createClients } from '../../clients'
-import { getEnvironment } from '../../conf'
 import { CommandError } from '../../errors'
+import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
 import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
 import { ManifestEditor } from '../../lib/manifest'
@@ -23,7 +22,6 @@ import startDebuggerTunnel from './debugger'
 import { getIgnoredPaths, listLocalFiles } from './file'
 import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
 import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
-import { SessionManager } from '../../lib/session/SessionManager'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
@@ -226,9 +224,7 @@ export default async options => {
 
   const appId = manifest.appLocator
 
-  const { account, workspace } = SessionManager.getSingleton()
-  const context = { account, workspace, environment: getEnvironment() }
-  const { builder } = createClients(context, { timeout: 60000 })
+  const builder = Builder.createClient({}, { timeout: 60000 })
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
   if (options.setup || options.s) {

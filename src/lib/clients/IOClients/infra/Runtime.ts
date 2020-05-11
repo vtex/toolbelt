@@ -1,13 +1,19 @@
 import { IOContext } from '@vtex/api'
-import { cluster } from '../env'
 import * as url from 'url'
 import WebSocket from 'ws'
-import logger from '../logger'
-import { SessionManager } from '../lib/session/SessionManager'
+import { cluster } from '../../../../env'
+import logger from '../../../../logger'
+import { Headers } from '../../../constants/Headers'
+import { SessionManager } from '../../../session/SessionManager'
+import { IOClientFactory } from '../IOClientFactory'
 
 const EOT = '\x04'
 
 export class Runtime {
+  public static createClient() {
+    return new Runtime(IOClientFactory.createIOContext())
+  }
+
   private account: string
   private workspace: string
 
@@ -20,13 +26,13 @@ export class Runtime {
   public async debugDotnetApp(appName: string, appVendor: string, appMajor: string, debugInst: string) {
     const host = 'app.io.vtex.com'
     const path = `/${appVendor}.${appName}/v${appMajor}/${this.account}/${this.workspace}/_debug/dotnet`
-    const clusterHeader = cluster() ? { 'x-vtex-upstream-target': cluster() } : null
+    const clusterHeader = cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: cluster() } : null
 
     const clientOptions = {
       headers: {
         Authorization: SessionManager.getSingleton().token,
         Host: host,
-        'X-Vtex-Runtime-Api': 'true',
+        [Headers.VTEX_RUNTIME_API]: 'true',
         ...clusterHeader,
       },
     }

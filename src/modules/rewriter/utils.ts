@@ -4,9 +4,8 @@ import csv from 'csvtojson'
 import { writeJsonSync } from 'fs-extra'
 import jsonSplit from 'json-array-split'
 import ProgressBar from 'progress'
-import { compose, keys, join, map, match, pluck, prop, replace, sortBy, toLower } from 'ramda'
-
-import { Redirect } from '../../clients/rewriter'
+import { compose, join, keys, map, match, pluck, prop, replace, sortBy, toLower } from 'ramda'
+import { Redirect } from '../../lib/clients/IOClients/apps/Rewriter'
 import log from '../../logger'
 
 export const DELIMITER = ';'

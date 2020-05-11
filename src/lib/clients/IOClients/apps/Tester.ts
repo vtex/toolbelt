@@ -1,4 +1,5 @@
-import { AppClient, inflightURL, InstanceOptions, IOContext, CacheType } from '@vtex/api'
+import { AppClient, CacheType, inflightURL, InstanceOptions, IOContext } from '@vtex/api'
+import { IOClientFactory } from '../IOClientFactory'
 
 export interface SpecTestReport {
   testId: string
@@ -14,7 +15,7 @@ export interface Screenshot {
   name?: string
   testId: string
   takenAt: string
-  path: string
+  path?: string
   height: number
   width: number
 }
@@ -33,10 +34,10 @@ export interface SpecReport {
     }
     tests: SpecTestReport[]
     video?: string
-    logs?: string
     screenshots: Screenshot[]
   }
   logId?: string
+  specId?: string
   lastUpdate: number
 }
 
@@ -70,6 +71,10 @@ export interface TestRequest {
 }
 
 export class Tester extends AppClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<Tester>(Tester, customContext, customOptions)
+  }
+
   constructor(context: IOContext, options?: InstanceOptions) {
     super('vtex.tester-hub@0.x', context, options)
   }

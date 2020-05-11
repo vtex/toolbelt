@@ -4,7 +4,7 @@ import { Box, Color, Text } from 'ink'
 import { AppId } from './appId'
 import { completedSpec } from './specsState'
 import { AppProps } from './index'
-import { SpecReport } from '../../../../clients/Tester'
+import { SpecReport } from '../../../../lib/clients/IOClients/apps/Tester'
 
 export const Running: React.FunctionComponent<AppProps> = ({ appId, specs }) => {
   const specsReports = Object.values(specs)

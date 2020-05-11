@@ -1,8 +1,13 @@
-import { AppClient, IOContext, InstanceOptions } from '@vtex/api'
+import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 import { stringify } from 'querystring'
+import { IOClientFactory } from '../IOClientFactory'
 
 export class Lighthouse extends AppClient {
   private static readonly TIMEOUT_MS = 60 * 1000
+
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<Lighthouse>(Lighthouse, customContext, customOptions)
+  }
 
   constructor(ioContext: IOContext, opts?: InstanceOptions) {
     super('vtex.lighthouse@0.x', ioContext, {

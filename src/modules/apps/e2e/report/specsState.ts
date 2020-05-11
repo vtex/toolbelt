@@ -1,4 +1,4 @@
-import { SpecReport, AppReport, TestReport } from '../../../../clients/Tester'
+import { SpecReport, AppReport, TestReport } from '../../../../lib/clients/IOClients/apps/Tester'
 import { ReportProps } from './index'
 
 const COMPLETED_STATES = ['passed', 'failed', 'skipped', 'error']

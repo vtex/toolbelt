@@ -1,13 +1,11 @@
 import chalk from 'chalk'
-import { Sponsor } from '../../clients/sponsor'
 import { CommandError } from '../../errors'
-import { createIOContext } from '../../lib/clients'
+import { Sponsor } from '../../lib/clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptWorkspaceMaster } from '../apps/utils'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { IOClientOptions } from '../utils'
 
 const promptSwitchToAccount = async (account: string, initial: boolean) => {
   const reason = initial
@@ -30,7 +28,7 @@ export default async function setEdition(edition: string, workspace?: string, au
   const workspaceNotice = targetWorkspace === 'master' ? '' : ` in workspace ${chalk.blue(targetWorkspace)}`
   log.info(`Changing edition of account ${chalk.blue(targetAccount)}${workspaceNotice}.`)
 
-  const sponsorClient = new Sponsor(createIOContext(), IOClientOptions)
+  const sponsorClient = Sponsor.createClient()
   const sponsorAccount = await sponsorClient.getSponsorAccount()
 
   if (!sponsorAccount) {
@@ -46,7 +44,7 @@ export default async function setEdition(edition: string, workspace?: string, au
   }
 
   try {
-    const sponsorClientForSponsorAccount = new Sponsor(createIOContext(), IOClientOptions)
+    const sponsorClientForSponsorAccount = Sponsor.createClient()
     await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
 
     log.info(`Successfully changed edition${workspaceNotice} of account ${chalk.blue(targetAccount)}.`)

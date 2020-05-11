@@ -1,10 +1,10 @@
 import chalk from 'chalk'
-import { router } from '../../clients'
 import { region } from '../../env'
 import { CommandError } from '../../errors'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from './utils'
+import { createRouterClient } from '../../lib/clients/IOClients/infra/Router'
 
 const unprefixName = (str: string) => {
   return str.split(':').pop()
@@ -14,6 +14,7 @@ const invalidAppMessage = 'Invalid app format, please use <vendor>.<name>, <vend
 
 const infraLatestVersion = async (app: string) => {
   try {
+    const router = createRouterClient()
     const { versions } = await router.getAvailableVersions(app)
     const latest = pickLatestVersion(versions[region()])
     return wildVersionByMajor(latest)

@@ -3,13 +3,13 @@ import chalk from 'chalk'
 import ora from 'ora'
 import pad from 'pad'
 import semver from 'semver'
-
-import { router } from '../../clients'
 import { Region } from '../../conf'
+import { createRouterClient } from '../../lib/clients/IOClients/infra/Router'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { diffVersions, getTag } from './utils'
 
+const router = createRouterClient()
 const { listAvailableServices, listInstalledServices, installService } = router
 
 const promptUpdate = () => Promise.resolve(promptConfirm('Apply version updates?'))

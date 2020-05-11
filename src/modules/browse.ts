@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import R from 'ramda'
 import { clusterIdDomainInfix, publicEndpoint } from '../env'
+import { Headers } from '../lib/constants/Headers'
 import { SessionManager } from '../lib/session/SessionManager'
 // Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯
 const QRCode = require('qrcode-terminal') // eslint-disable-line @typescript-eslint/no-var-requires
@@ -25,7 +26,7 @@ const prepareSupportBrowser = async (account: string, workspace: string): Promis
   const uri = `https://${workspace}--${account}.${publicEndpoint()}/_v/private/support-login/prepare`
   const response = await axios.get(uri, {
     headers: {
-      'X-Vtex-Original-Credential': token,
+      [Headers.VTEX_ORIGINAL_CREDENTIAL]: token,
     },
   })
   return response.data.oneTimeToken

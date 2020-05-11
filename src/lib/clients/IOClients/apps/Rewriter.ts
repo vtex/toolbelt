@@ -1,4 +1,5 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
+import { IOClientFactory } from '../IOClientFactory'
 
 export interface RedirectInput {
   id: string
@@ -28,6 +29,10 @@ export interface ExportResponse {
 }
 
 export class Rewriter extends AppGraphQLClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<Rewriter>(Rewriter, customContext, customOptions)
+  }
+
   constructor(context: IOContext, options: InstanceOptions) {
     super('vtex.rewriter@1.x', context, {
       ...options,

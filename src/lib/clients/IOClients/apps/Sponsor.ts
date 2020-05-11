@@ -1,6 +1,18 @@
-import { AuthType, InstanceOptions, IOClient, IOContext, AppManifest } from '@vtex/api'
+import { AppManifest, AuthType, InstanceOptions, IOClient, IOContext } from '@vtex/api'
+import { IOClientFactory } from '../IOClientFactory'
+
+export interface EditionInfo extends AppManifest {
+  id: string
+  title: string
+  _publicationDate: string
+  _activationDate: string
+}
 
 export class Sponsor extends IOClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<Sponsor>(Sponsor, customContext, customOptions)
+  }
+
   private account: string
   private workspace: string
 
@@ -20,7 +32,7 @@ export class Sponsor extends IOClient {
   }
 
   public getEdition() {
-    return this.http.get<AppManifest>(this.routes.getEdition, { metric: 'get-edition' })
+    return this.http.get<EditionInfo>(this.routes.getEdition, { metric: 'get-edition' })
   }
 
   public setEdition(account: string, workspace: string, editionApp: string) {

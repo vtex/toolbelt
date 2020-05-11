@@ -3,8 +3,7 @@ import { readJson, writeFile } from 'fs-extra'
 import { Parser } from 'json2csv'
 import ora from 'ora'
 import { createInterface } from 'readline'
-import { rewriter } from '../../clients'
-import { Redirect } from '../../clients/rewriter'
+import { Redirect, Rewriter } from '../../lib/clients/IOClients/apps/Rewriter'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
@@ -46,6 +45,8 @@ const handleExport = async (csvPath: string) => {
     console.log('\n')
     process.exit()
   })
+
+  const rewriter = Rewriter.createClient()
 
   do {
     try {

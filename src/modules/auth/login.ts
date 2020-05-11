@@ -1,10 +1,13 @@
-import boxen from 'boxen'
+import { TemplateRenderer } from '@vtex/toolbelt-message-renderer'
 import chalk from 'chalk'
-import emojic from 'emojic'
 import enquirer from 'enquirer'
+import { ToolbeltConfig } from '../../lib/clients/IOClients/apps/ToolbeltConfig'
+import { ErrorKinds } from '../../lib/error/ErrorKinds'
 import { SessionManager } from '../../lib/session/SessionManager'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
+import welcome from './welcome'
 
 const promptUsePreviousLogin = (account: string, userLogged: string, workspace: string) => {
   const details = `${chalk.green(userLogged)} @ ${chalk.green(account)} / ${chalk.green(workspace)}`
@@ -27,25 +30,18 @@ const promptDesiredAccount = async () => {
   return account
 }
 
-const notifyRelease = () => {
-  const RELEASE_NOTES_DATE = 'March 2020'
-  const RELEASE_NOTES_URL = 'https://bit.ly/2VBxyr3'
-
-  const msg = [
-    `${chalk.bold.green(`${RELEASE_NOTES_DATE} Release Notes`)} are now available!`,
-    `${emojic.memo} Be up-to-date with the latest news on VTEX IO now:`,
-    `${chalk.blueBright(RELEASE_NOTES_URL)}`,
-  ].join('\n')
-
-  const boxOptions: boxen.Options = {
-    padding: 1,
-    margin: 1,
-    borderStyle: boxen.BorderStyle.Round,
-    borderColor: 'yellow',
-    align: 'center',
+const notifyRelease = async () => {
+  try {
+    const messageRenderer = TemplateRenderer.getSingleton()
+    const configClient = ToolbeltConfig.createClient()
+    const { messages } = await configClient.getGlobalConfig()
+    console.log(messageRenderer.renderNode(messages.releaseNotes))
+  } catch (err) {
+    TelemetryCollector.createAndRegisterErrorReport({
+      kind: ErrorKinds.TOOLBELT_CONFIG_MESSAGES_ERROR,
+      originalError: err,
+    }).logErrorForUser({ coreLogLevelDefault: 'debug' })
   }
-
-  console.log(boxen(msg, boxOptions))
 }
 
 interface LoginOptions {
@@ -92,7 +88,9 @@ export default async (opts: LoginOptions) => {
         targetWorkspace
       )}`
     )
-    notifyRelease()
+
+    await welcome()
+    await notifyRelease()
   } catch (err) {
     if (err.statusCode === 404) {
       log.error('Account/Workspace not found')

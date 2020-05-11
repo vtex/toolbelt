@@ -1,11 +1,9 @@
-import ora from 'ora'
 import chalk from 'chalk'
-
-import log from '../../logger'
-import { lighthouse } from '../../clients'
+import ora from 'ora'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
-
+import log from '../../logger'
 import { TableGenerator } from './TableGenerator'
+import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
 
 function allWhenUndefined(atribute: string | undefined): string {
   return atribute ?? '<all>'
@@ -23,6 +21,7 @@ export async function showReports(app: string | undefined, url: string | undefin
 
   const spinner = ora(`Querying reports containing app: ${appUrlFormatString(app, url)}`).start()
   try {
+    const lighthouse = Lighthouse.createClient()
     const reports = await lighthouse.getReports(app, url)
     spinner.stop()
 

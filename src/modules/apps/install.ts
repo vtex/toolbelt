@@ -1,13 +1,14 @@
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
-import { apps, billing } from '../../clients'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
+import Billing from '../../lib/clients/IOClients/apps/Billing'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { optionsFormatter, validateAppAction } from './utils'
 
-const { installApp } = billing
-const { installApp: legacyInstallApp } = apps
+const { installApp } = Billing.createClient()
+const { installApp: legacyInstallApp } = createAppsClient()
 
 const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
 const isForbiddenError = isError(403)

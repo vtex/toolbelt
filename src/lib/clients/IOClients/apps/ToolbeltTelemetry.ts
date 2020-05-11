@@ -1,9 +1,13 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+import { ErrorReportObj } from '../../../error/ErrorReport'
+import { MetricReportObj } from '../../../metrics/MetricReport'
+import { IOClientFactory } from '../IOClientFactory'
 
-import { ErrorReportObj } from '../lib/error/ErrorReport'
-import { MetricReportObj } from '../lib/metrics/MetricReport'
+export class ToolbeltTelemetry extends AppClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<ToolbeltTelemetry>(ToolbeltTelemetry, customContext, customOptions)
+  }
 
-export class TelemetryClient extends AppClient {
   constructor(ioContext: IOContext, opts?: InstanceOptions) {
     super('vtex.toolbelt-telemetry@0.x', ioContext, opts)
   }

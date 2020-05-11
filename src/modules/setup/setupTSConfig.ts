@@ -1,5 +1,5 @@
 import R from 'ramda'
-import { createClients } from '../../clients'
+import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import log from '../../logger'
@@ -15,7 +15,7 @@ const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: str
 
 const getTSConfig = async () => {
   try {
-    const { builder: builderClient } = createClients({}, { retries: 2, timeout: 10000 })
+    const builderClient = Builder.createClient({}, { retries: 3, timeout: 10000 })
     log.info(`Fetching BuilderHub tsconfig`)
     return await builderClient.builderHubTsConfig()
   } catch (err) {

@@ -1,17 +1,16 @@
 import chalk from 'chalk'
 import R from 'ramda'
-
-import { createClients } from '../../clients'
 import { publicEndpoint } from '../../env'
-import { toMajorRange } from '../../locator'
-import log from '../../logger'
-import { isLinked, resolveAppId, appIdFromRegistry } from '../apps/utils'
-import { runYarn } from '../utils'
-import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
-import { BUILDERS_WITH_TYPES } from './consts'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
 import { SessionManager } from '../../lib/session/SessionManager'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { toMajorRange } from '../../locator'
+import log from '../../logger'
+import { appIdFromRegistry, isLinked, resolveAppId } from '../apps/utils'
+import { runYarn } from '../utils'
+import { BUILDERS_WITH_TYPES } from './consts'
+import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
 
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/
@@ -125,7 +124,7 @@ export const setupTypings = async (
   const appName = `${manifest.vendor}.${manifest.name}`
   const appMajor = toMajorRange(manifest.version)
 
-  const { builder: builderClient } = createClients({}, { retries: 2, timeout: 10000 })
+  const builderClient = Builder.createClient({}, { retries: 2, timeout: 10000 })
   const builders = R.keys(R.prop('builders', manifest) || {})
   const filteredBuilders = R.intersection(builders, buildersWithTypes)
 

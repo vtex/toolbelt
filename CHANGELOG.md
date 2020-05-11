@@ -6,6 +6,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.100.0] - 2020-05-11
+### Added
+- [vtex config] Config reset command.
+- [welcome, login, switch] Add welcome command.
+
+### Changed
+- Refactor clients organization and instantiation.
+- [edition-check] Change error log from `warn` to `debug` level.
+- [vtex login] Get release notes message from `vtex.toolbelt-config-server`.
+
+### Fixed
+- [clients:billing] Use new URL format.
+- [vtex test e2e] Show screenshot and videos assets URLs received from `vtex.tester-hub` new API.
+- [vtex undeprecate] 403 error when account switch is necessary.
+
+### Updated
+- [oclif] `oclif-plugin-spaced-commands` to fix alias documentation.
+
 ## [2.99.3] - 2020-05-05
 ### Fixed
 - [telemetry] Sanitize jwt tokens and simplify buffers serializtion.

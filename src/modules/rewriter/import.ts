@@ -4,8 +4,7 @@ import { Parser } from 'json2csv'
 import { resolve } from 'path'
 import { difference, isEmpty, length, map, pluck } from 'ramda'
 import { createInterface } from 'readline'
-import { rewriter } from '../../clients'
-import { RedirectInput } from '../../clients/rewriter'
+import { RedirectInput, Rewriter } from '../../lib/clients/IOClients/apps/Rewriter'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
@@ -80,6 +79,7 @@ const handleImport = async (csvPath: string) => {
     process.exit()
   })
 
+  const rewriter = Rewriter.createClient()
   for (const redirects of routesList.splice(counter)) {
     try {
       // eslint-disable-next-line no-await-in-loop

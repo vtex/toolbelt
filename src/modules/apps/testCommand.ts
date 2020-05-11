@@ -1,9 +1,8 @@
 import retry from 'async-retry'
 import chalk from 'chalk'
 import { concat, map, prop } from 'ramda'
-import { createClients } from '../../clients'
-import { getEnvironment } from '../../conf'
 import { CommandError } from '../../errors'
+import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
 import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
 import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
@@ -15,7 +14,6 @@ import { runYarnIfPathExists } from '../utils'
 import { listLocalFiles } from './file'
 import { ProjectUploader } from './ProjectUploader'
 import { validateAppAction } from './utils'
-import { SessionManager } from '../../lib/session/SessionManager'
 
 const root = getAppRoot()
 const buildersToRunLocalYarn = ['react', 'node']
@@ -89,9 +87,7 @@ export default async options => {
 
   const appId = toAppLocator(manifest)
 
-  const { account, workspace } = SessionManager.getSingleton()
-  const context = { account, workspace, environment: getEnvironment() }
-  const { builder } = createClients(context, { timeout: 60000 })
+  const builder = Builder.createClient({}, { timeout: 60000 })
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
   try {

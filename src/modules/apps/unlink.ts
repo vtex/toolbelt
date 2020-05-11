@@ -1,9 +1,9 @@
-import { apps } from '../../clients'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
 import log from '../../logger'
 import { validateAppAction } from './utils'
 
-const { unlink, unlinkAll, listLinks } = apps
+const { unlink, unlinkAll, listLinks } = createAppsClient()
 
 const unlinkApp = async (app: string) => {
   ManifestValidator.validateApp(app)

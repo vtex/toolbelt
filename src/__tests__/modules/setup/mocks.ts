@@ -4,11 +4,11 @@ export const mockCreateClients = () => {
     typingsInfo: jest.fn(),
   }
 
-  jest.doMock('../../../clients/index', () => {
+  jest.doMock('../../../lib/clients/IOClients/apps/Builder', () => {
     return {
-      createClients: jest.fn().mockReturnValue({
-        builder,
-      }),
+      Builder: {
+        createClient: () => builder,
+      },
     }
   })
 

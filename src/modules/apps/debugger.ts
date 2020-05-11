@@ -2,6 +2,7 @@ import streamToString from 'get-stream'
 import net from 'net'
 import WebSocket from 'ws'
 import { cluster } from '../../env'
+import { Headers } from '../../lib/constants/Headers'
 import { ManifestEditor } from '../../lib/manifest'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { versionMajor } from '../../locator'
@@ -33,8 +34,8 @@ function webSocketTunnelHandler(host: string, path: string, server: net.Server):
         Authorization: SessionManager.getSingleton().checkAndGetToken(true),
         Host: host,
         'user-agent': userAgent,
-        'X-Vtex-Runtime-Api': 'true',
-        ...(cluster() ? { 'x-vtex-upstream-target': cluster() } : null),
+        [Headers.VTEX_RUNTIME_API]: 'true',
+        ...(cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: cluster() } : null),
       },
     })
 

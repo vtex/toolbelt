@@ -1,11 +1,14 @@
-import { HttpClient, InstanceOptions, IOContext } from '@vtex/api'
-import { GraphQlError } from '../errors'
+import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+import { GraphQlError } from '../../../../errors'
+import { IOClientFactory } from '../IOClientFactory'
 
-export default class Billing {
-  private http: HttpClient
+export default class Billing extends AppClient {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
+    return IOClientFactory.createClient<Billing>(Billing, customContext, customOptions)
+  }
 
   constructor(ioContext: IOContext, opts: InstanceOptions) {
-    this.http = HttpClient.forWorkspace('billing.vtex', ioContext, opts)
+    super('vtex.billing@0.x', ioContext, opts)
   }
 
   public installApp = async (

@@ -21,6 +21,6 @@ export default class Switch extends CustomCommand {
       flags: { workspace },
     } = this.parse(Switch)
 
-    await switchAccount(account, { workspace })
+    await switchAccount(account, { workspace, showWelcomeMessage: true })
   }
 }

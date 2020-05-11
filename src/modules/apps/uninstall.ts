@@ -1,12 +1,12 @@
 import chalk from 'chalk'
-import { apps } from '../../clients'
+import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
+import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { validateAppAction } from './utils'
-import { SessionManager } from '../../lib/session/SessionManager'
 
-const { uninstallApp } = apps
+const { uninstallApp } = createAppsClient()
 
 const promptAppUninstall = (appsList: string[]): Promise<boolean> => {
   const { account, workspace } = SessionManager.getSingleton()
