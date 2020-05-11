@@ -107,7 +107,6 @@ export class ErrorReport extends ErrorReportBase {
   public sendToTelemetry() {
     if (!this.isErrorReported()) {
       TelemetryCollector.getCollector().registerError(this)
-      this.markErrorAsReported()
     }
 
     return this
