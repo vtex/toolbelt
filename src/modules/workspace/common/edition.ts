@@ -19,7 +19,7 @@ const getCurrEdition = async () => {
         originalError: err,
       })
 
-      log.warn(`Non-fatal error checking account edition: ${err.message}`)
+      log.debug(`Non-fatal error checking account edition: ${err.message}`)
     }
 
     return null
