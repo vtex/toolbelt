@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [edition-check] Change error log from `warn` to `debug` level.
 - [vtex login] Get release notes message from `vtex.toolbelt-config-server`.
 
-## Fixed
+### Fixed
 - [clients:billing] Use new URL format.
 - [vtex test e2e] Show screenshot and videos assets URLs received from `vtex.tester-hub` new API.
 - [vtex undeprecate] 403 error when account switch is necessary.
