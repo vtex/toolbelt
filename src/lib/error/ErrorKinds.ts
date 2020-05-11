@@ -11,4 +11,5 @@ export const enum ErrorKinds {
   SETUP_TYPINGS_ERROR = 'SetupTypingsError',
   SSE_ERROR = 'SSEError',
   TELEMETRY_REPORTER_ERROR = 'TelemetryReporterError',
+  TOOLBELT_CONFIG_MESSAGES_ERROR = 'ToolbeltConfigMessagesError',
 }
