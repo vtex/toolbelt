@@ -4,7 +4,6 @@ export const ErrorKinds = {
   ...ErrorKindsBase,
   DEPRECATION_CHECK_ERROR: 'DeprecationCheckError',
   EDITION_REQUEST_ERROR: 'EditionRequestError',
-  EVOLUTION_MANAGER_REPORT_ERROR: 'EvolutionManagerReportError',
   INVALID_OR_EXPIRED_TOKEN_ERROR: 'InvalidOrExpiredTokenError',
   OUTDATED_CHECK_ERROR: 'OutdatedCheckError',
   SETUP_TOOLING_ERROR: 'SetupToolingError',
