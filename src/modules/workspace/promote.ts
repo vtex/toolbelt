@@ -50,7 +50,7 @@ export default async () => {
   try {
     await evolutionManager.saveWorkspacePromotion(userEmail, currentWorkspace)
   } catch (err) {
-    log.error('Failed to report workspace promotion to Evolution Manager')
+    log.debug('Failed to report workspace promotion to Evolution Manager')
     ErrorReport.createAndRegisterOnTelemetry({
       originalError: err,
       kind: ErrorKinds.EVOLUTION_MANAGER_REPORT_ERROR,
