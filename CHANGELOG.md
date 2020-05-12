@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [vtex publish] Message referencing location of the published docs if any.
 - [vtex logs] Add logs command.
 
+### Changed
+- [vtex promote] Remove report to evolution manager.
+
 ## [2.100.1] - 2020-05-12
 ### Changed
 - [ErrorReport] Use `@vtex/node-error-report`.
