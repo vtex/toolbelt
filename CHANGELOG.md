@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.100.1] - 2020-05-12
+### Changed
+- [ErrorReport] Use `@vtex/node-error-report`.
+- [vtex promote] Change log level on evolution manager report error from `error` to `debug`.
+
 ## [2.100.0] - 2020-05-11
 ### Added
 - [vtex config] Config reset command.

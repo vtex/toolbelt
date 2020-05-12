@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.100.0",
+  "version": "2.100.1",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "scripts": {
@@ -54,6 +54,7 @@
     "@oclif/plugin-help": "^2.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
+    "@vtex/node-error-report": "^0.0.1",
     "@vtex/toolbelt-message-renderer": "^0.0.1",
     "@yarnpkg/lockfile": "^1.1.0",
     "ajv": "~6.10.2",

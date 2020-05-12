@@ -1,16 +1,17 @@
+import { ErrorReportSerializableObj } from '@vtex/node-error-report'
 import { randomBytes } from 'crypto'
 import { ensureFileSync, writeJsonSync } from 'fs-extra'
 import { join } from 'path'
 import * as pkgJson from '../../../package.json'
 import logger from '../../logger'
 import { PathConstants } from '../constants/Paths'
-import { ErrorCreationArguments, ErrorReport, ErrorReportObj } from '../error/ErrorReport'
+import { ErrorReport } from '../error/ErrorReport'
 import { Metric, MetricReport, MetricReportObj } from '../metrics/MetricReport'
 import { spawnUnblockingChildProcess } from '../utils/spawnUnblockingChildProcess'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 
 export interface TelemetryFile {
-  errors?: ErrorReportObj[]
+  errors?: ErrorReportSerializableObj[]
   metrics?: MetricReportObj[]
 }
 
@@ -31,11 +32,6 @@ export class TelemetryCollector {
     return TelemetryCollector.telemetryCollectorSingleton
   }
 
-  public static createAndRegisterErrorReport(args: ErrorCreationArguments) {
-    const err = ErrorReport.create(args)
-    return TelemetryCollector.getCollector().registerError(err)
-  }
-
   private errors: ErrorReport[]
   private metrics: MetricReport[]
   constructor(private store: ITelemetryLocalStore) {
@@ -44,13 +40,19 @@ export class TelemetryCollector {
   }
 
   public registerError(error: ErrorReport | Error | any): ErrorReport {
+    let errorReport: ErrorReport
     if (error instanceof ErrorReport) {
-      this.errors.push(error)
-      return error
+      errorReport = error
+    } else {
+      errorReport = ErrorReport.create({ originalError: error })
     }
 
-    const errorReport = ErrorReport.create({ originalError: error })
+    if (errorReport.isErrorReported()) {
+      return errorReport
+    }
+
     this.errors.push(errorReport)
+    errorReport.markErrorAsReported()
     return errorReport
   }
 

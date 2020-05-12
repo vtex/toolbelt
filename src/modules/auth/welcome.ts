@@ -3,8 +3,8 @@ import chalk from 'chalk'
 import { EditionInfo, Sponsor } from '../../lib/clients/IOClients/apps/Sponsor'
 import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import { SessionManager } from '../../lib/session/SessionManager'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { createTable } from '../../table'
@@ -73,7 +73,7 @@ const getEditionStatus = async (): Promise<EditionStatus> => {
     if (err.response?.data?.code === 'resource_not_found') {
       isEditionSet = false
     } else {
-      TelemetryCollector.createAndRegisterErrorReport({
+      ErrorReport.createAndRegisterOnTelemetry({
         kind: ErrorKinds.EDITION_REQUEST_ERROR,
         originalError: err,
       }).logErrorForUser({ coreLogLevelDefault: 'debug' })
@@ -116,7 +116,7 @@ export default async () => {
     const { data } = await apps.listApps()
     appArray = data
   } catch (err) {
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndRegisterOnTelemetry({
       originalError: err,
     }).logErrorForUser({ coreLogLevelDefault: 'debug' })
 

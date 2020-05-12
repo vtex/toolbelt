@@ -155,7 +155,7 @@ export const onError = async (e: any) => {
   }
 
   const errorReport = TelemetryCollector.getCollector().registerError(e)
-  log.error(`ErrorID: ${errorReport.errorId}`)
+  log.error(`ErrorID: ${errorReport.metadata.errorId}`)
   process.exit(1)
 }
 

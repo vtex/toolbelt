@@ -1,7 +1,7 @@
 import R from 'ramda'
 import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import log from '../../logger'
 import { tsconfigEditor } from './utils'
 
@@ -61,7 +61,7 @@ export const setupTSConfig = async (manifest: Manifest, warnOnNoBuilderCandidate
     log.info('Finished setting up tsconfig.json')
   } catch (err) {
     log.error('Failed setting up tsconfig.json')
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TSCONFIG_ERROR,
       originalError: err,
     }).logErrorForUser()

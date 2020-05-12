@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 import ora from 'ora'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
+import { ErrorReport } from '../../lib/error/ErrorReport'
 import log from '../../logger'
 import { TableGenerator } from './TableGenerator'
-import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
 
 function allWhenUndefined(atribute: string | undefined): string {
   return atribute ?? '<all>'
@@ -37,7 +37,7 @@ export async function showReports(app: string | undefined, url: string | undefin
   } catch (error) {
     spinner.stop()
 
-    TelemetryCollector.createAndRegisterErrorReport({ originalError: error })
+    ErrorReport.createAndRegisterOnTelemetry({ originalError: error })
     log.error(error)
   }
 }

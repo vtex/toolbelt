@@ -1,6 +1,6 @@
 import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
 import { GraphQlError } from '../../../../errors'
-import { TelemetryCollector } from '../../../telemetry/TelemetryCollector'
+import { ErrorReport } from '../../../error/ErrorReport'
 import { IOClientFactory } from '../IOClientFactory'
 
 export class EvolutionManager extends AppGraphQLClient {
@@ -30,7 +30,7 @@ export class EvolutionManager extends AppGraphQLClient {
       })
       .catch(res => {
         if (res.response?.data?.code === 'NotFound') {
-          TelemetryCollector.createAndRegisterErrorReport({
+          ErrorReport.createAndRegisterOnTelemetry({
             originalError: res,
             message: 'vtex.evolution-manager-graphql@0.x not installed in the current account/workspace',
           })
