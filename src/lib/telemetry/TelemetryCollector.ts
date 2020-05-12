@@ -48,7 +48,7 @@ export class TelemetryCollector {
     }
 
     if (errorReport.isErrorReported()) {
-      return
+      return errorReport
     }
 
     this.errors.push(errorReport)
