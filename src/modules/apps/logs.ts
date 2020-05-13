@@ -1,19 +1,21 @@
-import { getAccount, getToken } from '../../conf'
 import { getManifest } from '../../manifest'
 import userAgent from '../../user-agent'
 import log from '../../logger'
 import { AuthType } from '@vtex/api'
 import { CustomEventSource } from '../../lib/sse/CustomEventSource'
+import { SessionManager } from '../../lib/session/SessionManager'
+import { randomBytes } from 'crypto'
+
+const SKIDDER_MAJOR = 1
 
 export default async (app: string, options) => {
-  const account = getAccount()
-  const workspace = 'master'
-  const skidderMajor = 1
+  const session = SessionManager.getSingleton()
+  const { account, workspace, token, userLogged } = session
 
   const conf = {
     headers: {
-      Authorization: `${AuthType.bearer} ${getToken()}`,
-      'user-agent': `${userAgent}${options.ghost ? `#${Math.random()}` : ''}`,
+      Authorization: `${AuthType.bearer} ${token}`,
+      'user-agent': `${userAgent}${options.past ? `#${randomBytes(8).toString('hex')}` : `#${userLogged}`}`,
     },
   }
 
@@ -38,17 +40,19 @@ export default async (app: string, options) => {
     app = ''
   }
 
-  let uri = `http://infra.io.vtex.com/skidder/v${skidderMajor}/${account}/${workspace}/logs/stream`
+  let uri = `http://infra.io.vtex.com/skidder/v${SKIDDER_MAJOR}/${account}/${workspace}/logs/stream`
   if (app) {
     uri += `/${app}`
   }
 
-  function createEventSource() {
+  function createLogEventSource() {
     const es = new CustomEventSource(uri, conf)
-    console.info(`Listening ${account}${app ? `.${app}` : ''} logs`)
+    const streamLocator = `${account}${app ? `.${app}` : ''}`
+    log.info(`Connecting to logs stream for ${streamLocator}`)
+    log.debug(`Stream URI ${uri}`)
 
     es.onopen = () => {
-      log.info(`Open with ${uri} is open`)
+      log.info(`Listening to ${streamLocator}'s logs`)
     }
 
     es.onerror = err => {
@@ -57,18 +61,19 @@ export default async (app: string, options) => {
 
     es.onclose = () => {
       log.warn('SSE connection closed. Reconnecting.')
-      createEventSource()
+      createLogEventSource()
     }
 
     es.addEventListener('message', msg => {
       try {
-        console.log(JSON.stringify(JSON.parse(msg.data).data, null, 2))
-        // eslint-disable-next-line no-empty
-      } catch (e) {}
+        log.info(JSON.parse(msg.data).data)
+      } catch (e) {
+        log.error(e, msg.data)
+      }
     })
   }
 
-  createEventSource()
+  createLogEventSource()
 
   console.log('Press CTRL+C to abort')
 }
