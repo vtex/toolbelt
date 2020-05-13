@@ -6,7 +6,7 @@ import appsLogs from '../modules/apps/logs'
 export default class Logs extends CustomCommand {
   static description = 'Show logs of an app on the current directory or a specified one'
 
-  static examples = ['vtex logs']
+  static examples = ['vtex logs', 'vtex logs appName', 'vtex logs --all', 'vtex logs appName --past']
 
   static flags = {
     ...CustomCommand.globalFlags,
