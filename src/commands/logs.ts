@@ -11,7 +11,11 @@ export default class Logs extends CustomCommand {
   static flags = {
     ...CustomCommand.globalFlags,
     all: oclifFlags.boolean({ char: 'a', description: 'Show logs of all apps of this vendor', default: false }),
-    ghost: oclifFlags.boolean({ char: 'g', description: 'Show logs of all apps of this vendor', default: false }),
+    past: oclifFlags.boolean({
+      char: 'p',
+      description: 'Show logs already seen for this vendor',
+      default: false,
+    }),
   }
 
   static args = [{ name: 'app', required: false }]
