@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - [vtex publish] Message referencing location of the published docs if any.
+- [vtex logs] Add logs command
 
 ## [2.100.1] - 2020-05-12
 ### Changed
