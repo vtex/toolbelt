@@ -28,12 +28,12 @@ export default async (app: string, options) => {
     // manifest file was not found
 
     if (!account) {
-      console.error('vendor could not be specified, are you logged in?')
+      log.error('vendor could not be specified, are you logged in?')
       throw err
     }
 
     if (!options.all && !app) {
-      console.error('app could not be specified. Did you forget --all?')
+      log.error('app could not be specified. Did you forget --all?')
       throw err
     }
   }
@@ -80,5 +80,5 @@ export default async (app: string, options) => {
 
   createLogEventSource()
 
-  console.log('Press CTRL+C to abort')
+  log.info('Press CTRL+C to abort')
 }
