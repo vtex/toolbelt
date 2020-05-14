@@ -90,14 +90,6 @@ export class CustomEventSource {
     }
   }
 
-  set onclose(newOnClose) {
-    this.esOnClose = newOnClose
-    this.esOnClose = this.esOnClose.bind(this)
-    if (this.eventSource) {
-      (this.eventSource as any).onclose = this.esOnClose
-    }
-  }
-
   set onmessage(newOnMessage: OnMessageHandler) {
     this.esOnMessage = newOnMessage
     this.esOnMessage = this.esOnMessage.bind(this)
