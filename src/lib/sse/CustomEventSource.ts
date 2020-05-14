@@ -46,7 +46,6 @@ export class CustomEventSource {
   public esOnError: OnErrorHandler
   public esOnMessage: OnMessageHandler
   public esOnOpen: OnOpenHandler
-  public esOnClose: () => void
 
   private configuration: EventSource.EventSourceInitDict
   private events: EventListeners[]
@@ -118,9 +117,6 @@ export class CustomEventSource {
     this.closeEventSource()
     this.clearTimers()
     this.isClosed = true
-    if (typeof this.esOnClose === 'function') {
-      this.esOnClose()
-    }
   }
 
   public handleError(err: any) {
@@ -158,15 +154,16 @@ export class CustomEventSource {
   }
 
   private addMethods() {
-    if (this.eventSource) {
-      this.eventSource.onmessage = this.esOnMessage
-      this.eventSource.onopen = this.esOnOpen
-      this.eventSource.onerror = this.handleError
-
-      this.events.forEach(({ event, handler }) => {
-        this.eventSource.addEventListener(event, handler)
-      })
+    if (!this.eventSource) {
+      return
     }
+    this.eventSource.onmessage = this.esOnMessage
+    this.eventSource.onopen = this.esOnOpen
+    this.eventSource.onerror = this.handleError
+
+    this.events.forEach(({ event, handler }) => {
+      this.eventSource.addEventListener(event, handler)
+    })
   }
 
   private checkPing() {
@@ -196,11 +193,13 @@ export class CustomEventSource {
   }
 
   private reconnect() {
-    if (!this.isClosed) {
-      this.restartCount += 1
-      this.connectEventSource()
-      this.addColossusPing()
-      this.addMethods()
+    if (this.isClosed) {
+      return
     }
+
+    this.restartCount += 1
+    this.connectEventSource()
+    this.addColossusPing()
+    this.addMethods()
   }
 }
