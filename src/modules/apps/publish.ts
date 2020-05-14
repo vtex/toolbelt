@@ -68,6 +68,7 @@ const publisher = (workspace = 'master') => {
   const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {
     const session = SessionManager.getSingleton()
     const manifest = await ManifestEditor.getManifestEditor()
+
     const builderHubMessage = await checkBuilderHubMessage('publish')
     if (builderHubMessage != null) {
       await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
