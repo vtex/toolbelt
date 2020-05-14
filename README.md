@@ -55,6 +55,7 @@ $ vtex
     link                    Start a development session for this app
     setup                   Setup your development environment (configure tsconfig and tslint, run yarn)
     list                    List your installed VTEX apps
+    logs                    Show apps production logs
     login                   Log into a VTEX account
     logout                  Logout of the current VTEX account
     promote                 Promote this workspace to master
