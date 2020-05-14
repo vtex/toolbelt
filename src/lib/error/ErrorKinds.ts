@@ -13,4 +13,5 @@ export const ErrorKinds = {
   SSE_ERROR: 'SSEError',
   TELEMETRY_REPORTER_ERROR: 'TelemetryReporterError',
   TOOLBELT_CONFIG_MESSAGES_ERROR: 'ToolbeltConfigMessagesError',
+  APP_LOGS_SSE_ERROR: 'LogsSSEError',
 }

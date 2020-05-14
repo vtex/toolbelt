@@ -5,6 +5,8 @@ import { AuthType } from '@vtex/api'
 import { CustomEventSource } from '../../lib/sse/CustomEventSource'
 import { SessionManager } from '../../lib/session/SessionManager'
 import { randomBytes } from 'crypto'
+import { ErrorReport } from '../../lib/error/ErrorReport'
+import { ErrorKinds } from '../../lib/error/ErrorKinds'
 
 const SKIDDER_MAJOR = 1
 
@@ -57,11 +59,10 @@ export default async (app: string, options) => {
 
     es.onerror = err => {
       log.error(`Error reading logs: ${err.message}`)
-    }
-
-    es.onclose = () => {
-      log.warn('SSE connection closed. Reconnecting.')
-      createLogEventSource()
+      ErrorReport.createAndRegisterOnTelemetry({
+        kind: ErrorKinds.APP_LOGS_SSE_ERROR,
+        originalError: err,
+      })
     }
 
     es.addEventListener('message', msg => {
