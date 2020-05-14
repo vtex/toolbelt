@@ -104,7 +104,9 @@ const publisher = (workspace = 'master') => {
       log.info(`You can deploy it with: ${chalk.blueBright(`vtex deploy ${appId}`)}`)
 
       if (manifest.builders?.docs) {
-        log.info(`Your app documentation will be available at: ${chalk.yellowBright(`https://vtex.io/docs/app/${appId}`)}`)
+        log.info(
+          `Your app documentation will be available at: ${chalk.yellowBright(`https://vtex.io/docs/app/${appId}`)}`
+        )
       }
     } catch (e) {
       log.error(`Failed to publish ${appId}`)
