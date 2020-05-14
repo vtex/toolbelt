@@ -70,6 +70,10 @@ export default async (app: string, options) => {
         log.info(JSON.parse(msg.data).data)
       } catch (e) {
         log.error(e, msg.data)
+        ErrorReport.createAndRegisterOnTelemetry({
+          kind: ErrorKinds.APP_LOGS_PARSE_ERROR,
+          originalError: e,
+        })
       }
     })
   }
