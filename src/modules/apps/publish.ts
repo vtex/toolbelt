@@ -68,7 +68,6 @@ const publisher = (workspace = 'master') => {
   const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {
     const session = SessionManager.getSingleton()
     const manifest = await ManifestEditor.getManifestEditor()
-
     const builderHubMessage = await checkBuilderHubMessage('publish')
     if (builderHubMessage != null) {
       await showBuilderHubMessage(builderHubMessage.message, builderHubMessage.prompt, manifest)
@@ -102,6 +101,10 @@ const publisher = (workspace = 'master') => {
 
       log.info(`${appId} was published successfully!`)
       log.info(`You can deploy it with: ${chalk.blueBright(`vtex deploy ${appId}`)}`)
+
+      if (manifest.builders?.docs) {
+        log.info(`Your documentation will be available at: ${chalk.yellowBright(`https://vtex.io/docs/app/${appId}`)}`)
+      }
     } catch (e) {
       log.error(`Failed to publish ${appId}`)
     }
