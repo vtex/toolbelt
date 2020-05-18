@@ -5,6 +5,7 @@ import { CustomEventSource } from '../../sse/CustomEventSource'
 import log from '../../../logger'
 import userAgent from '../../../user-agent'
 import { SessionManager } from '../../session/SessionManager'
+import { inspect } from 'util'
 
 interface AppLogsEventSourceArgs {
   account: string
@@ -75,7 +76,7 @@ export class AppLogsEventSource {
 
     es.addEventListener('message', msg => {
       try {
-        log.info(JSON.parse(msg.data).data)
+        log.info(inspect(JSON.parse(msg.data).data, true, 4, true))
       } catch (e) {
         log.error(e, msg.data)
         ErrorReport.createAndRegisterOnTelemetry({
