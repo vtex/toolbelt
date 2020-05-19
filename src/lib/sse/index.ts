@@ -6,9 +6,9 @@ import { removeVersion } from '../../locator'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
 import { ErrorKinds } from '../error/ErrorKinds'
+import { ErrorReport } from '../error/ErrorReport'
 import { CustomEventSource } from './CustomEventSource'
 import { EventSourceError } from './EventSourceError'
-import { ErrorReport } from '../error/ErrorReport'
 
 const levelAdapter = { warning: 'warn' }
 
@@ -73,7 +73,7 @@ const onLog = (
   senders?: string[]
 ): Unlisten => {
   const source = `${colossusEndpoint()}/${ctx.account}/${ctx.workspace}/logs?level=${logLevel}`
-  const es = CustomEventSource.create(source, true)
+  const es = CustomEventSource.create({ source, closeOnInvalidToken: true })
   es.onopen = onOpen(`${logLevel} log`)
   es.onmessage = compose(maybeCall(callback), filterMessage(subject, true, senders), parseMessage)
   es.onerror = onError(`${logLevel} log`)
@@ -90,7 +90,7 @@ export const onEvent = (
   const source = `${colossusEndpoint()}/${ctx.account}/${
     ctx.workspace
   }/events?onUnsubscribe=link_interrupted&sender=${sender}${parseKeyToQueryParameter(keys)}`
-  const es = CustomEventSource.create(source, true)
+  const es = CustomEventSource.create({ source, closeOnInvalidToken: true })
   es.onopen = onOpen('event')
   es.onmessage = compose(maybeCall(callback), filterMessage(subject), parseMessage)
   es.onerror = onError('event')
@@ -161,7 +161,7 @@ export const onAuth = (
 ): Promise<[string, string]> => {
   const source = `https://${workspace}--${account}.${publicEndpoint()}/_v/private/auth-server/v1/sse/${state}`
   log.debug(`Listening for auth events from: ${source}`)
-  const es = CustomEventSource.create(source)
+  const es = CustomEventSource.create({ source })
   return new Promise((resolve, reject) => {
     es.onmessage = (msg: MessageJSON) => {
       const { body: token } = JSON.parse(msg.data) as { body: string }

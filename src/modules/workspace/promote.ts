@@ -1,9 +1,6 @@
 import chalk from 'chalk'
 import { CommandError } from '../../errors'
-import { EvolutionManager } from '../../lib/clients/IOClients/apps/EvolutionManager'
 import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { ErrorReport } from '../../lib/error/ErrorReport'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
@@ -41,22 +38,8 @@ export default async () => {
   if (!promptAnswer) {
     return
   }
+
   await promote(account, currentWorkspace)
-
-  const sessionManager = SessionManager.getSingleton()
-  const userEmail = sessionManager.userLogged
-
-  const evolutionManager = EvolutionManager.createClient()
-  try {
-    await evolutionManager.saveWorkspacePromotion(userEmail, currentWorkspace)
-  } catch (err) {
-    log.debug('Failed to report workspace promotion to Evolution Manager')
-    ErrorReport.createAndRegisterOnTelemetry({
-      originalError: err,
-      kind: ErrorKinds.EVOLUTION_MANAGER_REPORT_ERROR,
-    })
-  }
-
   log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`)
   await useCmd('master')
 }
