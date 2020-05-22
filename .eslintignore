@@ -1,2 +1,3 @@
+**/__mocks__
 **/*.test.ts
 /src/__tests__
