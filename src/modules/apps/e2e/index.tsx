@@ -10,7 +10,12 @@ import { RealTimeReport } from './report/index'
 class EndToEndCommand {
   private tester: Tester
   constructor(private options) {
-    this.tester = Tester.createClient()
+    this.tester = Tester.createClient(undefined, {
+      // Default timeout
+      timeout: 15000,
+      // retries to account for tester-hub's cold start
+      retries: 4,
+    })
   }
 
   public run() {
