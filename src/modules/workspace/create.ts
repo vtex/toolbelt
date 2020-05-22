@@ -1,12 +1,21 @@
+import { Workspaces } from '@vtex/api'
 import chalk from 'chalk'
 import { CommandError } from '../../errors'
 import { Builder } from '../../lib/clients/IOClients/apps/Builder'
 import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
+import { ErrorReport } from '../../lib/error/ErrorReport'
+import { WorkspaceCreator } from '../../lib/session/WorkspaceCreator'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
+import { promptConfirm } from '../prompts'
 import { ensureValidEdition } from './common/edition'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
+
+const promptWorkspaceCreation = (name: string) => {
+  console.log(chalk.blue('!'), `Workspace ${chalk.green(name)} doesn't exist`)
+  return promptConfirm('Do you wish to create it?')
+}
 
 const warmUpRouteMap = async (workspace: string) => {
   try {
@@ -16,29 +25,84 @@ const warmUpRouteMap = async (workspace: string) => {
   } catch (err) {} // eslint-disable-line no-empty
 }
 
-export default async (name: string, options: any) => {
-  if (!VALID_WORKSPACE.test(name)) {
+const promptWorkspaceProductionFlag = () => promptConfirm('Should the workspace be in production mode?', false)
+
+export const handleErrorCreatingWorkspace = (targetWorkspace: string, err: Error | ErrorReport | any) => {
+  log.error(`Failed to create workspace '${targetWorkspace}': ${err.message}`)
+  const rep = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err })
+  if (rep.shouldRemoteReport) {
+    log.error(`ErrorID: ${rep.metadata.errorId}`)
+  }
+}
+
+export const workspaceExists = async (account: string, workspace: string, workspacesClient: Workspaces) => {
+  try {
+    await workspacesClient.get(account, workspace)
+    return true
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return false
+    }
+
+    throw err
+  }
+}
+
+export const workspaceCreator: WorkspaceCreator = async ({
+  targetWorkspace,
+  clientContext,
+  productionWorkspace,
+  promptCreation,
+  logIfAlreadyExists = true,
+}) => {
+  if (!VALID_WORKSPACE.test(targetWorkspace)) {
     throw new CommandError("Whoops! That's not a valid workspace name. Please use only lowercase letters and numbers.")
   }
-  log.debug('Creating workspace', name)
-  let production = false
-  if (options.p || options.production) {
-    production = true
+
+  const { account, workspace, token } = clientContext ?? SessionManager.getSingleton()
+  const workspaces = clientContext
+    ? createWorkspacesClient({ workspace, account, authToken: token })
+    : createWorkspacesClient()
+
+  if (await workspaceExists(account, targetWorkspace, workspaces)) {
+    if (logIfAlreadyExists) {
+      log.error(`Workspace '${targetWorkspace}' already exists.`)
+    }
+
+    return 'exists'
   }
+
+  if (promptCreation && !(await promptWorkspaceCreation(targetWorkspace))) {
+    return 'cancelled'
+  }
+
+  if (productionWorkspace == null) {
+    productionWorkspace = await promptWorkspaceProductionFlag()
+  }
+
+  log.debug('Creating workspace', targetWorkspace)
+
   try {
-    const workspaces = createWorkspacesClient()
-    await workspaces.create(SessionManager.getSingleton().account, name, production)
+    await workspaces.create(account, targetWorkspace, productionWorkspace)
+
     log.info(
-      `Workspace ${chalk.green(name)} created ${chalk.green('successfully')} with ${chalk.green(
-        `production=${production}`
+      `Workspace ${chalk.green(targetWorkspace)} created ${chalk.green('successfully')} with ${chalk.green(
+        `production=${productionWorkspace}`
       )}`
     )
-    await ensureValidEdition(name)
+
+    await ensureValidEdition(targetWorkspace)
+
     // First request on a brand new workspace takes very long because of route map generation, so we warm it up.
-    await warmUpRouteMap(name)
+    warmUpRouteMap(targetWorkspace)
+
+    return 'created'
   } catch (err) {
-    if (err.response && err.response.data.code === 'WorkspaceAlreadyExists') {
-      log.error(err.response.data.message)
+    if (err.response?.data.code === 'WorkspaceAlreadyExists') {
+      if (logIfAlreadyExists) {
+        log.error(err.response.data.message)
+      }
+
       return
     }
     throw err
