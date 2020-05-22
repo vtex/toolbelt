@@ -11,6 +11,15 @@ import logger from '../../logger'
 import { SessionManager } from '../session/SessionManager'
 import { getPlatform } from '../utils/getPlatform'
 import { TelemetryCollector } from '../telemetry/TelemetryCollector'
+import { CommandError } from '../../errors'
+
+interface CustomErrorReportCreateArgs extends ErrorReportCreateArgs {
+  shouldRemoteReport?: boolean
+}
+
+interface CustomErrorReportBaseConstructorArgs extends ErrorReportBaseConstructorArgs {
+  shouldRemoteReport: boolean
+}
 
 interface ErrorEnv {
   account: string
@@ -39,15 +48,30 @@ interface LogToUserOptions {
 }
 
 export class ErrorReport extends ErrorReportBase {
-  public static create(args: ErrorReportCreateArgs) {
-    return new ErrorReport(createErrorReportBaseArgs(args))
+  public static checkIfShouldRemoteReport(err: Error | any) {
+    if (err instanceof CommandError) {
+      return false
+    }
+
+    return true
   }
 
-  public static createAndRegisterOnTelemetry(args: ErrorReportCreateArgs) {
-    return ErrorReport.create(args).sendToTelemetry()
+  public static create(args: CustomErrorReportCreateArgs) {
+    return new ErrorReport({
+      shouldRemoteReport: args.shouldRemoteReport ?? ErrorReport.checkIfShouldRemoteReport(args.originalError),
+      ...createErrorReportBaseArgs(args),
+    })
   }
 
-  constructor(args: ErrorReportBaseConstructorArgs) {
+  // This function creates the ErrorReport based on the original error
+  // and sends it to ToolbeltTelemetry, if the shouldRemoteReport
+  // property ends up to be true
+  public static createAndMaybeRegisterOnTelemetry(args: CustomErrorReportCreateArgs) {
+    return ErrorReport.create(args).maybeSendToTelemetry()
+  }
+
+  public shouldRemoteReport: boolean
+  constructor(args: CustomErrorReportBaseConstructorArgs) {
     const { workspace, account } = SessionManager.getSingleton()
 
     const env: ErrorEnv = {
@@ -66,6 +90,8 @@ export class ErrorReport extends ErrorReportBase {
         env,
       },
     })
+
+    this.shouldRemoteReport = args.shouldRemoteReport
   }
 
   public logErrorForUser(opts?: LogToUserOptions) {
@@ -89,7 +115,10 @@ export class ErrorReport extends ErrorReportBase {
 
     logger[coreLogLevels.errorKind](chalk`{bold ErrorKind:} ${this.kind}`)
     logger[coreLogLevels.errorMessage](chalk`{bold Message:} ${this.message}`)
-    logger[coreLogLevels.errorId](chalk`{bold ErrorID:} ${this.metadata.errorId}`)
+
+    if (this.shouldRemoteReport) {
+      logger[coreLogLevels.errorId](chalk`{bold ErrorID:} ${this.metadata.errorId}`)
+    }
 
     if (isRequestInfo(this.parsedInfo)) {
       const { method, url } = this.parsedInfo.requestConfig
@@ -104,8 +133,8 @@ export class ErrorReport extends ErrorReportBase {
     return this
   }
 
-  public sendToTelemetry() {
-    if (!this.isErrorReported()) {
+  public maybeSendToTelemetry() {
+    if (this.shouldRemoteReport && !this.isErrorReported()) {
       TelemetryCollector.getCollector().registerError(this)
     }
 

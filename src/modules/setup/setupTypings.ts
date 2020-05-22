@@ -52,7 +52,7 @@ const appsWithTypingsURLs = async (appDependencies: Record<string, any>, ignoreL
         result[appName] = await appTypingsURL(appName, appVersion, ignoreLinked)
       } catch (err) {
         log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
-        ErrorReport.createAndRegisterOnTelemetry({
+        ErrorReport.createAndMaybeRegisterOnTelemetry({
           kind: ErrorKinds.SETUP_TYPINGS_ERROR,
           originalError: err,
         }).logErrorForUser({
@@ -105,7 +105,7 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLi
       runYarn(builder, true)
     } catch (e) {
       log.error(`Error running Yarn in ${builder}.`)
-      ErrorReport.createAndRegisterOnTelemetry({
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.SETUP_TSCONFIG_ERROR,
         originalError: e,
       })
@@ -146,7 +146,7 @@ export const setupTypings = async (
     )
     log.info('Finished setting up typings')
   } catch (err) {
-    ErrorReport.createAndRegisterOnTelemetry({
+    ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TYPINGS_ERROR,
       originalError: err,
     }).logErrorForUser()
