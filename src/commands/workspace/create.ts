@@ -1,6 +1,6 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import workspaceCreate from '../../modules/workspace/create'
+import { workspaceCreator } from '../../modules/workspace/create'
 import { CustomCommand } from '../../oclif/CustomCommand'
 
 export default class WorkspaceCreate extends CustomCommand {
@@ -21,6 +21,11 @@ export default class WorkspaceCreate extends CustomCommand {
       flags: { production },
     } = this.parse(WorkspaceCreate)
 
-    await workspaceCreate(workspaceName, { production })
+    await workspaceCreator({
+      targetWorkspace: workspaceName,
+      promptCreation: false,
+      logIfAlreadyExists: true,
+      productionWorkspace: production,
+    })
   }
 }
