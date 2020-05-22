@@ -160,7 +160,7 @@ export function setupTooling(manifest: Manifest, buildersWithTooling = BUILDERS_
     setupBuilderTools(builders)
     logger.info('Finished setting up tooling')
   } catch (err) {
-    ErrorReport.createAndRegisterOnTelemetry({
+    ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TOOLING_ERROR,
       originalError: err,
     }).logErrorForUser()

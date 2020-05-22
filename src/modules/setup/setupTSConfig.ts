@@ -61,7 +61,7 @@ export const setupTSConfig = async (manifest: Manifest, warnOnNoBuilderCandidate
     log.info('Finished setting up tsconfig.json')
   } catch (err) {
     log.error('Failed setting up tsconfig.json')
-    ErrorReport.createAndRegisterOnTelemetry({
+    ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TSCONFIG_ERROR,
       originalError: err,
     }).logErrorForUser()
