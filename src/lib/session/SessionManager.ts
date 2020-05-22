@@ -13,14 +13,14 @@ interface WorkspaceCreation {
   onError: (targetWorkspace: string, err: Error | any) => void
 }
 
-interface LoginInput {
+export interface LoginInput {
   targetWorkspace?: string
   authMethod?: string
   useCachedToken?: boolean
   workspaceCreation: WorkspaceCreation
 }
 
-interface WorkspaceSwitchInput {
+export interface WorkspaceSwitchInput {
   targetWorkspace: string
   workspaceCreation: WorkspaceCreation
 }
