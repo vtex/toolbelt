@@ -4,6 +4,7 @@ import { CommandError } from '../../errors'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
+import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'
 import welcome from './welcome'
 
 interface SwitchOptions {
@@ -34,7 +35,15 @@ const checkAndSwitch = async (targetAccount: string, targetWorkspace: string) =>
     throw new CommandError(`You're already using the account ${chalk.blue(targetAccount)}`)
   }
 
-  await session.login(targetAccount, { targetWorkspace })
+  await session.login(targetAccount, {
+    targetWorkspace,
+    workspaceCreation: {
+      promptCreation: true,
+      creator: workspaceCreator,
+      onError: handleErrorCreatingWorkspace,
+    },
+  })
+
   const { account, workspace, userLogged } = session
 
   log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(userLogged)} at workspace ${chalk.green(workspace)}`)
