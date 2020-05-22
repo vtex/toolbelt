@@ -12,7 +12,7 @@ interface WorkspaceUseOptions {
 
 export default async (name: string, options?: WorkspaceUseOptions) => {
   const session = SessionManager.getSingleton()
-  const production = options.production ?? undefined
+  const production = options?.production
   const reset = options?.reset ?? false
 
   if (name === '-') {
