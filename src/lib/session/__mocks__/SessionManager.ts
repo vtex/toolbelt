@@ -1,5 +1,5 @@
 import { Token } from '../../auth/Token'
-import { ISessionManager, LoginOptions } from '../SessionManager'
+import { ISessionManager, LoginInput, WorkspaceSwitchInput, WorkspaceSwitchResult } from '../SessionManager'
 
 export class SessionManagerMock implements ISessionManager {
   private static singleton: SessionManagerMock
@@ -39,7 +39,7 @@ export class SessionManagerMock implements ISessionManager {
     return this.token
   }
 
-  public login(newAccount: string, { targetWorkspace = 'master' }: LoginOptions) {
+  public login(newAccount: string, { targetWorkspace = 'master' }: LoginInput) {
     this.account = newAccount
     this.workspace = targetWorkspace
     return Promise.resolve()
@@ -47,8 +47,9 @@ export class SessionManagerMock implements ISessionManager {
 
   public logout() {}
 
-  public workspaceSwitch(newWorkspace: string) {
-    this.workspace = newWorkspace
+  public async workspaceSwitch({ targetWorkspace }: WorkspaceSwitchInput): Promise<WorkspaceSwitchResult> {
+    this.workspace = targetWorkspace
+    return 'exists'
   }
 }
 
