@@ -1,4 +1,4 @@
-import { AppClient, CacheType, inflightURL, InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
 import { IOClientFactory } from '../IOClientFactory'
 
 export interface SpecTestReport {
@@ -88,7 +88,6 @@ export class Tester extends AppClient {
 
   public report(testId: string) {
     return this.http.get<TestReport>(`/_v/report/${testId}`, {
-      inflightKey: inflightURL,
       cacheable: CacheType.None,
     })
   }
