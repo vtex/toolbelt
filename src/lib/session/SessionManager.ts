@@ -4,11 +4,37 @@ import { Token } from '../auth/Token'
 import { ErrorKinds } from '../error/ErrorKinds'
 import { ErrorReport } from '../error/ErrorReport'
 import { SessionsPersister, SessionsPersisterBase } from './SessionsPersister'
+import { WorkspaceCreateResult, WorkspaceCreator } from './WorkspaceCreator'
 
-export interface LoginOptions {
+interface WorkspaceCreation {
+  production?: boolean
+  promptCreation: boolean
+  creator: WorkspaceCreator
+  onError: (targetWorkspace: string, err: Error | any) => void
+}
+
+export interface LoginInput {
   targetWorkspace?: string
   authMethod?: string
   useCachedToken?: boolean
+  workspaceCreation: WorkspaceCreation
+}
+
+export interface WorkspaceSwitchInput {
+  targetWorkspace: string
+  workspaceCreation: WorkspaceCreation
+}
+
+interface WorkspaceSwitchMasterInput {
+  targetWorkspace: 'master'
+}
+
+export type WorkspaceSwitchResult = WorkspaceCreateResult | 'not-changed'
+
+function isWorkspaceSwitchMaster(
+  el: WorkspaceSwitchInput | WorkspaceSwitchMasterInput
+): el is WorkspaceSwitchMasterInput {
+  return el.targetWorkspace === 'master'
 }
 
 export interface ISessionManager {
@@ -21,9 +47,9 @@ export interface ISessionManager {
   lastUsedWorkspace: string
   checkValidCredentials: () => boolean
   checkAndGetToken: (exitOnInvalid?: boolean) => string
-  login: (newAccount: string, opts: LoginOptions) => Promise<void>
+  login: (newAccount: string, opts: LoginInput) => Promise<void>
   logout: () => void
-  workspaceSwitch: (newWorkspace: string) => void
+  workspaceSwitch: (input: WorkspaceSwitchInput) => Promise<WorkspaceSwitchResult>
 }
 
 interface SessionManagerArguments {
@@ -118,7 +144,7 @@ export class SessionManager implements ISessionManager {
 
   public async login(
     newAccount: string,
-    { targetWorkspace = 'master', authMethod = 'oauth', useCachedToken = true }: LoginOptions
+    { targetWorkspace = 'master', authMethod = 'oauth', useCachedToken = true, workspaceCreation }: LoginInput
   ) {
     if (this.account !== newAccount) {
       this.state.lastAccount = this.account
@@ -127,20 +153,18 @@ export class SessionManager implements ISessionManager {
 
     const cachedToken = new Token(this.sessionPersister.getAccountToken(newAccount))
     if (useCachedToken && cachedToken.isValid()) {
-      this.state.account = newAccount
-      this.state.workspace = targetWorkspace
       this.state.tokenObj = cachedToken
-      this.saveState()
-      return
+    } else {
+      // Tokens are scoped by workspace - logging into master will grant cacheability
+      const { token } = await this.authProviders[authMethod].login(newAccount, 'master')
+      this.state.tokenObj = new Token(token)
+      this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token)
     }
 
-    // Tokens are scoped by workspace - logging into master will grant cacheability
-    const { token } = await this.authProviders[authMethod].login(newAccount, 'master')
     this.state.account = newAccount
-    this.state.workspace = targetWorkspace
-    this.state.tokenObj = new Token(token)
+    this.state.workspace = 'master'
     this.saveState()
-    this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token)
+    await this.workspaceSwitch({ targetWorkspace, workspaceCreation })
   }
 
   public logout() {
@@ -151,14 +175,43 @@ export class SessionManager implements ISessionManager {
     return this.tokenObj.isValid() && !!this.state.account && !!this.state.workspace
   }
 
-  public workspaceSwitch(newWorkspace: string) {
-    if (this.state.workspace === newWorkspace) {
-      return
+  public async workspaceSwitch(
+    input: WorkspaceSwitchInput | WorkspaceSwitchMasterInput
+  ): Promise<WorkspaceSwitchResult> {
+    const { targetWorkspace } = input
+    if (this.state.workspace === targetWorkspace) {
+      return 'not-changed'
     }
 
-    this.state.lastWorkspace = this.state.workspace
-    this.state.workspace = newWorkspace
-    this.saveWorkspaceData()
+    let result: WorkspaceCreateResult
+    if (!isWorkspaceSwitchMaster(input)) {
+      try {
+        result = await input.workspaceCreation.creator({
+          targetWorkspace,
+          productionWorkspace: input.workspaceCreation.production,
+          promptCreation: input.workspaceCreation.promptCreation,
+          logIfAlreadyExists: false,
+          clientContext: {
+            account: this.account,
+            token: this.token,
+            workspace: this.workspace,
+          },
+        })
+      } catch (err) {
+        input.workspaceCreation.onError(targetWorkspace, err)
+        result = 'error'
+      }
+    } else {
+      result = 'exists'
+    }
+
+    if (result === 'created' || result === 'exists') {
+      this.state.lastWorkspace = this.state.workspace
+      this.state.workspace = targetWorkspace
+      this.saveWorkspaceData()
+    }
+
+    return result
   }
 
   /* This should not be used - implement another login method instead */

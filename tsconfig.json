@@ -14,5 +14,5 @@
     "importHelpers": true
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.ts", "**/__tests__"]
+  "exclude": ["**/*.test.ts", "**/__tests__", "**/__mocks__"]
 }

@@ -16,7 +16,7 @@ const onOpen = (type: string) => () => log.debug(`Connected to ${type} server`)
 
 const onError = (type: string) => (err: EventSourceError) => {
   log.error(`Connection to ${type} server has failed with status ${err.event.status}`)
-  ErrorReport.createAndRegisterOnTelemetry({
+  ErrorReport.createAndMaybeRegisterOnTelemetry({
     kind: ErrorKinds.SSE_ERROR,
     originalError: err,
   }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })
@@ -174,7 +174,7 @@ export const onAuth = (
       const errMessage = `Connection to login server has failed${
         err.event.status ? ` with status ${err.event.status}` : ''
       }`
-      ErrorReport.createAndRegisterOnTelemetry({
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.SSE_ERROR,
         originalError: err,
       }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })

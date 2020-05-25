@@ -37,7 +37,7 @@ export default async (url: string, option: any) => {
   } catch (error) {
     spinner.stop()
 
-    ErrorReport.createAndRegisterOnTelemetry({ originalError: error })
+    ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: error })
     log.error(error)
   }
 }
