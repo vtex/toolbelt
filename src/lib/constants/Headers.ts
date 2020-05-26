@@ -10,4 +10,7 @@ export enum Headers {
   // Specify the target cluster for the request.
   // Works only on myvtexdev domain
   VTEX_UPSTREAM_TARGET = 'x-vtex-upstream-target',
+
+  // ID of link to keep on track all re-links related to that link.
+  VTEX_LINK_ID = 'x-vtex-bh-link-id'
 }

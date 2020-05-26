@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
 import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
 import { Headers } from '../../../constants/Headers'
@@ -47,9 +48,11 @@ export class Builder extends AppClient {
   }
 
   private stickyHost!: string
+  private linkID: string
 
   constructor(ioContext: IOContext, opts?: InstanceOptions) {
     super('vtex.builder-hub@0.x', ioContext, opts)
+    this.linkID = randomBytes(20).toString('hex')
   }
 
   public availability = async (app: string, hintIndex: number) => {
@@ -143,9 +146,10 @@ export class Builder extends AppClient {
       headers: { [Headers.VTEX_STICKY_HOST]: host },
     } = await this.http.postRaw<BuildResult>(route, zipFile, {
       headers: {
+        ...(sticky && { [Headers.VTEX_STICKY_HOST]: this.stickyHost || hint }),
         'Content-length': zipFile.byteLength,
         'Content-Type': 'application/octet-stream',
-        ...(sticky && { [Headers.VTEX_STICKY_HOST]: this.stickyHost || hint }),
+        [Headers.VTEX_LINK_ID]: this.linkID,
       },
       metric,
       params,
