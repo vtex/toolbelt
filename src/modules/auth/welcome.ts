@@ -73,7 +73,7 @@ const getEditionStatus = async (): Promise<EditionStatus> => {
     if (err.response?.data?.code === 'resource_not_found') {
       isEditionSet = false
     } else {
-      ErrorReport.createAndRegisterOnTelemetry({
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.EDITION_REQUEST_ERROR,
         originalError: err,
       }).logErrorForUser({ coreLogLevelDefault: 'debug' })
@@ -116,7 +116,7 @@ export default async () => {
     const { data } = await apps.listApps()
     appArray = data
   } catch (err) {
-    ErrorReport.createAndRegisterOnTelemetry({
+    ErrorReport.createAndMaybeRegisterOnTelemetry({
       originalError: err,
     }).logErrorForUser({ coreLogLevelDefault: 'debug' })
 

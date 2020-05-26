@@ -65,7 +65,7 @@ const assertToken = (raw: string): void => {
 const saveSupportCredentials = (account: string, token: string): void => {
   const session = SessionManager.getSingleton()
   session.DEPRECATEDchangeAccount(account)
-  session.workspaceSwitch('master')
+  session.workspaceSwitch({ targetWorkspace: 'master' })
   session.DEPRECATEDchangeToken(token)
 }
 

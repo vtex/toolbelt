@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - [vtex publish/link] Ignore Cypress generated videos/screenshots.
+- [ErrorReport] Do not send wrong usage errors to telemetry.
+
+### Fixed
+- [vtex login, vtex switch] Prompt workspace creation if it doesn't exist.
 
 ## [2.101.0] - 2020-05-19
 ### Added

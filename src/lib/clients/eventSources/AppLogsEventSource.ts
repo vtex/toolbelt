@@ -67,7 +67,7 @@ export class AppLogsEventSource {
     }
 
     es.onerror = err => {
-      const rep = ErrorReport.createAndRegisterOnTelemetry({
+      const rep = ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.APP_LOGS_SSE_ERROR,
         originalError: err,
       })
@@ -79,7 +79,7 @@ export class AppLogsEventSource {
         log.info(inspect(JSON.parse(msg.data).data, true, 4, true))
       } catch (e) {
         log.error(e, msg.data)
-        ErrorReport.createAndRegisterOnTelemetry({
+        ErrorReport.createAndMaybeRegisterOnTelemetry({
           kind: ErrorKinds.APP_LOGS_PARSE_ERROR,
           originalError: e,
         })

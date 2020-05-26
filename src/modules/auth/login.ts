@@ -7,6 +7,7 @@ import { ErrorReport } from '../../lib/error/ErrorReport'
 import { SessionManager } from '../../lib/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
+import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'
 import welcome from './welcome'
 
 const promptUsePreviousLogin = (account: string, userLogged: string, workspace: string) => {
@@ -37,7 +38,7 @@ const notifyRelease = async () => {
     const { messages } = await configClient.getGlobalConfig()
     console.log(messageRenderer.renderNode(messages.releaseNotes))
   } catch (err) {
-    ErrorReport.createAndRegisterOnTelemetry({
+    ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.TOOLBELT_CONFIG_MESSAGES_ERROR,
       originalError: err,
     }).logErrorForUser({ coreLogLevelDefault: 'debug' })
@@ -81,12 +82,22 @@ export default async (opts: LoginOptions) => {
   const { targetAccount, targetWorkspace } = await getTargetLogin(opts)
   const sessionManager = SessionManager.getSingleton()
   try {
-    await sessionManager.login(targetAccount, { targetWorkspace, useCachedToken: false })
+    await sessionManager.login(targetAccount, {
+      targetWorkspace,
+      useCachedToken: false,
+      workspaceCreation: {
+        promptCreation: true,
+        creator: workspaceCreator,
+        onError: handleErrorCreatingWorkspace,
+      },
+    })
+
     log.debug('Login successful', sessionManager.userLogged, targetAccount, sessionManager.token, targetWorkspace)
+
     log.info(
-      `Logged into ${chalk.blue(targetAccount)} as ${chalk.green(sessionManager.userLogged)} at workspace ${chalk.green(
-        targetWorkspace
-      )}`
+      `Logged into ${chalk.blue(sessionManager.account)} as ${chalk.green(
+        sessionManager.userLogged
+      )} at workspace ${chalk.green(sessionManager.workspace)}`
     )
 
     await welcome()
