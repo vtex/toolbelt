@@ -71,8 +71,8 @@ export interface TestRequest {
 }
 
 export class Tester extends AppClient {
-  public static DEFAULT_RETRIES = 3
-  public static DEFAULT_TIMEOUT = 15000
+  public static DEFAULT_RETRIES = 1
+  public static DEFAULT_TIMEOUT = 45000
 
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
     return IOClientFactory.createClient<Tester>(Tester, customContext, {
