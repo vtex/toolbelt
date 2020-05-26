@@ -1,4 +1,4 @@
-import { AppClient, CacheType, inflightURL, InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
 import { IOClientFactory } from '../IOClientFactory'
 
 export interface SpecTestReport {
@@ -71,8 +71,15 @@ export interface TestRequest {
 }
 
 export class Tester extends AppClient {
+  public static DEFAULT_RETRIES = 1
+  public static DEFAULT_TIMEOUT = 45000
+
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
-    return IOClientFactory.createClient<Tester>(Tester, customContext, customOptions)
+    return IOClientFactory.createClient<Tester>(Tester, customContext, {
+      retries: Tester.DEFAULT_RETRIES,
+      timeout: Tester.DEFAULT_TIMEOUT,
+      ...customOptions,
+    })
   }
 
   constructor(context: IOContext, options?: InstanceOptions) {
@@ -81,7 +88,6 @@ export class Tester extends AppClient {
 
   public report(testId: string) {
     return this.http.get<TestReport>(`/_v/report/${testId}`, {
-      inflightKey: inflightURL,
       cacheable: CacheType.None,
     })
   }
