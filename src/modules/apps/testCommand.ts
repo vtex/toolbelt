@@ -52,7 +52,9 @@ const performTest = async (
     }
 
     try {
-      const { code } = await projectUploader.sendToTest(filesWithContent, { tsErrorsAsWarnings: unsafe })
+      const { code } = await projectUploader.sendToTest(filesWithContent, {
+        params: { tsErrorsAsWarnings: unsafe },
+      })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }

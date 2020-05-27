@@ -45,7 +45,9 @@ const publisher = (workspace = 'master') => {
       }
 
       try {
-        return await projectUploader.sendToPublish(filesWithContent, tag, { skipSemVerEnsure: force })
+        return await projectUploader.sendToPublish(filesWithContent, tag, {
+          params: { skipSemVerEnsure: force },
+        })
       } catch (err) {
         const { response } = err
         const { status } = response

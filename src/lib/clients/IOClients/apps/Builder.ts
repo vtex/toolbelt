@@ -1,4 +1,3 @@
-import { randomBytes } from 'crypto'
 import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
 import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
 import { Headers } from '../../../constants/Headers'
@@ -13,6 +12,11 @@ interface StickyOptions {
 export interface RequestParams {
   tsErrorsAsWarnings?: boolean
   skipSemVerEnsure?: boolean
+}
+
+export interface BuilderHubRequestOptions {
+  params?: RequestParams
+  headers?: Record<string, any>
 }
 
 export interface BuildResult {
@@ -48,11 +52,9 @@ export class Builder extends AppClient {
   }
 
   private stickyHost!: string
-  private linkID: string
 
   constructor(ioContext: IOContext, opts?: InstanceOptions) {
     super('vtex.builder-hub@0.x', ioContext, opts)
-    this.linkID = randomBytes(20).toString('hex')
   }
 
   public availability = async (app: string, hintIndex: number) => {
@@ -108,17 +110,22 @@ export class Builder extends AppClient {
     app: string,
     zipFile: Buffer,
     stickyOptions: StickyOptions = { sticky: true },
-    params: RequestParams = {}
+    params: RequestParams = {},
+    requestHeaders: Record<string, any> = {}
   ) => {
-    return this.sendZipFile(routes.link(app), app, zipFile, stickyOptions, params)
+    return this.sendZipFile(routes.link(app), app, zipFile, stickyOptions, params, requestHeaders)
   }
 
-  public relinkApp = (app: string, changes: ChangeToSend[], params: RequestParams = {}) => {
-    console.info(`linkID: ${this.linkID}`)
+  public relinkApp = (
+    app: string,
+    changes: ChangeToSend[],
+    headersParams: Record<string, any>,
+    params: RequestParams = {}
+  ) => {
     const headers = {
       ...(this.stickyHost && { [Headers.VTEX_STICKY_HOST]: this.stickyHost }),
+      ...headersParams,
       'Content-Type': 'application/json',
-      [Headers.VTEX_LINK_ID]: this.linkID,
     }
     const metric = 'bh-relink'
     return this.http.put<BuildResult>(routes.relink(app), changes, { headers, metric, params })
@@ -138,9 +145,9 @@ export class Builder extends AppClient {
     app: string,
     zipFile: Buffer,
     { tag, sticky, stickyHint }: StickyOptions = {},
-    requestParams: RequestParams = {}
+    requestParams: RequestParams = {},
+    requestHeaders: Record<string, any> = {}
   ) => {
-    console.info(`linkID: ${this.linkID}`)
     const hint = stickyHint || `request:${this.context.account}:${this.context.workspace}:${app}`
     const metric = 'bh-zip-send'
     const params = tag ? { ...requestParams, tag } : requestParams
@@ -150,9 +157,9 @@ export class Builder extends AppClient {
     } = await this.http.postRaw<BuildResult>(route, zipFile, {
       headers: {
         ...(sticky && { [Headers.VTEX_STICKY_HOST]: this.stickyHost || hint }),
+        ...requestHeaders,
         'Content-length': zipFile.byteLength,
         'Content-Type': 'application/octet-stream',
-        [Headers.VTEX_LINK_ID]: this.linkID,
       },
       metric,
       params,
