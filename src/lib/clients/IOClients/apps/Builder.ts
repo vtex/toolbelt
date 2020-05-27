@@ -1,4 +1,4 @@
-import { randomBytes } from "crypto";
+import { randomBytes } from 'crypto'
 import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
 import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
 import { Headers } from '../../../constants/Headers'
@@ -114,9 +114,11 @@ export class Builder extends AppClient {
   }
 
   public relinkApp = (app: string, changes: ChangeToSend[], params: RequestParams = {}) => {
+    console.info(`linkID: ${this.linkID}`)
     const headers = {
-      'Content-Type': 'application/json',
       ...(this.stickyHost && { [Headers.VTEX_STICKY_HOST]: this.stickyHost }),
+      'Content-Type': 'application/json',
+      [Headers.VTEX_LINK_ID]: this.linkID,
     }
     const metric = 'bh-relink'
     return this.http.put<BuildResult>(routes.relink(app), changes, { headers, metric, params })
@@ -138,6 +140,7 @@ export class Builder extends AppClient {
     { tag, sticky, stickyHint }: StickyOptions = {},
     requestParams: RequestParams = {}
   ) => {
+    console.info(`linkID: ${this.linkID}`)
     const hint = stickyHint || `request:${this.context.account}:${this.context.workspace}:${app}`
     const metric = 'bh-zip-send'
     const params = tag ? { ...requestParams, tag } : requestParams
