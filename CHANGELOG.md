@@ -16,8 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [vtex login, vtex switch] Prompt workspace creation if it doesn't exist.
 
 ### Added
-- [vtex link] Generate `linkID` and set the `VTEX_LINK_ID` header request to `builder-hub`
-- [vtex re-link] Set the `VTEX_LINK_ID` header request to `builder-hub`
+- [vtex link] Generate `linkID` and set the `x-vtex-bh-link-id` header on link and relink requests to `builder-hub`.
 
 ## [2.101.0] - 2020-05-19
 ### Added
