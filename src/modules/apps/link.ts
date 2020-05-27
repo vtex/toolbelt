@@ -84,6 +84,7 @@ const performInitialLink = async (
     }
 
     try {
+      console.info(`link ID: ${linkID}`)
       const { code } = await projectUploader.sendToLink(filesWithContent, {
         params: { tsErrorsAsWarnings: unsafe },
         headers: { [Headers.VTEX_LINK_ID]: linkID },
@@ -169,6 +170,7 @@ const watchAndSendChanges = async (
 
   const sendChanges = debounce(async () => {
     try {
+      console.info(`link ID: ${linkID}`)
       return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), {
         params: { tsErrorsAsWarnings: unsafe },
         headers: { [Headers.VTEX_LINK_ID]: linkID },
