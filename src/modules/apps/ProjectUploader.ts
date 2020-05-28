@@ -1,10 +1,10 @@
+import { Builder, RequestParams } from '../../lib/clients/IOClients/apps/Builder'
+import { getSavedOrMostAvailableHost } from '../../host'
+import { Readable } from 'stream'
+import { ZlibOptions } from 'zlib'
 import archiver from 'archiver'
 import chalk from 'chalk'
 import getStream from 'get-stream'
-import { Readable } from 'stream'
-import { ZlibOptions } from 'zlib'
-import { Builder, BuildResult, RequestParams } from '../../lib/clients/IOClients/apps/Builder'
-import { getSavedOrMostAvailableHost } from '../../host'
 import logger from '../../logger'
 
 const MB = 1000000
@@ -16,6 +16,14 @@ export interface FileToSend {
 }
 
 export type ChangeToSend = FileToSend
+
+interface PrepareRequest {
+  zipFile: Buffer
+  builderHubResolvingOpts: {
+    sticky: boolean
+    stickyHint: string
+  }
+}
 
 const getSizeString = (byteSize: number, colored = true, megaBytesintensityScale = [10, 20]) => {
   const mbSize = byteSize / MB
@@ -72,21 +80,29 @@ export class ProjectUploader {
 
   constructor(private appName: string, private builderHubClient: Builder) {}
 
-  public sendToPublish(files: FileToSend[], publishTag: string, requestParams: RequestParams = {}) {
-    return this.sendWholeProject('publish', files, requestParams, publishTag)
+  public async sendToPublish(files: FileToSend[], publishTag: string, params: RequestParams = {}) {
+    const { zipFile, builderHubResolvingOpts } = await this.prepareRequest(files)
+    return this.builderHubClient.publishApp(
+      this.appName,
+      zipFile,
+      { ...builderHubResolvingOpts, tag: publishTag },
+      params
+    )
   }
 
-  public sendToTest(files: FileToSend[], requestParams: RequestParams = {}) {
-    return this.sendWholeProject('test', files, requestParams)
+  public async sendToTest(files: FileToSend[], params: RequestParams = {}) {
+    const { zipFile, builderHubResolvingOpts } = await this.prepareRequest(files)
+    return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, params)
   }
 
-  public sendToLink(files: FileToSend[], requestParams: RequestParams = {}) {
-    return this.sendWholeProject('link', files, requestParams)
+  public async sendToLink(files: FileToSend[], linkID: string, params: RequestParams = {}) {
+    const { zipFile, builderHubResolvingOpts } = await this.prepareRequest(files)
+    return this.builderHubClient.linkApp(this.appName, linkID, zipFile, builderHubResolvingOpts, params)
   }
 
-  public sendToRelink(changes: ChangeToSend[], requestParams: RequestParams = {}) {
+  public sendToRelink(changes: ChangeToSend[], linkID: string, params: RequestParams = {}) {
     this.checkSizeLimits(changes, true)
-    return this.builderHubClient.relinkApp(this.appName, changes, requestParams)
+    return this.builderHubClient.relinkApp(this.appName, changes, linkID, params)
   }
 
   private checkSizeLimits(filesOrChanges: FileToSend[] | ChangeToSend[], isChange = false) {
@@ -111,34 +127,21 @@ export class ProjectUploader {
     }
   }
 
-  // prettier-ignore
-  private async sendWholeProject(operation: 'link' | 'test', files: FileToSend[], requestParams: RequestParams): Promise<BuildResult>
-  // prettier-ignore
-  private async sendWholeProject(operation: 'publish', files: FileToSend[], requestParams: RequestParams, publishTag: string): Promise<BuildResult>
-  // prettier-ignore
-  private async sendWholeProject(operation: 'link' | 'publish' | 'test', files: FileToSend[], requestParams: RequestParams, publishTag?: string) {
+  private async prepareRequest(files: FileToSend[]): Promise<PrepareRequest> {
     this.checkSizeLimits(files)
     this.checkForManifest(files)
 
     logger.info('Compressing project files...')
     const zipFile = await this.compressFilesOnMemory(files)
     logger.info(`Compressed project size: ${getSizeString(zipFile.byteLength, false)}`)
-    
+
     const stickyHint = await this.getBuilderHubSticky()
     const builderHubResolvingOpts = {
       sticky: true,
       stickyHint,
     }
 
-    if (operation === 'link') {
-      return this.builderHubClient.linkApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
-    } 
-    
-    if (operation === 'publish') {
-      return this.builderHubClient.publishApp(this.appName, zipFile, { ...builderHubResolvingOpts, tag: publishTag }, requestParams)
-    } 
-      
-    return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, requestParams)
+    return { zipFile, builderHubResolvingOpts }
   }
 
   private checkForManifest(files: FileToSend[]) {

@@ -103,17 +103,19 @@ export class Builder extends AppClient {
 
   public linkApp = (
     app: string,
+    linkID: string,
     zipFile: Buffer,
     stickyOptions: StickyOptions = { sticky: true },
     params: RequestParams = {}
   ) => {
-    return this.sendZipFile(routes.link(app), app, zipFile, stickyOptions, params)
+    return this.sendZipFile(routes.link(app), app, zipFile, stickyOptions, params, { [Headers.VTEX_LINK_ID]: linkID })
   }
 
-  public relinkApp = (app: string, changes: ChangeToSend[], params: RequestParams = {}) => {
+  public relinkApp = (app: string, changes: ChangeToSend[], linkID: string, params: RequestParams = {}) => {
     const headers = {
-      'Content-Type': 'application/json',
       ...(this.stickyHost && { [Headers.VTEX_STICKY_HOST]: this.stickyHost }),
+      ...{ [Headers.VTEX_LINK_ID]: linkID },
+      'Content-Type': 'application/json',
     }
     const metric = 'bh-relink'
     return this.http.put<BuildResult>(routes.relink(app), changes, { headers, metric, params })
@@ -133,7 +135,8 @@ export class Builder extends AppClient {
     app: string,
     zipFile: Buffer,
     { tag, sticky, stickyHint }: StickyOptions = {},
-    requestParams: RequestParams = {}
+    requestParams: RequestParams = {},
+    requestHeaders: Record<string, any> = {}
   ) => {
     const hint = stickyHint || `request:${this.context.account}:${this.context.workspace}:${app}`
     const metric = 'bh-zip-send'
@@ -143,9 +146,10 @@ export class Builder extends AppClient {
       headers: { [Headers.VTEX_STICKY_HOST]: host },
     } = await this.http.postRaw<BuildResult>(route, zipFile, {
       headers: {
+        ...(sticky && { [Headers.VTEX_STICKY_HOST]: this.stickyHost || hint }),
+        ...requestHeaders,
         'Content-length': zipFile.byteLength,
         'Content-Type': 'application/octet-stream',
-        ...(sticky && { [Headers.VTEX_STICKY_HOST]: this.stickyHost || hint }),
       },
       metric,
       params,
