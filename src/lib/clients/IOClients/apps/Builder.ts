@@ -26,6 +26,14 @@ export interface BuildResult {
   timeNano?: number
 }
 
+export interface PrepareRequest {
+  zipFile?: Buffer
+  builderHubResolvingOpts: {
+    sticky: boolean
+    stickyHint: string
+  }
+}
+
 export interface AvailabilityResponse {
   host: string | undefined
   hostname: string | undefined
@@ -108,23 +116,18 @@ export class Builder extends AppClient {
 
   public linkApp = (
     app: string,
+    linkID: string,
     zipFile: Buffer,
     stickyOptions: StickyOptions = { sticky: true },
-    params: RequestParams = {},
-    requestHeaders: Record<string, any> = {}
-  ) => {
-    return this.sendZipFile(routes.link(app), app, zipFile, stickyOptions, params, requestHeaders)
-  }
-
-  public relinkApp = (
-    app: string,
-    changes: ChangeToSend[],
-    headersParams: Record<string, any>,
     params: RequestParams = {}
   ) => {
+    return this.sendZipFile(routes.link(app), app, zipFile, stickyOptions, params, { [Headers.VTEX_LINK_ID]: linkID })
+  }
+
+  public relinkApp = (app: string, changes: ChangeToSend[], linkID: string, params: RequestParams = {}) => {
     const headers = {
       ...(this.stickyHost && { [Headers.VTEX_STICKY_HOST]: this.stickyHost }),
-      ...headersParams,
+      ...{ [Headers.VTEX_LINK_ID]: linkID },
       'Content-Type': 'application/json',
     }
     const metric = 'bh-relink'

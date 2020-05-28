@@ -10,7 +10,6 @@ import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
 import { formatNano, runYarnIfPathExists } from '../utils'
 import { getAppRoot } from '../../manifest'
 import { getIgnoredPaths, listLocalFiles } from './file'
-import { Headers } from '../../lib/constants/Headers'
 import { join, resolve as resolvePath, sep } from 'path'
 import { listenBuild } from '../build'
 import { ManifestEditor } from '../../lib/manifest'
@@ -84,11 +83,8 @@ const performInitialLink = async (
     }
 
     try {
-      console.info(`link ID: ${linkID}`)
-      const { code } = await projectUploader.sendToLink(filesWithContent, {
-        params: { tsErrorsAsWarnings: unsafe },
-        headers: { [Headers.VTEX_LINK_ID]: linkID },
-      })
+      log.info(`link ID: ${linkID}`)
+      const { code } = await projectUploader.sendToLink(filesWithContent, linkID, { tsErrorsAsWarnings: unsafe })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
@@ -170,10 +166,9 @@ const watchAndSendChanges = async (
 
   const sendChanges = debounce(async () => {
     try {
-      console.info(`link ID: ${linkID}`)
-      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), {
-        params: { tsErrorsAsWarnings: unsafe },
-        headers: { [Headers.VTEX_LINK_ID]: linkID },
+      log.info(`link ID: ${linkID}`)
+      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), linkID, {
+        tsErrorsAsWarnings: unsafe,
       })
     } catch (err) {
       nodeNotifier?.notify({

@@ -11,6 +11,7 @@ export enum Headers {
   // Works only on myvtexdev domain
   VTEX_UPSTREAM_TARGET = 'x-vtex-upstream-target',
 
-  // LinkID used by builder-hub to create logs/tracing correlation between all relinks related to a initial link
+  // LinkID used by builder-hub to create logs/tracing correlation between all
+  // relink/link operations related to a initial link
   VTEX_LINK_ID = 'x-vtex-bh-link-id',
 }

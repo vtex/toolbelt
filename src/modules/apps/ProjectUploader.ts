@@ -1,4 +1,4 @@
-import { Builder, BuildResult, BuilderHubRequestOptions } from '../../lib/clients/IOClients/apps/Builder'
+import { Builder, RequestParams, PrepareRequest } from '../../lib/clients/IOClients/apps/Builder'
 import { getSavedOrMostAvailableHost } from '../../host'
 import { Readable } from 'stream'
 import { ZlibOptions } from 'zlib'
@@ -72,30 +72,29 @@ export class ProjectUploader {
 
   constructor(private appName: string, private builderHubClient: Builder) {}
 
-  public sendToPublish(
-    files: FileToSend[],
-    publishTag: string,
-    builderHubRequestOptions: BuilderHubRequestOptions = {}
-  ) {
-    return this.sendWholeProject('publish', files, builderHubRequestOptions, publishTag)
-  }
-
-  public sendToTest(files: FileToSend[], builderHubRequestOptions: BuilderHubRequestOptions = {}) {
-    return this.sendWholeProject('test', files, builderHubRequestOptions)
-  }
-
-  public sendToLink(files: FileToSend[], builderHubRequestOptions: BuilderHubRequestOptions = {}) {
-    return this.sendWholeProject('link', files, builderHubRequestOptions)
-  }
-
-  public sendToRelink(changes: ChangeToSend[], builderHubRequestOptions: BuilderHubRequestOptions = {}) {
-    this.checkSizeLimits(changes, true)
-    return this.builderHubClient.relinkApp(
+  public async sendToPublish(files: FileToSend[], publishTag: string, params: RequestParams = {}) {
+    const { zipFile, builderHubResolvingOpts } = await this.prepareRequest(files)
+    return this.builderHubClient.publishApp(
       this.appName,
-      changes,
-      builderHubRequestOptions.params,
-      builderHubRequestOptions.headers
+      zipFile,
+      { ...builderHubResolvingOpts, tag: publishTag },
+      params
     )
+  }
+
+  public async sendToTest(files: FileToSend[], params: RequestParams = {}) {
+    const { zipFile, builderHubResolvingOpts } = await this.prepareRequest(files)
+    return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, params)
+  }
+
+  public async sendToLink(files: FileToSend[], linkID: string, params: RequestParams = {}) {
+    const { zipFile, builderHubResolvingOpts } = await this.prepareRequest(files)
+    return this.builderHubClient.linkApp(this.appName, linkID, zipFile, builderHubResolvingOpts, params)
+  }
+
+  public sendToRelink(changes: ChangeToSend[], linkID: string, params: RequestParams = {}) {
+    this.checkSizeLimits(changes, true)
+    return this.builderHubClient.relinkApp(this.appName, changes, linkID, params)
   }
 
   private checkSizeLimits(filesOrChanges: FileToSend[] | ChangeToSend[], isChange = false) {
@@ -120,12 +119,7 @@ export class ProjectUploader {
     }
   }
 
-  // prettier-ignore
-  private async sendWholeProject( operation: 'link' | 'test', files: FileToSend[], builderHubRequestOptions: BuilderHubRequestOptions ): Promise<BuildResult>
-  // prettier-ignore
-  private async sendWholeProject(operation: 'publish', files: FileToSend[], builderHubRequestOptions: BuilderHubRequestOptions, publishTag: string): Promise<BuildResult>
-  // prettier-ignore
-  private async sendWholeProject(operation: 'link' | 'publish' | 'test', files: FileToSend[], builderHubRequestOptions: BuilderHubRequestOptions, publishTag?: string) {
+  private async prepareRequest(files: FileToSend[]): Promise<PrepareRequest> {
     this.checkSizeLimits(files)
     this.checkForManifest(files)
 
@@ -139,15 +133,7 @@ export class ProjectUploader {
       stickyHint,
     }
 
-    if (operation === 'link') {
-      return this.builderHubClient.linkApp(this.appName, zipFile, builderHubResolvingOpts, builderHubRequestOptions.params, builderHubRequestOptions.headers)
-    }
-
-    if (operation === 'publish') {
-      return this.builderHubClient.publishApp(this.appName, zipFile, { ...builderHubResolvingOpts, tag: publishTag }, builderHubRequestOptions.params)
-    }
-
-    return this.builderHubClient.testApp(this.appName, zipFile, builderHubResolvingOpts, builderHubRequestOptions.params)
+    return { zipFile, builderHubResolvingOpts }
   }
 
   private checkForManifest(files: FileToSend[]) {
