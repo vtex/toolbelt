@@ -14,24 +14,11 @@ export interface RequestParams {
   skipSemVerEnsure?: boolean
 }
 
-export interface BuilderHubRequestOptions {
-  params?: RequestParams
-  headers?: Record<string, any>
-}
-
 export interface BuildResult {
   availability?: AvailabilityResponse
   code?: string
   message?: any
   timeNano?: number
-}
-
-export interface PrepareRequest {
-  zipFile?: Buffer
-  builderHubResolvingOpts: {
-    sticky: boolean
-    stickyHint: string
-  }
 }
 
 export interface AvailabilityResponse {

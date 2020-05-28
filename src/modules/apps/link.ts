@@ -83,7 +83,7 @@ const performInitialLink = async (
     }
 
     try {
-      log.info(`link ID: ${linkID}`)
+      log.info(`Link ID: ${linkID}`)
       const { code } = await projectUploader.sendToLink(filesWithContent, linkID, { tsErrorsAsWarnings: unsafe })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
@@ -166,7 +166,7 @@ const watchAndSendChanges = async (
 
   const sendChanges = debounce(async () => {
     try {
-      log.info(`link ID: ${linkID}`)
+      log.info(`Link ID: ${linkID}`)
       return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), linkID, {
         tsErrorsAsWarnings: unsafe,
       })

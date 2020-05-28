@@ -1,4 +1,4 @@
-import { Builder, RequestParams, PrepareRequest } from '../../lib/clients/IOClients/apps/Builder'
+import { Builder, RequestParams } from '../../lib/clients/IOClients/apps/Builder'
 import { getSavedOrMostAvailableHost } from '../../host'
 import { Readable } from 'stream'
 import { ZlibOptions } from 'zlib'
@@ -16,6 +16,14 @@ export interface FileToSend {
 }
 
 export type ChangeToSend = FileToSend
+
+interface PrepareRequest {
+  zipFile: Buffer
+  builderHubResolvingOpts: {
+    sticky: boolean
+    stickyHint: string
+  }
+}
 
 const getSizeString = (byteSize: number, colored = true, megaBytesintensityScale = [10, 20]) => {
   const mbSize = byteSize / MB
