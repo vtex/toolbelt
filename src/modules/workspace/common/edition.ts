@@ -14,7 +14,7 @@ const getCurrEdition = async () => {
     return await sponsor.getEdition()
   } catch (err) {
     if (err.response?.status !== 404) {
-      ErrorReport.createAndRegisterOnTelemetry({
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.EDITION_REQUEST_ERROR,
         originalError: err,
       })

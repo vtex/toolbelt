@@ -12,6 +12,8 @@ const defaultIgnored = [
   'node_modules/**',
   '**/node_modules/**',
   '.git/**',
+  'cypress/videos/**',
+  'cypress/screenshots/**',
 ]
 
 const services = ['react', 'render', 'masterdata', 'service']

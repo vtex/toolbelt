@@ -37,7 +37,7 @@ export async function showReports(app: string | undefined, url: string | undefin
   } catch (error) {
     spinner.stop()
 
-    ErrorReport.createAndRegisterOnTelemetry({ originalError: error })
+    ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: error })
     log.error(error)
   }
 }

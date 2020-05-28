@@ -1,27 +1,28 @@
-import retry from 'async-retry'
+import { Builder } from '../../lib/clients/IOClients/apps/Builder'
+import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
+import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
+import { CommandError } from '../../errors'
+import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
+import { createInterface } from 'readline'
+import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
+import { default as setup } from '../setup'
+import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
+import { formatNano, runYarnIfPathExists } from '../utils'
+import { getAppRoot } from '../../manifest'
+import { getIgnoredPaths, listLocalFiles } from './file'
+import { join, resolve as resolvePath, sep } from 'path'
+import { listenBuild } from '../build'
+import { ManifestEditor } from '../../lib/manifest'
+import { randomBytes } from 'crypto'
+import { readFileSync } from 'fs'
+import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
-import { readFileSync } from 'fs'
-import moment from 'moment'
-import { join, resolve as resolvePath, sep } from 'path'
-import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
-import { createInterface } from 'readline'
-import { CommandError } from '../../errors'
-import { Builder } from '../../lib/clients/IOClients/apps/Builder'
-import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
-import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
-import { ManifestEditor } from '../../lib/manifest'
-import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
 import log from '../../logger'
-import { getAppRoot } from '../../manifest'
-import { listenBuild } from '../build'
-import { default as setup } from '../setup'
-import { formatNano, runYarnIfPathExists } from '../utils'
+import moment from 'moment'
+import retry from 'async-retry'
 import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles } from './file'
-import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
-import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
@@ -33,6 +34,7 @@ const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
+const linkID = randomBytes(8).toString('hex')
 
 const buildersToStartDebugger = ['node']
 const buildersToRunLocalYarn = ['react', 'node']
@@ -81,7 +83,8 @@ const performInitialLink = async (
     }
 
     try {
-      const { code } = await projectUploader.sendToLink(filesWithContent, { tsErrorsAsWarnings: unsafe })
+      log.info(`Link ID: ${linkID}`)
+      const { code } = await projectUploader.sendToLink(filesWithContent, linkID, { tsErrorsAsWarnings: unsafe })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
@@ -163,7 +166,8 @@ const watchAndSendChanges = async (
 
   const sendChanges = debounce(async () => {
     try {
-      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), {
+      log.info(`Link ID: ${linkID}`)
+      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), linkID, {
         tsErrorsAsWarnings: unsafe,
       })
     } catch (err) {
