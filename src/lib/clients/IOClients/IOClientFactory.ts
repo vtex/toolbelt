@@ -4,6 +4,7 @@ import * as env from '../../../env'
 import userAgent from '../../../user-agent'
 import { Headers } from '../../constants/Headers'
 import { SessionManager } from '../../session/SessionManager'
+import { TraceConfig } from '../../globalConfigs/traceConfig'
 
 interface IOContextOptions {
   account?: string
@@ -66,11 +67,13 @@ export class IOClientFactory {
     customOptions: Partial<InstanceOptions> = {}
   ): T {
     const clusterHeader = env.cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: env.cluster() } : null
+    const traceHeader = TraceConfig.shouldTrace() ? { [Headers.VTEX_TRACE]: TraceConfig.jeagerDebugID } : null
 
     const defaultOptions = {
       timeout: (env.envTimeout || IOClientFactory.DEFAULT_TIMEOUT) as number,
       headers: {
         ...clusterHeader,
+        ...traceHeader,
       },
     }
 

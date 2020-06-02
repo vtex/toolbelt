@@ -3,7 +3,8 @@ import { Metric } from '../lib/metrics/MetricReport'
 import { onError } from './hooks/init'
 import { ParsingToken } from '@oclif/parser/lib/parse'
 import { TelemetryCollector } from '../lib/telemetry/TelemetryCollector'
-//import * as Parser from '@oclif/parser';
+import { TraceConfig } from '../lib/globalConfigs/traceConfig';
+import * as Parser from '@oclif/parser';
 import OclifCommand, { flags as oclifFlags } from '@oclif/command'
 
 export abstract class CustomCommand extends OclifCommand {
@@ -17,18 +18,13 @@ export abstract class CustomCommand extends OclifCommand {
     return rawParse.filter(token => token.type === 'arg').map(token => token.input)
   }
 
-  // overload parse here
-/*
   protected parse<F, A extends {
     [name: string]: any;
   }>(options?: Parser.Input<F>, argv?: string[]): Parser.Output<F, A> {
-    console.log(`#### Overload called!!!`)
-    const result = super.parse()
-    console.log(`Result = ${result.flags}`)
+    const result = super.parse<F, A>(options, argv)
+    TraceConfig.checkTrace((result.flags as any).trace)
     return result
   }
-*/
-
 
   async _run<T>(): Promise<T | undefined> {
     let err: Error | undefined

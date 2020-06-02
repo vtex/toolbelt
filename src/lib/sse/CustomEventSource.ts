@@ -4,6 +4,7 @@ import userAgent from '../../user-agent'
 import { Headers } from '../constants/Headers'
 import { SessionManager } from '../session/SessionManager'
 import { EventSourceError } from './EventSourceError'
+import { TraceConfig } from '../globalConfigs/traceConfig'
 
 // Colossus ping is set at 45s
 const COLOSSUS_PING = 45000
@@ -33,7 +34,8 @@ type OnOpenHandler = () => void
 export class CustomEventSource {
   public static create(opts: CustomEventSourceOptions) {
     const { source, closeOnInvalidToken = false, additionalHeaders = {} } = opts
-
+    const traceHeader = TraceConfig.shouldTrace() ? { [Headers.VTEX_TRACE]: TraceConfig.jeagerDebugID } : null
+    
     let token
     if (closeOnInvalidToken) {
       token = SessionManager.getSingleton().checkAndGetToken(closeOnInvalidToken)
@@ -48,6 +50,7 @@ export class CustomEventSource {
         ...(envCookies() ? { cookie: envCookies() } : null),
         ...(cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: cluster() } : null),
         ...additionalHeaders,
+        ...traceHeader,
       },
     })
   }

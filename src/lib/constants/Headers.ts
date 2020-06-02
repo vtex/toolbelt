@@ -14,4 +14,7 @@ export enum Headers {
   // LinkID used by builder-hub to create logs/tracing correlation between all
   // relink/link operations related to a initial link
   VTEX_LINK_ID = 'x-vtex-bh-link-id',
+
+  // Tracing header to be used by jaeger
+  VTEX_TRACE = 'jaeger-debug-id'
 }
