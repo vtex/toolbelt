@@ -1,25 +1,37 @@
-import OclifCommand, { flags as oclifFlags } from '@oclif/command'
-
-import { ParsingToken } from '@oclif/parser/lib/parse'
-
 import { hrTimeToMs } from '../lib/utils/hrTimeToMs'
-import { TelemetryCollector } from '../lib/telemetry/TelemetryCollector'
 import { Metric } from '../lib/metrics/MetricReport'
 import { onError } from './hooks/init'
+import { ParsingToken } from '@oclif/parser/lib/parse'
+import { TelemetryCollector } from '../lib/telemetry/TelemetryCollector'
+//import * as Parser from '@oclif/parser';
+import OclifCommand, { flags as oclifFlags } from '@oclif/command'
 
 export abstract class CustomCommand extends OclifCommand {
   public static globalFlags = {
     verbose: oclifFlags.boolean({ char: 'v', description: 'Show debug level logs', default: false }),
     help: oclifFlags.help({ char: 'h' }),
+    trace: oclifFlags.boolean({ char: 't', description: 'Log tracing to jaeger', default: false }),
   }
 
   getAllArgs(rawParse: ParsingToken[]) {
     return rawParse.filter(token => token.type === 'arg').map(token => token.input)
   }
 
+  // overload parse here
+/*
+  protected parse<F, A extends {
+    [name: string]: any;
+  }>(options?: Parser.Input<F>, argv?: string[]): Parser.Output<F, A> {
+    console.log(`#### Overload called!!!`)
+    const result = super.parse()
+    console.log(`Result = ${result.flags}`)
+    return result
+  }
+*/
+
+
   async _run<T>(): Promise<T | undefined> {
     let err: Error | undefined
-
     try {
       // remove redirected env var to allow subsessions to run autoupdated client
       delete process.env[this.config.scopedEnvVarKey('REDIRECTED')]
