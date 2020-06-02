@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- [CustomCommand] new flag `trace` that set the `jaeger-debug-id` header automatically
+
 ## [2.101.1] - 2020-05-28
 ### Added
 - [vtex test e2e] Added retry count to account for cold `tester-hub` start.
