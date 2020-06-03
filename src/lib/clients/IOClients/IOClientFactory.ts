@@ -67,7 +67,7 @@ export class IOClientFactory {
     customOptions: Partial<InstanceOptions> = {}
   ): T {
     const clusterHeader = env.cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: env.cluster() } : null
-    const traceHeader = TraceConfig.shouldTrace() ? { [Headers.VTEX_TRACE]: TraceConfig.jeagerDebugID } : null
+    const traceHeader = TraceConfig.shouldTrace() ? { [Headers.VTEX_TRACE]: TraceConfig.jaegerDebugID } : null
 
     const defaultOptions = {
       timeout: (env.envTimeout || IOClientFactory.DEFAULT_TIMEOUT) as number,

@@ -15,6 +15,6 @@ export enum Headers {
   // relink/link operations related to a initial link
   VTEX_LINK_ID = 'x-vtex-bh-link-id',
 
-  // Tracing header to be used by jaeger
+  // Header to ensure that the request trace will be sampled
   VTEX_TRACE = 'jaeger-debug-id',
 }

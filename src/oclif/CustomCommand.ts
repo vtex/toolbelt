@@ -11,7 +11,7 @@ export abstract class CustomCommand extends OclifCommand {
   public static globalFlags = {
     verbose: oclifFlags.boolean({ char: 'v', description: 'Show debug level logs', default: false }),
     help: oclifFlags.help({ char: 'h' }),
-    trace: oclifFlags.boolean({ char: 't', description: 'Log tracing to jaeger', default: false }),
+    trace: oclifFlags.boolean({ description: 'Ensure all requests to VTEX IO are traced', default: false }),
   }
 
   getAllArgs(rawParse: ParsingToken[]) {
@@ -25,7 +25,7 @@ export abstract class CustomCommand extends OclifCommand {
     }
   >(options?: Parser.Input<F>, argv?: string[]): Parser.Output<F, A> {
     const result = super.parse<F, A>(options, argv)
-    TraceConfig.checkTrace((result.flags as any).trace)
+    TraceConfig.setupTraceConfig((result.flags as any).trace)
     return result
   }
 

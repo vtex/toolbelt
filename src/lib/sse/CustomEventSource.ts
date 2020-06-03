@@ -34,7 +34,7 @@ type OnOpenHandler = () => void
 export class CustomEventSource {
   public static create(opts: CustomEventSourceOptions) {
     const { source, closeOnInvalidToken = false, additionalHeaders = {} } = opts
-    const traceHeader = TraceConfig.shouldTrace() ? { [Headers.VTEX_TRACE]: TraceConfig.jeagerDebugID } : null
+    const traceHeader = TraceConfig.shouldTrace() ? { [Headers.VTEX_TRACE]: TraceConfig.jaegerDebugID } : null
 
     let token
     if (closeOnInvalidToken) {
