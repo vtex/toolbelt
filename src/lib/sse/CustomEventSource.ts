@@ -35,7 +35,7 @@ export class CustomEventSource {
   public static create(opts: CustomEventSourceOptions) {
     const { source, closeOnInvalidToken = false, additionalHeaders = {} } = opts
     const traceHeader = TraceConfig.shouldTrace() ? { [Headers.VTEX_TRACE]: TraceConfig.jeagerDebugID } : null
-    
+
     let token
     if (closeOnInvalidToken) {
       token = SessionManager.getSingleton().checkAndGetToken(closeOnInvalidToken)
