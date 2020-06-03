@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- [CustomCommand] new flag `trace` that set the `jaeger-debug-id` header automatically
+- [All Commands] new flag `--trace` that sets the `jaeger-debug-id` header automatically on all requests.
 
 ## [2.101.1] - 2020-05-28
 ### Added
