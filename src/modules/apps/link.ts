@@ -146,7 +146,7 @@ const watchAndSendChanges = async (
     throw e
   }
 
-  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
+  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json', 'cypress.json']
   const linkedDepsPatterns = map(path => join(path, '**'), yarnFilesManager.symlinkedDepsDirs)
 
   const pathModifier = pipe(
