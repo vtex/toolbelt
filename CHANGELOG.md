@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- [vtex test e2e] Handle error when executed on an unlinked app.
 
 ### Added
 - [All Commands] new flag `--trace` that sets the `jaeger-debug-id` header automatically on all requests.

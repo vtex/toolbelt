@@ -29,7 +29,7 @@ class EndToEndCommand {
     const { data: workspaceAppsList } = await apps.listApps()
     const appItem = workspaceAppsList.find(({ app }) => app.startsWith(cleanAppId))
 
-    if (appItem.id === undefined) {
+    if (appItem === undefined) {
       throw new Error(`App "${cleanAppId}" was not found in the current workspace!`)
     }
 
