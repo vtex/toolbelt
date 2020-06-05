@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - [All Commands] new flag `--trace` that sets the `jaeger-debug-id` header automatically on all requests.
+- [vtex link] Added `cypress.json` to the list of watched files.
 
 ## [2.101.1] - 2020-05-28
 ### Added
