@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.102.0] - 2020-06-08
+### Fixed
+- [vtex test e2e] Handle error when executed on an unlinked app.
+
+### Added
+- [All Commands] new flag `--trace` that sets the `jaeger-debug-id` header automatically on all requests.
+- [vtex link] Added `cypress.json` to the list of watched files.
+
 ## [2.101.1] - 2020-05-28
 ### Added
 - [vtex test e2e] Added retry count to account for cold `tester-hub` start.
