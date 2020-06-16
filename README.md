@@ -194,6 +194,9 @@ If no `.vtexignore` is found, your [.gitignore](http://git-scm.com/docs/gitignor
 You can do so by adding the `vtex_get_account` and `vtex_get_workspace` commands to your PS1 environment variable the way it pleases you.
 
 ---
+## Contributing
+
+Follow the steps on [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
