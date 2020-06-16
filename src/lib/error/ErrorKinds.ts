@@ -14,4 +14,5 @@ export const ErrorKinds = {
   TOOLBELT_CONFIG_MESSAGES_ERROR: 'ToolbeltConfigMessagesError',
   APP_LOGS_SSE_ERROR: 'LogsSSEError',
   APP_LOGS_PARSE_ERROR: 'LogsParseError',
+  STICKY_HOST_ERROR: 'StickyHostError',
 }
