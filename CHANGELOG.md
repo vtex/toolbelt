@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - [docs] Update session about development.
+- [vtex link/relink] Add telemetry on builder-hub host changes.
 
 ## [2.102.0] - 2020-06-08
 ### Fixed
