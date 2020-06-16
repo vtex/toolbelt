@@ -2,6 +2,24 @@
 
 We're glad you want to contribute!
 
+### Local development
+
+You can use the command `yarn watch` to test the VTEX Toolbelt locally. It creates a [_symlink_](https://en.wikipedia.org/wiki/Symbolic_link) named `vtex-test`, with which you can test your code as you develop.
+
+To be able to use it you'll have to add `$HOME/.vtex/dev/bin` to your `PATH` environment variable. This may differ across different OSs, but follow this steps:
+
+1. Open the `~/.bashrc` file (or the correponding shell configuration file).
+2. On the end of the file, add the line: `export PATH=$PATH:$HOME/.vtex/dev/bin `.
+3. Save it.
+4. Run the command `source ~/.bashrc` (or corresponding file).
+
+That's it! Now you're able to run `yarn watch` and, on another terminal session, use the command `vtex-test` as an alias to what you're developing.
+
+### Adding commands
+
+The VTEX CLI uses [Ocliff](https://oclif.io/) under the hood, making it very easy to add or improve commands. Follow [this guide](https://oclif.io/docs/commands) to learn how to develop on this project.
+
+
 ### Git workflow
 
 We adhere to a strict pull request review workflow. Please refrain from committing any "serious" changes directly to master. Small fixes are ok. ;)
@@ -14,32 +32,3 @@ We adhere to a strict pull request review workflow. Please refrain from committi
 
 Please do not leave any unpublished code in master!
 
-### Adding commands
-
-Adding commands to the Toolbelt is very easy.  
-All commands are implemented by JavaScript files in the `src/modules/` directory.  
-These files `export` a JavaScript object containing one `command` for each key.  
-The `key` in this object will be the command name, and the value is an object containing, at least, a `handler` function.  
-Handler functions **should return a Promise**.
-You can either add a command to an existing file, or create a new one.  
-Here's an example for a very simple command:
-
-```js
-export default {
-  login: {
-    requiredArgs: 'account',
-    optionalArgs: 'login',
-    description: 'Log into a VTEX account',
-    handler: (account, login) => {
-      // Do something interesting and return a Promise
-      return Promise()
-    },
-  },
-}
-```
-
-For advanced usage information, see [findhelp](https://github.com/vtex/findhelp), the library used to parse commands in the toolbelt.
-
-### Local development
-
-Developing locally was made easy with the `yarn watch` command. When this command is run it will create a symlink named `vtex-test` with which you can test your code as you develop. To be able to use it you'll have to add `$HOME/.vtex/dev/bin` to your `PATH` environment variable.  

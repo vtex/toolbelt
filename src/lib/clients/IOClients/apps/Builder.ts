@@ -1,6 +1,8 @@
-import { AppClient, CacheType, InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient, CacheType, InstanceOptions, IOContext, RequestConfig } from '@vtex/api'
 import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
 import { Headers } from '../../../constants/Headers'
+import { ErrorKinds } from '../../../error/ErrorKinds'
+import { ErrorReport } from '../../../error/ErrorReport'
 import { IOClientFactory } from '../IOClientFactory'
 
 interface StickyOptions {
@@ -42,11 +44,14 @@ const routes = {
 }
 
 export class Builder extends AppClient {
+  private static TOO_MANY_HOST_CHANGES = 3
+
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
     return IOClientFactory.createClient<Builder>(Builder, customContext, customOptions)
   }
 
   private stickyHost!: string
+  private hostChanges = 0
 
   constructor(ioContext: IOContext, opts?: InstanceOptions) {
     super('vtex.builder-hub@0.x', ioContext, opts)
@@ -111,14 +116,21 @@ export class Builder extends AppClient {
     return this.sendZipFile(routes.link(app), app, zipFile, stickyOptions, params, { [Headers.VTEX_LINK_ID]: linkID })
   }
 
-  public relinkApp = (app: string, changes: ChangeToSend[], linkID: string, params: RequestParams = {}) => {
+  public relinkApp = async (app: string, changes: ChangeToSend[], linkID: string, params: RequestParams = {}) => {
     const headers = {
       ...(this.stickyHost && { [Headers.VTEX_STICKY_HOST]: this.stickyHost }),
-      ...{ [Headers.VTEX_LINK_ID]: linkID },
+      [Headers.VTEX_LINK_ID]: linkID,
       'Content-Type': 'application/json',
     }
     const metric = 'bh-relink'
-    return this.http.put<BuildResult>(routes.relink(app), changes, { headers, metric, params })
+
+    const putConfig: RequestConfig = { url: routes.relink(app), method: 'put', data: changes, headers, metric, params }
+    const {
+      data,
+      headers: { [Headers.VTEX_STICKY_HOST]: host, [Headers.VTEX_TRACE_ID]: traceID },
+    } = await (this.http as any).request(putConfig)
+    this.updateStickyHost(this.stickyHost, host, traceID)
+    return data as BuildResult
   }
 
   public builderHubTsConfig = () => {
@@ -141,12 +153,14 @@ export class Builder extends AppClient {
     const hint = stickyHint || `request:${this.context.account}:${this.context.workspace}:${app}`
     const metric = 'bh-zip-send'
     const params = tag ? { ...requestParams, tag } : requestParams
+    const stickyHostHeader = this.stickyHost || hint
+
     const {
       data,
-      headers: { [Headers.VTEX_STICKY_HOST]: host },
+      headers: { [Headers.VTEX_STICKY_HOST]: host, [Headers.VTEX_TRACE_ID]: traceID },
     } = await this.http.postRaw<BuildResult>(route, zipFile, {
       headers: {
-        ...(sticky && { [Headers.VTEX_STICKY_HOST]: this.stickyHost || hint }),
+        ...(sticky && { [Headers.VTEX_STICKY_HOST]: stickyHostHeader }),
         ...requestHeaders,
         'Content-length': zipFile.byteLength,
         'Content-Type': 'application/octet-stream',
@@ -155,7 +169,36 @@ export class Builder extends AppClient {
       params,
     })
 
-    this.stickyHost = host
+    if (sticky) {
+      this.updateStickyHost(stickyHostHeader, host, traceID)
+    }
+
     return data
+  }
+
+  private updateStickyHost(sentStickyHostHeader: string, responseStickyHostHeader: string, traceID: string) {
+    if (!responseStickyHostHeader) {
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.STICKY_HOST_ERROR,
+        originalError: new Error('Missing sticky-host on builder-hub response'),
+        details: { traceID, sentStickyHostHeader },
+      })
+    } else if (this.stickyHost && responseStickyHostHeader !== this.stickyHost) {
+      this.hostChanges += 1
+      if (this.hostChanges >= Builder.TOO_MANY_HOST_CHANGES) {
+        ErrorReport.createAndMaybeRegisterOnTelemetry({
+          kind: ErrorKinds.STICKY_HOST_ERROR,
+          originalError: new Error(`Too many builder-hub host changes`),
+          details: {
+            traceID,
+            sentStickyHostHeader,
+            responseStickyHostHeader,
+            hostChanges: this.hostChanges,
+          },
+        })
+      }
+    }
+
+    this.stickyHost = responseStickyHostHeader
   }
 }

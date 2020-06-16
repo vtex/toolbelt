@@ -17,4 +17,8 @@ export enum Headers {
 
   // Header to ensure that the request trace will be sampled
   VTEX_TRACE = 'jaeger-debug-id',
+
+  // When the backend **IO App** decides to sample the trace of a request, this
+  // header will be defined
+  VTEX_TRACE_ID = 'x-trace-id',
 }

@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.102.1] - 2020-06-16
+### Changed
+- [docs] Update session about development.
+- [vtex link/relink] Add telemetry on builder-hub host changes.
+
 ## [2.102.0] - 2020-06-08
 ### Fixed
 - [vtex test e2e] Handle error when executed on an unlinked app.
