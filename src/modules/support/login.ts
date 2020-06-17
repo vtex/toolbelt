@@ -53,7 +53,7 @@ const loginAsRole = async (token: string, supportedAccount: string, role: string
       },
     }
   )
-  return response.data
+  return response.headers.authorization ?? response.data
 }
 
 const assertToken = (raw: string): void => {
