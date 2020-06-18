@@ -11,7 +11,7 @@ export default class Link extends CustomCommand {
 
   static flags = {
     ...CustomCommand.globalFlags,
-    account: oclifFlags.string({ char: 'a', description: 'Account to login' }),
+    account: oclifFlags.string({ char: 'a', description: 'Account to login', required: false }),
     clean: oclifFlags.boolean({ char: 'c', description: 'Clean builder cache', default: false }),
     setup: oclifFlags.boolean({
       char: 's',
@@ -20,7 +20,7 @@ export default class Link extends CustomCommand {
     }),
     'no-watch': oclifFlags.boolean({ description: "Don't watch for file changes after initial link", default: false }),
     unsafe: oclifFlags.boolean({ char: 'u', description: 'Allow links with Typescript errors', default: false }),
-    workspace: oclifFlags.string({ char: 'w', description: 'Workspace to login into' }),
+    workspace: oclifFlags.string({ char: 'w', description: 'Workspace to login into', required: false }),
   }
 
   static args = []
@@ -32,7 +32,10 @@ export default class Link extends CustomCommand {
     } = this.parse(Link)
     const noWatch = flags['no-watch']
 
-    await authLogin({ account, workspace })
+    if (account && workspace) {
+      await authLogin({ account, workspace })
+    }
+
     await appsLink({ setup, clean, unsafe, noWatch })
   }
 }
