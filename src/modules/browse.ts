@@ -1,6 +1,6 @@
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
-import opn from 'opn'
+import opn from 'open'
 import R from 'ramda'
 import { clusterIdDomainInfix, publicEndpoint } from '../env'
 import { Headers } from '../lib/constants/Headers'
@@ -46,5 +46,5 @@ export default async (endpointInput, { q, qr }) => {
     return
   }
 
-  opn(uri, { wait: false })
+  opn(uri, { wait: false, url: true })
 }
