@@ -67,7 +67,7 @@ Example:
 
 Use [Peer Dependencies](https://nodejs.org/es/blog/npm/peer-dependencies/)
 
-I'm still developing this solution for the previous [POC](https://github.com/VerasThiago/npmPackageTests)
+I'm still developing this solution and you can check [here].(https://github.com/VerasThiago/npmPackageTests/pull/1)
 
 ## Future possibilities
 
