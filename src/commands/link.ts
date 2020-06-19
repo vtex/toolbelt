@@ -11,7 +11,7 @@ export default class Link extends CustomCommand {
     ...CustomCommand.globalFlags,
     account: oclifFlags.string({
       char: 'a',
-      description: `Account to login before linking. This flag has to be paired with the 'workspace' flag.`,
+      description: `Account to login before linking the app. This flag has to be paired with the '--workspace' flag.`,
       required: false,
       dependsOn: ['workspace'],
     }),
@@ -25,7 +25,7 @@ export default class Link extends CustomCommand {
     unsafe: oclifFlags.boolean({ char: 'u', description: 'Allow links with Typescript errors', default: false }),
     workspace: oclifFlags.string({
       char: 'w',
-      description: `Workspace to switch to. Can be paired with the 'account' flag to change account and switch to the provided workspace.`,
+      description: `Workspace to switch to before linking the app. Can be paired with the '--account' flag to change account and switch to the given workspace.`,
       required: false,
     }),
   }
