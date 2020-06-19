@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- [vtex link] Parameters to enable login singleline
+- [vtex link] Parameters to enable login singleline.
 
 ## [2.102.1] - 2020-06-16
 ### Changed
