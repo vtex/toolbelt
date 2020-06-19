@@ -1,33 +1,45 @@
-import { Builder } from '../../lib/clients/IOClients/apps/Builder'
-import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
-import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
-import { CommandError } from '../../errors'
-import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
-import { createInterface } from 'readline'
-import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
-import { default as setup } from '../setup'
-import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
-import { formatNano, runYarnIfPathExists } from '../utils'
-import { getAppRoot } from '../../manifest'
-import { getIgnoredPaths, listLocalFiles } from './file'
-import { join, resolve as resolvePath, sep } from 'path'
-import { listenBuild } from '../build'
-import { ManifestEditor } from '../../lib/manifest'
-import { randomBytes } from 'crypto'
-import { readFileSync } from 'fs'
-import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
+import retry from 'async-retry'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
+import { randomBytes } from 'crypto'
 import debounce from 'debounce'
-import log from '../../logger'
+import { readFileSync } from 'fs'
 import moment from 'moment'
-import retry from 'async-retry'
+import { join, resolve as resolvePath, sep } from 'path'
+import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
+import { createInterface } from 'readline'
+import { CommandError } from '../../errors'
+import { Builder } from '../../lib/clients/IOClients/apps/Builder'
+import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
+import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
+import { ManifestEditor } from '../../lib/manifest'
+import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
+import { SessionManager } from '../../lib/session/SessionManager'
+import log from '../../logger'
+import { getAppRoot } from '../../manifest'
+import { listenBuild } from '../build'
+import authLogin, { LoginOptions } from '../auth/login'
+import workspaceUse from '../workspace/use'
+import { default as setup } from '../setup'
+import { formatNano, runYarnIfPathExists } from '../utils'
 import startDebuggerTunnel from './debugger'
+import { getIgnoredPaths, listLocalFiles } from './file'
+import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
+import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   nodeNotifier = require('node-notifier')
+}
+
+interface LinkOptions {
+  account?: string
+  workspace?: string
+  unsafe?: boolean
+  clean?: boolean
+  setup?: boolean
+  noWatch?: boolean
 }
 
 const root = getAppRoot()
@@ -215,9 +227,26 @@ const watchAndSendChanges = async (
   })
 }
 
-export default async options => {
+async function handlePreLinkLogin({ account, workspace }: { account?: string; workspace?: string }) {
+  const postLoginOps: LoginOptions['postLoginOps'] = ['releaseNotify']
+  if (!SessionManager.getSingleton().checkValidCredentials()) {
+    return authLogin({ account, workspace, allowUseCachedToken: true, postLoginOps })
+  }
+
+  if (account && workspace) {
+    return authLogin({ account, workspace, allowUseCachedToken: true, postLoginOps })
+  }
+
+  if (workspace) {
+    return workspaceUse(workspace)
+  }
+}
+
+export async function appLink(options: LinkOptions) {
+  await handlePreLinkLogin({ account: options.account, workspace: options.workspace })
+
   await validateAppAction('link')
-  const unsafe = !!(options.unsafe || options.u)
+  const unsafe = options.unsafe
   const manifest = await ManifestEditor.getManifestEditor()
   await manifest.writeSchema()
 
@@ -231,7 +260,7 @@ export default async options => {
   const builder = Builder.createClient({}, { timeout: 60000 })
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
-  if (options.setup || options.s) {
+  if (options.setup) {
     await setup({ 'ignore-linked': false })
   }
   try {
@@ -244,7 +273,7 @@ export default async options => {
   // Always run yarn locally for some builders
   map(runYarnIfPathExists, buildersToRunLocalYarn)
 
-  if (options.c || options.clean) {
+  if (options.clean) {
     log.info('Requesting to clean cache in builder.')
     const { timeNano } = await builder.clean(appId)
     log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
