@@ -246,7 +246,7 @@ export async function appLink(options: LinkOptions) {
   await handlePreLinkLogin({ account: options.account, workspace: options.workspace })
 
   await validateAppAction('link')
-  const unsafe = options.unsafe
+  const unsafe = !!options.unsafe
   const manifest = await ManifestEditor.getManifestEditor()
   await manifest.writeSchema()
 
