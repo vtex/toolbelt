@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.103.0-beta] - 2020-06-19
+
 ### Added
 - [vtex link] Parameters to enable login singleline.
 
