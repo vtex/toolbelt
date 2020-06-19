@@ -6,11 +6,11 @@ Remove all the commands, transform them into plugins and set only the necessary 
 
 VTEX CLI is the first contact that we have with the VTEX IO products, so we need to have a clean and simple CLI that works pretty well.
 
-Nowadays we have a CLI that, by default, comes with a **LOT** of commands that probably most of them will never be used.
+Nowadays we have a CLI that, by default, comes with a **LOT** of commands that probably most of them will never be used by the same user.
 
 ![](https://i.imgur.com/2GIq2Ep.png)
 
-The idea is to remove this commands that are not necessary to come by default, i.e., `vtex lighthouse` and `vtex test`. Eventually the user will need to use some of this extra commands so just import to his own CLI.
+The idea is to remove this commands that are not necessary to come by default, i.e., `vtex lighthouse` and `vtex test`. Eventually the user will need to use some of this extra commands, so just import to your own CLI.
 
 We can also have a library with all the possible commands that the user can import such as [Adobe I/O CLI](https://github.com/adobe/aio-cli).
 
@@ -46,6 +46,8 @@ Create a `@vtex/toolbelt-api` with all these needs. The plugins would always use
 ##### Problem #1
 
 How do we guarantee that all installed plugins are using the same `@vtex/toolbelt-api version`? The problem on them using different versions is the amount of code to be compiled when requiring and the fact that we could have fixed a major bug in a `@vtex/toolbelt-api`'s patch. 
+
+![](https://i.imgur.com/WTBuh0Y.png)
 
 You can check a POC that I made [here](https://github.com/VerasThiago/npmPackageTests).
 
