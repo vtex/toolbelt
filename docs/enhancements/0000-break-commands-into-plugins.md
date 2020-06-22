@@ -67,7 +67,15 @@ Example:
 
 Use [Peer Dependencies](https://nodejs.org/es/blog/npm/peer-dependencies/)
 
-I'm still developing this solution and you can check [here](https://github.com/VerasThiago/npmPackageTests/pull/1).
+Example:
+
+"peerDependencies": {
+  "@thiagoveras/toolbelt-api-test": "^1.1.1"
+}
+
+Solution with default plugins [here](https://github.com/VerasThiago/npmPackageTests/pull/1).
+
+Problem with external plugins [here](https://github.com/VerasThiago/npmPackageTests/pull/1#issuecomment-647696211)
 
 ## Future possibilities
 
