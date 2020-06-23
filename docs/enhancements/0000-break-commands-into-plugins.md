@@ -80,7 +80,7 @@ Problem with external plugins [here](https://github.com/VerasThiago/npmPackageTe
 
 #### Approach #2
 
-Transform toolbelt repository into a monorepo with `toolbelt-core` and a `toolbelt-api` package, that contains the code that will be shared. Inspired [here](https://github.com/apollographql/apollo-tooling/tree/master/packages)
+Reorganize toolbelt `/src`, to store the code that will be shared inside a folder `toolbelt-api` for example.
 
 Plugins now imports from `toolbelt` the code that they will use. Today the toolbelt don't allow this easily because he doesn't offer re-export entrypoints and don't have on the published bundle the typescript types.
 
