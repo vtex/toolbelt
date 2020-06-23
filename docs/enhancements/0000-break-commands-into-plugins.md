@@ -77,6 +77,55 @@ Solution with default plugins [here](https://github.com/VerasThiago/npmPackageTe
 
 Problem with external plugins [here](https://github.com/VerasThiago/npmPackageTests/pull/1#issuecomment-647696211)
 
+
+#### Approach #2
+
+Transform toolbelt repository into a monorepo with `toolbelt-core` and a `toolbelt-api` package, that contains the code that will be shared. Inspired [here](https://github.com/apollographql/apollo-tooling/tree/master/packages)
+
+Plugins now imports from `toolbelt` the code that they will use. Today the toolbelt don't allow this easily because he doesn't offer re-export entrypoints and don't have on the published bundle the typescript types.
+
+To solve this problem is quite simple, just need to add the `declaration: true` option inside `tsconfig` and now the user can do:
+
+```
+import { SessionManager } from ‘vtex’
+```
+
+Or
+
+```
+Import { SessionManager } from ‘vtex/toolbelt-api’
+Import { Apps } from ‘vtex/toolbelt-clients’
+```
+
+To implement this solution, we can just simply create an entrypoint `index.ts` that re-export everything that `toolbelt` want from plugin to have access.
+
+#### Problem 1
+
+Using this approach can have problems with initialization performance. We can use as example `@vtex/api`, nowadays in `toolbelt` have a not negligible cost of initialization.
+
+| Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
+|:---|---:|---:|---:|---:|
+| `node simple-require.js` | 705.3 ± 31.2 | 662.0 | 818.0 | 1.69 ± 0.09 |
+| `node require-file.js` | 416.7 ± 13.6 | 389.3 | 450.4 | 1.00 |
+| `node destructure-require.js` | 696.5 ± 15.1 | 667.9 | 740.5 | 1.67 ± 0.07 |
+
+Check the full benchmark [here](https://github.com/tiagonapoli/benchmarking/tree/master/node-vtex-api-import
+)
+
+
+In order that, I made a benchmark to analyze if this cost will be really bad for the `toolbelt` performance, and the results was pretty good as far as I understand.
+
+| Command | Mean [ms] | Min…Max [ms] |
+|:---|---:|---:|
+| `node axios-require.js` | 38.9 ± 2.2 | 37.1…46.6 |
+| `node vtex-api-require.js` | 498.7 ± 15.0 | 467.6…528.9 |
+| `node simple-require.js` | 580.9 ± 15.7 | 547.8…619.8 |
+| `node destructure-require.js` | 589.3 ± 11.8 | 573.3…616.7 |
+
+
+
+Check the full benchmark [here](https://github.com/VerasThiago/toolbelt-benchmark/tree/master/toolbelt-import)
+
 ## Future possibilities
 
 ### How to easily develop a plugin?
