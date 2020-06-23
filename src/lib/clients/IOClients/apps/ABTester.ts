@@ -1,4 +1,5 @@
-import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+import type { InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient } from '@vtex/api/lib/HttpClient/AppClient'
 import { IOClientFactory } from '../IOClientFactory'
 
 const routes = {

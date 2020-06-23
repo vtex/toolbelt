@@ -1,4 +1,5 @@
-import { InstanceOptions, IOContext, Router } from '@vtex/api'
+import type { InstanceOptions, IOContext } from '@vtex/api'
+import { Router } from '@vtex/api/lib/clients/Router'
 import { IOClientFactory } from '../IOClientFactory'
 
 export const createRouterClient = (

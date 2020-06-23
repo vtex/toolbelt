@@ -1,4 +1,4 @@
-import { AppManifest } from '@vtex/api'
+import type { AppManifest } from '@vtex/api'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
 import numbro from 'numbro'

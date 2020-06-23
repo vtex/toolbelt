@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Box, Color } from 'ink'
-import { parseAppId } from '@vtex/api'
+import { parseAppId } from '@vtex/api/lib/utils/app'
 
 interface AppIdProps {
   appId: string

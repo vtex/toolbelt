@@ -1,4 +1,4 @@
-import { IOContext } from '@vtex/api'
+import type { IOContext } from '@vtex/api'
 import * as url from 'url'
 import WebSocket from 'ws'
 import { cluster } from '../../../../env'

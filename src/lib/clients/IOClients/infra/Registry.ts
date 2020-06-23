@@ -1,4 +1,5 @@
-import { InstanceOptions, IOContext, Registry } from '@vtex/api'
+import type { InstanceOptions, IOContext } from '@vtex/api'
+import { Registry } from '@vtex/api/lib/clients/Registry'
 import { IOClientFactory } from '../IOClientFactory'
 
 export const createRegistryClient = (

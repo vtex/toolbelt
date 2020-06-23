@@ -1,4 +1,4 @@
-import { AppManifest } from '@vtex/api'
+import type { AppManifest } from '@vtex/api'
 
 export const manifestSamples: Record<string, AppManifest> = {
   'node4-react3-app': {

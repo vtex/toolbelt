@@ -1,4 +1,5 @@
-import { InstanceOptions, IOContext, Workspaces } from '@vtex/api'
+import type { InstanceOptions, IOContext } from '@vtex/api'
+import { Workspaces } from '@vtex/api/lib/clients/Workspaces'
 import { IOClientFactory } from '../IOClientFactory'
 
 export const createWorkspacesClient = (

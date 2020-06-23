@@ -1,4 +1,5 @@
-import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+import type { InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient } from '@vtex/api/lib/HttpClient/AppClient'
 import { GraphQlError } from '../../../../errors'
 import { IOClientFactory } from '../IOClientFactory'
 

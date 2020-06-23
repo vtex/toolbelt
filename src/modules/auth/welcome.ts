@@ -1,4 +1,5 @@
-import { AppsListItem, removeBuild } from '@vtex/api'
+import type { AppsListItem } from '@vtex/api'
+import { removeBuild } from '@vtex/api/lib/utils/app'
 import chalk from 'chalk'
 import { EditionInfo, Sponsor } from '../../lib/clients/IOClients/apps/Sponsor'
 import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'

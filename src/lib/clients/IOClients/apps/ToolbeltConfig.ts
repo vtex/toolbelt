@@ -1,4 +1,5 @@
-import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
+import type { InstanceOptions, IOContext } from '@vtex/api'
+import { IOClient } from '@vtex/api/lib/HttpClient/IOClient'
 import { NodeToRender } from '@vtex/toolbelt-message-renderer'
 import { IOClientFactory } from '../IOClientFactory'
 

@@ -1,4 +1,5 @@
-import { AppGraphQLClient, InstanceOptions, IOContext } from '@vtex/api'
+import type { InstanceOptions, IOContext } from '@vtex/api'
+import { AppGraphQLClient } from '@vtex/api/lib/HttpClient/AppGraphQLClient'
 import { IOClientFactory } from '../IOClientFactory'
 
 export interface RedirectInput {
@@ -18,7 +19,7 @@ export interface Redirect {
   binding: string
 }
 
-export enum RedirectTypes {
+export const enum RedirectTypes {
   PERMANENT = 'PERMANENT',
   TEMPORARY = 'TEMPORARY',
 }

@@ -1,4 +1,5 @@
-import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
+import type { InstanceOptions, IOContext } from '@vtex/api'
+import { AppClient } from '@vtex/api/lib/HttpClient/AppClient'
 import { ErrorReportSerializableObj } from '@vtex/node-error-report'
 import { MetricReportObj } from '../../../metrics/MetricReport'
 import { IOClientFactory } from '../IOClientFactory'

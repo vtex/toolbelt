@@ -1,4 +1,4 @@
-import { Workspaces } from '@vtex/api'
+import type { Workspaces } from '@vtex/api'
 import chalk from 'chalk'
 import { CommandError } from '../../errors'
 import { Builder } from '../../lib/clients/IOClients/apps/Builder'

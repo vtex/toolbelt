@@ -1,4 +1,5 @@
-import { AppManifest, AuthType, InstanceOptions, IOClient, IOContext } from '@vtex/api'
+import type { AppManifest, AuthType, InstanceOptions, IOContext } from '@vtex/api'
+import { IOClient } from '@vtex/api/lib/HttpClient/IOClient'
 import { IOClientFactory } from '../IOClientFactory'
 
 export interface EditionInfo extends AppManifest {
@@ -19,7 +20,7 @@ export class Sponsor extends IOClient {
   constructor(context: IOContext, options: InstanceOptions) {
     super(context, {
       ...options,
-      authType: AuthType.bearer,
+      authType: "Bearer" as AuthType.bearer,
     })
     const { account, workspace } = context
     this.account = account

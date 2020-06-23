@@ -1,4 +1,6 @@
-import { AppClient, CacheType, InstanceOptions, IOContext, RequestConfig } from '@vtex/api'
+import type { InstanceOptions, IOContext, RequestConfig } from '@vtex/api'
+import { AppClient } from '@vtex/api/lib/HttpClient/AppClient'
+import { CacheType } from '@vtex/api/lib/HttpClient/middlewares/cache'
 import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
 import { Headers } from '../../../constants/Headers'
 import { ErrorKinds } from '../../../error/ErrorKinds'

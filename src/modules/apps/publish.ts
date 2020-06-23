@@ -1,4 +1,4 @@
-import { BuildResult } from '@vtex/api'
+import type { BuildResult } from '@vtex/api'
 import retry from 'async-retry'
 import chalk from 'chalk'
 import * as conf from '../../conf'

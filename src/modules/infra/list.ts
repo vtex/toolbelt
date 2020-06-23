@@ -1,4 +1,4 @@
-import { AvailableServices, InstalledService } from '@vtex/api'
+import type { AvailableServices, InstalledService } from '@vtex/api'
 import chalk from 'chalk'
 import semver from 'semver'
 import { createRouterClient } from '../../lib/clients/IOClients/infra/Router'

@@ -1,4 +1,4 @@
-import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
+import type { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import { Logger } from '@vtex/api/lib/service/logger'
 import * as env from '../../../env'
 import userAgent from '../../../user-agent'

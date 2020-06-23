@@ -1,4 +1,4 @@
-import { Workspaces } from '@vtex/api'
+import type { Workspaces } from '@vtex/api'
 import chalk from 'chalk'
 import { contains, flatten, head, tail } from 'ramda'
 import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
