@@ -1,4 +1,4 @@
-export enum EnvVariablesConstants {
+export const enum EnvVariablesConstants {
   // Activate child_process debugging: Instead of creating non-blocking child processes
   // it will create processes with stdio attached to the parent's stdio streams
   // Setting this to any string value will work: `DEBUG_CP=* vtex whoami`

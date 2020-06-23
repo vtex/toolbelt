@@ -39,7 +39,7 @@ export const getEnvironment = (): Environment => {
   return env || persisted
 }
 
-export enum Region {
+export const enum Region {
   Production = 'aws-us-east-1',
 }
 

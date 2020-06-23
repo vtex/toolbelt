@@ -1,4 +1,4 @@
-export enum Headers {
+export const enum Headers {
   VTEX_ORIGINAL_CREDENTIAL = 'x-vtex-original-credential',
 
   // If set to 'true' in the request, will hit the runtime-base server, instead of the app server.
