@@ -1,7 +1,6 @@
 import { accessSync } from 'fs'
 import { readFile, writeFile } from 'fs-extra'
 import path from 'path'
-import { memoize } from 'ramda'
 
 import { CommandError } from './errors'
 
@@ -77,13 +76,11 @@ export const validateAppManifest = (manifest: any) => {
   }
 }
 
-export const getManifest = memoize(
-  async (): Promise<Manifest> => {
-    const manifest = parseManifest(await readFileUtf(getManifestPath()))
-    validateAppManifest(manifest)
-    return manifest
-  }
-)
+export const getManifest = async (): Promise<Manifest> => {
+  const manifest = parseManifest(await readFileUtf(getManifestPath()))
+  validateAppManifest(manifest)
+  return manifest
+}
 
 export const writeManifestSchema = async () => {
   const content = await readFileUtf(getManifestPath())
