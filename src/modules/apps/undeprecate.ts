@@ -1,13 +1,13 @@
 import chalk from 'chalk'
 import { createRegistryClient } from '../../lib/clients/IOClients/infra/Registry'
-import { ErrorReport } from '../../lib/error/ErrorReport'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import { parseLocator } from '../../locator'
 import log from '../../logger'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { TelemetryCollector } from '../../api/telemetry/TelemetryCollector'
 
 let originalAccount
 let originalWorkspace

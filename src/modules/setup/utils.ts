@@ -6,7 +6,7 @@ import tar from 'tar'
 
 import log from '../../logger'
 import { FileReaderWriter } from './includes/FileReaderWriter'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 
 export const packageJsonEditor = new FileReaderWriter('packageJson')
 export const eslintrcEditor = new FileReaderWriter('eslintrc')

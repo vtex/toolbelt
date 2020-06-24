@@ -1,7 +1,7 @@
 import Configstore from 'configstore'
 import { name as pkgName } from '../../../package.json'
 import { join } from 'path'
-import { PathConstants } from '../constants/Paths'
+import { PathConstants } from '../../lib/constants/Paths'
 
 export abstract class SessionsPersisterBase {
   public abstract clearData(): void

@@ -1,10 +1,10 @@
 import { randomBytes } from 'crypto'
-import { ErrorKinds } from '../../error/ErrorKinds'
-import { ErrorReport } from '../../error/ErrorReport'
+import { ErrorKinds } from '../../../api/error/ErrorKinds'
+import { ErrorReport } from '../../../api/error/ErrorReport'
 import { CustomEventSource } from '../../sse/CustomEventSource'
 import log from '../../../logger'
 import userAgent from '../../../user-agent'
-import { SessionManager } from '../../session/SessionManager'
+import { SessionManager } from '../../../api/session/SessionManager'
 import { inspect } from 'util'
 
 interface AppLogsEventSourceArgs {

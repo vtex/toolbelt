@@ -15,7 +15,7 @@ import { runYarnIfPathExists } from '../utils'
 import { listLocalFiles } from './file'
 import { ProjectUploader } from './ProjectUploader'
 import { checkBuilderHubMessage, showBuilderHubMessage } from './utils'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 
 const root = getAppRoot()
 const buildersToRunLocalYarn = ['node', 'react']

@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { split } from 'ramda'
 import { CommandError } from '../../errors'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'

@@ -3,6 +3,7 @@
   "version": "2.102.0",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
+  "main": "src/api/index.js",
   "scripts": {
     "exe": "node scripts/make-executable.js",
     "watch": "bash ./scripts/symlink.sh && yarn nodemon && yarn oclif-dev manifest",

@@ -1,8 +1,8 @@
 import { AppClient, CacheType, InstanceOptions, IOContext, RequestConfig } from '@vtex/api'
 import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
 import { Headers } from '../../../constants/Headers'
-import { ErrorKinds } from '../../../error/ErrorKinds'
-import { ErrorReport } from '../../../error/ErrorReport'
+import { ErrorKinds } from '../../../../api/error/ErrorKinds'
+import { ErrorReport } from '../../../../api/error/ErrorReport'
 import { IOClientFactory } from '../IOClientFactory'
 
 interface StickyOptions {

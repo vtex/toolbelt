@@ -1,8 +1,8 @@
 import logger from '../../logger'
-import { AuthProviderBase, AuthProviders } from '../auth/AuthProviders'
-import { Token } from '../auth/Token'
-import { ErrorKinds } from '../error/ErrorKinds'
-import { ErrorReport } from '../error/ErrorReport'
+import { AuthProviderBase, AuthProviders } from '../../lib/auth/AuthProviders'
+import { Token } from '../../lib/auth/Token'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import { SessionsPersister, SessionsPersisterBase } from './SessionsPersister'
 import { WorkspaceCreateResult, WorkspaceCreator } from './WorkspaceCreator'
 

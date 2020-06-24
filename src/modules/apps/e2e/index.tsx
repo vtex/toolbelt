@@ -4,7 +4,7 @@ import React from 'react'
 import { createAppsClient } from '../../../lib/clients/IOClients/infra/Apps'
 import { Tester, TestRequest } from '../../../lib/clients/IOClients/apps/Tester'
 import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
-import { SessionManager } from '../../../lib/session/SessionManager'
+import { SessionManager } from '../../../api/session/SessionManager'
 import { RealTimeReport } from './report/index'
 
 class EndToEndCommand {
