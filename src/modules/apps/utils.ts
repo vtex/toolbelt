@@ -9,7 +9,7 @@ import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../../lib/clients/IOClients/infra/Registry'
 import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
 import { ManifestEditor } from '../../lib/manifest'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 

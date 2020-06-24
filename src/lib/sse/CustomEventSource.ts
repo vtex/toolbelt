@@ -2,7 +2,7 @@ import EventSource from 'eventsource'
 import { cluster, envCookies } from '../../env'
 import userAgent from '../../user-agent'
 import { Headers } from '../constants/Headers'
-import { SessionManager } from '../session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import { EventSourceError } from './EventSourceError'
 import { TraceConfig } from '../globalConfigs/traceConfig'
 

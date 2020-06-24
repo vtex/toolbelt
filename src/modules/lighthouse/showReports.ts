@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import ora from 'ora'
 import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
-import { ErrorReport } from '../../lib/error/ErrorReport'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import log from '../../logger'
 import { TableGenerator } from './TableGenerator'
 

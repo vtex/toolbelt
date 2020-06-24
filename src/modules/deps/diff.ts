@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import { matchedDepsDiffTable } from '../utils'
 import { getCleanDependencies } from './utils'
 

@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../logger'
 import { createTable } from '../../table'
 

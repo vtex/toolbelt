@@ -6,7 +6,7 @@ import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import { default as abTestStatus } from './status'
 import { abtester, installedABTester } from './utils'
-import { SessionManager } from '../../../lib/session/SessionManager'
+import { SessionManager } from '../../../api/session/SessionManager'
 
 const { account } = SessionManager.getSingleton()
 

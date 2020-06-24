@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { validateAppAction } from './utils'

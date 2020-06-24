@@ -3,7 +3,7 @@ import { readFile, readJson } from 'fs-extra'
 import { length, map } from 'ramda'
 import { createInterface } from 'readline'
 import { Rewriter } from '../../lib/clients/IOClients/apps/Rewriter'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../logger'
 import { isVerbose } from '../../verbose'
 import {

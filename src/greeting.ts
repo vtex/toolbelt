@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 
 import log from './logger'
-import { SessionManager } from './lib/session/SessionManager'
+import { SessionManager } from './api/session/SessionManager'
 import { createWorkspacesClient } from './lib/clients/IOClients/infra/Workspaces'
 
 const workspaceState = (meta: WorkspaceResponse) => (meta.production ? 'production' : 'dev')
