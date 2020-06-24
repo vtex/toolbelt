@@ -1,7 +1,7 @@
 import R from 'ramda'
 import { Builder } from '../../lib/clients/IOClients/apps/Builder'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { ErrorReport } from '../../lib/error/ErrorReport'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import log from '../../logger'
 import { tsconfigEditor } from './utils'
 

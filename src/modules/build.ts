@@ -1,7 +1,7 @@
 import { BuildFailError } from '../errors'
 import log, { fileLoggerLevel } from '../logger'
 import { logAll, onEvent } from '../lib/sse'
-import { SessionManager } from '../lib/session/SessionManager'
+import { SessionManager } from '../api/session/SessionManager'
 
 interface ListeningOptions {
   context?: Context

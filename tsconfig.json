@@ -11,7 +11,8 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "jsx": "react",
-    "importHelpers": true
+    "importHelpers": true,
+    "declaration": true,
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.ts", "**/__tests__", "**/__mocks__"]

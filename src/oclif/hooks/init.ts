@@ -6,7 +6,7 @@ import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
 
 import { envCookies } from '../../env'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { TelemetryCollector } from '../../api/telemetry/TelemetryCollector'
 import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
 import { updateNotify } from '../../update'
 import log from '../../logger'
@@ -17,7 +17,7 @@ import { Metric } from '../../lib/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
 import { CommandError, SSEConnectionError } from '../../errors'
 import { MetricNames } from '../../lib/metrics/MetricNames'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')

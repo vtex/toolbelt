@@ -3,7 +3,7 @@ import { Logger } from '@vtex/api/lib/service/logger'
 import * as env from '../../../env'
 import userAgent from '../../../user-agent'
 import { Headers } from '../../constants/Headers'
-import { SessionManager } from '../../session/SessionManager'
+import { SessionManager } from '../../../api/session/SessionManager'
 import { TraceConfig } from '../../globalConfigs/traceConfig'
 
 interface IOContextOptions {

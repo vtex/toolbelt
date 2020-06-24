@@ -6,7 +6,7 @@ import log from '../../logger'
 import { promptConfirm } from '../prompts'
 
 import * as git from './git'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 
 const VTEX_APPS = 'vtex-apps'
 

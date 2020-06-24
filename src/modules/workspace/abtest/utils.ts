@@ -8,7 +8,7 @@ import { CommandError } from '../../../errors'
 import { ABTester } from '../../../lib/clients/IOClients/apps/ABTester'
 import { createAppsClient } from '../../../lib/clients/IOClients/infra/Apps'
 import { createWorkspacesClient } from '../../../lib/clients/IOClients/infra/Workspaces'
-import { SessionManager } from '../../../lib/session/SessionManager'
+import { SessionManager } from '../../../api/session/SessionManager'
 
 const DEFAULT_TIMEOUT = 15000
 

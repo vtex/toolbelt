@@ -78,7 +78,7 @@ Solution with default plugins [here](https://github.com/VerasThiago/npmPackageTe
 Problem with external plugins [here](https://github.com/VerasThiago/npmPackageTests/pull/1#issuecomment-647696211)
 
 
-#### Approach #2
+#### Approach #2 (**Chosen**)
 
 Reorganize toolbelt `/src`, to store the code that will be shared inside a folder `toolbelt-api` for example.
 

@@ -1,5 +1,5 @@
 import * as pkg from '../../../package.json'
-import { SessionManager } from '../session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import { getPlatform } from '../utils/getPlatform'
 
 export interface Metric {
