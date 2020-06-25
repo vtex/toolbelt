@@ -1,6 +1,6 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import testCommand from '../../modules/apps/testCommand'
 
 export default class UnitTest extends CustomCommand {

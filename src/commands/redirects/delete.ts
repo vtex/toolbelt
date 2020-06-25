@@ -1,5 +1,5 @@
 import redirectsDelete from '../../modules/rewriter/delete'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class RedirectsDelete extends CustomCommand {
   static description = 'Delete redirects in the current account and workspace'

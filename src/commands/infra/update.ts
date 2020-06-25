@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import workspaceInfraUpdate from '../../modules/infra/update'
 
 export default class InfraUpdateCommand extends CustomCommand {

@@ -1,5 +1,5 @@
 import editionGet from '../../modules/sponsor/getEdition'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class EditionGet extends CustomCommand {
   static description = 'Get edition of the current account'
