@@ -1,4 +1,4 @@
-import { Token } from '../../auth/Token'
+import { Token } from '../../../lib/auth/Token'
 import { ISessionManager, LoginInput, WorkspaceSwitchInput, WorkspaceSwitchResult } from '../SessionManager'
 
 export class SessionManagerMock implements ISessionManager {
