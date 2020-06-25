@@ -55,6 +55,7 @@ export abstract class CustomCommand extends OclifCommand {
   async finally(err: any): Promise<any> {
     try {
       if (err && err.oclif === undefined) await onError(err)
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { config } = require('@oclif/errors')
       if (config.errorLogger) await config.errorLogger.flush()
     } catch (error) {
