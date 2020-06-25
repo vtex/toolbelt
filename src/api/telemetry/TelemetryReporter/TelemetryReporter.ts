@@ -3,7 +3,7 @@ import { readJson, remove } from 'fs-extra'
 import { ToolbeltTelemetry } from '../../../lib/clients/IOClients/apps/ToolbeltTelemetry'
 import { ErrorKinds } from '../../../api/error/ErrorKinds'
 import { ErrorReport } from '../../../api/error/ErrorReport'
-import { MetricReportObj } from '../../../lib/metrics/MetricReport'
+import { MetricReportObj } from '../../metrics/MetricReport'
 import { TelemetryFile } from '../TelemetryCollector'
 import { PendingTelemetryDataManager } from './PendingTelemetryDataManager'
 

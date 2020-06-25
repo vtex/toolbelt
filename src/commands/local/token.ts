@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import authToken from '../../modules/local/token'
 
 export default class LocalToken extends CustomCommand {

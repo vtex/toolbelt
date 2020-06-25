@@ -1,6 +1,6 @@
 import { flags as oclifFlags } from '@oclif/command'
 
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import { showReports } from '../../modules/lighthouse/showReports'
 
 export default class ShowReports extends CustomCommand {

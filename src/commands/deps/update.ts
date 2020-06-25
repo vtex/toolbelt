@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import workspaceDepsUpdate from '../../modules/deps/update'
 
 export default class DepsUpdate extends CustomCommand {

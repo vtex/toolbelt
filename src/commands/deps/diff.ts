@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import workspaceDepsDiff from '../../modules/deps/diff'
 import { SessionManager } from '../../api/session/SessionManager'
 

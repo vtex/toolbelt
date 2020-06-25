@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
 import workspaceReset from '../../modules/workspace/reset'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class WorkspaceReset extends CustomCommand {
   static description = 'Delete and recreate a workspace'

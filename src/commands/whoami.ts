@@ -1,4 +1,4 @@
-import { CustomCommand } from '../oclif/CustomCommand'
+import { CustomCommand } from '../api/oclif/CustomCommand'
 import authWhoami from '../modules/auth/whoami'
 
 export default class WhoAmI extends CustomCommand {

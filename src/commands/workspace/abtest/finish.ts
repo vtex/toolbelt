@@ -1,5 +1,5 @@
 import testAbFinish from '../../../modules/workspace/abtest/finish'
-import { CustomCommand } from '../../../oclif/CustomCommand'
+import { CustomCommand } from '../../../api/oclif/CustomCommand'
 
 export default class ABTestFinish extends CustomCommand {
   static description = 'Stop all AB testing in current account'

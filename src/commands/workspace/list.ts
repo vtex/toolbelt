@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import workspaceList from '../../modules/workspace/list'
 
 export default class WorkspaceList extends CustomCommand {

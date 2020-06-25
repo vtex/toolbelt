@@ -13,10 +13,10 @@ import log from '../../logger'
 import * as pkg from '../../../package.json'
 import * as conf from '../../conf'
 import { checkAndOpenNPSLink } from '../../nps'
-import { Metric } from '../../lib/metrics/MetricReport'
+import { Metric } from '../../api/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
 import { CommandError, SSEConnectionError } from '../../errors'
-import { MetricNames } from '../../lib/metrics/MetricNames'
+import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
