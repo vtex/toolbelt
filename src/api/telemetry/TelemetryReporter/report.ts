@@ -1,6 +1,6 @@
 const initTime = process.hrtime()
 
-import { TelemetryMetaMetrics } from '../../../lib/metrics/MetricNames'
+import { TelemetryMetaMetrics } from '../../metrics/MetricNames'
 import { SessionManager } from '../../../api/session/SessionManager'
 import { TelemetryLocalStore } from '../TelemetryStore'
 import { PendingTelemetryDataManager } from './PendingTelemetryDataManager'

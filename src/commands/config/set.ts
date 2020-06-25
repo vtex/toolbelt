@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import configSet from '../../modules/config/set'
 
 export default class ConfigSet extends CustomCommand {

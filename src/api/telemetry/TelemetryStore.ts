@@ -1,6 +1,6 @@
 import Configstore from 'configstore'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import { MetricReport } from '../../lib/metrics/MetricReport'
+import { MetricReport } from '../metrics/MetricReport'
 
 export interface ITelemetryLocalStore {
   storeFilePath: string

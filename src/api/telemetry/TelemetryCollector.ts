@@ -6,7 +6,7 @@ import * as pkgJson from '../../../package.json'
 import logger from '../../logger'
 import { PathConstants } from '../../lib/constants/Paths'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import { Metric, MetricReport, MetricReportObj } from '../../lib/metrics/MetricReport'
+import { Metric, MetricReport, MetricReportObj } from '../metrics/MetricReport'
 import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 

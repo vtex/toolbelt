@@ -1,6 +1,6 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
 import { ErrorReportSerializableObj } from '@vtex/node-error-report'
-import { MetricReportObj } from '../../../metrics/MetricReport'
+import { MetricReportObj } from '../../../../api/metrics/MetricReport'
 import { IOClientFactory } from '../IOClientFactory'
 
 export class ToolbeltTelemetry extends AppClient {

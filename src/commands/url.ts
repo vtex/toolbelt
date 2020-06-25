@@ -1,4 +1,4 @@
-import { CustomCommand } from '../oclif/CustomCommand'
+import { CustomCommand } from '../api/oclif/CustomCommand'
 import authUrl from '../modules/url'
 
 export default class URL extends CustomCommand {

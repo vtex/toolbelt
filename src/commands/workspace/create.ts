@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
 import { workspaceCreator } from '../../modules/workspace/create'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class WorkspaceCreate extends CustomCommand {
   static description = 'Create a new workspace'

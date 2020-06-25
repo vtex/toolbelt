@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
 import workspaceUse from '../../modules/workspace/use'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class WorkspaceUse extends CustomCommand {
   static description = 'Use a workspace to perform operations'
