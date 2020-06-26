@@ -1,7 +1,6 @@
 export * from './ABTester'
 export * from './Billing'
 export * from './Builder'
-export * from './Lighthouse'
 export * from './Rewriter'
 export * from './Sponsor'
 export * from './Tester'
