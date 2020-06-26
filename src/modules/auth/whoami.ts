@@ -1,5 +1,5 @@
 import { greeting } from '../../greeting'
-import log from '../../logger'
+import log from '../../api/logger'
 
 export default async (): Promise<void> => {
   const lines = await greeting()

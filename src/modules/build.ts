@@ -1,5 +1,5 @@
 import { BuildFailError } from '../errors'
-import log, { fileLoggerLevel } from '../logger'
+import log, { fileLoggerLevel } from '../api/logger'
 import { logAll, onEvent } from '../lib/sse'
 import { SessionManager } from '../api/session/SessionManager'
 

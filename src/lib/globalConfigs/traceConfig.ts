@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto'
-import log from '../../logger'
+import log from '../../api/logger'
 
 export class TraceConfig {
   public static jaegerDebugID: string

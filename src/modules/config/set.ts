@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { contains, values } from 'ramda'
 
 import { CommandError } from '../../errors'
-import log from '../../logger'
+import log from '../../api/logger'
 import { Environment, saveEnvironment, saveCluster } from '../../conf'
 
 const envValues = values(Environment)

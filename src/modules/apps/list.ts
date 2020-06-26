@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 import { compose, equals, filter, head, prop, split } from 'ramda'
-import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { SessionManager } from '../../api/session/SessionManager'
 import { parseLocator } from '../../locator'
-import log from '../../logger'
+import log from '../../api/logger'
 import { createTable } from '../../table'
 
 const { listApps } = createAppsClient()

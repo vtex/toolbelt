@@ -3,7 +3,7 @@ import enquirer from 'enquirer'
 import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 'ramda'
 import semver from 'semver'
 
-import log from '../../../logger'
+import log from '../../../api/logger'
 import { promptConfirm } from '../../prompts'
 import {
   abtester,

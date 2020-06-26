@@ -1,9 +1,9 @@
 import { AvailableServices, InstalledService } from '@vtex/api'
 import chalk from 'chalk'
 import semver from 'semver'
-import { createRouterClient } from '../../lib/clients/IOClients/infra/Router'
+import { createRouterClient } from '../../api/clients/IOClients/infra/Router'
 import { SessionManager } from '../../api/session/SessionManager'
-import log from '../../logger'
+import log from '../../api/logger'
 import { createTable } from '../../table'
 import { getLastStableAndPrerelease } from './utils'
 

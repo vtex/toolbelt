@@ -4,7 +4,7 @@ import { close, existsSync, openSync, readFileSync, readJsonSync, writeJsonSync,
 import { resolve } from 'path'
 import { path } from 'ramda'
 import semver from 'semver'
-import log from '../../logger'
+import log from '../../api/logger'
 import { getAppRoot } from '../../manifest'
 import { promptConfirm } from '../prompts'
 
