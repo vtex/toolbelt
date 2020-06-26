@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
-import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
-import Billing from '../../lib/clients/IOClients/apps/Billing'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
+import log from '../../api/logger'
 import { promptConfirm } from '../prompts'
 import { optionsFormatter, validateAppAction } from './utils'
 

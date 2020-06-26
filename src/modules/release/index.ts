@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { indexOf, prop } from 'ramda'
 import semver from 'semver'
 
-import log from '../../logger'
+import log from '../../api/logger'
 import {
   add,
   bump,

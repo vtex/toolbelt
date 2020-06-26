@@ -7,7 +7,7 @@ import {
 } from '@vtex/node-error-report'
 import chalk from 'chalk'
 import * as pkg from '../../../package.json'
-import logger from '../../logger'
+import logger from '../logger'
 import { SessionManager } from '../session/SessionManager'
 import { getPlatform } from '../../lib/utils/getPlatform'
 import { TelemetryCollector } from '../telemetry/TelemetryCollector'

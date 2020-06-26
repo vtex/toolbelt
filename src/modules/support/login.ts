@@ -6,7 +6,7 @@ import { prop } from 'ramda'
 import * as env from '../../env'
 import { Headers } from '../../lib/constants/Headers'
 import { SessionManager } from '../../api/session/SessionManager'
-import log from '../../logger'
+import log from '../../api/logger'
 
 const getAvailableRoles = async (token: string, supportedAccount: string): Promise<string[]> => {
   const { account, workspace } = SessionManager.getSingleton()

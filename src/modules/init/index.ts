@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { keys, prop, reject, test } from 'ramda'
 
-import log from '../../logger'
+import log from '../../api/logger'
 import { promptConfirm } from '../prompts'
 
 import * as git from './git'

@@ -1,10 +1,10 @@
 import chalk from 'chalk'
 import ora from 'ora'
-import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
-import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
+import { Lighthouse } from '../../api/clients/IOClients/apps/Lighthouse'
+import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { SessionManager } from '../../api/session/SessionManager'
-import log from '../../logger'
+import log from '../../api/logger'
 import { TableGenerator } from './TableGenerator'
 
 async function isProdutionWorkspace(account: string, workspace: string): Promise<boolean> {

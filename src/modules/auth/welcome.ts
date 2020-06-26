@@ -1,12 +1,12 @@
 import { AppsListItem, removeBuild } from '@vtex/api'
 import chalk from 'chalk'
-import { EditionInfo, Sponsor } from '../../lib/clients/IOClients/apps/Sponsor'
-import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
+import { EditionInfo, Sponsor } from '../../api/clients/IOClients/apps/Sponsor'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { SessionManager } from '../../api/session/SessionManager'
 import { parseLocator } from '../../locator'
-import log from '../../logger'
+import log from '../../api/logger'
 import { createTable } from '../../table'
 
 const filterBySource = (method: 'edition' | 'installation') => {

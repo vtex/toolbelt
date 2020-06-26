@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Box, Static } from 'ink'
 import { difference } from 'ramda'
 
-import { AppReport, TestReport } from '../../../../lib/clients/IOClients/apps/Tester'
+import { AppReport, TestReport } from '../../../../api/clients/IOClients/apps/Tester'
 import { Completed } from './completedApps'
 import { Summary } from './summary'
 import { parseReport } from './specsState'

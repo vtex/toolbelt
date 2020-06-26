@@ -1,8 +1,8 @@
 import chalk from 'chalk'
 import ora from 'ora'
-import { Lighthouse } from '../../lib/clients/IOClients/apps/Lighthouse'
+import { Lighthouse } from '../../api/clients/IOClients/apps/Lighthouse'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import log from '../../logger'
+import log from '../../api/logger'
 import { TableGenerator } from './TableGenerator'
 
 function allWhenUndefined(atribute: string | undefined): string {

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Box, Color } from 'ink'
 
-import { SpecReport } from '../../../../lib/clients/IOClients/apps/Tester'
+import { SpecReport } from '../../../../api/clients/IOClients/apps/Tester'
 import { FailedSpec } from './failedApps'
 import { AppId } from './appId'
 import { AppProps } from './index'
