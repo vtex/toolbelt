@@ -4,7 +4,7 @@ import { resolve } from 'path'
 import { mergeDeepRight } from 'ramda'
 import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import { default as log, default as logger } from '../../logger'
+import { default as log, default as logger } from '../../api/logger'
 import { getAppRoot } from '../../manifest'
 import { yarnPath } from '../utils'
 import {

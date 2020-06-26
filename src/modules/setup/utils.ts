@@ -4,7 +4,7 @@ import { pipeline } from 'stream'
 import axios from 'axios'
 import tar from 'tar'
 
-import log from '../../logger'
+import log from '../../api/logger'
 import { FileReaderWriter } from './includes/FileReaderWriter'
 import { SessionManager } from '../../api/session/SessionManager'
 

@@ -1,7 +1,7 @@
 import glob from 'globby'
 import { join, resolve } from 'path'
 import { PassThrough } from 'stream'
-import log from '../../logger'
+import log from '../../api/logger'
 import { createPathToFileObject } from './ProjectFilesManager'
 import { YarnSymlinkedModulesConfig } from './YarnLinkedFilesConfig'
 

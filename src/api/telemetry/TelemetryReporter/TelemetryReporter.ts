@@ -1,6 +1,6 @@
 import { ErrorReportSerializableObj } from '@vtex/node-error-report'
 import { readJson, remove } from 'fs-extra'
-import { ToolbeltTelemetry } from '../../../lib/clients/IOClients/apps/ToolbeltTelemetry'
+import { ToolbeltTelemetry } from '../../clients/IOClients/apps/ToolbeltTelemetry'
 import { ErrorKinds } from '../../error/ErrorKinds'
 import { ErrorReport } from '../../error/ErrorReport'
 import { MetricReportObj } from '../../metrics/MetricReport'

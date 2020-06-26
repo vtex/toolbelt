@@ -1,8 +1,8 @@
 import { render } from 'ink'
 import React from 'react'
 
-import { createAppsClient } from '../../../lib/clients/IOClients/infra/Apps'
-import { Tester, TestRequest } from '../../../lib/clients/IOClients/apps/Tester'
+import { createAppsClient } from '../../../api/clients/IOClients/infra/Apps'
+import { Tester, TestRequest } from '../../../api/clients/IOClients/apps/Tester'
 import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
 import { SessionManager } from '../../../api/session/SessionManager'
 import { RealTimeReport } from './report/index'

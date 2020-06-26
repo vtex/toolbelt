@@ -1,4 +1,4 @@
-import logger from '../../logger'
+import logger from '../logger'
 import { AuthProviderBase, AuthProviders } from '../../lib/auth/AuthProviders'
 import { Token } from '../../lib/auth/Token'
 import { ErrorKinds } from '../error/ErrorKinds'

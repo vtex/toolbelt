@@ -1,8 +1,8 @@
 import chalk from 'chalk'
 import { CommandError } from '../../errors'
-import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
+import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
-import log from '../../logger'
+import log from '../../api/logger'
 import { promptConfirm } from '../prompts'
 import useCmd from './use'
 

@@ -1,4 +1,4 @@
-import logger from '../logger'
+import logger from '../api/logger'
 import { getAppRoot } from '../manifest'
 import { PackageJson } from './packageJson'
 

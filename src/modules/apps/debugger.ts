@@ -6,7 +6,7 @@ import { Headers } from '../../lib/constants/Headers'
 import { ManifestEditor } from '../../lib/manifest'
 import { SessionManager } from '../../api/session/SessionManager'
 import { versionMajor } from '../../locator'
-import log from '../../logger'
+import log from '../../api/logger'
 import userAgent from '../../user-agent'
 
 const keepAliveDelayMs = 3 * 60 * 1000
