@@ -52,6 +52,7 @@
     "@oclif/command": "^1.0.0",
     "@oclif/config": "^1.0.0",
     "@oclif/plugin-help": "^2.0.0",
+    "@thiagoveras/cli-plugin-lighthouse": "^0.0.1",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
     "@vtex/node-error-report": "^0.0.2",
@@ -149,7 +150,8 @@
     "bin": "vtex",
     "plugins": [
       "@oclif/plugin-help",
-      "@tiagonapoli/oclif-plugin-spaced-commands"
+      "@tiagonapoli/oclif-plugin-spaced-commands",
+      "@thiagoveras/cli-plugin-lighthouse"
     ],
     "hooks": {
       "init": "./build/oclif/hooks/init"
