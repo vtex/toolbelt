@@ -48,7 +48,7 @@ class EndToEndCommand {
           appItem.id
         )
 
-    this.watch(testRequest)
+    return this.watch(testRequest)
   }
 
   private workspaceBaseUrl() {
@@ -69,7 +69,7 @@ class EndToEndCommand {
           authToken: this.options.token ? SessionManager.getSingleton().token : undefined,
         })
 
-    this.watch(testRequest)
+    return this.watch(testRequest)
   }
 
   private async watch(testRequest: TestRequest | null) {
