@@ -18,7 +18,6 @@ jobs:
       - run: yarn install --ignore-scripts
       - run: yarn run ci:prettier-check
       - run: yarn run lint:node
-      - run: yarn run lint:react
 
   test:
     needs: [lint]
