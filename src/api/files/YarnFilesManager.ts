@@ -1,9 +1,10 @@
 import glob from 'globby'
 import { join, resolve } from 'path'
 import { PassThrough } from 'stream'
-import log from '../../api/logger'
+import log from '../logger'
 import { createPathToFileObject } from './ProjectFilesManager'
 import { YarnSymlinkedModulesConfig } from './YarnLinkedFilesConfig'
+import { BatchStream } from '../typings'
 
 const stringToStream = (str: string) => {
   const stream = new PassThrough()

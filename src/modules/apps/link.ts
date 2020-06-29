@@ -1,22 +1,27 @@
 import { Builder } from '../../api/clients/IOClients/apps/Builder'
-import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
-import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
-import { CommandError } from '../../errors'
+import {
+  ChangeSizeLimitError,
+  ChangeToSend,
+  ProjectSizeLimitError,
+  ProjectUploader,
+} from '../../api/modules/apps/ProjectUploader'
+import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from '../../api/modules/utils'
+import { CommandError } from '../../api/error/errors'
 import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
-import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
+import { createPathToFileObject } from '../../api/files/ProjectFilesManager'
 import { default as setup } from '../setup'
-import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
+import { fixPinnedDependencies, PinnedDeps } from '../../api/pinnedDependencies'
 import { formatNano, runYarnIfPathExists } from '../utils'
-import { getAppRoot } from '../../manifest'
-import { getIgnoredPaths, listLocalFiles } from './file'
+import { getAppRoot, ManifestEditor } from '../../api/manifest'
+import { getIgnoredPaths, listLocalFiles } from '../../api/modules/apps/file'
 import { join, resolve as resolvePath, sep } from 'path'
-import { listenBuild } from '../build'
-import { ManifestEditor } from '../../lib/manifest'
+import { listenBuild } from '../../api/modules/build'
+
 import { randomBytes } from 'crypto'
 import { readFileSync } from 'fs'
 import { SessionManager } from '../../api/session/SessionManager'
-import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
+import { YarnFilesManager } from '../../api/files/YarnFilesManager'
 import authLogin, { LoginOptions } from '../auth/login'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
@@ -26,6 +31,7 @@ import moment from 'moment'
 import retry from 'async-retry'
 import startDebuggerTunnel from './debugger'
 import workspaceUse from '../workspace/use'
+import { BatchStream } from '../../api/typings'
 
 let nodeNotifier
 if (process.platform !== 'win32') {

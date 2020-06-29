@@ -1,5 +1,5 @@
 import { AppLogsEventSource } from '../../api/clients/eventSources/AppLogsEventSource'
-import { ManifestEditor } from '../../lib/manifest'
+import { ManifestEditor } from '../../api/manifest'
 import log from '../../api/logger'
 
 export default async (app: string, options) => {

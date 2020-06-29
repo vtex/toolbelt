@@ -1,4 +1,4 @@
-import { CommandError } from '../../errors'
+import { CommandError } from '../error/errors'
 
 const namePattern = '[\\w_-]+'
 const vendorPattern = '[\\w_-]+'

@@ -1,6 +1,6 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import { Logger } from '@vtex/api/lib/service/logger'
-import * as env from '../../../env'
+import * as env from '../../env'
 import userAgent from '../../../user-agent'
 import { Headers } from '../../../lib/constants/Headers'
 import { SessionManager } from '../../session/SessionManager'

@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
-import { getAppRoot } from '../../../manifest'
+import { getAppRoot } from '../../../api/manifest'
 
 type Files = 'tsconfig' | 'eslintrc' | 'packageJson' | 'eslintIgnore' | 'prettierrc'
 

@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
-import { createTable } from '../../table'
+import { createTable } from '../../api/table'
 
 export default () => {
   const { account, workspace: currentWorkspace } = SessionManager.getSingleton()

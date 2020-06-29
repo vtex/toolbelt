@@ -2,7 +2,7 @@ import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import R from 'ramda'
-import { clusterIdDomainInfix, publicEndpoint } from '../env'
+import { clusterIdDomainInfix, publicEndpoint } from '../api/env'
 import { Headers } from '../lib/constants/Headers'
 import { SessionManager } from '../api/session/SessionManager'
 // Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯

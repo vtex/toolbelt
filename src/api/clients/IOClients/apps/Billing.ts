@@ -1,5 +1,5 @@
 import { AppClient, InstanceOptions, IOContext } from '@vtex/api'
-import { GraphQlError } from '../../../../errors'
+import { GraphQlError } from '../../../error/errors'
 import { IOClientFactory } from '../IOClientFactory'
 
 export class Billing extends AppClient {

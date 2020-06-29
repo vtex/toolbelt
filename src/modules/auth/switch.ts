@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { split } from 'ramda'
-import { CommandError } from '../../errors'
+import { CommandError } from '../../api/error/errors'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { promptConfirm } from '../prompts'

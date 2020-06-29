@@ -1,9 +1,9 @@
 import chalk from 'chalk'
-import { CommandError } from '../../errors'
+import { CommandError } from '../../api/error/errors'
 import { Sponsor } from '../../api/clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
-import { promptWorkspaceMaster } from '../apps/utils'
+import { promptWorkspaceMaster } from '../../api/modules/utils'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
 

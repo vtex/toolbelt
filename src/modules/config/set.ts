@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { contains, values } from 'ramda'
 
-import { CommandError } from '../../errors'
+import { CommandError } from '../../api/error/errors'
 import log from '../../api/logger'
 import { Environment, saveEnvironment, saveCluster } from '../../conf'
 

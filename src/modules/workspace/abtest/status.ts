@@ -4,7 +4,7 @@ import numbro from 'numbro'
 import R from 'ramda'
 import { SessionManager } from '../../../api/session/SessionManager'
 import log from '../../../api/logger'
-import { createTable } from '../../../table'
+import { createTable } from '../../../api/table'
 import { abtester, formatDuration, installedABTester } from './utils'
 
 interface ABTestStatus {

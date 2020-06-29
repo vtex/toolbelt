@@ -3,7 +3,7 @@ import moment from 'moment'
 import { map, reduce } from 'ramda'
 import { Builder } from './api/clients/IOClients/apps/Builder'
 import { getStickyHost, hasStickyHost, saveStickyHost } from './conf'
-import { BuilderHubTimeoutError } from './errors'
+import { BuilderHubTimeoutError } from './api/error/errors'
 import log from './api/logger'
 
 const TTL_SAVED_HOST_HOURS = 0
