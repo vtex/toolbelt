@@ -28,9 +28,26 @@ const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
-const checkLogin = async command => {
-  const whitelist = [undefined, 'config', 'login', 'logout', 'switch', 'whoami', 'init', '-v', '--version', 'release']
-  if (!SessionManager.getSingleton().checkValidCredentials() && whitelist.indexOf(command) === -1) {
+const checkLogin = async (command: string) => {
+  /**
+   * Commands for which previous login is not necessary. There's some exceptions:
+   * - link: It's necessary to be logged in, but there's some login logic there before running the link per se
+   */
+  const allowedList = [
+    undefined,
+    'config',
+    'login',
+    'logout',
+    'switch',
+    'whoami',
+    'init',
+    '-v',
+    '--version',
+    'release',
+    'link',
+  ]
+
+  if (!SessionManager.getSingleton().checkValidCredentials() && allowedList.indexOf(command) === -1) {
     log.debug('Requesting login before command:', command)
     await authLogin({})
   }

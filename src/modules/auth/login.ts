@@ -45,9 +45,13 @@ const notifyRelease = async () => {
   }
 }
 
-interface LoginOptions {
+type PostLoginOps = 'welcomeDashboard' | 'releaseNotify' | 'all'
+
+export interface LoginOptions {
   account?: string
   workspace?: string
+  allowUseCachedToken?: boolean
+  postLoginOps?: PostLoginOps[]
 }
 
 const getTargetLogin = async ({ account: optionAccount, workspace: optionWorkspace }: LoginOptions) => {
@@ -78,13 +82,23 @@ const getTargetLogin = async ({ account: optionAccount, workspace: optionWorkspa
   return { targetAccount: await promptDesiredAccount(), targetWorkspace }
 }
 
+const shouldShowAnnouncement = (target: PostLoginOps, ops: LoginOptions['postLoginOps']) => {
+  if (ops.includes('all') || ops.includes(target)) {
+    return true
+  }
+
+  return false
+}
+
 export default async (opts: LoginOptions) => {
+  const { allowUseCachedToken = false, postLoginOps = ['all'] } = opts
+
   const { targetAccount, targetWorkspace } = await getTargetLogin(opts)
   const sessionManager = SessionManager.getSingleton()
   try {
     await sessionManager.login(targetAccount, {
       targetWorkspace,
-      useCachedToken: false,
+      useCachedToken: allowUseCachedToken,
       workspaceCreation: {
         promptCreation: true,
         creator: workspaceCreator,
@@ -100,8 +114,13 @@ export default async (opts: LoginOptions) => {
       )} at workspace ${chalk.green(sessionManager.workspace)}`
     )
 
-    await welcome()
-    await notifyRelease()
+    if (shouldShowAnnouncement('welcomeDashboard', postLoginOps)) {
+      await welcome()
+    }
+
+    if (shouldShowAnnouncement('releaseNotify', postLoginOps)) {
+      await notifyRelease()
+    }
   } catch (err) {
     if (err.statusCode === 404) {
       log.error('Account/Workspace not found')
