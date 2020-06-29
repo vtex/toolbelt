@@ -4,7 +4,7 @@ import semver from 'semver'
 import { createRouterClient } from '../../api/clients/IOClients/infra/Router'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
-import { createTable } from '../../table'
+import { createTable } from '../../api/table'
 import { getLastStableAndPrerelease } from './utils'
 
 const { account, workspace } = SessionManager.getSingleton()

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { CommandError } from '../../errors'
+import { CommandError } from '../../api/error/errors'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'

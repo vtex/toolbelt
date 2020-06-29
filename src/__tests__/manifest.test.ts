@@ -1,4 +1,4 @@
-import { ManifestValidator } from '../lib/manifest'
+import { ManifestValidator } from '../api/manifest'
 
 test.each([
   ['foo@', false],

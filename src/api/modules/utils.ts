@@ -2,16 +2,22 @@ import axios from 'axios'
 import chalk from 'chalk'
 import Table from 'cli-table2'
 import enquirer from 'enquirer'
-import { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
+import R, { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
-import { CommandError } from '../../errors'
-import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
-import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
-import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
-import { ManifestEditor } from '../../lib/manifest'
-import { SessionManager } from '../../api/session/SessionManager'
-import log from '../../api/logger'
-import { promptConfirm } from '../prompts'
+import { CommandError } from '../error/errors'
+import { createAppsClient } from '../clients/IOClients/infra/Apps'
+import { createRegistryClient } from '../clients/IOClients/infra/Registry'
+import { createWorkspacesClient } from '../clients/IOClients/infra/Workspaces'
+import { ManifestEditor, getAppRoot } from '../manifest'
+import { SessionManager } from '../session/SessionManager'
+import log from '../logger'
+import { promptConfirm } from '../../modules/prompts'
+import { execSync } from 'child-process-es6-promise'
+import { diffArrays } from 'diff'
+import { existsSync } from 'fs-extra'
+import { resolve as resolvePath } from 'path'
+
+import { createTable } from '../table'
 
 const workspaceExampleName = process.env.USER || 'example'
 
@@ -244,3 +250,122 @@ export const resolveAppId = (appName: string, appVersion: string): Promise<strin
 }
 
 export const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')
+
+// PS: All functions below was merged from the other utils.ts file
+
+export const yarnPath = `"${require.resolve('yarn/bin/yarn')}"`
+
+export const formatNano = (nanoseconds: number): string =>
+  `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(0)}ms`
+
+export const runYarn = (relativePath: string, force: boolean) => {
+  log.info(`Running yarn in ${chalk.green(relativePath)}`)
+  const root = getAppRoot()
+  const command = force
+    ? `${yarnPath} --force --non-interactive --ignore-engines`
+    : `${yarnPath} --non-interactive --ignore-engines`
+  execSync(command, { stdio: 'inherit', cwd: resolvePath(root, relativePath) })
+  log.info('Finished running yarn')
+}
+
+export const runYarnIfPathExists = (relativePath: string) => {
+  const root = getAppRoot()
+  const pathName = resolvePath(root, relativePath)
+  if (existsSync(pathName)) {
+    try {
+      runYarn(relativePath, false)
+    } catch (e) {
+      log.error(`Failed to run yarn in ${chalk.green(relativePath)}`)
+      throw e
+    }
+  }
+}
+
+const formatAppId = (appId: string) => {
+  const [appVendor, appName] = R.split('.', appId)
+  if (!appName) {
+    // Then the app is an 'infra' app.
+    const [infraAppVendor, infraAppName] = R.split(':', appId)
+    if (!infraAppName) {
+      return appId
+    }
+    return `${chalk.blue(infraAppVendor)}:${infraAppName}`
+  }
+  return `${chalk.blue(appVendor)}.${appName}`
+}
+
+const cleanVersion = (appId: string) => {
+  return R.compose<string, string[], string, string>(
+    (version: string) => {
+      const [pureVersion, build] = R.split('+build', version)
+      return build ? `${pureVersion}(linked)` : pureVersion
+    },
+    R.last,
+    R.split('@')
+  )(appId)
+}
+
+export const matchedDepsDiffTable = (title1: string, title2: string, deps1: string[], deps2: string[]) => {
+  const depsDiff = diffArrays(deps1, deps2)
+  // Get deduplicated names (no version) of the changed deps.
+  const depNames = [
+    ...new Set(
+      R.compose<string[], any[], string[], string[], string[]>(
+        R.map(k => R.head(R.split('@', k))),
+        R.flatten,
+        R.pluck('value'),
+        R.filter((k: any) => !!k.removed || !!k.added)
+      )(depsDiff)
+    ),
+  ].sort((strA, strB) => strA.localeCompare(strB))
+  const produceStartValues = () => R.map(_ => [])(depNames) as any
+  // Each of the following objects will start as a { `depName`: [] }, ... }-like.
+  const addedDeps = R.zipObj(depNames, produceStartValues())
+  const removedDeps = R.zipObj(depNames, produceStartValues())
+
+  // Custom function to set the objects values.
+  const setObjectValues = (obj, formatter, filterFunction) => {
+    R.compose<void, any[], any[], any[], any[]>(
+      // eslint-disable-next-line array-callback-return
+      R.map(k => {
+        const index = R.head(R.split('@', k))
+        obj[index].push(formatter(k))
+      }),
+      R.flatten,
+      R.pluck('value'),
+      R.filter(filterFunction)
+    )(depsDiff)
+    R.mapObjIndexed((_, index) => {
+      obj[index] = obj[index].join(',')
+    })(obj)
+  }
+
+  // Setting the objects values.
+  setObjectValues(
+    removedDeps,
+    k => chalk.red(`${cleanVersion(k)}`),
+    (k: any) => !!k.removed
+  )
+  setObjectValues(
+    addedDeps,
+    k => chalk.green(`${cleanVersion(k)}`),
+    (k: any) => !!k.added
+  )
+
+  const table = createTable() // Set table headers.
+  table.push(['', chalk.bold.yellow(title1), chalk.bold.yellow(title2)])
+
+  const formattedDepNames = R.map(formatAppId, depNames)
+  // Push array of changed dependencies pairs to the table.
+  Array.prototype.push.apply(
+    table,
+    R.map((k: any[]) => R.flatten(k))(
+      R.zip(
+        // zipping 3 arrays.
+        R.zip(formattedDepNames, R.values(removedDeps)),
+        R.values(addedDeps)
+      )
+    )
+  )
+  return table
+}

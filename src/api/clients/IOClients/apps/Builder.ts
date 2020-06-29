@@ -1,5 +1,5 @@
 import { AppClient, CacheType, InstanceOptions, IOContext, RequestConfig } from '@vtex/api'
-import { ChangeToSend } from '../../../../modules/apps/ProjectUploader'
+import { ChangeToSend } from '../../../modules/apps/ProjectUploader'
 import { Headers } from '../../../../lib/constants/Headers'
 import { ErrorKinds } from '../../../error/ErrorKinds'
 import { ErrorReport } from '../../../error/ErrorReport'

@@ -1,5 +1,5 @@
 import { Runtime } from '../../api/clients/IOClients/infra/Runtime'
-import { ManifestEditor } from '../../lib/manifest'
+import { ManifestEditor } from '../../api/manifest'
 import logger from '../../api/logger'
 
 export default async (debugInst: string) => {

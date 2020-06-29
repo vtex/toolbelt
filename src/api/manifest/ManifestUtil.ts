@@ -3,7 +3,7 @@ import { readFile, writeFile } from 'fs-extra'
 import path from 'path'
 import { memoize } from 'ramda'
 
-import { CommandError } from './errors'
+import { CommandError } from '../error/errors'
 
 const readFileUtf = (file: string): Promise<string> => {
   return readFile(file, 'utf8')

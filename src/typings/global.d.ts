@@ -12,12 +12,6 @@ declare global {
     content: string | Readable | Buffer | null
   }
 
-  interface BatchStream {
-    path: string
-    content: NodeJS.ReadableStream
-    byteSize: number
-  }
-
   type Manifest = AppManifest
 
   interface InstalledApp {

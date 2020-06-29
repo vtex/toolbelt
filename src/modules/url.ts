@@ -1,4 +1,4 @@
-import { clusterIdDomainInfix, publicEndpoint } from '../env'
+import { clusterIdDomainInfix, publicEndpoint } from '../api/env'
 import { SessionManager } from '../api/session/SessionManager'
 
 export default () => {

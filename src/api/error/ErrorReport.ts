@@ -11,7 +11,7 @@ import logger from '../logger'
 import { SessionManager } from '../session/SessionManager'
 import { getPlatform } from '../../lib/utils/getPlatform'
 import { TelemetryCollector } from '../telemetry/TelemetryCollector'
-import { CommandError } from '../../errors'
+import { CommandError } from './errors'
 
 interface CustomErrorReportCreateArgs extends ErrorReportCreateArgs {
   shouldRemoteReport?: boolean

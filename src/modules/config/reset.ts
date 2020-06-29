@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 
-import { CommandError } from '../../errors'
+import { CommandError } from '../../api/error/errors'
 import { saveEnvironment, saveCluster, ENV_DEFAULT_VALUE, CLUSTER_DEFAULT_VALUE } from '../../conf'
 
 export default (name: string) => {

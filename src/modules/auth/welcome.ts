@@ -5,9 +5,9 @@ import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { SessionManager } from '../../api/session/SessionManager'
-import { parseLocator } from '../../locator'
+import { parseLocator } from '../../api/locator'
 import log from '../../api/logger'
-import { createTable } from '../../table'
+import { createTable } from '../../api/table'
 
 const filterBySource = (method: 'edition' | 'installation') => {
   return (el: any) => el?._source === method

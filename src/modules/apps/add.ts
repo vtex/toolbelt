@@ -1,9 +1,9 @@
 import chalk from 'chalk'
-import { region } from '../../env'
-import { CommandError } from '../../errors'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
+import { region } from '../../api/env'
+import { CommandError } from '../../api/error/errors'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import log from '../../api/logger'
-import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from './utils'
+import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from '../../api/modules/utils'
 import { createRouterClient } from '../../api/clients/IOClients/infra/Router'
 
 const unprefixName = (str: string) => {

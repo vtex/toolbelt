@@ -1,6 +1,6 @@
 import { Workspaces } from '@vtex/api'
 import chalk from 'chalk'
-import { CommandError } from '../../errors'
+import { CommandError } from '../../api/error/errors'
 import { Builder } from '../../api/clients/IOClients/apps/Builder'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { ErrorReport } from '../../api/error/ErrorReport'

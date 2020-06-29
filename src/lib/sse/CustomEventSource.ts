@@ -1,5 +1,5 @@
 import EventSource from 'eventsource'
-import { cluster, envCookies } from '../../env'
+import { cluster, envCookies } from '../../api/env'
 import userAgent from '../../user-agent'
 import { Headers } from '../constants/Headers'
 import { SessionManager } from '../../api/session/SessionManager'

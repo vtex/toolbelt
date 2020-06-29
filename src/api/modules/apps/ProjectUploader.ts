@@ -1,11 +1,11 @@
-import { Builder, RequestParams } from '../../api/clients/IOClients/apps/Builder'
-import { getSavedOrMostAvailableHost } from '../../host'
+import { Builder, RequestParams } from '../../clients/IOClients/apps/Builder'
+import { getSavedOrMostAvailableHost } from '../../../host'
 import { Readable } from 'stream'
 import { ZlibOptions } from 'zlib'
 import archiver from 'archiver'
 import chalk from 'chalk'
 import getStream from 'get-stream'
-import logger from '../../api/logger'
+import logger from '../../logger'
 
 const MB = 1000000
 

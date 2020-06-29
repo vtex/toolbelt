@@ -2,7 +2,7 @@ import { lstat, readFileSync } from 'fs-extra'
 import glob from 'globby'
 import { join } from 'path'
 import { reject } from 'ramda'
-import log from '../../api/logger'
+import log from '../../logger'
 
 const defaultIgnored = [
   '.DS_Store',

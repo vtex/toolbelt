@@ -5,7 +5,7 @@ import { resolve } from 'path'
 import { path } from 'ramda'
 import semver from 'semver'
 import log from '../../api/logger'
-import { getAppRoot } from '../../manifest'
+import { getAppRoot } from '../../api/manifest'
 import { promptConfirm } from '../prompts'
 
 const root = getAppRoot()

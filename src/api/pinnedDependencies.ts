@@ -1,6 +1,6 @@
-import logger from '../api/logger'
-import { getAppRoot } from '../manifest'
-import { PackageJson } from './packageJson'
+import logger from './logger'
+import { getAppRoot } from './manifest/ManifestUtil'
+import { PackageJson } from '../lib/packageJson'
 
 export interface PinnedDeps {
   common: {
