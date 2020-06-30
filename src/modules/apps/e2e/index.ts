@@ -1,13 +1,13 @@
 import chalk from 'chalk'
 
-import { createAppsClient } from '../../../lib/clients/IOClients/infra/Apps'
-import { Tester, TestRequest, AppReport } from '../../../lib/clients/IOClients/apps/Tester'
-import { ManifestEditor } from '../../../lib/manifest/ManifestEditor'
-import { SessionManager } from '../../../lib/session/SessionManager'
+import { createAppsClient } from '../../../api/clients/IOClients/infra/Apps'
+import { Tester, TestRequest, AppReport } from '../../../api/clients/IOClients/apps/Tester'
+import { ManifestEditor } from '../../../api/manifest/ManifestEditor'
+import { SessionManager } from '../../../api/session/SessionManager'
 import { parseReport, AppTest, passedApp } from './specsState'
-import { parseLocator } from '../../../locator'
-import logger from '../../../logger'
-import { clusterIdDomainInfix, publicEndpoint } from '../../../env'
+import { parseLocator } from '../../../api/locator'
+import logger from '../../../api/logger'
+import { clusterIdDomainInfix, publicEndpoint } from '../../../api/env'
 
 const POLL_INTERVAL = 2000
 

@@ -1,4 +1,4 @@
-import { SpecReport, AppReport, TestReport } from '../../../api/clients/IOClients/apps/'
+import { SpecReport, AppReport, TestReport } from '../../../api/clients/IOClients/apps'
 
 const COMPLETED_STATES = ['passed', 'failed', 'skipped', 'error']
 
