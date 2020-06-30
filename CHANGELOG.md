@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
 ### Changed
+- [vtex test / vtex lighthouse] Refactored this commands to use them as oclif plugins.
 - [vtex test e2e] Simplified test summary linking to full report.
 
 ## [2.103.0] - 2020-06-29
