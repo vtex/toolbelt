@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.104.0] - 2020-07-06
+### Changed
+- [vtex test e2e] Simplified test summary linking to full report.
+
 ## [2.103.0] - 2020-06-29
 
 ### Added

@@ -1,7 +1,11 @@
-import { SpecReport, AppReport, TestReport } from '../../../../lib/clients/IOClients/apps/Tester'
-import { ReportProps } from './index'
+import { SpecReport, AppReport, TestReport } from '../../../lib/clients/IOClients/apps/Tester'
 
 const COMPLETED_STATES = ['passed', 'failed', 'skipped', 'error']
+
+export interface AppTest {
+  appId: string
+  specs: AppReport
+}
 
 export const completedSpec = (specReport: SpecReport) => COMPLETED_STATES.includes(specReport.state)
 const completedApp = (appReport: AppReport) => {
@@ -10,15 +14,15 @@ const completedApp = (appReport: AppReport) => {
   })
 }
 
-export const passedSpec = (specReport: SpecReport) => specReport.state === 'passed'
+export const passedSpec = (specReport: SpecReport) => specReport.state !== 'failed'
 export const passedApp = (appReport: AppReport) => {
   return Object.values(appReport).every((specReport: SpecReport) => {
     return passedSpec(specReport)
   })
 }
 
-export const parseReport = (report: TestReport): ReportProps => {
-  const appTests = Object.keys(report).map(appId => {
+export const parseReport = (report: TestReport) => {
+  const appTests: AppTest[] = Object.keys(report).map(appId => {
     return {
       appId,
       specs: report[appId],
