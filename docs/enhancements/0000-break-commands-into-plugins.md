@@ -10,9 +10,9 @@ Nowadays we have a CLI that, by default, comes with a **LOT** of commands that p
 
 ![](https://i.imgur.com/2GIq2Ep.png)
 
-The idea is to remove this commands that are not necessary to come by default, i.e., `vtex lighthouse` and `vtex test`. Eventually the user will need to use some of this extra commands, so just import to your own CLI.
+The idea is to remove commands that are not necessary to be included on toolbelt by default, e.g., `vtex lighthouse` and `vtex test`. If the user eventually needs to use some of these extra commands, he/she can just add the desired command to its local CLI.
 
-We can also have a library with all the possible commands that the user can import such as [Adobe I/O CLI](https://github.com/adobe/aio-cli).
+In order to provide discoverability of possible commands the user can import a library can be created with all commands approved by VTEX (inspired in  [Adobe I/O CLI](https://github.com/adobe/aio-cli)), this way the users will have a curated list of safe commands to install locally.
 
 ![](https://i.imgur.com/TXS0MmO.png)
 
@@ -26,7 +26,7 @@ This new change will be made by `plugins`, breaking all the commands and transfo
 
 ### Toolbelt Plugins
 
-Huge amount of toolbelt commands share the same piece of code, in order that, toolbelt plugins will need to use it as well. So what do toolbelt-plugins will need?
+Toolbelt commands share a lot of common code, which is a situation that will happen too when the commands are broken into plugins. Because of this we have to create a way to share this common code across plugins, but first we have to determine what we want to share across them:
 
 - `SessionManager`
 - `Clients + IOClientFactory + SSE Helpers`
@@ -45,7 +45,7 @@ Create a `@vtex/toolbelt-api` with all these needs. The plugins would always use
 
 ##### Problem #1
 
-How do we guarantee that all installed plugins are using the same `@vtex/toolbelt-api version`? The problem on them using different versions is the amount of code to be compiled when requiring and the fact that we could have fixed a major bug in a `@vtex/toolbelt-api`'s patch. 
+How do we guarantee that all installed plugins are using the same `@vtex/toolbelt-api` version? The problem on them using different versions is the amount of code to be compiled when requiring and the fact that we could have fixed a major bug in a `@vtex/toolbelt-api`'s patch. 
 
 ![](https://i.imgur.com/WTBuh0Y.png)
 
@@ -82,7 +82,7 @@ Problem with external plugins [here](https://github.com/VerasThiago/npmPackageTe
 
 Reorganize toolbelt `/src`, to store the code that will be shared inside a folder `toolbelt-api` for example.
 
-Plugins now imports from `toolbelt` the code that they will use. Today the toolbelt don't allow this easily because he doesn't offer re-export entrypoints and don't have on the published bundle the typescript types.
+Plugins now import from `toolbelt` the code that they will use. Currently toolbelt doesn't allow this easily because it doesn't offer re-export entrypoints and doesn't have on the published bundle the typescript types.
 
 To solve this problem is quite simple, just need to add the `declaration: true` option inside `tsconfig` and now the user can do:
 
@@ -113,7 +113,7 @@ Check the full benchmark [here](https://github.com/tiagonapoli/benchmarking/tree
 )
 
 
-In order that, I made a benchmark to analyze if this cost will be really bad for the `toolbelt` performance, and the results was pretty good as far as I understand.
+Because of this, I made a benchmark to analyze if this cost will be really bad for the `toolbelt` performance, and the results was pretty good as far as I understand.
 
 | Command | Mean [ms] | Min [ms] | Max [ms] | Relative |
 |:---|---:|---:|---:|---:|

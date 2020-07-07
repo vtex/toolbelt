@@ -251,8 +251,6 @@ export const resolveAppId = (appName: string, appVersion: string): Promise<strin
 
 export const isLinked = propSatisfies<string, Manifest>(contains('+build'), 'version')
 
-// PS: All functions below was merged from the other utils.ts file
-
 export const yarnPath = `"${require.resolve('yarn/bin/yarn')}"`
 
 export const formatNano = (nanoseconds: number): string =>
