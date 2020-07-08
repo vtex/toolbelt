@@ -6,7 +6,6 @@ import { TelemetryLocalStore } from '../TelemetryStore'
 import { PendingTelemetryDataManager } from './PendingTelemetryDataManager'
 import { TelemetryReporter } from './TelemetryReporter'
 
-
 const reportTelemetry = async () => {
   const reportTime = process.hrtime()
   const telemetryObjFilePath = process.argv[3]

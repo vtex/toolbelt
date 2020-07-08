@@ -4,10 +4,10 @@ import { ensureFileSync, writeJsonSync } from 'fs-extra'
 import { join } from 'path'
 import * as pkgJson from '../../../package.json'
 import logger from '../../api/logger'
-import { PathConstants } from '../../lib/constants/Paths'
+import { PathConstants } from '../constants/Paths'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { Metric, MetricReport, MetricReportObj } from '../../api/metrics/MetricReport'
-import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
+import { spawnUnblockingChildProcess } from '../utils/spawnUnblockingChildProcess'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
 
 export interface TelemetryFile {

@@ -4,8 +4,8 @@ import glob from 'globby'
 import { join } from 'path'
 import { TelemetryMetaMetrics } from '../../../api/metrics/MetricNames'
 import { MetricReport } from '../../../api/metrics/MetricReport'
-import { FileLock } from '../../../lib/utils/FileLock'
-import { hrTimeToMs } from '../../../lib/utils/hrTimeToMs'
+import { FileLock } from '../../utils/FileLock'
+import { hrTimeToMs } from '../../utils/hrTimeToMs'
 import { TelemetryCollector, TelemetryFile } from '../TelemetryCollector'
 
 export class PendingTelemetryDataManager {
