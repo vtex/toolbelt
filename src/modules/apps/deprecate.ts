@@ -3,7 +3,7 @@ import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { SessionManager } from '../../api/session/SessionManager'
-import { TelemetryCollector } from '../../api/telemetry/TelemetryCollector'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { parseLocator } from '../../api/locator'
 import log from '../../api/logger'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'

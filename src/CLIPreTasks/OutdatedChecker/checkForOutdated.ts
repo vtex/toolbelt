@@ -3,7 +3,7 @@ const initTime = process.hrtime()
 import { ToolbeltConfig } from '../../api/clients/IOClients/apps/ToolbeltConfig'
 import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import { TelemetryCollector } from '../../api/telemetry/TelemetryCollector'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
 import { IOutdatedCheckerStore, OutdatedCheckerStore } from './OutdatedCheckerStore'
 

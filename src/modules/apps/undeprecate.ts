@@ -7,7 +7,7 @@ import { parseLocator } from '../../api/locator'
 import log from '../../api/logger'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
-import { TelemetryCollector } from '../../api/telemetry/TelemetryCollector'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 
 let originalAccount
 let originalWorkspace

@@ -6,7 +6,7 @@ import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
 
 import { envCookies } from '../../api/env'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
-import { TelemetryCollector } from '../../api/telemetry/TelemetryCollector'
+import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
 import { updateNotify } from '../../update'
 import log from '../../api/logger'

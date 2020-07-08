@@ -1,5 +1,5 @@
-import { TelemetryMetaMetrics } from '../../metrics/MetricNames'
-import { SessionManager } from '../../session/SessionManager'
+import { TelemetryMetaMetrics } from '../../../api/metrics/MetricNames'
+import { SessionManager } from '../../../api/session/SessionManager'
 import { TelemetryLocalStore } from '../TelemetryStore'
 import { PendingTelemetryDataManager } from './PendingTelemetryDataManager'
 import { TelemetryReporter } from './TelemetryReporter'
