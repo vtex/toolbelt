@@ -5,7 +5,7 @@ import { mergeDeepRight } from 'ramda'
 import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { default as log, default as logger } from '../../api/logger'
-import { getAppRoot } from '../../api/manifest'
+import { getAppRoot } from '../../api/manifest/ManifestUtil'
 import { yarnPath } from '../utils'
 import {
   BUILDERS_WITH_TOOLING,

@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
-import { ManifestValidator, getManifest } from '../../api/manifest'
+import { ManifestValidator } from '../../api/manifest'
+import { getManifest } from '../../api/manifest/ManifestUtil'
 import { SessionManager } from '../../api/session/SessionManager'
 import { parseLocator, toAppLocator } from '../../api/locator'
 import log from '../../api/logger'

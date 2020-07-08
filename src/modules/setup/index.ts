@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import logger from '../../api/logger'
-import { getManifest } from '../../api/manifest'
+import { getManifest } from '../../api/manifest/ManifestUtil'
 import { setupTooling } from './setupTooling'
 import { setupTSConfig } from './setupTSConfig'
 import { setupTypings } from './setupTypings'
