@@ -14,7 +14,7 @@ const completedApp = (appReport: AppReport) => {
   })
 }
 
-export const passedSpec = (specReport: SpecReport) => specReport.state !== 'failed'
+export const passedSpec = (specReport: SpecReport) => specReport.state === 'passed'
 export const passedApp = (appReport: AppReport) => {
   return Object.values(appReport).every((specReport: SpecReport) => {
     return passedSpec(specReport)
