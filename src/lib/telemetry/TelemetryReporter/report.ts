@@ -1,10 +1,11 @@
+const initTime = process.hrtime()
+
 import { TelemetryMetaMetrics } from '../../../api/metrics/MetricNames'
 import { SessionManager } from '../../../api/session/SessionManager'
 import { TelemetryLocalStore } from '../TelemetryStore'
 import { PendingTelemetryDataManager } from './PendingTelemetryDataManager'
 import { TelemetryReporter } from './TelemetryReporter'
 
-const initTime = process.hrtime()
 
 const reportTelemetry = async () => {
   const reportTime = process.hrtime()
