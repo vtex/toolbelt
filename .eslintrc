@@ -25,7 +25,7 @@
       }
     },
     {
-      "files": ["./src/apilogger.ts"],
+      "files": ["./src/api/logger.ts"],
       "rules": {
         "@typescript-eslint/ban-ts-ignore": "off"
       }
