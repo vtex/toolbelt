@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import editionSet from '../../modules/sponsor/setEdition'
 
 export default class EditionSet extends CustomCommand {

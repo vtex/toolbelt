@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import { Sponsor } from '../../lib/clients/IOClients/apps/Sponsor'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { Sponsor } from '../../api/clients/IOClients/apps/Sponsor'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 
 export default async () => {
   const sponsorClient = Sponsor.createClient()

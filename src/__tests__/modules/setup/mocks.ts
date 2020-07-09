@@ -4,7 +4,7 @@ export const mockCreateClients = () => {
     typingsInfo: jest.fn(),
   }
 
-  jest.doMock('../../../lib/clients/IOClients/apps/Builder', () => {
+  jest.doMock('../../../api/clients/IOClients/apps/Builder', () => {
     return {
       Builder: {
         createClient: () => builder,
@@ -35,9 +35,9 @@ export const mockConf = () => {
 }
 
 export const mockEnv = () => {
-  jest.doMock('../../../env', () => {
+  jest.doMock('../../../api/env', () => {
     return {
-      ...jest.requireActual('../../../env'),
+      ...jest.requireActual('../../../api/env'),
       publicEndpoint: jest.fn().mockReturnValue('public-endpoint'),
     }
   })
@@ -52,15 +52,15 @@ export const mockRunYarn = () => {
 }
 
 export const mockAppsUtils = () => {
-  jest.doMock('../../../modules/apps/utils', () => {
+  jest.doMock('../../../api/modules/utils', () => {
     return {
-      isLinked: jest.requireActual('../../../modules/apps/utils').isLinked,
+      isLinked: jest.requireActual('../../../api/modules/utils').isLinked,
       resolveAppId: jest.fn(),
       appIdFromRegistry: jest.fn(),
     }
   })
 
-  const { resolveAppId, appIdFromRegistry } = jest.requireMock('../../../modules/apps/utils')
+  const { resolveAppId, appIdFromRegistry } = jest.requireMock('../../../api/modules/utils')
   let appsAppIDs = {}
   resolveAppId.mockImplementation((appName: string, appVersion: string) => appsAppIDs[appName][appVersion])
   let registryAppIDs = {}

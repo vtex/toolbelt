@@ -1,7 +1,7 @@
-import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import { validateAppAction } from './utils'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
+import log from '../../api/logger'
+import { validateAppAction } from '../../api/modules/utils'
 
 const { unlink, unlinkAll, listLinks } = createAppsClient()
 

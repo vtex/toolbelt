@@ -1,6 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
+
+import { CustomCommand } from '../api/oclif/CustomCommand'
 import { appLink } from '../modules/apps/link'
-import { CustomCommand } from '../oclif/CustomCommand'
 
 export default class Link extends CustomCommand {
   static description = 'Start a development session for this app'

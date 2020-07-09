@@ -2,11 +2,11 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { map, prop } from 'ramda'
 
-import log from '../../../logger'
+import log from '../../../api/logger'
 import { promptConfirm } from '../../prompts'
 import { default as abTestStatus } from './status'
 import { abtester, installedABTester } from './utils'
-import { SessionManager } from '../../../lib/session/SessionManager'
+import { SessionManager } from '../../../api/session/SessionManager'
 
 const { account } = SessionManager.getSingleton()
 

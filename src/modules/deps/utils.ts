@@ -1,5 +1,5 @@
 import { compose, keys } from 'ramda'
-import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 
 const isNpm = dep => dep.startsWith('npm:')
 

@@ -1,4 +1,4 @@
-import { CustomCommand } from '../oclif/CustomCommand'
+import { CustomCommand } from '../api/oclif/CustomCommand'
 import authSupport from '../modules/support/login'
 
 export default class Support extends CustomCommand {

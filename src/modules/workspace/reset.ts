@@ -1,9 +1,9 @@
 import chalk from 'chalk'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 import { promptConfirm } from '../prompts'
 import { ensureValidEdition } from './common/edition'
-import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
+import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 
 const promptWorkspaceReset = (name: string, account: string) =>
   promptConfirm(`Are you sure you want to reset workspace ${chalk.green(name)} on account ${chalk.blue(account)}?`)

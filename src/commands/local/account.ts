@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import authAccount from '../../modules/local/account'
 
 export default class LocalAccount extends CustomCommand {

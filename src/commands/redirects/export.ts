@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import redirectsExport from '../../modules/rewriter/export'
 
 export default class RedirectsExport extends CustomCommand {

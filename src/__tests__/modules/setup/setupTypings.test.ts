@@ -1,7 +1,7 @@
 import { manifestSamples } from '../../fixtures/manifests'
 import { mockAppsUtils, mockConf, mockCreateClients, mockEnv, mockRunYarn, mockSetupUtils } from './mocks'
 
-jest.mock('../../../lib/session/SessionManager')
+jest.mock('../../../api/session/SessionManager')
 
 mockConf()
 mockEnv()

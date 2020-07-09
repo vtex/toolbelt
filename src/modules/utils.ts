@@ -4,9 +4,9 @@ import { diffArrays } from 'diff'
 import { existsSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import R from 'ramda'
-import log from '../logger'
-import { getAppRoot } from '../manifest'
-import { createTable } from '../table'
+import log from '../api/logger'
+import { getAppRoot } from '../api/manifest/ManifestUtil'
+import { createTable } from '../api/table'
 
 export const yarnPath = `"${require.resolve('yarn/bin/yarn')}"`
 

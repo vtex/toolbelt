@@ -1,10 +1,10 @@
 import chalk from 'chalk'
-import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 import { promptConfirm } from '../prompts'
-import { validateAppAction } from './utils'
+import { validateAppAction } from '../../api/modules/utils'
 
 const { uninstallApp } = createAppsClient()
 

@@ -1,6 +1,6 @@
-import { AppLogsEventSource } from '../../lib/clients/eventSources/AppLogsEventSource'
-import { ManifestEditor } from '../../lib/manifest'
-import log from '../../logger'
+import { AppLogsEventSource } from '../../api/clients/eventSources/AppLogsEventSource'
+import { ManifestEditor } from '../../api/manifest'
+import log from '../../api/logger'
 
 export default async (app: string, options) => {
   if (options.all) {

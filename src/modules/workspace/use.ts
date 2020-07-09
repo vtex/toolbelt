@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import { CommandError } from '../../errors'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { CommandError } from '../../api/error/errors'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from './create'
 import resetWks from './reset'
 

@@ -1,5 +1,5 @@
 import workspaceInfo from '../../modules/workspace/info'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class WorkspaceInfo extends CustomCommand {
   static description = 'Display information about the current workspace'

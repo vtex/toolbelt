@@ -1,5 +1,5 @@
 import appsInfraInstall from '../../modules/infra/install'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class InfraInstall extends CustomCommand {
   static description = 'Install an infra service'

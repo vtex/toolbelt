@@ -1,12 +1,12 @@
 import streamToString from 'get-stream'
 import net from 'net'
 import WebSocket from 'ws'
-import { cluster } from '../../env'
+import { cluster } from '../../api/env'
 import { Headers } from '../../lib/constants/Headers'
-import { ManifestEditor } from '../../lib/manifest'
-import { SessionManager } from '../../lib/session/SessionManager'
-import { versionMajor } from '../../locator'
-import log from '../../logger'
+import { ManifestEditor } from '../../api/manifest'
+import { SessionManager } from '../../api/session/SessionManager'
+import { versionMajor } from '../../api/locator'
+import log from '../../api/logger'
 import userAgent from '../../user-agent'
 
 const keepAliveDelayMs = 3 * 60 * 1000

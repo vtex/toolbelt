@@ -3,9 +3,9 @@ import { readJson, writeFile } from 'fs-extra'
 import { Parser } from 'json2csv'
 import ora from 'ora'
 import { createInterface } from 'readline'
-import { Redirect, Rewriter } from '../../lib/clients/IOClients/apps/Rewriter'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { Redirect, Rewriter } from '../../api/clients/IOClients/apps/Rewriter'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 import { isVerbose } from '../../verbose'
 import {
   deleteMetainfo,

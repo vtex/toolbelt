@@ -1,9 +1,9 @@
 import { Workspaces } from '@vtex/api'
 import chalk from 'chalk'
 import { contains, flatten, head, tail } from 'ramda'
-import { createWorkspacesClient } from '../../lib/clients/IOClients/infra/Workspaces'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 import { promptConfirm } from '../prompts'
 import workspaceUse from './use'
 

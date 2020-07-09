@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import debugDotnet from '../../modules/debug/dotnet'
 
 export default class DotnetDebug extends CustomCommand {

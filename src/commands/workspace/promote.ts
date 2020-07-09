@@ -1,5 +1,5 @@
 import workspacePromote from '../../modules/workspace/promote'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class WorkspacePromote extends CustomCommand {
   static description = 'Promote this workspace to master'

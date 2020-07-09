@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import authWorkspace from '../../modules/local/workspace'
 
 export default class LocalWorkspace extends CustomCommand {

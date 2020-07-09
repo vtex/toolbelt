@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import configReset from '../../modules/config/reset'
 
 export default class ConfigReset extends CustomCommand {

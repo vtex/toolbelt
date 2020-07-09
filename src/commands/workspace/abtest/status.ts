@@ -1,5 +1,5 @@
 import testAbStatus from '../../../modules/workspace/abtest/status'
-import { CustomCommand } from '../../../oclif/CustomCommand'
+import { CustomCommand } from '../../../api/oclif/CustomCommand'
 
 export default class ABTestStatus extends CustomCommand {
   static description = 'Display currently running AB tests results'

@@ -4,9 +4,9 @@ import { pipeline } from 'stream'
 import axios from 'axios'
 import tar from 'tar'
 
-import log from '../../logger'
+import log from '../../api/logger'
 import { FileReaderWriter } from './includes/FileReaderWriter'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 
 export const packageJsonEditor = new FileReaderWriter('packageJson')
 export const eslintrcEditor = new FileReaderWriter('eslintrc')

@@ -3,10 +3,10 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
-import * as env from '../../env'
+import * as env from '../../api/env'
 import { Headers } from '../../lib/constants/Headers'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 
 const getAvailableRoles = async (token: string, supportedAccount: string): Promise<string[]> => {
   const { account, workspace } = SessionManager.getSingleton()

@@ -3,12 +3,12 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import numbro from 'numbro'
 import { compose, filter, map, prop } from 'ramda'
-import * as env from '../../../env'
-import { CommandError } from '../../../errors'
-import { ABTester } from '../../../lib/clients/IOClients/apps/ABTester'
-import { createAppsClient } from '../../../lib/clients/IOClients/infra/Apps'
-import { createWorkspacesClient } from '../../../lib/clients/IOClients/infra/Workspaces'
-import { SessionManager } from '../../../lib/session/SessionManager'
+import * as env from '../../../api/env'
+import { CommandError } from '../../../api/error/errors'
+import { ABTester } from '../../../api/clients/IOClients/apps/ABTester'
+import { createAppsClient } from '../../../api/clients/IOClients/infra/Apps'
+import { createWorkspacesClient } from '../../../api/clients/IOClients/infra/Workspaces'
+import { SessionManager } from '../../../api/session/SessionManager'
 
 const DEFAULT_TIMEOUT = 15000
 
