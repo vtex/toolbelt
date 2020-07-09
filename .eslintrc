@@ -25,13 +25,13 @@
       }
     },
     {
-      "files": ["./src/logger.ts"],
+      "files": ["./src/apilogger.ts"],
       "rules": {
         "@typescript-eslint/ban-ts-ignore": "off"
       }
     },
     {
-      "files": ["./src/oclif/CustomCommand.ts"],
+      "files": ["./src/api/oclif/CustomCommand.ts"],
       "rules": {
         "@typescript-eslint/no-var-requires": "warn"
       }
