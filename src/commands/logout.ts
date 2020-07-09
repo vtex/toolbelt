@@ -1,4 +1,4 @@
-import { CustomCommand } from '../oclif/CustomCommand'
+import { CustomCommand } from '../api/oclif/CustomCommand'
 import authLogout from '../modules/auth/logout'
 
 export default class Logout extends CustomCommand {

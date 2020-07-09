@@ -2,9 +2,9 @@ import chalk from 'chalk'
 import moment from 'moment'
 import numbro from 'numbro'
 import R from 'ramda'
-import { SessionManager } from '../../../lib/session/SessionManager'
-import log from '../../../logger'
-import { createTable } from '../../../table'
+import { SessionManager } from '../../../api/session/SessionManager'
+import log from '../../../api/logger'
+import { createTable } from '../../../api/table'
 import { abtester, formatDuration, installedABTester } from './utils'
 
 interface ABTestStatus {

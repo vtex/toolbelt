@@ -1,4 +1,4 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import appsSettingsUnset from '../../modules/apps/settings/unset'
 
 export default class SettingsUnset extends CustomCommand {

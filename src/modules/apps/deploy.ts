@@ -1,10 +1,11 @@
 import chalk from 'chalk'
-import { createRegistryClient } from '../../lib/clients/IOClients/infra/Registry'
-import { ManifestValidator } from '../../lib/manifest'
-import { SessionManager } from '../../lib/session/SessionManager'
-import { parseLocator, toAppLocator } from '../../locator'
-import log from '../../logger'
-import { getManifest } from '../../manifest'
+import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
+import { ManifestValidator } from '../../api/manifest'
+import { getManifest } from '../../api/manifest/ManifestUtil'
+import { SessionManager } from '../../api/session/SessionManager'
+import { parseLocator, toAppLocator } from '../../api/locator'
+import log from '../../api/logger'
+
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
 

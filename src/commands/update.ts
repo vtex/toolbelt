@@ -1,4 +1,4 @@
-import { CustomCommand } from '../oclif/CustomCommand'
+import { CustomCommand } from '../api/oclif/CustomCommand'
 import workspaceUpdate from '../modules/housekeeper/update'
 
 export default class Update extends CustomCommand {

@@ -1,5 +1,5 @@
-import { createAppsClient } from '../../lib/clients/IOClients/infra/Apps'
-import log from '../../logger'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import log from '../../api/logger'
 import { removeNpm } from './utils'
 
 const { getDependencies } = createAppsClient()

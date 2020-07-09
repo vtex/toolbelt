@@ -2,9 +2,9 @@ import { createHash } from 'crypto'
 import { readFile, readJson } from 'fs-extra'
 import { length, map } from 'ramda'
 import { createInterface } from 'readline'
-import { Rewriter } from '../../lib/clients/IOClients/apps/Rewriter'
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { Rewriter } from '../../api/clients/IOClients/apps/Rewriter'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 import { isVerbose } from '../../verbose'
 import {
   deleteMetainfo,

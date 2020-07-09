@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
 import workspaceDelete from '../../modules/workspace/delete'
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 
 export default class WorkspaceDelete extends CustomCommand {
   static description = 'Delete one or many workspaces'

@@ -1,4 +1,4 @@
-import { CustomCommand } from '../oclif/CustomCommand'
+import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsInit from '../modules/init'
 
 export default class Init extends CustomCommand {

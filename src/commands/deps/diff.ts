@@ -1,6 +1,6 @@
-import { CustomCommand } from '../../oclif/CustomCommand'
+import { CustomCommand } from '../../api/oclif/CustomCommand'
 import workspaceDepsDiff from '../../modules/deps/diff'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 
 export default class DepsDiff extends CustomCommand {
   static description =

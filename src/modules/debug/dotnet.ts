@@ -1,6 +1,6 @@
-import { Runtime } from '../../lib/clients/IOClients/infra/Runtime'
-import { ManifestEditor } from '../../lib/manifest'
-import logger from '../../logger'
+import { Runtime } from '../../api/clients/IOClients/infra/Runtime'
+import { ManifestEditor } from '../../api/manifest'
+import logger from '../../api/logger'
 
 export default async (debugInst: string) => {
   const manifest = await ManifestEditor.getManifestEditor()

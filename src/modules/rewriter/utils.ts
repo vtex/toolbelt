@@ -5,8 +5,8 @@ import { writeJsonSync } from 'fs-extra'
 import jsonSplit from 'json-array-split'
 import ProgressBar from 'progress'
 import { compose, join, keys, map, match, pluck, prop, replace, sortBy, toLower } from 'ramda'
-import { Redirect } from '../../lib/clients/IOClients/apps/Rewriter'
-import log from '../../logger'
+import { Redirect } from '../../api/clients/IOClients/apps/Rewriter'
+import log from '../../api/logger'
 
 export const DELIMITER = ';'
 export const MAX_ENTRIES_PER_REQUEST = 10

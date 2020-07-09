@@ -1,6 +1,6 @@
-import { NpmClient } from '../../lib/clients/NpmClient'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { ErrorReport } from '../../lib/error/ErrorReport'
+import { NpmClient } from '../../api/clients/NpmClient'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { DeprecationCheckerStore, IDeprecationCheckerStore } from './DeprecationCheckerStore'
 

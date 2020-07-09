@@ -1,8 +1,8 @@
 import R from 'ramda'
-import { Builder } from '../../lib/clients/IOClients/apps/Builder'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { ErrorReport } from '../../lib/error/ErrorReport'
-import log from '../../logger'
+import { Builder } from '../../api/clients/IOClients/apps/Builder'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import log from '../../api/logger'
 import { tsconfigEditor } from './utils'
 
 const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: string) => {

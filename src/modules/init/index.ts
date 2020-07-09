@@ -2,11 +2,11 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { keys, prop, reject, test } from 'ramda'
 
-import log from '../../logger'
+import log from '../../api/logger'
 import { promptConfirm } from '../prompts'
 
 import * as git from './git'
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 
 const VTEX_APPS = 'vtex-apps'
 

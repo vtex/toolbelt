@@ -1,5 +1,5 @@
-import { SessionManager } from '../../lib/session/SessionManager'
-import log from '../../logger'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 
 export default () => {
   log.debug('Clearing config file')

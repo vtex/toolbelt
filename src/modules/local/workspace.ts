@@ -1,4 +1,4 @@
-import { SessionManager } from '../../lib/session/SessionManager'
+import { SessionManager } from '../../api/session/SessionManager'
 import { copyToClipboard } from './utils'
 
 export default () => {

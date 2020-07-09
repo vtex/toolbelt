@@ -1,5 +1,5 @@
 import testAbStart from '../../../modules/workspace/abtest/start'
-import { CustomCommand } from '../../../oclif/CustomCommand'
+import { CustomCommand } from '../../../api/oclif/CustomCommand'
 
 export default class ABTestStart extends CustomCommand {
   static description = 'Start AB testing with current workspace'

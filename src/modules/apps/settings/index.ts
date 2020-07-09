@@ -1,5 +1,5 @@
 import { path } from 'ramda'
-import { createAppsClient } from '../../../lib/clients/IOClients/infra/Apps'
+import { createAppsClient } from '../../../api/clients/IOClients/infra/Apps'
 
 export default async (app: string, fields: string[]) => {
   const apps = createAppsClient()
