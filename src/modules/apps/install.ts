@@ -4,7 +4,7 @@ import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import log from '../../api/logger'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 import { optionsFormatter, validateAppAction } from '../../api/modules/utils'
 
 const { installApp } = Billing.createClient()

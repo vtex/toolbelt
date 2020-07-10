@@ -6,8 +6,8 @@ import { SessionManager } from '../../api/session/SessionManager'
 import { parseLocator, toAppLocator } from '../../api/locator'
 import log from '../../api/logger'
 
-import { returnToPreviousAccount, switchAccount } from '../auth/switch'
-import { promptConfirm } from '../prompts'
+import { returnToPreviousAccount, switchAccount } from '../../api/modules/auth/switch'
+import { promptConfirm } from '../../api/modules/prompts'
 
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to deploy this app in an account that differs from the indicated vendor. Do you want to deploy in account ${chalk.blue(
