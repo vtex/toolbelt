@@ -4,7 +4,7 @@ import { compose, fromPairs, keys, map, mapObjIndexed, prop, values, zip } from 
 import semver from 'semver'
 
 import log from '../../../api/logger'
-import { promptConfirm } from '../../prompts'
+import { promptConfirm } from '../../../api/modules/prompts'
 import {
   abtester,
   installedABTester,

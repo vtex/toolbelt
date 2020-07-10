@@ -1,14 +1,14 @@
 import { TemplateRenderer } from '@vtex/toolbelt-message-renderer'
 import chalk from 'chalk'
 import enquirer from 'enquirer'
-import { ToolbeltConfig } from '../../api/clients/IOClients/apps/ToolbeltConfig'
-import { ErrorKinds } from '../../api/error/ErrorKinds'
-import { ErrorReport } from '../../api/error/ErrorReport'
-import { SessionManager } from '../../api/session/SessionManager'
-import log from '../../api/logger'
+import { ToolbeltConfig } from '../../clients/IOClients/apps/ToolbeltConfig'
+import { ErrorKinds } from '../../error/ErrorKinds'
+import { ErrorReport } from '../../error/ErrorReport'
+import { SessionManager } from '../../session/SessionManager'
+import log from '../../logger'
 import { promptConfirm } from '../prompts'
-import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'
-import welcome from './welcome'
+import { handleErrorCreatingWorkspace, workspaceCreator } from '../../../modules/workspace/create'
+import welcome from '../../../modules/auth/welcome'
 
 const promptUsePreviousLogin = (account: string, userLogged: string, workspace: string) => {
   const details = `${chalk.green(userLogged)} @ ${chalk.green(account)} / ${chalk.green(workspace)}`

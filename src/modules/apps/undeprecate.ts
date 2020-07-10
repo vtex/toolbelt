@@ -5,8 +5,8 @@ import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { SessionManager } from '../../api/session/SessionManager'
 import { parseLocator } from '../../api/locator'
 import log from '../../api/logger'
-import { returnToPreviousAccount, switchAccount } from '../auth/switch'
-import { promptConfirm } from '../prompts'
+import { returnToPreviousAccount, switchAccount } from '../../api/modules/auth/switch'
+import { promptConfirm } from '../../api/modules/prompts'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 
 let originalAccount

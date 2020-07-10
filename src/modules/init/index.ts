@@ -3,7 +3,7 @@ import enquirer from 'enquirer'
 import { keys, prop, reject, test } from 'ramda'
 
 import log from '../../api/logger'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 
 import * as git from './git'
 import { SessionManager } from '../../api/session/SessionManager'

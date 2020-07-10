@@ -7,7 +7,7 @@ import { ErrorReport } from '../../api/error/ErrorReport'
 import { SessionManager } from '../../api/session/SessionManager'
 import { WorkspaceCreator } from '../../api/session/WorkspaceCreator'
 import log from '../../api/logger'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 import { ensureValidEdition } from './common/edition'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/

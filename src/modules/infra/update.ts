@@ -6,7 +6,7 @@ import semver from 'semver'
 import { Region } from '../../conf'
 import { createRouterClient } from '../../api/clients/IOClients/infra/Router'
 import log from '../../api/logger'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 import { diffVersions, getTag } from './utils'
 
 const router = createRouterClient()
