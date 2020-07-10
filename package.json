@@ -168,9 +168,6 @@
       "deps": {
         "description": "Dependencies commands. Run 'vtex deps' to see all subcommands"
       },
-      "edition": {
-        "description": "Edition commands. Run 'vtex edition' to see all subcommands"
-      },
       "infra": {
         "description": "Infra commands. Run 'vtex infra' to see all subcommands"
       },
