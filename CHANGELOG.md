@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.105.1-beta] - 2020-07-10
+
 ## [2.105.0] - 2020-07-09
 ### Changed
 - [vtex test / vtex lighthouse] Refactored this commands to use them as oclif plugins.
