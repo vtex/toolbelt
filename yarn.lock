@@ -1098,6 +1098,16 @@
     tar-fs "^2.0.0"
     xss "^1.0.6"
 
+"@vtex/cli-plugin-edition@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-edition/-/cli-plugin-edition-0.0.1.tgz#b0c7f922b9b183fa470ee251f75ae57b94596115"
+  integrity sha512-acSh3lwtOTMZs+qPlMFN+n6ADojl0RmpRAFFuc59JStAsPfMjodUl75P5aFaTw5KfjjI2JvHmaMslaHUMGDbbQ==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
+    tslib "^1"
+
 "@vtex/cli-plugin-lighthouse@^0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-lighthouse/-/cli-plugin-lighthouse-0.0.3.tgz#cdfcfe4b5c6cb0579f0b4be65d5e94bf0858eb91"
