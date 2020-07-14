@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - [oclif:entrypoint] Only run oclif command when the entrypoint is the main script.
 
+### Changed
+- [vtex login] Use new VTEX ID login flow.
+
 ## [2.105.0] - 2020-07-09
 ### Changed
 - [vtex test / vtex lighthouse] Refactored this commands to use them as oclif plugins.
