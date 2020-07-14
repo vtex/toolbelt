@@ -107,7 +107,6 @@ export class LoginServer {
     this.app.use(async ctx => {
       ctx.set('connection', 'close')
       if (ctx.method !== 'POST' || ctx.path !== LoginServer.LOGIN_CALLBACK_PATH) {
-        console.log('will handle error')
         return this.handleError(ctx, new Error('LoginServer received invalid HTTP call'), {
           method: ctx.method,
           path: ctx.path,
