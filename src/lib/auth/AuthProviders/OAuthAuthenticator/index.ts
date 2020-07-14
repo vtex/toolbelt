@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import { join } from 'path'
 import { VTEXID } from '../../../../api/clients/IOClients/external/VTEXID'
+import { storeUrl } from '../../../../api/domain'
 import { randomCryptoString } from '../../../utils/randomCryptoString'
 import { spawnUnblockingChildProcess } from '../../../utils/spawnUnblockingChildProcess'
 import { AuthProviderBase } from '../AuthProviderBase'
@@ -44,9 +45,9 @@ export class OAuthAuthenticator extends AuthProviderBase {
   }
 
   private loginUrl(account: string, loginState: string) {
-    const loginPath = `${account}.myvtex.com/_v/segment/admin-login/v1/login`
+    const loginPathPrefix = storeUrl({ account, addWorkspace: false, path: '/_v/segment/admin-login/v1/login' })
     const returnUrl = `/api/vtexid/toolbelt/callback?state=${encodeURIComponent(loginState)}`
-    return `https://${loginPath}?returnUrl=${encodeURIComponent(returnUrl)}`
+    return `${loginPathPrefix}?returnUrl=${encodeURIComponent(returnUrl)}`
   }
 
   private hashSecret(secret: string) {
