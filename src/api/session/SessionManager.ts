@@ -1,8 +1,9 @@
-import logger from '../logger'
 import { AuthProviderBase, AuthProviders } from '../../lib/auth/AuthProviders'
 import { Token } from '../../lib/auth/Token'
+import { VTEXID } from '../clients/IOClients/external/VTEXID'
 import { ErrorKinds } from '../error/ErrorKinds'
 import { ErrorReport } from '../error/ErrorReport'
+import logger from '../logger'
 import { SessionsPersister, SessionsPersisterBase } from './SessionsPersister'
 import { WorkspaceCreateResult, WorkspaceCreator } from './WorkspaceCreator'
 
@@ -48,7 +49,7 @@ export interface ISessionManager {
   checkValidCredentials: () => boolean
   checkAndGetToken: (exitOnInvalid?: boolean) => string
   login: (newAccount: string, opts: LoginInput) => Promise<void>
-  logout: () => void
+  logout: (logoutOptions?: LogoutOptions) => Promise<void>
   workspaceSwitch: (input: WorkspaceSwitchInput) => Promise<WorkspaceSwitchResult>
 }
 
@@ -63,6 +64,14 @@ interface SessionState {
   workspace: string
   lastAccount: string
   lastWorkspace: string
+}
+
+interface LogoutOptions {
+  /**
+   * Open browser on URL to invalidate browser's auth cookie on the current account
+   * @default false
+   */
+  invalidateBrowserAuthCookie: boolean
 }
 
 export class SessionManager implements ISessionManager {
@@ -167,7 +176,22 @@ export class SessionManager implements ISessionManager {
     await this.workspaceSwitch({ targetWorkspace, workspaceCreation })
   }
 
-  public logout() {
+  public async logout(logoutOptions?: LogoutOptions) {
+    const { invalidateBrowserAuthCookie }: LogoutOptions = { invalidateBrowserAuthCookie: false, ...logoutOptions }
+    if (this.token) {
+      const vtexId = VTEXID.createClient()
+      try {
+        await vtexId.invalidateToolbeltToken(this.token)
+      } catch (err) {
+        ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err })
+        logger.error('Unable to invalidate local token')
+      }
+    }
+
+    if (invalidateBrowserAuthCookie && this.account) {
+      VTEXID.invalidateBrowserAuthCookie(this.account)
+    }
+
     this.sessionPersister.clearData()
   }
 
