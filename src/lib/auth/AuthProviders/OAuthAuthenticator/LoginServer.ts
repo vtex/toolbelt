@@ -134,7 +134,7 @@ export class LoginServer {
           account: this.loginConfig.account,
           secret: this.loginConfig.secret,
           ott: body.ott,
-          loginState: this.loginState,
+          state: this.loginState,
         })
 
         this.resolveTokenPromise(token)

@@ -25,9 +25,9 @@ export class VTEXID extends IOClient {
     return this.http.post<string>(`${VTEXID.TOOLBELT_API_PATH_PREFIX}/start?an=${account}`, body)
   }
 
-  public validateToolbeltLogin({ account, loginState, secret, ott }: ValidateToolbeltLoginInput) {
+  public validateToolbeltLogin({ account, state, secret, ott }: ValidateToolbeltLoginInput) {
     const body = querystring.stringify({
-      state: loginState,
+      state,
       secret,
       ott,
     })
@@ -44,7 +44,7 @@ interface StartToolbeltLoginInput {
 
 interface ValidateToolbeltLoginInput {
   account: string
-  loginState: string
+  state: string
   secret: string
   ott: string
 }
