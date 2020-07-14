@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import { join } from 'path'
 import { VTEXID } from '../../../../api/clients/IOClients/external/VTEXID'
-import logger from '../../../../api/logger'
 import { randomCryptoString } from '../../../utils/randomCryptoString'
 import { spawnUnblockingChildProcess } from '../../../utils/spawnUnblockingChildProcess'
 import { AuthProviderBase } from '../AuthProviderBase'
@@ -40,8 +39,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
       this.closeChromeTabIfMac(loginServer.loginCallbackUrl)
       return { login, token }
     } finally {
-      await loginServer.close()
-      logger.debug('Closed login server')
+      loginServer.close()
     }
   }
 

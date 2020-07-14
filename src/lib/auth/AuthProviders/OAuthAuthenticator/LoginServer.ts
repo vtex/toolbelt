@@ -89,9 +89,8 @@ export class LoginServer {
   }
 
   public close() {
-    return new Promise(resolve => {
-      this.server.close(resolve)
-    })
+    this.server.unref()
+    this.server.close()
   }
 
   private initServer(port: number): Promise<Server> {
