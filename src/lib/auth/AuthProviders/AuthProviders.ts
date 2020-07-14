@@ -1,5 +1,5 @@
 import { AuthProviderBase } from './AuthProviderBase'
-import { OAuthAuthenticator } from './OAuthAuthenticator/OAuthAuthenticator'
+import { OAuthAuthenticator } from './OAuthAuthenticator'
 
 export class AuthProviders {
   public static getAuthProviders(): Record<string, AuthProviderBase> {
