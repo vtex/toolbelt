@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Fixed
 - [oclif:entrypoint] Only run oclif command when the entrypoint is the main script.
+- [vtex settings set] Cast value before setting field.
 
 ### Changed
 - [vtex edition] Refactor command to use as oclif plugin.
