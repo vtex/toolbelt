@@ -1,24 +1,18 @@
-import { ExternalClient, InstanceOptions, IOContext } from '@vtex/api'
+import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import querystring from 'querystring'
 import { IOClientFactory } from '../IOClientFactory'
 
-export class VTEXID extends ExternalClient {
+export class VTEXID extends IOClient {
   private static TOOLBELT_API_PATH_PREFIX = '/api/vtexid/toolbelt'
 
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
-    return IOClientFactory.createClient<VTEXID>(VTEXID, customContext, customOptions)
+    return IOClientFactory.createClient<VTEXID>(VTEXID, customContext, customOptions, { requireAuth: false })
   }
 
   constructor(ioContext: IOContext, opts: InstanceOptions) {
-    super('https://vtexid.vtex.com.br', ioContext, {
+    super(ioContext, {
       ...opts,
-      headers: {
-        // DEVELOPMENT ONLY
-        //  - the cookie routes to VTEX ID Beta env
-        //  - remove before release
-        cookie: 'vtex-commerce-env=beta',
-        'X-Forwarded-For': '127.0.0.1',
-      },
+      baseURL: 'https://vtexid.vtex.com.br',
     })
   }
 
