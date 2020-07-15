@@ -6,7 +6,7 @@ import { SessionManager } from '../../api/session/SessionManager'
 import { parseLocator, toAppLocator } from '../../api/locator'
 import log from '../../api/logger'
 
-import { returnToPreviousAccount, switchAccount } from '../../api/modules/auth/switch'
+import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../../api/modules/prompts'
 
 const switchToVendorMessage = (vendor: string): string => {

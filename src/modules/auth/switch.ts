@@ -1,11 +1,11 @@
 import chalk from 'chalk'
 import { split } from 'ramda'
-import { CommandError } from '../../error/errors'
-import { SessionManager } from '../../session/SessionManager'
-import log from '../../logger'
-import { promptConfirm } from '../prompts'
-import { handleErrorCreatingWorkspace, workspaceCreator } from '../../../modules/workspace/create'
-import welcome from '../../../modules/auth/welcome'
+import { CommandError } from '../../api/error/errors'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
+import { promptConfirm } from '../../api/modules/prompts'
+import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'
+import welcome from './welcome'
 
 interface SwitchOptions {
   showWelcomeMessage?: boolean

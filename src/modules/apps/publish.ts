@@ -9,7 +9,7 @@ import { getAppRoot } from '../../api/manifest/ManifestUtil'
 import { toAppLocator } from '../../api/locator'
 import log from '../../api/logger'
 
-import { switchAccount, returnToPreviousAccount } from '../../api/modules/auth/switch'
+import { switchAccount, returnToPreviousAccount } from '../auth/switch'
 import { listenBuild } from '../../api/modules/build'
 import { promptConfirm } from '../../api/modules/prompts'
 import { runYarnIfPathExists } from '../utils'

@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
 import { CustomCommand } from '../api/oclif/CustomCommand'
-import authLogin from '../api/modules/auth/login'
+import authLogin from '../modules/auth/login'
 
 export default class Login extends CustomCommand {
   static description = 'Log into a VTEX account'
