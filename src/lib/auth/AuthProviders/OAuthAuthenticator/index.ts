@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { createHash } from 'crypto'
 import jwt from 'jsonwebtoken'
 import opn from 'opn'
@@ -12,6 +13,9 @@ import { LoginServer } from './LoginServer'
 export class OAuthAuthenticator extends AuthProviderBase {
   public static readonly AUTH_TYPE = 'oauth'
   private static readonly SECRET_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~'
+
+  private static ADMIN_LOGIN_URL_PATH = '/_v/segment/admin-login/v1/login'
+  private static FALLBACK_AUTH_SERVER_LOGIN_URL_PATH = '/_v/private/auth-server/v1/login'
 
   public async login(account: string) {
     const secret = randomCryptoString(128, OAuthAuthenticator.SECRET_ALPHABET)
@@ -32,7 +36,8 @@ export class OAuthAuthenticator extends AuthProviderBase {
 
       loginServer.setLoginState(loginState)
 
-      opn(this.loginUrl(account, loginState), { wait: false })
+      const url = await this.loginUrl(account, loginState)
+      opn(url, { wait: false })
 
       const token = await loginServer.token
       const decodedToken = jwt.decode(token)
@@ -44,16 +49,45 @@ export class OAuthAuthenticator extends AuthProviderBase {
     }
   }
 
-  private loginUrl(account: string, loginState: string) {
-    const loginPathPrefix = storeUrl({ account, addWorkspace: false, path: '/_v/segment/admin-login/v1/login' })
-    const returnUrl = `/api/vtexid/toolbelt/callback?state=${encodeURIComponent(loginState)}`
-    return `${loginPathPrefix}?returnUrl=${encodeURIComponent(returnUrl)}`
-  }
-
   private hashSecret(secret: string) {
     return createHash('sha256')
       .update(secret)
       .digest('base64')
+  }
+
+  private async loginUrl(account: string, loginState: string) {
+    const hasAdminLogin = await this.hasAdminLoginInstalled(account)
+    const returnUrl = `/api/vtexid/toolbelt/callback?state=${encodeURIComponent(loginState)}`
+
+    let loginPathPrefix: string
+    if (!hasAdminLogin) {
+      // If for some reason vtex.admin-login is not installed in the account, fallback to use auth-server login url
+      loginPathPrefix = storeUrl({
+        account,
+        addWorkspace: false,
+        path: OAuthAuthenticator.FALLBACK_AUTH_SERVER_LOGIN_URL_PATH,
+      })
+    } else {
+      loginPathPrefix = storeUrl({ account, addWorkspace: false, path: OAuthAuthenticator.ADMIN_LOGIN_URL_PATH })
+    }
+
+    return `${loginPathPrefix}?returnUrl=${encodeURIComponent(returnUrl)}`
+  }
+
+  private async hasAdminLoginInstalled(account: string) {
+    try {
+      const { data } = await axios.get<string>(
+        storeUrl({ account, addWorkspace: false, path: '/_v/segment/admin-login/v1/login' })
+      )
+
+      return data.includes('vtex.admin-login')
+    } catch (err) {
+      if (err.response?.status === 404) {
+        return false
+      }
+
+      throw err
+    }
   }
 
   private closeChromeTabIfMac(loginCallbackUrl: string) {
