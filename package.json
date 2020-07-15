@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.105.1-beta.6",
+  "version": "2.105.1-beta.7",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "build/api/index.js",
