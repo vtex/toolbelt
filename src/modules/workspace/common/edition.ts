@@ -3,8 +3,8 @@ import { Sponsor } from '../../../api/clients/IOClients/apps/Sponsor'
 import { ErrorKinds } from '../../../api/error/ErrorKinds'
 import { ErrorReport } from '../../../api/error/ErrorReport'
 import log from '../../../api/logger'
-import { promptConfirm } from '../../prompts'
-import setEditionCmd from '../../sponsor/setEdition'
+import { promptConfirm } from '../../../api/modules/prompts'
+import { setEdition } from '../../../api/modules/sponsor'
 
 const recommendedEdition = 'vtex.edition-store@2.x'
 
@@ -42,7 +42,7 @@ export async function ensureValidEdition(workspace: string) {
   if (edition && edition.vendor === 'vtex' && edition.name === 'edition-business') {
     const shouldSwitch = await promptSwitchEdition(edition.id)
     if (shouldSwitch) {
-      await setEditionCmd(recommendedEdition, workspace, true)
+      await setEdition(recommendedEdition, workspace, true)
     }
   }
 }

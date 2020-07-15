@@ -54,8 +54,9 @@
     "@oclif/plugin-help": "^2.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
+    "@vtex/cli-plugin-edition": "^0.0.1",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
-    "@vtex/cli-plugin-test": "^0.0.3",
+    "@vtex/cli-plugin-test": "^0.0.5",
     "@vtex/node-error-report": "^0.0.2",
     "@vtex/toolbelt-message-renderer": "^0.0.1",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -153,7 +154,8 @@
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands",
       "@vtex/cli-plugin-lighthouse",
-      "@vtex/cli-plugin-test"
+      "@vtex/cli-plugin-test",
+      "@vtex/cli-plugin-edition"
     ],
     "hooks": {
       "init": "./build/oclif/hooks/init"
@@ -168,9 +170,6 @@
       "deps": {
         "description": "Dependencies commands. Run 'vtex deps' to see all subcommands"
       },
-      "edition": {
-        "description": "Edition commands. Run 'vtex edition' to see all subcommands"
-      },
       "infra": {
         "description": "Infra commands. Run 'vtex infra' to see all subcommands"
       },
@@ -182,9 +181,6 @@
       },
       "settings": {
         "description": "Settings commands. Run 'vtex settings' to see all subcommands"
-      },
-      "test": {
-        "description": "Test commands. Run 'vtex test' to see all subcommands"
       },
       "workspace": {
         "description": "Workspace commands. Run 'vtex workspace' to see all subcommands"

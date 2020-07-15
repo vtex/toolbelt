@@ -11,7 +11,7 @@ import log from '../../api/logger'
 
 import { switchAccount, returnToPreviousAccount } from '../auth/switch'
 import { listenBuild } from '../../api/modules/build'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 import { runYarnIfPathExists } from '../utils'
 import { listLocalFiles } from '../../api/modules/apps/file'
 import { ProjectUploader } from '../../api/modules/apps/ProjectUploader'

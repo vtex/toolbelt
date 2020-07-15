@@ -6,7 +6,7 @@ import { path } from 'ramda'
 import semver from 'semver'
 import log from '../../api/logger'
 import { getAppRoot } from '../../api/manifest/ManifestUtil'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 
 const root = getAppRoot()
 const versionFile = resolve(root, 'manifest.json')

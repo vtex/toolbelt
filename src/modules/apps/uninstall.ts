@@ -3,7 +3,7 @@ import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 import { validateAppAction } from '../../api/modules/utils'
 
 const { uninstallApp } = createAppsClient()

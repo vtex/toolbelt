@@ -1098,6 +1098,16 @@
     tar-fs "^2.0.0"
     xss "^1.0.6"
 
+"@vtex/cli-plugin-edition@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-edition/-/cli-plugin-edition-0.0.1.tgz#b0c7f922b9b183fa470ee251f75ae57b94596115"
+  integrity sha512-acSh3lwtOTMZs+qPlMFN+n6ADojl0RmpRAFFuc59JStAsPfMjodUl75P5aFaTw5KfjjI2JvHmaMslaHUMGDbbQ==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
+    tslib "^1"
+
 "@vtex/cli-plugin-lighthouse@^0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-lighthouse/-/cli-plugin-lighthouse-0.0.3.tgz#cdfcfe4b5c6cb0579f0b4be65d5e94bf0858eb91"
@@ -1108,10 +1118,10 @@
     "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
     tslib "^1"
 
-"@vtex/cli-plugin-test@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-test/-/cli-plugin-test-0.0.3.tgz#e96217b12ed05605a3bf6a6a526d80879d27aa67"
-  integrity sha512-3RtueI4l+QJ31jtPecS80gN7N831HjZ1/Y2KZoDJpi4ExQA4XSMHPouafx8T+nqZLMkVEYjvC80fy6sq2ZKpGw==
+"@vtex/cli-plugin-test@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-test/-/cli-plugin-test-0.0.5.tgz#f1754092dd4e9aad7a1e94d59b0055106210fac7"
+  integrity sha512-o+EXTQYB6qcyfRApnLC23eEPK3gehbbZPI7LtKcvT5jr9jKvxGCoUgW88E4Xujw4XC4f2A11y8sHqVBT69qSSQ==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"

@@ -3,7 +3,7 @@ import { split } from 'ramda'
 import { CommandError } from '../../api/error/errors'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'
 import welcome from './welcome'
 
