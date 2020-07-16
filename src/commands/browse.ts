@@ -21,6 +21,6 @@ export default class Browse extends CustomCommand {
       flags: { qr },
     } = this.parse(Browse)
 
-    await browse(path, { qr, q: qr })
+    await browse(path, { qr })
   }
 }
