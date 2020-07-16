@@ -4,7 +4,7 @@ import { contains, flatten, head, tail } from 'ramda'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 import workspaceUse from './use'
 
 const promptWorkspaceDeletion = (names: string[]) =>

@@ -5,8 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.105.1] - 2020-07-16
 ### Fixed
 - [oclif:entrypoint] Only run oclif command when the entrypoint is the main script.
+- [vtex settings set] Cast value before setting field.
+- [vtex logout] Local token is now invalidated before deleting local data. Also a URL is opened on the browser to invalidate the auth cookie stored.
+
+### Changed
+- [vtex edition] Refactor command to use as oclif plugin.
+- [vtex login] Use new VTEX ID login flow.
+
+### Removed
+- [vtex browse] Remove support authority logic, as VTEX ID token doesn't expose user roles.
 
 ## [2.105.0] - 2020-07-09
 ### Changed

@@ -1,10 +1,10 @@
 import chalk from 'chalk'
-import { CommandError } from '../../api/error/errors'
-import { Sponsor } from '../../api/clients/IOClients/apps/Sponsor'
-import { SessionManager } from '../../api/session/SessionManager'
-import log from '../../api/logger'
-import { promptWorkspaceMaster } from '../../api/modules/utils'
-import { returnToPreviousAccount, switchAccount } from '../auth/switch'
+import { CommandError } from '../../error/errors'
+import { Sponsor } from '../../clients/IOClients/apps/Sponsor'
+import { SessionManager } from '../../session/SessionManager'
+import log from '../../logger'
+import { promptWorkspaceMaster } from '../utils'
+import { returnToPreviousAccount, switchAccount } from '../../../modules/auth/switch'
 import { promptConfirm } from '../prompts'
 
 const promptSwitchToAccount = async (account: string, initial: boolean) => {

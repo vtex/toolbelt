@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.105.0",
+  "version": "2.105.1",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "build/api/index.js",
@@ -54,8 +54,9 @@
     "@oclif/plugin-help": "^2.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
+    "@vtex/cli-plugin-edition": "^0.0.1",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
-    "@vtex/cli-plugin-test": "^0.0.3",
+    "@vtex/cli-plugin-test": "^0.0.5",
     "@vtex/node-error-report": "^0.0.2",
     "@vtex/toolbelt-message-renderer": "^0.0.1",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -70,6 +71,7 @@
     "cli-table": "~0.3.1",
     "cli-table2": "~0.2.0",
     "clipboardy": "~2.1.0",
+    "co-body": "^6.0.0",
     "configstore": "^5.0.1",
     "csvtojson": "~2.0.10",
     "debounce": "~1.2.0",
@@ -78,6 +80,7 @@
     "eventsource": "~1.0.7",
     "extendable-error": "~0.1.5",
     "fs-extra": "~7.0.0",
+    "get-port": "^5.1.1",
     "get-stream": "~4.0.0",
     "globby": "~8.0.1",
     "graphql": "^14.2.1",
@@ -87,6 +90,7 @@
     "json-array-split": "~1.0.0",
     "json2csv": "~4.5.4",
     "jsonwebtoken": "~8.5.1",
+    "koa": "^2.13.0",
     "latest-version": "^4.0.0",
     "moment": "~2.24.0",
     "node-notifier": "^6.0.0",
@@ -120,6 +124,7 @@
   "devDependencies": {
     "@oclif/dev-cli": "^1",
     "@types/async-retry": "1.4.1",
+    "@types/co-body": "^5.1.0",
     "@types/configstore": "^4.0.0",
     "@types/debounce": "^1.2.0",
     "@types/eventsource": "^1.1.2",
@@ -153,7 +158,8 @@
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands",
       "@vtex/cli-plugin-lighthouse",
-      "@vtex/cli-plugin-test"
+      "@vtex/cli-plugin-test",
+      "@vtex/cli-plugin-edition"
     ],
     "hooks": {
       "init": "./build/oclif/hooks/init"
@@ -168,9 +174,6 @@
       "deps": {
         "description": "Dependencies commands. Run 'vtex deps' to see all subcommands"
       },
-      "edition": {
-        "description": "Edition commands. Run 'vtex edition' to see all subcommands"
-      },
       "infra": {
         "description": "Infra commands. Run 'vtex infra' to see all subcommands"
       },
@@ -182,9 +185,6 @@
       },
       "settings": {
         "description": "Settings commands. Run 'vtex settings' to see all subcommands"
-      },
-      "test": {
-        "description": "Test commands. Run 'vtex test' to see all subcommands"
       },
       "workspace": {
         "description": "Workspace commands. Run 'vtex workspace' to see all subcommands"

@@ -6,7 +6,7 @@ import { createHousekeeperClient } from '../../api/clients/IOClients/infra/House
 import { toMajorRange } from '../../api/locator'
 import log from '../../api/logger'
 import { isVerbose } from '../../verbose'
-import { promptConfirm } from '../prompts'
+import { promptConfirm } from '../../api/modules/prompts'
 import { matchedDepsDiffTable } from '../utils'
 
 const promptUpdate = (): Promise<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))

@@ -1,9 +1,9 @@
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 
-export default () => {
+export default async () => {
   log.debug('Clearing config file')
   const sessionManager = SessionManager.getSingleton()
-  sessionManager.logout()
+  await sessionManager.logout({ invalidateBrowserAuthCookie: true })
   log.info('See you soon!')
 }
