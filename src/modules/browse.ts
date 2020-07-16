@@ -7,10 +7,9 @@ interface BrowseOptions {
   qr: boolean
 }
 
-export default async (endpointInput: string, { qr }: BrowseOptions) => {
+export default async (path: string, { qr }: BrowseOptions) => {
   const { account, workspace } = SessionManager.getSingleton()
-  let endpoint = endpointInput ?? ''
-  const uri = storeUrl({ account, workspace, path: endpoint })
+  const uri = storeUrl({ account, workspace, path })
 
   if (qr) {
     QRCode.generate(uri, { small: true })
