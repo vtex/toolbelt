@@ -1,8 +1,9 @@
-import logger from '../logger'
 import { AuthProviderBase, AuthProviders } from '../../lib/auth/AuthProviders'
 import { Token } from '../../lib/auth/Token'
+import { VTEXID } from '../clients/IOClients/external/VTEXID'
 import { ErrorKinds } from '../error/ErrorKinds'
 import { ErrorReport } from '../error/ErrorReport'
+import logger from '../logger'
 import { SessionsPersister, SessionsPersisterBase } from './SessionsPersister'
 import { WorkspaceCreateResult, WorkspaceCreator } from './WorkspaceCreator'
 
@@ -48,7 +49,7 @@ export interface ISessionManager {
   checkValidCredentials: () => boolean
   checkAndGetToken: (exitOnInvalid?: boolean) => string
   login: (newAccount: string, opts: LoginInput) => Promise<void>
-  logout: () => void
+  logout: (logoutOptions?: LogoutOptions) => Promise<void>
   workspaceSwitch: (input: WorkspaceSwitchInput) => Promise<WorkspaceSwitchResult>
 }
 
@@ -63,6 +64,14 @@ interface SessionState {
   workspace: string
   lastAccount: string
   lastWorkspace: string
+}
+
+interface LogoutOptions {
+  /**
+   * Open browser on URL to invalidate browser's auth cookie on the current account
+   * @default false
+   */
+  invalidateBrowserAuthCookie: boolean
 }
 
 export class SessionManager implements ISessionManager {
@@ -167,7 +176,12 @@ export class SessionManager implements ISessionManager {
     await this.workspaceSwitch({ targetWorkspace, workspaceCreation })
   }
 
-  public logout() {
+  public async logout(logoutOptions?: LogoutOptions) {
+    const opts: LogoutOptions = { invalidateBrowserAuthCookie: false, ...logoutOptions }
+    if (this.token) {
+      await this.invalidateTokens(opts)
+    }
+
     this.sessionPersister.clearData()
   }
 
@@ -242,5 +256,25 @@ export class SessionManager implements ISessionManager {
   private saveAccountData() {
     this.sessionPersister.saveAccount(this.state.account)
     this.sessionPersister.saveLastAccount(this.state.lastAccount)
+  }
+
+  private async invalidateTokens({ invalidateBrowserAuthCookie }: LogoutOptions) {
+    const vtexId = VTEXID.createClient()
+    try {
+      await vtexId.invalidateToolbeltToken(this.token)
+      logger.info('Invalidated local token')
+    } catch (err) {
+      const errReport = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err })
+      logger.error('Unable to invalidate local token')
+      errReport.logErrorForUser({
+        coreLogLevelDefault: 'debug',
+        logLevels: { core: { errorMessage: 'error', errorId: 'error' } },
+      })
+      return
+    }
+
+    if (invalidateBrowserAuthCookie && this.account) {
+      VTEXID.invalidateBrowserAuthCookie(this.account)
+    }
   }
 }

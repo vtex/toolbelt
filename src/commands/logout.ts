@@ -12,7 +12,7 @@ export default class Logout extends CustomCommand {
 
   static args = []
 
-  async run() {
-    authLogout()
+  run() {
+    return authLogout()
   }
 }

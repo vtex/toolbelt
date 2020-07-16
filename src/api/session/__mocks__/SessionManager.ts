@@ -45,7 +45,7 @@ export class SessionManagerMock implements ISessionManager {
     return Promise.resolve()
   }
 
-  public logout() {}
+  public async logout() {}
 
   public async workspaceSwitch({ targetWorkspace }: WorkspaceSwitchInput): Promise<WorkspaceSwitchResult> {
     this.workspace = targetWorkspace
