@@ -179,7 +179,7 @@ export class SessionManager implements ISessionManager {
   public async logout(logoutOptions?: LogoutOptions) {
     const opts: LogoutOptions = { invalidateBrowserAuthCookie: false, ...logoutOptions }
     if (this.token) {
-      this.invalidateTokens(opts)
+      await this.invalidateTokens(opts)
     }
 
     this.sessionPersister.clearData()
@@ -262,6 +262,7 @@ export class SessionManager implements ISessionManager {
     const vtexId = VTEXID.createClient()
     try {
       await vtexId.invalidateToolbeltToken(this.token)
+      logger.info('Invalidated local token')
     } catch (err) {
       const errReport = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err })
       logger.error('Unable to invalidate local token')
