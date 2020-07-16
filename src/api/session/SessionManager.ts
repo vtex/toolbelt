@@ -177,19 +177,9 @@ export class SessionManager implements ISessionManager {
   }
 
   public async logout(logoutOptions?: LogoutOptions) {
-    const { invalidateBrowserAuthCookie }: LogoutOptions = { invalidateBrowserAuthCookie: false, ...logoutOptions }
+    const opts: LogoutOptions = { invalidateBrowserAuthCookie: false, ...logoutOptions }
     if (this.token) {
-      const vtexId = VTEXID.createClient()
-      try {
-        await vtexId.invalidateToolbeltToken(this.token)
-      } catch (err) {
-        ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err })
-        logger.error('Unable to invalidate local token')
-      }
-    }
-
-    if (invalidateBrowserAuthCookie && this.account) {
-      VTEXID.invalidateBrowserAuthCookie(this.account)
+      this.invalidateTokens(opts)
     }
 
     this.sessionPersister.clearData()
@@ -266,5 +256,24 @@ export class SessionManager implements ISessionManager {
   private saveAccountData() {
     this.sessionPersister.saveAccount(this.state.account)
     this.sessionPersister.saveLastAccount(this.state.lastAccount)
+  }
+
+  private async invalidateTokens({ invalidateBrowserAuthCookie }: LogoutOptions) {
+    const vtexId = VTEXID.createClient()
+    try {
+      await vtexId.invalidateToolbeltToken(this.token)
+    } catch (err) {
+      const errReport = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err })
+      logger.error('Unable to invalidate local token')
+      errReport.logErrorForUser({
+        coreLogLevelDefault: 'debug',
+        logLevels: { core: { errorMessage: 'error', errorId: 'error' } },
+      })
+      return
+    }
+
+    if (invalidateBrowserAuthCookie && this.account) {
+      VTEXID.invalidateBrowserAuthCookie(this.account)
+    }
   }
 }

@@ -24,9 +24,10 @@ export class VTEXID extends IOClient {
 
   constructor(ioContext: IOContext, opts: InstanceOptions) {
     super(ioContext, {
+      timeout: VTEXID.DEFAULT_TIMEOUT,
+      retries: 2,
       ...opts,
       baseURL: VTEXID.BASE_URL,
-      timeout: VTEXID.DEFAULT_TIMEOUT,
     })
   }
 
