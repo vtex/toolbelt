@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [vtex edition] Refactor command to use as oclif plugin.
 - [vtex login] Use new VTEX ID login flow.
 
+### Removed
+- [vtex browse] Remove support authority logic, as VTEX ID token doesn't expose user roles.
+
 ## [2.105.0] - 2020-07-09
 ### Changed
 - [vtex test / vtex lighthouse] Refactored this commands to use them as oclif plugins.

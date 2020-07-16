@@ -1,5 +1,4 @@
 import { flags as oclifFlags } from '@oclif/command'
-
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import browse from '../modules/browse'
 
@@ -13,7 +12,7 @@ export default class Browse extends CustomCommand {
     qr: oclifFlags.boolean({ char: 'q', description: 'Outputs a QR Code on the terminal' }),
   }
 
-  static args = [{ name: 'path' }]
+  static args = [{ name: 'path', default: '' }]
 
   async run() {
     const {
@@ -21,6 +20,6 @@ export default class Browse extends CustomCommand {
       flags: { qr },
     } = this.parse(Browse)
 
-    await browse(path, { qr, q: qr })
+    await browse(path, { qr })
   }
 }
