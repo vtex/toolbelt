@@ -1,7 +1,7 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import opn from 'opn'
 import querystring from 'querystring'
-import { storeUrl } from '../../../domain'
+import { storeUrl } from '../../../storeUrl'
 import { IOClientFactory } from '../IOClientFactory'
 
 export class VTEXID extends IOClient {
