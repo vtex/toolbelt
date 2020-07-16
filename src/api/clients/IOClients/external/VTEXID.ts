@@ -6,6 +6,7 @@ import { IOClientFactory } from '../IOClientFactory'
 
 export class VTEXID extends IOClient {
   private static readonly DEFAULT_TIMEOUT = 10000
+  private static readonly DEFAULT_RETRIES = 2
   private static readonly BASE_URL = 'https://vtexid.vtex.com.br'
   private static readonly API_PATH_PREFIX = '/api/vtexid'
   private static readonly TOOLBELT_API_PATH_PREFIX = `${VTEXID.API_PATH_PREFIX}/toolbelt`
@@ -25,7 +26,7 @@ export class VTEXID extends IOClient {
   constructor(ioContext: IOContext, opts: InstanceOptions) {
     super(ioContext, {
       timeout: VTEXID.DEFAULT_TIMEOUT,
-      retries: 2,
+      retries: VTEXID.DEFAULT_RETRIES,
       ...opts,
       baseURL: VTEXID.BASE_URL,
     })
