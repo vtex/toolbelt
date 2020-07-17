@@ -22,7 +22,8 @@ export function storeUrl(opts: StoreUrlOptions) {
     path = opts.path.startsWith('/') ? opts.path : `/${opts.path}`
   }
 
-  if (opts.addWorkspace) {
+  const addWorkspace = opts.addWorkspace ?? true
+  if (addWorkspace) {
     return `https://${workspace}--${account}.${publicEndpoint()}${path}`
   }
 
