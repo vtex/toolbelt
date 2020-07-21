@@ -79,6 +79,7 @@
     "fs-extra": "~7.0.0",
     "get-stream": "~4.0.0",
     "globby": "~8.0.1",
+    "graphql": "^15.3.0",
     "is-docker": "^2.0.0",
     "is-wsl": "^2.1.1",
     "json-array-split": "~1.0.0",
