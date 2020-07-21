@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Change
-- [vtex abtest] Refactor this commands to use as oclif plugin.
-- [dependencies] Remove unsed dependencies
+- [vtex abtest] Refactor to use as oclif plugin.
+- [dependencies] Remove unused dependencies
 
 ### Fixed
 - [vtex browse] Fix workspace not being added to url.
