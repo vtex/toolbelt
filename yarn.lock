@@ -1071,13 +1071,6 @@
     tar-fs "^2.0.0"
     xss "^1.0.6"
 
-"@vtex/cli-plugin-abtest@../plugins/cli-plugin-abtest/":
-  version "0.0.0"
-  dependencies:
-    "@oclif/command" "^1"
-    "@oclif/config" "^1"
-    tslib "^1"
-
 "@vtex/cli-plugin-edition@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-edition/-/cli-plugin-edition-0.0.1.tgz#b0c7f922b9b183fa470ee251f75ae57b94596115"

@@ -54,7 +54,6 @@
     "@oclif/plugin-help": "^2.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
-    "@vtex/cli-plugin-abtest": "../plugins/cli-plugin-abtest/",
     "@vtex/cli-plugin-edition": "^0.0.1",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
     "@vtex/cli-plugin-test": "^0.0.5",
@@ -141,8 +140,7 @@
       "@tiagonapoli/oclif-plugin-spaced-commands",
       "@vtex/cli-plugin-lighthouse",
       "@vtex/cli-plugin-test",
-      "@vtex/cli-plugin-edition",
-      "@vtex/cli-plugin-abtest"
+      "@vtex/cli-plugin-edition"
     ],
     "hooks": {
       "init": "./build/oclif/hooks/init"
