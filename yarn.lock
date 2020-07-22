@@ -1096,10 +1096,10 @@
     tar-fs "^2.0.0"
     xss "^1.0.6"
 
-"@vtex/cli-plugin-abtest@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.0.3.tgz#00f7fc46e35c832f987901177aa2947eaed4b8ed"
-  integrity sha512-EpIC/PVJFWYl+K2e5IYnKrs19Pwe+2Fvrf8QFlI+cAdAQ8WdGBwiUQnGYMOUlEASoxsW9sk+L3yvMp5egz7Kgw==
+"@vtex/cli-plugin-abtest@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.0.4.tgz#10fac01787030faa310104767d32fee3a34d6701"
+  integrity sha512-5ieZkMCBw9YEoe8H1OHCEV1VZUTGT/Uxm2bqvAVHHAo1I8gr5tf/xcc9FEdJRSYvo/GSWBETXUcI9yJ53gbJfg==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
