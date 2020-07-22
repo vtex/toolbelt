@@ -6,6 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.106.0] - 2020-07-22
+### Changed
+
+- [vtex abtest] Rename command from `vtex workspace abtest`  to `vtex abtest`
+- [vtex abtest] Refactor to use as oclif plugin.
+- [dependencies] Remove unused dependencies
+
+### Fixed
+- [vtex browse] Fix workspace not being added to url.
+- [vtex login] Revert to use old login flow due to issues on Safari browsers.
+
 ## [2.105.1] - 2020-07-16
 ### Fixed
 - [oclif:entrypoint] Only run oclif command when the entrypoint is the main script.
