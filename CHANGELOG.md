@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.106.1] - 2020-07-22
+### Changed
+- [vtex workspace abtest] Revert `vtex abtest` to subcommand of `workspace` command
+
 ## [2.106.0] - 2020-07-22
 ### Changed
 
