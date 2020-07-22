@@ -1096,6 +1096,16 @@
     tar-fs "^2.0.0"
     xss "^1.0.6"
 
+"@vtex/cli-plugin-abtest@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.0.3.tgz#00f7fc46e35c832f987901177aa2947eaed4b8ed"
+  integrity sha512-EpIC/PVJFWYl+K2e5IYnKrs19Pwe+2Fvrf8QFlI+cAdAQ8WdGBwiUQnGYMOUlEASoxsW9sk+L3yvMp5egz7Kgw==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    numbro "2.1.0"
+    tslib "^1"
+
 "@vtex/cli-plugin-edition@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-edition/-/cli-plugin-edition-0.0.1.tgz#b0c7f922b9b183fa470ee251f75ae57b94596115"
@@ -1776,6 +1786,11 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
+
+bignumber.js@^4.0.4:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-4.1.0.tgz#db6f14067c140bd46624815a7916c92d9b6c24b1"
+  integrity sha512-eJzYkFYy9L4JzXsbymsFn3p54D+llV27oTQ+ziJG7WFRheJcNZilgVXMG0LoZtlQSKBsJdWtLFqOD0u+U0jZKA==
 
 binary-extensions@^2.0.0:
   version "2.0.0"
@@ -5637,6 +5652,13 @@ number-is-nan@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
+
+numbro@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/numbro/-/numbro-2.1.0.tgz#618ac6e4b2f32f2e623190ce4b05f4c8b09c3207"
+  integrity sha1-YYrG5LLzLy5iMZDOSwX0yLCcMgc=
+  dependencies:
+    bignumber.js "^4.0.4"
 
 nwsapi@^2.0.7:
   version "2.2.0"
