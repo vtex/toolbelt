@@ -11,7 +11,6 @@ import logger from '../logger'
 import { SessionManager } from '../session/SessionManager'
 import { getPlatform } from '../../lib/utils/getPlatform'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
-import { CommandError } from './errors'
 
 interface CustomErrorReportCreateArgs extends ErrorReportCreateArgs {
   shouldRemoteReport?: boolean
@@ -48,17 +47,9 @@ interface LogToUserOptions {
 }
 
 export class ErrorReport extends ErrorReportBase {
-  public static checkIfShouldRemoteReport(err: Error | any) {
-    if (err instanceof CommandError) {
-      return false
-    }
-
-    return true
-  }
-
   public static create(args: CustomErrorReportCreateArgs) {
     return new ErrorReport({
-      shouldRemoteReport: args.shouldRemoteReport ?? ErrorReport.checkIfShouldRemoteReport(args.originalError),
+      shouldRemoteReport: args.shouldRemoteReport,
       ...createErrorReportBaseArgs(args),
     })
   }

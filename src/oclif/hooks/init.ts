@@ -18,6 +18,7 @@ import authLogin from '../../modules/auth/login'
 import { CommandError, SSEConnectionError } from '../../api/error/errors'
 import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
+import { ErrorKinds } from '../../api'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -167,12 +168,12 @@ export const onError = async (e: any) => {
 
   process.removeListener('unhandledRejection', onError)
 
-  if (e instanceof CommandError) {
-    process.exit(1)
+  const errorReport = TelemetryCollector.getCollector().registerError(e)
+
+  if (e.kind !== ErrorKinds.FLOW_ISSUE_ERROR) {
+    log.error(`ErrorID: ${errorReport.metadata.errorId}`)
   }
 
-  const errorReport = TelemetryCollector.getCollector().registerError(e)
-  log.error(`ErrorID: ${errorReport.metadata.errorId}`)
   process.exit(1)
 }
 
