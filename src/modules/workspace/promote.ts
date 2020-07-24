@@ -4,8 +4,10 @@ import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Worksp
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { promptConfirm } from '../../api/modules/prompts'
+import { VBase } from '../../api/clients/IOClients/infra/VBase'
 import useCmd from './use'
 
+const { checkForConflicts } = VBase.createClient()
 const { promote, get } = createWorkspacesClient()
 const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
 
@@ -17,6 +19,10 @@ const throwIfIsMaster = (workspace: string) => {
 
 const isPromotable = async (workspace: string) => {
   throwIfIsMaster(workspace)
+  const conflictsFound = await checkForConflicts()
+  if (conflictsFound) {
+    //handle conflict
+  }
   const meta = await get(account, currentWorkspace)
   if (!meta.production) {
     throw createFlowIssueError(
