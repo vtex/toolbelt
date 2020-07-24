@@ -3,7 +3,7 @@ import chalk from 'chalk'
 import { concat, map, prop } from 'ramda'
 import { ManifestEditor } from '../../api'
 import { Builder } from '../../api/clients/IOClients/apps/Builder'
-import { CommandError } from '../../api/error/errors'
+import { ErrorKinds, ErrorReport } from '../../api/error'
 import { createPathToFileObject } from '../../api/files/ProjectFilesManager'
 import { YarnFilesManager } from '../../api/files/YarnFilesManager'
 import log from '../../api/logger'
@@ -125,11 +125,14 @@ export default async options => {
       }
 
       if (data.code === 'link_on_production') {
-        throw new CommandError(
-          `Please use a dev workspace to test apps. Create one with (${chalk.blue(
-            'vtex use <workspace> -rp'
-          )}) to be able to test apps`
-        )
+        ErrorReport.createAndMaybeRegisterOnTelemetry({
+          kind: ErrorKinds.FLOW_ISSUE_ERROR,
+          originalError: new Error(
+            `Please use a dev workspace to test apps. Create one with (${chalk.blue(
+              'vtex use <workspace> -rp'
+            )}) to be able to test apps`
+          ),
+        })
       }
     }
     throw e

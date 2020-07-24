@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { CommandError } from '../../api/error/errors'
+import { ErrorKinds, ErrorReport } from '../../api/error'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from './create'
@@ -18,7 +18,10 @@ export default async (name: string, options?: WorkspaceUseOptions) => {
   if (name === '-') {
     name = session.lastUsedWorkspace
     if (name == null) {
-      throw new CommandError('No last used workspace was found')
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error('No last used workspace was found'),
+      })
     }
   }
 

@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 
-import { CommandError } from '../../api/error/errors'
+import { ErrorKinds, ErrorReport } from '../../api/error'
 import { getEnvironment, getCluster } from '../../conf'
 
 export default (name: string) => {
@@ -12,6 +12,9 @@ export default (name: string) => {
       console.log(getCluster())
       break
     default:
-      throw new CommandError(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`)
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`),
+      })
   }
 }

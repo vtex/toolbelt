@@ -85,7 +85,7 @@ export const validateAppManifest = (manifest: any) => {
   if (!versionRegex.test(manifest.version)) {
     ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error("The version format is invalid"),
+      originalError: new Error('The version format is invalid'),
     })
   }
 }

@@ -1,4 +1,4 @@
-import { CommandError } from '../error/errors'
+import { ErrorKinds, ErrorReport } from '../error'
 
 const namePattern = '[\\w_-]+'
 const vendorPattern = '[\\w_-]+'
@@ -24,29 +24,50 @@ export class ManifestValidator {
     const nameRegex = new RegExp(`^${this.namePattern}$`)
     const versionRegex = new RegExp(`^${this.versionPattern}$`)
     if (manifest.name === undefined) {
-      throw new CommandError("Field 'name' should be set in manifest.json file")
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error("Field 'name' should be set in manifest.json file"),
+      })
     }
     if (manifest.version === undefined) {
-      throw new CommandError("Field 'version' should be set in manifest.json file")
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error("Field 'version' should be set in manifest.json file"),
+      })
     }
     if (manifest.vendor === undefined) {
-      throw new CommandError("Field 'vendor' should be set in manifest.json file")
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error("Field 'vendor' should be set in manifest.json file"),
+      })
     }
     if (!nameRegex.test(manifest.name)) {
-      throw new CommandError("Field 'name' may contain only letters, numbers, underscores and hyphens")
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error("Field 'name' may contain only letters, numbers, underscores and hyphens"),
+      })
     }
     if (!vendorRegex.test(manifest.vendor)) {
-      throw new CommandError("Field 'vendor' may contain only letters, numbers, underscores and hyphens")
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error("Field 'vendor' may contain only letters, numbers, underscores and hyphens"),
+      })
     }
     if (!versionRegex.test(manifest.version)) {
-      throw new CommandError('The version format is invalid')
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error('The version format is invalid'),
+      })
     }
   }
 
   public static validateApp(app: string, skipVersion = false) {
     const regex = skipVersion ? ManifestValidator.appID : ManifestValidator.appLocator
     if (!regex.test(app)) {
-      throw new CommandError(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`)
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.FLOW_ISSUE_ERROR,
+        originalError: new Error(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`),
+      })
     }
     return app
   }
