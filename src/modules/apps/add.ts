@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { region } from '../../api/env'
-import { ErrorKinds, ErrorReport, CommandError } from '../../api/error'
+import { ErrorKinds, ErrorReport } from '../../api/error'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import log from '../../api/logger'
 import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from '../../api/modules/utils'
@@ -69,8 +69,8 @@ export default async (apps: string[]) => {
   try {
     await addApps(apps, manifest)
   } catch (err) {
-    if (err instanceof CommandError) {
-      log.error(err.message)
+    if (ErrorReport.isFlowIssue(err)) {
+      log.error(err.originalError)
       return
     }
 

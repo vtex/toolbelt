@@ -4,14 +4,6 @@ import { isFunction } from 'ramda-adjunct'
 
 const joinErrorMessages = compose<any[], any[], string[], string>(join('\n'), map(prop('message')), reject(isFunction))
 
-export class CommandError extends ExtendableError {
-  public message
-
-  constructor(message = '') {
-    super(message)
-  }
-}
-
 export class SSEConnectionError extends ExtendableError {
   public statusCode: number
   constructor(message: string, statusCode: number) {

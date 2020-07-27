@@ -11,6 +11,7 @@ import logger from '../logger'
 import { SessionManager } from '../session/SessionManager'
 import { getPlatform } from '../../lib/utils/getPlatform'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
+import { ErrorKinds } from './ErrorKinds'
 
 interface CustomErrorReportCreateArgs extends ErrorReportCreateArgs {
   shouldRemoteReport?: boolean
@@ -47,6 +48,11 @@ interface LogToUserOptions {
 }
 
 export class ErrorReport extends ErrorReportBase {
+  public static isFlowIssue(err: any) {
+    if (err instanceof ErrorReport && err.kind === ErrorKinds.FLOW_ISSUE_ERROR) return true
+    return false
+  }
+
   public static create(args: CustomErrorReportCreateArgs) {
     return new ErrorReport({
       shouldRemoteReport: args.shouldRemoteReport,

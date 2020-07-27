@@ -15,10 +15,9 @@ import * as conf from '../../conf'
 import { checkAndOpenNPSLink } from '../../nps'
 import { Metric } from '../../api/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
-import { CommandError, SSEConnectionError } from '../../api/error/errors'
 import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
-import { ErrorKinds } from '../../api'
+import { ErrorReport, SSEConnectionError } from '../../api/error'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -149,28 +148,23 @@ export const onError = async (e: any) => {
         }
         log.debug(e)
     }
-  } else {
-    switch (e.name) {
-      case CommandError.name:
-        if (e.message && e.message !== '') {
-          log.error(e.message)
-        }
-        break
-      case SSEConnectionError.name:
-        log.error(e.message ?? 'Connection to login server has failed')
-        break
-      default:
-        log.error('Unhandled exception')
-        log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
-        log.error('Raw error: ', e)
+  } else if (ErrorReport.isFlowIssue(e)) {
+    if (e.originalError && e.originalError !== '') {
+      log.error(e.originalError)
     }
+  } else if (e instanceof SSEConnectionError) {
+    log.error(e.message ?? 'Connection to login server has failed')
+  } else {
+    log.error('Unhandled exception')
+    log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
+    log.error('Raw error: ', e)
   }
 
   process.removeListener('unhandledRejection', onError)
 
   const errorReport = TelemetryCollector.getCollector().registerError(e)
 
-  if (e.kind !== ErrorKinds.FLOW_ISSUE_ERROR) {
+  if (!ErrorReport.isFlowIssue(e)) {
     log.error(`ErrorID: ${errorReport.metadata.errorId}`)
   }
 
