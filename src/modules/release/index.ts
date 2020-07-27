@@ -3,22 +3,7 @@ import { indexOf, prop } from 'ramda'
 import semver from 'semver'
 
 import log from '../../api/logger'
-import {
-  add,
-  bump,
-  checkGit,
-  checkIfInGitRepo,
-  commit,
-  confirmRelease,
-  incrementVersion,
-  postRelease,
-  preRelease,
-  push,
-  readVersion,
-  tag,
-  updateChangelog,
-} from './utils'
-
+import { ReleaseUtils } from './utils'
 export const releaseTypeAliases = {
   pre: 'prerelease',
 }
@@ -34,10 +19,10 @@ const shouldUpdateChangelog = (releaseType, tagName) => {
   )
 }
 
-const getNewAndOldVersions = (releaseType, tagName) => {
+const getNewAndOldVersions = (utils: ReleaseUtils, releaseType, tagName) => {
   if (semver.valid(releaseType)) {
     // If `releaseType` is a valid (semver) version, use it.
-    const oldVersion = readVersion()
+    const oldVersion = utils.readVersion()
     const newVersion = semver.parse(releaseType).version
     if (!semver.gt(newVersion, oldVersion)) {
       // TODO: Remove the below log.error when toolbelt has better error handling.
@@ -66,8 +51,8 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
     throw new Error(`Invalid release tag: ${tagName}
 Valid release tags are: ${supportedTagNames.join(', ')}`)
   }
-  const oldVersion = readVersion()
-  const newVersion = incrementVersion(oldVersion, releaseType, tagName)
+  const oldVersion = utils.readVersion()
+  const newVersion = utils.incrementVersion(oldVersion, releaseType, tagName)
   return [oldVersion, newVersion]
 }
 
@@ -75,10 +60,12 @@ export default async (
   releaseType = 'patch', // This arg. can also be a valid (semver) version.
   tagName = 'beta'
 ) => {
-  checkGit()
-  checkIfInGitRepo()
+
+  const utils = new ReleaseUtils()
+  utils.checkGit()
+  utils.checkIfInGitRepo()
   const normalizedReleaseType = prop<string>(releaseType, releaseTypeAliases) || releaseType
-  const [oldVersion, newVersion] = getNewAndOldVersions(normalizedReleaseType, tagName)
+  const [oldVersion, newVersion] = getNewAndOldVersions(utils, normalizedReleaseType, tagName)
 
   log.info(`Old version: ${chalk.bold(oldVersion)}`)
   log.info(`New version: ${chalk.bold.yellow(newVersion)}`)
@@ -91,22 +78,22 @@ export default async (
   const tagText = `v${newVersion}`
   const changelogVersion = `\n\n## [${newVersion}] - ${year}-${month}-${day}`
 
-  if (!(await confirmRelease())) {
+  if (!(await utils.confirmRelease())) {
     // Abort release.
     return
   }
   log.info('Starting release...')
   try {
-    await preRelease()
-    await bump(newVersion)
+    await utils.preRelease()
+    await utils.bump(newVersion)
     if (shouldUpdateChangelog(normalizedReleaseType, tagName)) {
-      updateChangelog(changelogVersion)
+      utils.updateChangelog(changelogVersion)
     }
-    await add()
-    await commit(tagText)
-    await tag(tagText)
-    await push(tagText)
-    await postRelease()
+    await utils.add()
+    await utils.commit(tagText)
+    await utils.tag(tagText)
+    await utils.push(tagText)
+    await utils.postRelease()
   } catch (e) {
     log.error(`Failed to release \n${e}`)
   }
