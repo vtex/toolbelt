@@ -28,17 +28,17 @@ const checkAndSwitch = async (targetAccount: string, targetWorkspace: string) =>
   const isValidAccount = /^\s*[\w-]+\s*$/.test(targetAccount)
 
   if (!isValidAccount) {
-    ErrorReport.createAndMaybeRegisterOnTelemetry({
+    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
       originalError: new Error('Invalid account format'),
     })
   } else if (!currAccount) {
-    ErrorReport.createAndMaybeRegisterOnTelemetry({
+    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
       originalError: new Error("You're not logged in right now"),
     })
   } else if (currAccount === targetAccount) {
-    ErrorReport.createAndMaybeRegisterOnTelemetry({
+    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
       originalError: new Error(`You're already using the account ${chalk.blue(targetAccount)}`),
     })
@@ -75,7 +75,7 @@ export const switchAccount = async (account: string, options: SwitchOptions): Pr
   if (account === '-') {
     account = lastUsedAccount
     if (account == null) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error('No last used account was found'),
       })

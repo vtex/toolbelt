@@ -63,7 +63,7 @@ export const workspaceCreator: WorkspaceCreator = async ({
   logIfAlreadyExists = true,
 }) => {
   if (!VALID_WORKSPACE.test(targetWorkspace)) {
-    ErrorReport.createAndMaybeRegisterOnTelemetry({
+    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
       originalError: new Error(
         "Whoops! That's not a valid workspace name. Please use only lowercase letters and numbers."

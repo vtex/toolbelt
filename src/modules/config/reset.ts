@@ -12,7 +12,7 @@ export default (name: string) => {
       saveCluster(CLUSTER_DEFAULT_VALUE)
       break
     default:
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`),
       })

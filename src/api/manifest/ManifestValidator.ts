@@ -24,37 +24,37 @@ export class ManifestValidator {
     const nameRegex = new RegExp(`^${this.namePattern}$`)
     const versionRegex = new RegExp(`^${this.versionPattern}$`)
     if (manifest.name === undefined) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error("Field 'name' should be set in manifest.json file"),
       })
     }
     if (manifest.version === undefined) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error("Field 'version' should be set in manifest.json file"),
       })
     }
     if (manifest.vendor === undefined) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error("Field 'vendor' should be set in manifest.json file"),
       })
     }
     if (!nameRegex.test(manifest.name)) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error("Field 'name' may contain only letters, numbers, underscores and hyphens"),
       })
     }
     if (!vendorRegex.test(manifest.vendor)) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error("Field 'vendor' may contain only letters, numbers, underscores and hyphens"),
       })
     }
     if (!versionRegex.test(manifest.version)) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error('The version format is invalid'),
       })
@@ -64,7 +64,7 @@ export class ManifestValidator {
   public static validateApp(app: string, skipVersion = false) {
     const regex = skipVersion ? ManifestValidator.appID : ManifestValidator.appLocator
     if (!regex.test(app)) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error(`Invalid app format, please use <vendor>.<name>${skipVersion ? '' : '[@<version>]'}`),
       })

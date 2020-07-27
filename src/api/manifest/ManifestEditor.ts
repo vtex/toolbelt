@@ -35,7 +35,7 @@ export class ManifestEditor {
       if (e.code === 'ENOENT') {
         throw new Error(`Missing manifest.json on app root. ${e}`)
       }
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error(`Malformed manifest.json file. ${e}`),
       })

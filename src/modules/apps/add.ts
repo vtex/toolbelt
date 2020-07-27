@@ -20,7 +20,7 @@ const infraLatestVersion = async (app: string) => {
     return wildVersionByMajor(latest)
   } catch (err) {
     if (err.response?.status === 404) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error(`App ${chalk.green(`infra:${app}`)} not found`),
       })
@@ -49,7 +49,7 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
       log.debug('Starting to add app', app)
 
       if (!ManifestValidator.dependencyName.test(app)) {
-        ErrorReport.createAndMaybeRegisterOnTelemetry({
+        throw ErrorReport.createAndMaybeRegisterOnTelemetry({
           kind: ErrorKinds.FLOW_ISSUE_ERROR,
           originalError: new Error(invalidAppMessage),
         })

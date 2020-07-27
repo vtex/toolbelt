@@ -63,7 +63,7 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
 
   if (workspace === 'master') {
     if (!contains(operation, workspaceMasterAllowedOperations)) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error(workspaceMasterMessage),
       })
@@ -78,7 +78,7 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
   const workspaces = createWorkspacesClient()
   const workspaceMeta = await workspaces.get(account, workspace)
   if (workspaceMeta.production && !contains(operation, workspaceProductionAllowedOperatios)) {
-    ErrorReport.createAndMaybeRegisterOnTelemetry({
+    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
       originalError: new Error(workspaceProductionMessage(workspace)),
     })
@@ -87,7 +87,7 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
   // No app arguments and no manifest file.
   const isReadable = await ManifestEditor.isManifestReadable()
   if (!app && !isReadable) {
-    ErrorReport.createAndMaybeRegisterOnTelemetry({
+    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
       originalError: new Error(
         `No app was found, please fix your manifest.json${app ? ' or use <vendor>.<name>[@<version>]' : ''}`
@@ -251,7 +251,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
       const appNameInput = await promptConfirmName(confirmMsg)
       const AppName = `${manifest.vendor}.${manifest.name}`
       if (appNameInput !== AppName) {
-        ErrorReport.createAndMaybeRegisterOnTelemetry({
+        throw ErrorReport.createAndMaybeRegisterOnTelemetry({
           kind: ErrorKinds.FLOW_ISSUE_ERROR,
           originalError: new Error(`${appNameInput} doesn't match with the app name.`),
         })

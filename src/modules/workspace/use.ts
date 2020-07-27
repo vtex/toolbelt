@@ -18,7 +18,7 @@ export default async (name: string, options?: WorkspaceUseOptions) => {
   if (name === '-') {
     name = session.lastUsedWorkspace
     if (name == null) {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error('No last used workspace was found'),
       })

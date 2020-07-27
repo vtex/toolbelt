@@ -33,7 +33,7 @@ export default async function setEdition(edition: string, workspace?: string, au
 
   if (!sponsorAccount) {
     if (targetWorkspace !== 'master') {
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error('Can only set initial edition in master workspace'),
       })

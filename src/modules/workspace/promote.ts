@@ -11,7 +11,7 @@ const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
 
 const throwIfIsMaster = (workspace: string) => {
   if (workspace === 'master') {
-    ErrorReport.createAndMaybeRegisterOnTelemetry({
+    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
       originalError: new Error(`It is not possible to promote workspace ${workspace} to master`),
     })
@@ -22,7 +22,7 @@ const isPromotable = async (workspace: string) => {
   throwIfIsMaster(workspace)
   const meta = await get(account, currentWorkspace)
   if (!meta.production) {
-    ErrorReport.createAndMaybeRegisterOnTelemetry({
+    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.FLOW_ISSUE_ERROR,
       originalError: new Error(
         `Workspace ${chalk.green(currentWorkspace)} is not a ${chalk.green(

@@ -11,7 +11,7 @@ export default (name: string, value: string) => {
   switch (name) {
     case 'env':
       if (!contains(value, envValues)) {
-        ErrorReport.createAndMaybeRegisterOnTelemetry({
+        throw ErrorReport.createAndMaybeRegisterOnTelemetry({
           kind: ErrorKinds.FLOW_ISSUE_ERROR,
           originalError: new Error(
             `Invalid value for environment "${value}". Possible values are: ${envValues.join(', ')}`
@@ -26,7 +26,7 @@ export default (name: string, value: string) => {
       log.info(`Successfully set cluster to "${value}"`)
       break
     default:
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
+      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.FLOW_ISSUE_ERROR,
         originalError: new Error(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`),
       })

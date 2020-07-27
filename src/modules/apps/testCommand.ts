@@ -125,7 +125,7 @@ export default async options => {
       }
 
       if (data.code === 'link_on_production') {
-        ErrorReport.createAndMaybeRegisterOnTelemetry({
+        throw ErrorReport.createAndMaybeRegisterOnTelemetry({
           kind: ErrorKinds.FLOW_ISSUE_ERROR,
           originalError: new Error(
             `Please use a dev workspace to test apps. Create one with (${chalk.blue(
