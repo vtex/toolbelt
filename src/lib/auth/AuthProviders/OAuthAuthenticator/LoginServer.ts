@@ -108,11 +108,9 @@ export class LoginServer {
 
       console.log(ctx)
 
-      if (ctx.method !== 'POST' || ctx.path !== LoginServer.LOGIN_CALLBACK_PATH) {
-        return this.handleError(ctx, new Error('LoginServer received invalid HTTP call'), {
-          method: ctx.method,
-          path: ctx.path,
-        })
+      if(ctx.path !== LoginServer.LOGIN_CALLBACK_PATH) {
+        ctx.status = 404
+        return
       }
 
       logger.debug('Received login callback')
