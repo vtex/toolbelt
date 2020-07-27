@@ -5,6 +5,7 @@ import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { promptConfirm } from '../../api/modules/prompts'
 import { VBase } from '../../api/clients/IOClients/infra/VBase'
+import authUrl from '../url'
 import useCmd from './use'
 
 const { checkForConflicts } = VBase.createClient()
@@ -21,7 +22,11 @@ const isPromotable = async (workspace: string) => {
   throwIfIsMaster(workspace)
   const conflictsFound = await checkForConflicts()
   if (conflictsFound) {
-    //handle conflict
+    throw new CommandError(`
+    Workspace ${chalk.green(currentWorkspace)} have changes that can cause conflict with the ${chalk.green('master')}.
+    Please, take a look at this workspace.\n
+    See at: ${authUrl()}\n
+    After comparing the workspaces, run ${chalk.magenta('vtex workspace promote')}.\n`)
   }
   const meta = await get(account, currentWorkspace)
   if (!meta.production) {
