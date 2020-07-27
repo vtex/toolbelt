@@ -106,7 +106,7 @@ export class LoginServer {
     this.app.use(async ctx => {
       ctx.set('connection', 'close')
 
-      if(ctx.path !== LoginServer.LOGIN_CALLBACK_PATH) {
+      if (ctx.path !== LoginServer.LOGIN_CALLBACK_PATH) {
         ctx.status = 404
         return
       }
