@@ -22,8 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [dependencies] Remove unused dependencies
 
 ### Fixed
-- [vtex browse] Fix workspace not being added to url.
-- [vtex login] Revert to use old login flow due to issues on Safari browsers.
+- [vtex browse] Fix workspace not being added to url. 
 
 ## [2.105.1] - 2020-07-16
 ### Fixed
