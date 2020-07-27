@@ -49,8 +49,7 @@ interface LogToUserOptions {
 
 export class ErrorReport extends ErrorReportBase {
   public static isFlowIssue(err: any) {
-    if (err instanceof ErrorReport && err.kind === ErrorKinds.FLOW_ISSUE_ERROR) return true
-    return false
+    return err instanceof ErrorReport && err.kind === ErrorKinds.FLOW_ISSUE_ERROR
   }
 
   public static create(args: CustomErrorReportCreateArgs) {
