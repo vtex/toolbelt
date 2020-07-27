@@ -44,6 +44,9 @@ export class OAuthAuthenticator extends AuthProviderBase {
       const login: string = decodedToken.sub
       this.closeChromeTabIfMac(loginServer.loginCallbackUrl)
       return { login, token }
+    } catch (err) {
+      console.log(err)
+      throw err
     } finally {
       loginServer.close()
     }

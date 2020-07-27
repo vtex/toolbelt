@@ -38,6 +38,8 @@ export class VTEXID extends IOClient {
       loopbackUrl,
     })
 
+    console.log(body)
+
     return this.http.post<string>(`${VTEXID.TOOLBELT_API_PATH_PREFIX}/start?an=${account}`, body)
   }
 

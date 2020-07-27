@@ -59,7 +59,7 @@ export class LoginServer {
       throw new Error('LoginServer not initialized')
     }
 
-    return `http://localhost:${this.port}${LoginServer.LOGIN_CALLBACK_PATH}`
+    return `http://127.0.0.1:${this.port}${LoginServer.LOGIN_CALLBACK_PATH}`
   }
 
   public setLoginState(val: string) {
@@ -105,6 +105,9 @@ export class LoginServer {
   private registerLoginHandler() {
     this.app.use(async ctx => {
       ctx.set('connection', 'close')
+
+      console.log(ctx)
+
       if (ctx.method !== 'POST' || ctx.path !== LoginServer.LOGIN_CALLBACK_PATH) {
         return this.handleError(ctx, new Error('LoginServer received invalid HTTP call'), {
           method: ctx.method,
