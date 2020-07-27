@@ -5,8 +5,7 @@
   "bin": "bin/run",
   "main": "build/api/index.js",
   "scripts": {
-    "exe": "node scripts/make-executable.js",
-    "watch": "bash ./scripts/symlink.sh && yarn nodemon && yarn oclif-dev manifest",
+    "watch": "yarn build-clean && bash ./scripts/symlink.sh && yarn nodemon",
     "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
     "lint:node": "yarn eslint ./src --cache --ext ts --config .eslintrc",
     "format-lint": "yarn format && yarn lint:node",
