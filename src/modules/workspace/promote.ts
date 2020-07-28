@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import axios from 'axios'
 import { createFlowIssueError } from '../../api/error/utils'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
@@ -11,6 +12,7 @@ import useCmd from './use'
 const { checkForConflicts } = VBase.createClient()
 const { promote, get } = createWorkspacesClient()
 const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
+const url = authUrl()
 
 const throwIfIsMaster = (workspace: string) => {
   if (workspace === 'master') {
@@ -19,15 +21,8 @@ const throwIfIsMaster = (workspace: string) => {
 }
 
 const isPromotable = async (workspace: string) => {
+  console.log('Preparing the workspace to be promoted\n')
   throwIfIsMaster(workspace)
-  const conflictsFound = await checkForConflicts()
-  if (conflictsFound) {
-    throw new CommandError(`
-    Workspace ${chalk.green(currentWorkspace)} have changes that can cause conflict with the ${chalk.green('master')}.
-    Please, take a look at this workspace.\n
-    See at: ${authUrl()}\n
-    After comparing the workspaces, run ${chalk.magenta('vtex workspace promote')}.\n`)
-  }
   const meta = await get(account, currentWorkspace)
   if (!meta.production) {
     throw createFlowIssueError(
@@ -38,15 +33,35 @@ const isPromotable = async (workspace: string) => {
       )} to create a production workspace`
     )
   }
+  const conflictsFound = await checkForConflicts()
+  if (conflictsFound) {
+    await axios.get(url)
+  }
 }
 const promptPromoteConfirm = (workspace: string): Promise<boolean> =>
-  promptConfirm(`Are you sure you want to promote workspace ${chalk.green(workspace)} to master?`, true)
+  promptConfirm(
+    `Do you want to promote ${chalk.green(workspace)} to master? ${chalk.dim(
+      `Doing so, the work you did locally will be taken to production.`
+    )}`,
+    true
+  )
 
 export default async () => {
   log.debug('Promoting workspace', currentWorkspace)
   await isPromotable(currentWorkspace)
+  console.log(`${chalk.bold(
+    `The workspace ${chalk.green(currentWorkspace)} is about to be promoted,`
+  )} to be sure if this is the one you want to promote, check on the link below, please.\n
+  🖥️  ${chalk.green(currentWorkspace)} workspace
+  See at: ${chalk.hex('#477DFF').underline(url)}\n`)
+
   const promptAnswer = await promptPromoteConfirm(currentWorkspace)
   if (!promptAnswer) {
+    console.log(
+      `${chalk.bold(
+        `Ok! Workspace ${chalk.green(currentWorkspace)} was not promoted.`
+      )} If you are looking for other workspaces, run ${chalk.magenta('vtex workspace list')}`
+    )
     return
   }
 
