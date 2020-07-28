@@ -117,10 +117,14 @@ export class LoginServer {
       }
 
       let body
-      try {
-        body = await coBody(ctx.req)
-      } catch (err) {
-        return this.handleError(ctx, err)
+      if (ctx.method.toLowerCase() === 'post') {
+        try {
+          body = await coBody(ctx.req)
+        } catch (err) {
+          return this.handleError(ctx, err)
+        }
+      } else {
+        body = { ott: ctx.query?.ott }
       }
 
       if (!body.ott) {
