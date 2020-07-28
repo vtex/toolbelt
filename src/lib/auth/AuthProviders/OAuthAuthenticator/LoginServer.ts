@@ -117,7 +117,7 @@ export class LoginServer {
       }
 
       let body
-      if(ctx.method.toLowerCase() === 'post') {
+      if (ctx.method.toLowerCase() === 'post') {
         try {
           body = await coBody(ctx.req)
         } catch (err) {
