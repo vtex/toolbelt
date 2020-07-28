@@ -1,24 +1,21 @@
 import { BuildResult } from '@vtex/api'
 import retry from 'async-retry'
 import chalk from 'chalk'
-import * as conf from '../../conf'
 import { region } from '../../api/env'
 import { createPathToFileObject } from '../../api/files/ProjectFilesManager'
-import { ManifestEditor } from '../../api/manifest'
-import { getAppRoot } from '../../api/manifest/ManifestUtil'
 import { toAppLocator } from '../../api/locator'
 import log from '../../api/logger'
-
-import { switchAccount, returnToPreviousAccount } from '../auth/switch'
-import { listenBuild } from '../../api/modules/build'
-import { promptConfirm } from '../../api/modules/prompts'
-import { runYarnIfPathExists } from '../utils'
+import { ManifestEditor, getAppRoot } from '../../api/manifest'
 import { listLocalFiles } from '../../api/modules/apps/file'
 import { ProjectUploader } from '../../api/modules/apps/ProjectUploader'
+import { listenBuild } from '../../api/modules/build'
+import { promptConfirm } from '../../api/modules/prompts'
 import { checkBuilderHubMessage, showBuilderHubMessage } from '../../api/modules/utils'
 import { SessionManager } from '../../api/session/SessionManager'
+import * as conf from '../../conf'
+import { returnToPreviousAccount, switchAccount } from '../auth/switch'
+import { runYarnIfPathExists } from '../utils'
 
-const root = getAppRoot()
 const buildersToRunLocalYarn = ['node', 'react']
 
 const automaticTag = (version: string): string => (version.indexOf('-') > 0 ? null : 'latest')
@@ -152,6 +149,7 @@ export default async (path: string, options) => {
     process.exit(1)
   }
 
+  const root = getAppRoot()
   path = path || root
   const force = options.f || options.force
 
