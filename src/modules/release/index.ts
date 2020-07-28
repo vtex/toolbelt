@@ -4,6 +4,7 @@ import semver from 'semver'
 
 import log from '../../api/logger'
 import { ReleaseUtils } from './utils'
+
 export const releaseTypeAliases = {
   pre: 'prerelease',
 }
@@ -60,7 +61,6 @@ export default async (
   releaseType = 'patch', // This arg. can also be a valid (semver) version.
   tagName = 'beta'
 ) => {
-
   const utils = new ReleaseUtils()
   utils.checkGit()
   utils.checkIfInGitRepo()
