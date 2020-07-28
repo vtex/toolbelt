@@ -1,13 +1,11 @@
 import chalk from 'chalk'
 import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
-import { ManifestValidator } from '../../api/manifest'
-import { getManifest } from '../../api/manifest/ManifestUtil'
-import { SessionManager } from '../../api/session/SessionManager'
-import { parseLocator, toAppLocator } from '../../api/locator'
+import { parseLocator } from '../../api/locator'
 import log from '../../api/logger'
-
-import { returnToPreviousAccount, switchAccount } from '../auth/switch'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
+import { SessionManager } from '../../api/session/SessionManager'
+import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 
 const switchToVendorMessage = (vendor: string): string => {
   return `You are trying to deploy this app in an account that differs from the indicated vendor. Do you want to deploy in account ${chalk.blue(
@@ -61,7 +59,7 @@ export default async (optionalApp: string, options) => {
   const preConfirm = options.y || options.yes
 
   const { account: originalAccount, workspace: originalWorkspace } = SessionManager.getSingleton()
-  const app = optionalApp || toAppLocator(await getManifest())
+  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
 
   if (!preConfirm && !(await promptDeploy(app))) {
     return
