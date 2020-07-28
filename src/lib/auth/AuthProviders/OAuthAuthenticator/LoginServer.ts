@@ -97,6 +97,10 @@ export class LoginServer {
     return new Promise((resolve, reject) => {
       this.app.on('error', reject)
       const server = this.app.listen(port, () => {
+        server.on('connection', socket => {
+          socket.unref()
+        })
+
         resolve(server)
       })
     })
@@ -108,6 +112,7 @@ export class LoginServer {
 
       if (ctx.path !== LoginServer.LOGIN_CALLBACK_PATH) {
         ctx.status = 404
+        ctx.body = 'Not found'
         return
       }
 
