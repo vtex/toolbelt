@@ -1,6 +1,6 @@
 import chalk from 'chalk'
+import { ManifestEditor } from '../../api'
 import logger from '../../api/logger'
-import { getManifest } from '../../api/manifest/ManifestUtil'
 import { setupTooling } from './setupTooling'
 import { setupTSConfig } from './setupTSConfig'
 import { setupTypings } from './setupTypings'
@@ -27,7 +27,7 @@ export default async (opts: SetupOpts) => {
     )
   }
 
-  const manifest = await getManifest()
+  const manifest = await ManifestEditor.getManifestEditor()
 
   if (tooling) {
     setupTooling(manifest)

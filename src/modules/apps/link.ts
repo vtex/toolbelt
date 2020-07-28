@@ -49,7 +49,6 @@ interface LinkOptions {
   noWatch?: boolean
 }
 
-const root = getAppRoot()
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
@@ -74,6 +73,7 @@ const shouldStartDebugger = (manifest: ManifestEditor) => {
 }
 
 const performInitialLink = async (
+  root: string,
   projectUploader: ProjectUploader,
   extraData: { yarnFilesManager: YarnFilesManager },
   unsafe: boolean
@@ -140,16 +140,18 @@ const performInitialLink = async (
 }
 
 const warnAndLinkFromStart = (
+  root: string,
   projectUploader: ProjectUploader,
   unsafe: boolean,
   extraData: { yarnFilesManager: YarnFilesManager } = { yarnFilesManager: null }
 ) => {
   log.warn('Initial link requested by builder')
-  performInitialLink(projectUploader, extraData, unsafe)
+  performInitialLink(root, projectUploader, extraData, unsafe)
   return null
 }
 
 const watchAndSendChanges = async (
+  root: string,
   appId: string,
   projectUploader: ProjectUploader,
   { yarnFilesManager }: { yarnFilesManager: YarnFilesManager },
@@ -160,7 +162,7 @@ const watchAndSendChanges = async (
   const onInitialLinkRequired = e => {
     const data = e.response && e.response.data
     if (data?.code === 'initial_link_required') {
-      return warnAndLinkFromStart(projectUploader, unsafe, { yarnFilesManager })
+      return warnAndLinkFromStart(root, projectUploader, unsafe, { yarnFilesManager })
     }
     throw e
   }
@@ -254,6 +256,7 @@ export async function appLink(options: LinkOptions) {
 
   await validateAppAction('link')
   const unsafe = !!options.unsafe
+  const root = getAppRoot()
   const manifest = await ManifestEditor.getManifestEditor()
   await manifest.writeSchema()
 
@@ -292,7 +295,7 @@ export async function appLink(options: LinkOptions) {
       log.error(`App build failed. Waiting for changes...`)
     },
     // eslint-disable-next-line @typescript-eslint/camelcase
-    initial_link_required: () => warnAndLinkFromStart(projectUploader, unsafe),
+    initial_link_required: () => warnAndLinkFromStart(root, projectUploader, unsafe),
   }
 
   let debuggerStarted = false
@@ -328,7 +331,7 @@ export async function appLink(options: LinkOptions) {
   let unlistenBuild
   const extraData = { yarnFilesManager: null }
   try {
-    const buildTrigger = performInitialLink.bind(this, projectUploader, extraData, unsafe)
+    const buildTrigger = performInitialLink.bind(this, root, projectUploader, extraData, unsafe)
     const [subject] = appId.split('@')
     if (options.noWatch) {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
@@ -370,5 +373,5 @@ export async function appLink(options: LinkOptions) {
     process.exit()
   })
 
-  await watchAndSendChanges(appId, projectUploader, extraData, unsafe)
+  await watchAndSendChanges(root, appId, projectUploader, extraData, unsafe)
 }

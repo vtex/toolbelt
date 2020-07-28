@@ -1,22 +1,21 @@
 import retry from 'async-retry'
 import chalk from 'chalk'
 import { concat, map, prop } from 'ramda'
-import { CommandError } from '../../api/error/errors'
+import { ManifestEditor } from '../../api'
 import { Builder } from '../../api/clients/IOClients/apps/Builder'
+import { CommandError } from '../../api/error/errors'
 import { createPathToFileObject } from '../../api/files/ProjectFilesManager'
 import { YarnFilesManager } from '../../api/files/YarnFilesManager'
-import { fixPinnedDependencies, PinnedDeps } from '../../api/pinnedDependencies'
-import { toAppLocator } from '../../api/locator'
 import log from '../../api/logger'
-import { getAppRoot, getManifest, writeManifestSchema } from '../../api/manifest/ManifestUtil'
-import { listenBuild } from '../../api/modules/build'
-import { runYarnIfPathExists } from '../utils'
+import { getAppRoot } from '../../api/manifest/ManifestUtil'
 import { listLocalFiles } from '../../api/modules/apps/file'
 import { ProjectUploader } from '../../api/modules/apps/ProjectUploader'
+import { listenBuild } from '../../api/modules/build'
 import { validateAppAction } from '../../api/modules/utils'
+import { fixPinnedDependencies, PinnedDeps } from '../../api/pinnedDependencies'
 import { BatchStream } from '../../api/typings'
+import { runYarnIfPathExists } from '../utils'
 
-const root = getAppRoot()
 const buildersToRunLocalYarn = ['react', 'node']
 const RETRY_OPTS_TEST = {
   retries: 2,
@@ -25,6 +24,7 @@ const RETRY_OPTS_TEST = {
 }
 
 const performTest = async (
+  root: string,
   projectUploader: ProjectUploader,
   extraData: { yarnFilesManager: YarnFilesManager },
   unsafe: boolean
@@ -79,14 +79,11 @@ const performTest = async (
 export default async options => {
   await validateAppAction('test')
   const unsafe = !!(options.unsafe || options.u)
-  const manifest = await getManifest()
-  try {
-    await writeManifestSchema()
-  } catch (e) {
-    log.debug('Failed to write schema on manifest.')
-  }
 
-  const appId = toAppLocator(manifest)
+  const root = getAppRoot()
+  const manifest = await ManifestEditor.getManifestEditor()
+  await manifest.writeSchema()
+  const appId = manifest.appLocator
 
   const builder = Builder.createClient({}, { timeout: 60000 })
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
@@ -115,7 +112,7 @@ export default async options => {
 
   const extraData = { linkConfig: null }
   try {
-    const buildTrigger = performTest.bind(this, projectUploader, extraData, unsafe)
+    const buildTrigger = performTest.bind(this, root, projectUploader, extraData, unsafe)
     const [subject] = appId.split('@')
     await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
   } catch (e) {
