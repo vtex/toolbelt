@@ -116,6 +116,7 @@ export class LoginServer {
         return
       }
 
+      ctx.socket.ref()
       logger.debug(`Received ${ctx.method} login callback`)
       if (!this.loginState) {
         return this.handleError(ctx, new Error('Received login callback before setting login state'))
