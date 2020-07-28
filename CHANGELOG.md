@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- [vtex login] Use new VTEX ID login flow.
 
 ## [2.106.3] - 2020-07-28
 ### Changed
@@ -27,7 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [dependencies] Remove unused dependencies
 
 ### Fixed
-- [vtex browse] Fix workspace not being added to url. 
+- [vtex browse] Fix workspace not being added to url.
+- [vtex login] Revert to use old login flow due to issues on Safari browsers.
 
 ## [2.105.1] - 2020-07-16
 ### Fixed
