@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.106.4] - 2020-07-30
+### Changed
+- [vtex login] Use new VTEX ID login flow.
+
 ## [2.106.3] - 2020-07-28
 ### Changed
 - Remove function calls on the root of the module on the commands: `vtex release`, `vtex test unit`, `vtex setup`, `vtex publish`, `vtex link` and `vtex deploy`
