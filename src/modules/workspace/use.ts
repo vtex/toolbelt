@@ -4,6 +4,7 @@ import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from './create'
 import resetWks from './reset'
+import { ColorifyConstants } from '../../lib/constants/Colors'
 
 interface WorkspaceUseOptions {
   production: boolean
@@ -37,5 +38,9 @@ export default async (name: string, options?: WorkspaceUseOptions) => {
   }
 
   const { account, workspace } = session
-  log.info(`You're now using the workspace ${chalk.green(workspace)} on account ${chalk.blue(account)}!`)
+  log.info(
+    `${chalk.bold('Workspace change:')} You are now using the workspace ${ColorifyConstants.ID(
+      workspace
+    )} on account ${ColorifyConstants.ID(account)}.\n`
+  )
 }

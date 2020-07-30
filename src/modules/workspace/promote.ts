@@ -1,5 +1,8 @@
 import chalk from 'chalk'
 import axios from 'axios'
+import cli from 'cli-ux'
+import terminalLink from 'terminal-link'
+import boxen from 'boxen'
 import { createFlowIssueError } from '../../api/error/utils'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
@@ -8,6 +11,7 @@ import { promptConfirm } from '../../api/modules/prompts'
 import { VBase } from '../../api/clients/IOClients/infra/VBase'
 import authUrl from '../url'
 import useCmd from './use'
+import { ColorifyConstants } from '../../lib/constants/Colors'
 
 const { checkForConflicts } = VBase.createClient()
 const { promote, get } = createWorkspacesClient()
@@ -21,26 +25,28 @@ const throwIfIsMaster = (workspace: string) => {
 }
 
 const isPromotable = async (workspace: string) => {
-  console.log('Preparing the workspace to be promoted\n')
   throwIfIsMaster(workspace)
   const meta = await get(account, currentWorkspace)
   if (!meta.production) {
     throw createFlowIssueError(
-      `Workspace ${chalk.green(currentWorkspace)} is not a ${chalk.green(
+      `Workspace ${ColorifyConstants.ID(workspace)} is not a ${ColorifyConstants.ID(
         'production'
-      )} workspace\nOnly production workspaces may be promoted\nUse the command ${chalk.blue(
+      )} workspace\nOnly production workspaces may be promoted\nUse the command ${ColorifyConstants.COMMAND_OR_VTEX_REF(
         'vtex workspace create <workspace> --production'
       )} to create a production workspace`
     )
   }
+  cli.action.start('Preparing the workspace to be promoted')
   const conflictsFound = await checkForConflicts()
   if (conflictsFound) {
     await axios.get(url)
   }
+  cli.action.stop()
 }
+
 const promptPromoteConfirm = (workspace: string): Promise<boolean> =>
   promptConfirm(
-    `Do you want to promote ${chalk.green(workspace)} to master? ${chalk.dim(
+    `Do you want to promote ${ColorifyConstants.ID(workspace)} to master? ${chalk.dim(
       `Doing so, the work you did locally will be taken to production.`
     )}`,
     true
@@ -50,22 +56,41 @@ export default async () => {
   log.debug('Promoting workspace', currentWorkspace)
   await isPromotable(currentWorkspace)
   console.log(`${chalk.bold(
-    `The workspace ${chalk.green(currentWorkspace)} is about to be promoted,`
+    `The workspace ${ColorifyConstants.ID(currentWorkspace)} is about to be promoted,`
   )} to be sure if this is the one you want to promote, check on the link below, please.\n
-  🖥️  ${chalk.green(currentWorkspace)} workspace
-  See at: ${chalk.hex('#477DFF').underline(url)}\n`)
+  🖥️  ${ColorifyConstants.ID(currentWorkspace)} workspace
+  See at: ${ColorifyConstants.URL_INTERACTIVE(url)}\n`)
 
   const promptAnswer = await promptPromoteConfirm(currentWorkspace)
   if (!promptAnswer) {
-    console.log(
+    log.info(
       `${chalk.bold(
-        `Ok! Workspace ${chalk.green(currentWorkspace)} was not promoted.`
-      )} If you are looking for other workspaces, run ${chalk.magenta('vtex workspace list')}`
+        `Ok! Workspace ${ColorifyConstants.ID(currentWorkspace)} was not promoted.`
+      )} If you are looking for other workspaces, run ${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex workspace list')}\n`
     )
     return
   }
 
   await promote(account, currentWorkspace)
-  log.info(`Workspace ${chalk.green(currentWorkspace)} promoted successfully`)
+  log.info(
+    `✨ ${chalk.bold('Success!')} The workspace ${ColorifyConstants.ID(
+      currentWorkspace
+    )} was promoted. We deleted the workspace named ${ColorifyConstants.ID(
+      currentWorkspace
+    )} and now you'll see what was on it at the workspace ${ColorifyConstants.ID('master')}.`
+  )
+  console.log(
+    boxen(
+      `Learn more about why we ask you to choose a workspace ${terminalLink(
+        'here',
+        ''
+      )}, and send us\nfeedback about this approach.`,
+      {
+        padding: 1,
+        margin: 1,
+      }
+    )
+  )
+
   await useCmd('master')
 }
