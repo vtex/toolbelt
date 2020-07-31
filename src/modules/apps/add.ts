@@ -70,7 +70,7 @@ export default async (apps: string[]) => {
     await addApps(apps, manifest)
   } catch (err) {
     if (ErrorReport.isFlowIssue(err)) {
-      log.error(err.originalError)
+      log.error(err.message)
       return
     }
 

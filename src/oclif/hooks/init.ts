@@ -149,8 +149,8 @@ export const onError = async (e: any) => {
         log.debug(e)
     }
   } else if (ErrorReport.isFlowIssue(e)) {
-    if (e.originalError && e.originalError !== '') {
-      log.error(e.originalError)
+    if (e.message && e.message !== '') {
+      log.error(e.message)
     }
   } else if (e instanceof SSEConnectionError) {
     log.error(e.message ?? 'Connection to login server has failed')
