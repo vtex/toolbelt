@@ -24,8 +24,16 @@ const throwIfIsMaster = (workspace: string) => {
   }
 }
 
+const handleConflict = async () => {
+  const conflictsFound = await checkForConflicts()
+  if (conflictsFound) {
+    await axios.get(url)
+  }
+}
+
 const isPromotable = async (workspace: string) => {
   throwIfIsMaster(workspace)
+
   const meta = await get(account, currentWorkspace)
   if (!meta.production) {
     throw createFlowIssueError(
@@ -36,11 +44,9 @@ const isPromotable = async (workspace: string) => {
       )} to create a production workspace`
     )
   }
+
   cli.action.start('Preparing the workspace to be promoted')
-  const conflictsFound = await checkForConflicts()
-  if (conflictsFound) {
-    await axios.get(url)
-  }
+  await handleConflict()
   cli.action.stop()
 }
 
@@ -66,7 +72,9 @@ export default async () => {
     log.info(
       `${chalk.bold(
         `Ok! Workspace ${ColorifyConstants.ID(currentWorkspace)} was not promoted.`
-      )} If you are looking for other workspaces, run ${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex workspace list')}\n`
+      )} If you are looking for other workspaces, run ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+        'vtex workspace list'
+      )}.\n`
     )
     return
   }
@@ -75,10 +83,13 @@ export default async () => {
   log.info(
     `✨ ${chalk.bold('Success!')} The workspace ${ColorifyConstants.ID(
       currentWorkspace
-    )} was promoted. We deleted the workspace named ${ColorifyConstants.ID(
-      currentWorkspace
-    )} and now you'll see what was on it at the workspace ${ColorifyConstants.ID('master')}.`
+    )} was promoted to ${ColorifyConstants.ID(
+      'master'
+    )}, taking your changes to the final users. All the content it had is now at the workspace ${ColorifyConstants.ID(
+      'master'
+    )} and the workspace ${ColorifyConstants.ID(currentWorkspace)} was deleted.`
   )
+
   console.log(
     boxen(
       `Learn more about why we ask you to choose a workspace ${terminalLink(
