@@ -51,7 +51,7 @@ index=io_vtex_logs app=vtex.toolbelt-config-server@* data.event!=NULL workspace=
 
 ### Deprecating a version
 
-Toolbelt has a way of enforcing users to not use deprecated versions. From time to time toolbelt checks the `npm` registry checking if the current version is deprecated - if it's the user won't be allowed to run commands and will be presented a message like the following:
+Toolbelt has a way of enforcing users to not use deprecated versions. From time to time toolbelt access the `npm` registry to check if the current version is deprecated - if it's the user won't be allowed to run commands and will be presented a message like the following:
 
 ```
 This version 2.93.0 was deprecated. Please update to the latest version: 'yarn global add vtex'.
