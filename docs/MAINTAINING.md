@@ -6,7 +6,7 @@ This document is for people working on VTEX as Toolbelt maintainers.
 
 Toolbelt has a way of enforcing users to use a minimum version choosed by us. This enforcement is done on the client side (can be disabled by an environment variable, check [EnvVariables](../src/lib/constants/EnvVariables.ts)) and on `vtex.builder-hub` - users using an older toolbelt version will not be allowed to link or publish. This feature is useful for enforcing users to update to the latest version, which can be important when we launch a new version with a major bug fix for example.
 
-Here's how you enforce minumum toolbelt version:
+Here's how you enforce minimum toolbelt version:
 
 1. You'll have to install the [toolbelt-config-cli](https://github.com/vtex/toolbelt-config-cli):
 
