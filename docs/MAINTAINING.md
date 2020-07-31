@@ -63,7 +63,7 @@ There's a problem with this approach - when we deprecate a npm package version, 
 
 1. Deprecate it:
 ```
-npm deprecate vtex@2.92.0 -m "Message explaining why this version was deprecated, for example: Bug when sending files to link"
+npm deprecate vtex@2.92.0 "Message explaining why this version was deprecated, for example: Bug when sending files to link"
 ```
 
 2. Change the `latest` tag to the previous version (you'll have to check it):
