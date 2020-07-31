@@ -71,6 +71,6 @@ npm deprecate vtex@2.92.0 "Message explaining why this version was deprecated, f
 npm dist-tag add vtex@2.91.0 latest
 ```
 
-3. Make sure the we aren't enforcing the deprecated version (see [forcing a new version](##forcing-a-new-version))
+3. Make sure that we aren't enforcing the deprecated version (see [forcing a new version](##forcing-a-new-version))
 
 That's it!
