@@ -57,7 +57,7 @@ Toolbelt has a way of enforcing users to not use deprecated versions. From time 
 This version 2.93.0 was deprecated. Please update to the latest version: 'yarn global add vtex'.
 ```
 
-This enforcement is on the client side and can be disabled on a execution by setting an environment variable (check check [EnvVariables](../src/lib/constants/EnvVariables.ts)).
+This enforcement is on the client side and can be disabled on an execution by setting an environment variable (check [EnvVariables](../src/lib/constants/EnvVariables.ts)).
 
 There's a problem with this approach - when we deprecate a npm package version, the `latest` tag is not automatically relocated, we have to do it manually, so the full process of deprecating a version is the following (the version chosen is just an example):
 
