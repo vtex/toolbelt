@@ -27,7 +27,7 @@ All configs
 }
 ```
 
-The `minimumToolbeltPrereleaseVersion` is used for enforcing minimum `-beta` versions; `minimumToolbeltVersion` is used for enforcing minimum stable version. You'll probably want to maitain the property `minimumToolbeltPrereleaseVersion <= minimumToolbeltVersion`.
+The `minimumToolbeltPrereleaseVersion` is used for enforcing minimum `-beta` versions; `minimumToolbeltVersion` is used for enforcing minimum stable version. You'll probably want to maintain the property `minimumToolbeltPrereleaseVersion <= minimumToolbeltVersion`.
 
 4. Set the version to the one you want to enforce.
 
