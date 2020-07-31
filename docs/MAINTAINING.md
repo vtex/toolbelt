@@ -10,7 +10,7 @@ Toolbelt has a way of enforcing users to use a minimum version choosed by us. Th
 - A security bug was fixed, protecting our users from a vulnerability.
 - We improved usage on a command or provided better error messages and logs.
 
-We don't need to enforce the newer version in every release (except when a security bug was fixed), but from time to time it's important to enforce a newer version - updating will provide an overall better experience for our users.
+We don't need to enforce the newest version in every release (except when a security bug was fixed), but from time to time it's important to enforce a newer version - updating will provide an overall better experience for our users.
 
 Here's how you enforce minimum toolbelt version:
 
