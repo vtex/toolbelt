@@ -4,13 +4,13 @@ This document is for people working on VTEX as Toolbelt maintainers.
 
 ### Forcing a new version
 
-Toolbelt has a way of enforcing users to use a minimum version choosed by us. This enforcement is done on the client side (can be disabled by an environment variable, check [EnvVariables](../src/lib/constants/EnvVariables.ts)) and on `vtex.builder-hub` - users using an older toolbelt version will not be allowed to link or publish. This feature is useful for enforcing users to update to the latest version, which can be important when we launch a new version with a major bug fix for example. This enforcement may benefit users in situations like the following:
+Toolbelt has a way of enforcing users to use a minimum version choosed by us. This enforcement is done on the client side (can be disabled by an environment variable, check [EnvVariables](../src/lib/constants/EnvVariables.ts)) and on `vtex.builder-hub` - users using an older toolbelt version will not be allowed to link or publish. This feature is useful for enforcing users to update to the latest version, which can benefit users in many situations, like the following:
 
 - Bugs on toolbelt usage were fixed, providing a better experience.
 - A security bug was fixed, protecting our users from a vulnerability.
 - We improved usage on a command or provided better error messages and logs.
 
-Because of these from time to time it's important to enforce a newer version - updating will provide an overall better experience for our users.
+We don't need to enforce the newer version in every release (except when a security bug was fixed), but from time to time it's important to enforce a newer version - updating will provide an overall better experience for our users.
 
 Here's how you enforce minimum toolbelt version:
 
@@ -68,11 +68,13 @@ This enforcement is on the client side and can be disabled on an execution by se
 There's a problem with this approach - when we deprecate a npm package version, the `latest` tag is not automatically relocated, we have to do it manually, so the full process of deprecating a version is the following (the version chosen is just an example):
 
 1. Deprecate it:
+
 ```
 npm deprecate vtex@2.92.0 "Message explaining why this version was deprecated, for example: Bug when sending files to link"
 ```
 
 2. Change the `latest` tag to the previous version (you'll have to check it):
+
 ```
 npm dist-tag add vtex@2.91.0 latest
 ```
