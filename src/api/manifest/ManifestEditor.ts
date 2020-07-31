@@ -1,6 +1,7 @@
 import { readJson, writeJson, writeJsonSync } from 'fs-extra'
 import { resolve } from 'path'
-import { ErrorKinds, ErrorReport } from '../error'
+import { ErrorKinds } from '../error/ErrorKinds'
+import { ErrorReport } from '../error/ErrorReport'
 import { getAppRoot } from './ManifestUtil'
 import { ManifestValidator } from './ManifestValidator'
 

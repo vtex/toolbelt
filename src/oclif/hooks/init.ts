@@ -17,7 +17,8 @@ import { Metric } from '../../api/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
 import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
-import { ErrorReport, SSEConnectionError } from '../../api/error'
+import { SSEConnectionError } from '../../api/error/errors'
+import { ErrorReport } from '../../api/error/ErrorReport'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')

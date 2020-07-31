@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 
-import { ErrorKinds, ErrorReport } from '../../api/error'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import { saveEnvironment, saveCluster, ENV_DEFAULT_VALUE, CLUSTER_DEFAULT_VALUE } from '../../conf'
 
 export default (name: string) => {

@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { region } from '../../api/env'
-import { ErrorKinds, ErrorReport } from '../../api/error'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import log from '../../api/logger'
 import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from '../../api/modules/utils'

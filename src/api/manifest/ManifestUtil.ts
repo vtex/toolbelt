@@ -1,6 +1,7 @@
 import { accessSync } from 'fs'
 import path from 'path'
-import { ErrorReport, ErrorKinds } from '../error'
+import { ErrorKinds } from '../error/ErrorKinds'
+import { ErrorReport } from '../error/ErrorReport'
 
 export const MANIFEST_FILE_NAME = 'manifest.json'
 

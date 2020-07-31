@@ -6,7 +6,8 @@ import {
   ProjectUploader,
 } from '../../api/modules/apps/ProjectUploader'
 import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from '../../api/modules/utils'
-import { ErrorKinds, ErrorReport } from '../../api/error'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
 import { createPathToFileObject } from '../../api/files/ProjectFilesManager'

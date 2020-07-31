@@ -1,4 +1,5 @@
-import { ErrorKinds, ErrorReport } from '../error'
+import { ErrorKinds } from '../error/ErrorKinds'
+import { ErrorReport } from '../error/ErrorReport'
 
 const namePattern = '[\\w_-]+'
 const vendorPattern = '[\\w_-]+'

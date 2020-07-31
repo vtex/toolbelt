@@ -1,5 +1,6 @@
 import chalk from 'chalk'
-import { ErrorKinds, ErrorReport } from '../../api/error'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from './create'

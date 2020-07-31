@@ -1,5 +1,6 @@
 import chalk from 'chalk'
-import { ErrorKinds, ErrorReport } from '../../error'
+import { ErrorKinds } from '../../error/ErrorKinds'
+import { ErrorReport } from '../../error/ErrorReport'
 import { Sponsor } from '../../clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../session/SessionManager'
 import log from '../../logger'
