@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.106.4] - 2020-07-30
 ### Changed
 - [vtex login] Use new VTEX ID login flow.
-- [commandError] Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
+- Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
 
 ## [2.106.3] - 2020-07-28
 ### Changed
