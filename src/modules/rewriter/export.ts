@@ -6,7 +6,7 @@ import { createInterface } from 'readline'
 import { Redirect, Rewriter } from '../../api/clients/IOClients/apps/Rewriter'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
-import { isVerbose } from '../../verbose'
+import { isVerbose } from '../../api/verbose'
 import {
   deleteMetainfo,
   DELIMITER,

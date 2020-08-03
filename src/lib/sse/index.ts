@@ -5,7 +5,7 @@ import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { removeVersion } from '../../api/locator'
 import log from '../../api/logger'
-import { isVerbose } from '../../verbose'
+import { isVerbose } from '../../api/verbose'
 import { CustomEventSource } from './CustomEventSource'
 import { EventSourceError } from './EventSourceError'
 

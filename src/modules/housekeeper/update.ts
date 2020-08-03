@@ -5,7 +5,7 @@ import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, 
 import { createHousekeeperClient } from '../../api/clients/IOClients/infra/Housekeeper'
 import { toMajorRange } from '../../api/locator'
 import log from '../../api/logger'
-import { isVerbose } from '../../verbose'
+import { isVerbose } from '../../api/verbose'
 import { promptConfirm } from '../../api/modules/prompts'
 import { matchedDepsDiffTable } from '../utils'
 
