@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - [vtex workspace promote] Log messages.
+- [vtex redirects] Refactor to use as oclif plugin.
 
 ## [2.107.0] - 2020-08-06
 ### Changed
