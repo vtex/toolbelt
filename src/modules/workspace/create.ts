@@ -1,6 +1,6 @@
 import { Workspaces } from '@vtex/api'
 import chalk from 'chalk'
-import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { createFlowIssueError } from '../../api/error'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { Builder } from '../../api/clients/IOClients/apps/Builder'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
@@ -64,12 +64,9 @@ export const workspaceCreator: WorkspaceCreator = async ({
   logIfAlreadyExists = true,
 }) => {
   if (!VALID_WORKSPACE.test(targetWorkspace)) {
-    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-      kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error(
-        "Whoops! That's not a valid workspace name. Please use only lowercase letters and numbers."
-      ),
-    })
+    throw createFlowIssueError(
+      "Whoops! That's not a valid workspace name. Please use only lowercase letters and numbers."
+    )
   }
 
   const { account, workspace, token } = clientContext ?? SessionManager.getSingleton()

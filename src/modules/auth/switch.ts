@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 import { split } from 'ramda'
-import { ErrorKinds } from '../../api/error/ErrorKinds'
-import { ErrorReport } from '../../api/error/ErrorReport'
+import { createFlowIssueError } from '../../api/error'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { promptConfirm } from '../../api/modules/prompts'
@@ -29,20 +28,11 @@ const checkAndSwitch = async (targetAccount: string, targetWorkspace: string) =>
   const isValidAccount = /^\s*[\w-]+\s*$/.test(targetAccount)
 
   if (!isValidAccount) {
-    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-      kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error('Invalid account format'),
-    })
+    throw createFlowIssueError('Invalid account format')
   } else if (!currAccount) {
-    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-      kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error("You're not logged in right now"),
-    })
+    throw createFlowIssueError("You're not logged in right now")
   } else if (currAccount === targetAccount) {
-    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-      kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error(`You're already using the account ${chalk.blue(targetAccount)}`),
-    })
+    throw createFlowIssueError(`You're already using the account ${chalk.blue(targetAccount)}`)
   }
 
   await session.login(targetAccount, {
@@ -76,10 +66,7 @@ export const switchAccount = async (account: string, options: SwitchOptions): Pr
   if (account === '-') {
     account = lastUsedAccount
     if (account == null) {
-      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-        kind: ErrorKinds.FLOW_ISSUE_ERROR,
-        originalError: new Error('No last used account was found'),
-      })
+      throw createFlowIssueError('No last used account was found')
     }
   }
 

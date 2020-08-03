@@ -16,8 +16,7 @@ import { execSync } from 'child-process-es6-promise'
 import { diffArrays } from 'diff'
 import { existsSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
-import { ErrorKinds } from '../error/ErrorKinds'
-import { ErrorReport } from '../error/ErrorReport'
+import { createFlowIssueError } from '../error'
 
 import { createTable } from '../table'
 
@@ -64,10 +63,7 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
 
   if (workspace === 'master') {
     if (!contains(operation, workspaceMasterAllowedOperations)) {
-      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-        kind: ErrorKinds.FLOW_ISSUE_ERROR,
-        originalError: new Error(workspaceMasterMessage),
-      })
+      throw createFlowIssueError(workspaceMasterMessage)
     } else {
       const confirm = await promptWorkspaceMaster(account)
       if (!confirm) {
@@ -79,21 +75,15 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
   const workspaces = createWorkspacesClient()
   const workspaceMeta = await workspaces.get(account, workspace)
   if (workspaceMeta.production && !contains(operation, workspaceProductionAllowedOperatios)) {
-    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-      kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error(workspaceProductionMessage(workspace)),
-    })
+    throw createFlowIssueError(workspaceProductionMessage(workspace))
   }
 
   // No app arguments and no manifest file.
   const isReadable = await ManifestEditor.isManifestReadable()
   if (!app && !isReadable) {
-    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-      kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error(
-        `No app was found, please fix your manifest.json${app ? ' or use <vendor>.<name>[@<version>]' : ''}`
-      ),
-    })
+    throw createFlowIssueError(
+      `No app was found, please fix your manifest.json${app ? ' or use <vendor>.<name>[@<version>]' : ''}`
+    )
   }
   return true
 }
@@ -115,12 +105,7 @@ export const pickLatestVersion = (versions: string[]): string => {
 
 export const handleError = curry((app: string, err: any) => {
   if (err.response && err.response.status === 404) {
-    return Promise.reject(
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
-        kind: ErrorKinds.FLOW_ISSUE_ERROR,
-        originalError: new Error(`App ${chalk.green(app)} not found`),
-      })
-    )
+    return Promise.reject(createFlowIssueError(`App ${chalk.green(app)} not found`))
   }
   return Promise.reject(err)
 })
@@ -252,10 +237,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
       const appNameInput = await promptConfirmName(confirmMsg)
       const AppName = `${manifest.vendor}.${manifest.name}`
       if (appNameInput !== AppName) {
-        throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-          kind: ErrorKinds.FLOW_ISSUE_ERROR,
-          originalError: new Error(`${appNameInput} doesn't match with the app name.`),
-        })
+        throw createFlowIssueError(`${appNameInput} doesn't match with the app name.`)
       }
     } else {
       log.info(message)

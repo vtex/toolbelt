@@ -1,7 +1,6 @@
 import { readJson, writeJson, writeJsonSync } from 'fs-extra'
 import { resolve } from 'path'
-import { ErrorKinds } from '../error/ErrorKinds'
-import { ErrorReport } from '../error/ErrorReport'
+import { createFlowIssueError } from '../error/utils'
 import { getAppRoot } from './ManifestUtil'
 import { ManifestValidator } from './ManifestValidator'
 
@@ -36,10 +35,7 @@ export class ManifestEditor {
       if (e.code === 'ENOENT') {
         throw new Error(`Missing manifest.json on app root. ${e}`)
       }
-      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-        kind: ErrorKinds.FLOW_ISSUE_ERROR,
-        originalError: new Error(`Malformed manifest.json file. ${e}`),
-      })
+      throw createFlowIssueError(`Malformed manifest.json file. ${e}`)
     }
   }
 

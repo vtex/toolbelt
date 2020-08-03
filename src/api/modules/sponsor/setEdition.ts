@@ -1,6 +1,5 @@
 import chalk from 'chalk'
-import { ErrorKinds } from '../../error/ErrorKinds'
-import { ErrorReport } from '../../error/ErrorReport'
+import { createFlowIssueError } from '../../error'
 import { Sponsor } from '../../clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../session/SessionManager'
 import log from '../../logger'
@@ -34,10 +33,7 @@ export default async function setEdition(edition: string, workspace?: string, au
 
   if (!sponsorAccount) {
     if (targetWorkspace !== 'master') {
-      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-        kind: ErrorKinds.FLOW_ISSUE_ERROR,
-        originalError: new Error('Can only set initial edition in master workspace'),
-      })
+      throw createFlowIssueError('Can only set initial edition in master workspace')
     }
     await promptSwitchToAccount('vtex', true)
   } else {

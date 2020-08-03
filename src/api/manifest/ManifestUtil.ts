@@ -1,7 +1,6 @@
 import { accessSync } from 'fs'
 import path from 'path'
-import { ErrorKinds } from '../error/ErrorKinds'
-import { ErrorReport } from '../error/ErrorReport'
+import { createFlowIssueError } from '../error'
 
 export const MANIFEST_FILE_NAME = 'manifest.json'
 
@@ -15,14 +14,10 @@ export const getAppRoot = () => {
       return dir
     } catch (err) {
       if (dir === rootDirName) {
-        throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-          kind: ErrorKinds.FLOW_ISSUE_ERROR,
-          originalError: new Error(
-            "Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app."
-          ),
-        })
+        throw createFlowIssueError(
+          "Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app."
+        )
       }
-
       return find(path.resolve(dir, '..'))
     }
   }

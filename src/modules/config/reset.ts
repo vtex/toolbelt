@@ -1,7 +1,6 @@
 import chalk from 'chalk'
 
-import { ErrorKinds } from '../../api/error/ErrorKinds'
-import { ErrorReport } from '../../api/error/ErrorReport'
+import { createFlowIssueError } from '../../api/error'
 import { saveEnvironment, saveCluster, ENV_DEFAULT_VALUE, CLUSTER_DEFAULT_VALUE } from '../../conf'
 
 export default (name: string) => {
@@ -13,9 +12,6 @@ export default (name: string) => {
       saveCluster(CLUSTER_DEFAULT_VALUE)
       break
     default:
-      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-        kind: ErrorKinds.FLOW_ISSUE_ERROR,
-        originalError: new Error(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`),
-      })
+      throw createFlowIssueError(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`)
   }
 }

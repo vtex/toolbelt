@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { region } from '../../api/env'
-import { ErrorKinds } from '../../api/error/ErrorKinds'
-import { ErrorReport } from '../../api/error/ErrorReport'
+import { createFlowIssueError, ErrorReport } from '../../api/error'
+
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import log from '../../api/logger'
 import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from '../../api/modules/utils'
@@ -21,10 +21,7 @@ const infraLatestVersion = async (app: string) => {
     return wildVersionByMajor(latest)
   } catch (err) {
     if (err.response?.status === 404) {
-      throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-        kind: ErrorKinds.FLOW_ISSUE_ERROR,
-        originalError: new Error(`App ${chalk.green(`infra:${app}`)} not found`),
-      })
+      throw createFlowIssueError(`App ${chalk.green(`infra:${app}`)} not found`)
     }
 
     throw err
@@ -50,10 +47,7 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
       log.debug('Starting to add app', app)
 
       if (!ManifestValidator.dependencyName.test(app)) {
-        throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-          kind: ErrorKinds.FLOW_ISSUE_ERROR,
-          originalError: new Error(invalidAppMessage),
-        })
+        throw createFlowIssueError(invalidAppMessage)
       }
       // eslint-disable-next-line no-await-in-loop
       await addApp(app, manifest)

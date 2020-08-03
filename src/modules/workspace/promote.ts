@@ -1,6 +1,5 @@
 import chalk from 'chalk'
-import { ErrorKinds } from '../../api/error/ErrorKinds'
-import { ErrorReport } from '../../api/error/ErrorReport'
+import { createFlowIssueError } from '../../api/error'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
@@ -12,10 +11,7 @@ const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
 
 const throwIfIsMaster = (workspace: string) => {
   if (workspace === 'master') {
-    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-      kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error(`It is not possible to promote workspace ${workspace} to master`),
-    })
+    throw createFlowIssueError(`It is not possible to promote workspace ${workspace} to master`)
   }
 }
 
@@ -23,16 +19,13 @@ const isPromotable = async (workspace: string) => {
   throwIfIsMaster(workspace)
   const meta = await get(account, currentWorkspace)
   if (!meta.production) {
-    throw ErrorReport.createAndMaybeRegisterOnTelemetry({
-      kind: ErrorKinds.FLOW_ISSUE_ERROR,
-      originalError: new Error(
-        `Workspace ${chalk.green(currentWorkspace)} is not a ${chalk.green(
-          'production'
-        )} workspace\nOnly production workspaces may be promoted\nUse the command ${chalk.blue(
-          'vtex workspace create <workspace> --production'
-        )} to create a production workspace`
-      ),
-    })
+    throw createFlowIssueError(
+      `Workspace ${chalk.green(currentWorkspace)} is not a ${chalk.green(
+        'production'
+      )} workspace\nOnly production workspaces may be promoted\nUse the command ${chalk.blue(
+        'vtex workspace create <workspace> --production'
+      )} to create a production workspace`
+    )
   }
 }
 const promptPromoteConfirm = (workspace: string): Promise<boolean> =>
