@@ -88,7 +88,6 @@
     "is-wsl": "^2.1.1",
     "js-yaml": "~3.13.1",
     "json-array-split": "~1.0.0",
-    "json2csv": "~4.5.4",
     "jsonwebtoken": "~8.5.1",
     "koa": "^2.13.0",
     "latest-version": "^4.0.0",
@@ -100,7 +99,6 @@
     "ora": "^4.0.3",
     "pad": "~2.0.3",
     "pipe-streams-to-promise": "~0.2.0",
-    "progress": "~2.0.3",
     "prompt-confirm": "^2.0.4",
     "prompts": "~2.3.0",
     "proper-lockfile": "^4.1.1",
@@ -180,9 +178,6 @@
       },
       "local": {
         "description": "Local commands. Run 'vtex local' to see all subcommands"
-      },
-      "redirects": {
-        "description": "Redirects commands. Run 'vtex redirects' to see all subcommands"
       },
       "settings": {
         "description": "Settings commands. Run 'vtex settings' to see all subcommands"
