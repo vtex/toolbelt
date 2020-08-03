@@ -154,7 +154,7 @@ export const onError = async (e: any) => {
       log.error(e.message)
     }
   } else if (e instanceof SSEConnectionError) {
-    log.error(e.message ?? 'Connection to login server has failed')
+    log.error(e.message)
   } else {
     log.error('Unhandled exception')
     log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
