@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.106.5-beta] - 2020-08-03
+
 ## [2.106.4] - 2020-07-30
 ### Changed
 - [vtex login] Use new VTEX ID login flow.
