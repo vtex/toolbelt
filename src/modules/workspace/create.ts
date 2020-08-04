@@ -1,6 +1,6 @@
 import { Workspaces } from '@vtex/api'
 import chalk from 'chalk'
-import { createFlowIssueError } from '../../api/error'
+import { createFlowIssueError } from '../../api/error/utils'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { Builder } from '../../api/clients/IOClients/apps/Builder'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'

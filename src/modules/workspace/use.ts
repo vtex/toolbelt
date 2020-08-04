@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { createFlowIssueError } from '../../api/error'
+import { createFlowIssueError } from '../../api/error/utils'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from './create'

@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 
-import { createFlowIssueError } from '../../api/error'
+import { createFlowIssueError } from '../../api/error/utils'
 import { getEnvironment, getCluster } from '../../conf'
 
 export default (name: string) => {

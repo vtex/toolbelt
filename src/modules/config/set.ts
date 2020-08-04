@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { contains, values } from 'ramda'
-import { createFlowIssueError } from '../../api/error'
+import { createFlowIssueError } from '../../api/error/utils'
 import log from '../../api/logger'
 import { Environment, saveEnvironment, saveCluster } from '../../conf'
 

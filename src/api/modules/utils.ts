@@ -16,7 +16,7 @@ import { execSync } from 'child-process-es6-promise'
 import { diffArrays } from 'diff'
 import { existsSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
-import { createFlowIssueError } from '../error'
+import { createFlowIssueError } from '../error/utils'
 
 import { createTable } from '../table'
 

@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { createFlowIssueError } from '../../error'
+import { createFlowIssueError } from '../../error/utils'
 import { Sponsor } from '../../clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../session/SessionManager'
 import log from '../../logger'

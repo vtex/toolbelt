@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import { region } from '../../api/env'
-import { createFlowIssueError, ErrorReport } from '../../api/error'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import { createFlowIssueError } from '../../api/error/utils'
 
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import log from '../../api/logger'

@@ -1,6 +1,6 @@
 import { accessSync } from 'fs'
 import path from 'path'
-import { createFlowIssueError } from '../error'
+import { createFlowIssueError } from '../error/utils'
 
 export const MANIFEST_FILE_NAME = 'manifest.json'
 

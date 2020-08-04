@@ -1,4 +1,4 @@
-import { createFlowIssueError } from '../error'
+import { createFlowIssueError } from '../error/utils'
 
 const namePattern = '[\\w_-]+'
 const vendorPattern = '[\\w_-]+'
