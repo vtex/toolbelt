@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import axios from 'axios'
-import terminalLink from 'terminal-link'
-import boxen from 'boxen'
+// import terminalLink from 'terminal-link'
+// import boxen from 'boxen'
 import ora from 'ora'
 import { createFlowIssueError } from '../../api/error/utils'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
@@ -48,7 +48,7 @@ const isPromotable = async (workspace: string) => {
   const spinner = ora('Preparing the workspace to be promoted').start()
   spinner.color = 'magenta'
   await handleConflict()
-  spinner.stop()
+  spinner.succeed()
 }
 
 const promptPromoteConfirm = (workspace: string): Promise<boolean> =>
@@ -91,18 +91,19 @@ export default async () => {
     )} and the workspace ${ColorifyConstants.ID(currentWorkspace)} was deleted.`
   )
 
-  console.log(
-    boxen(
-      `Learn more about why we ask you to choose a workspace ${terminalLink(
-        'here',
-        ''
-      )}, and send us\nfeedback about this approach.`,
-      {
-        padding: 1,
-        margin: 1,
-      }
-    )
-  )
+  // This code will be uncommented as soon as we finish the feedback form
+  // console.log(
+  //   boxen(
+  //     `Learn more about why we ask you to choose a workspace ${terminalLink(
+  //       'here',
+  //       ''
+  //     )}, and send us\nfeedback about this approach.`,
+  //     {
+  //       padding: 1,
+  //       margin: 1,
+  //     }
+  //   )
+  // )
 
   await useCmd('master')
 }
