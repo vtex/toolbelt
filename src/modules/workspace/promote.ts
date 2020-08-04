@@ -1,8 +1,8 @@
 import chalk from 'chalk'
 import axios from 'axios'
-import cli from 'cli-ux'
 import terminalLink from 'terminal-link'
 import boxen from 'boxen'
+import ora from 'ora'
 import { createFlowIssueError } from '../../api/error/utils'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
@@ -16,7 +16,7 @@ import { ColorifyConstants } from '../../lib/constants/Colors'
 const { checkForConflicts } = VBase.createClient()
 const { promote, get } = createWorkspacesClient()
 const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
-const url = authUrl()
+const workspaceUrl = authUrl()
 
 const throwIfIsMaster = (workspace: string) => {
   if (workspace === 'master') {
@@ -27,7 +27,7 @@ const throwIfIsMaster = (workspace: string) => {
 const handleConflict = async () => {
   const conflictsFound = await checkForConflicts()
   if (conflictsFound) {
-    await axios.get(url)
+    await axios.get(workspaceUrl)
   }
 }
 
@@ -45,9 +45,10 @@ const isPromotable = async (workspace: string) => {
     )
   }
 
-  cli.action.start('Preparing the workspace to be promoted')
+  const spinner = ora('Preparing the workspace to be promoted').start()
+  spinner.color = 'magenta'
   await handleConflict()
-  cli.action.stop()
+  spinner.stop()
 }
 
 const promptPromoteConfirm = (workspace: string): Promise<boolean> =>
@@ -65,7 +66,7 @@ export default async () => {
     `The workspace ${ColorifyConstants.ID(currentWorkspace)} is about to be promoted,`
   )} to be sure if this is the one you want to promote, check on the link below, please.\n
   🖥️  ${ColorifyConstants.ID(currentWorkspace)} workspace
-  See at: ${ColorifyConstants.URL_INTERACTIVE(url)}\n`)
+  See at: ${ColorifyConstants.URL_INTERACTIVE(workspaceUrl)}\n`)
 
   const promptAnswer = await promptPromoteConfirm(currentWorkspace)
   if (!promptAnswer) {
