@@ -7,7 +7,7 @@ import R from 'ramda'
 import log from '../api/logger'
 import { getAppRoot } from '../api/manifest/ManifestUtil'
 import { createTable } from '../api/table'
-import { ColorifyConstants } from './../lib/constants/Colors'
+import { ColorifyConstants } from '../lib/constants/Colors'
 import supportsHyperlinks from 'supports-hyperlinks'
 import ansiEscapes from 'ansi-escapes'
 
@@ -129,6 +129,6 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
 }
 
 export const formatHyperlink = (text: string, url: string): string =>
-  supportsHyperlinks['stdout']
+  supportsHyperlinks.stdout
     ? `${ColorifyConstants.URL_INTERACTIVE(ansiEscapes.link(text, url))}`
     : `${text} (${ColorifyConstants.URL_INTERACTIVE(url)})`
