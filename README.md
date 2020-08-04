@@ -20,8 +20,9 @@ With it you can:
 
 The VTEX Toolbelt can be installed via [npm](https://www.npmjs.com/).
 If you don't have it installed, you can get it bundled with [node](https://nodejs.org/):
- - [Linux](https://nodejs.org/en/download/package-manager/)
- - [Mac and Windows](https://nodejs.org/en/download/)
+
+- [Linux](https://nodejs.org/en/download/package-manager/)
+- [Mac and Windows](https://nodejs.org/en/download/)
 
 ## Installing the VTEX Toolbelt
 
@@ -95,10 +96,6 @@ $ vtex
     settings set <app> <fields> <value>         Set a value
     settings unset <app> <fields>               Unset a value
 
-    redirects import <csvPath>      Import redirects for the current account and workspace
-    redirects export <csvPath>      Export all redirects in the current account and workspace
-    redirects delete <csvPath>      Delete redirects in the current account and workspace
-
     url                               Prints base URL for current account, workspace and account
 
     workspace                         Alias for vtex workspace info
@@ -128,7 +125,7 @@ VTEX Toolbelt will now monitor your files for changes and sync them automaticall
 
 ## Customizing your prompt
 
-You can configure your **terminal prompt** to display relevant information about your current context, like  which **account** you're logged into and which **workspace** you are currently using.
+You can configure your **terminal prompt** to display relevant information about your current context, like which **account** you're logged into and which **workspace** you are currently using.
 
 Just like knowing which `git` branch you're currently in, having this info in your prompt you help you avoid mistakes and be faster when using VTEX IO.
 
@@ -145,7 +142,7 @@ For fine grained control, use only the first script and add `__vtex_ps1` manuall
 
 ### `fish` users
 
-If you want a pretty, ready-made Git + VTEX prompt you can copy `plugins/fish/fish_prompt.fish` to the  `~/.config/fish/functions` folder. To see the changes, simply restart your shell by typing `fish`.
+If you want a pretty, ready-made Git + VTEX prompt you can copy `plugins/fish/fish_prompt.fish` to the `~/.config/fish/functions` folder. To see the changes, simply restart your shell by typing `fish`.
 
 ```sh
 cp (npm root -g)/vtex/plugins/fish/fish_prompt.fish ~/.config/fish/functions/
@@ -172,7 +169,6 @@ If you wish to work on another `account`, logout and login again with that `acco
 
 Note that `link` and `publish` implicitly checks if you're logged, and if you're not, it asks your credentials before proceeding.
 
-
 ## How do I develop an app locally?
 
 To develop an app locally, open the directory where your VTEX app is and then type:
@@ -188,12 +184,12 @@ Toolbelt will upload all your app files to the developer environment, print an U
 Create a `.vtexignore` file containing, on each line, paths you wish to ignore.
 If no `.vtexignore` is found, your [.gitignore](http://git-scm.com/docs/gitignore) file is used instead.
 
-
 ## I don't like the default toolbelt prompt customization. It's ugly or it messes with some of my other configurations, but I still want to be able to see the account and workspace I'm logged into. What do I do?
 
 You can do so by adding the `vtex_get_account` and `vtex_get_workspace` commands to your PS1 environment variable the way it pleases you.
 
 ---
+
 ## Contributing
 
 Follow the steps on [CONTRIBUTING.md](./CONTRIBUTING.md).
