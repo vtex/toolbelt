@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import axios from 'axios'
-// import terminalLink from 'terminal-link'
-// import boxen from 'boxen'
+import { formatHyperlink } from '../utils'
+import boxen from 'boxen'
 import ora from 'ora'
 import { createFlowIssueError } from '../../api/error/utils'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
@@ -91,19 +91,18 @@ export default async () => {
     )} and the workspace ${ColorifyConstants.ID(currentWorkspace)} was deleted.`
   )
 
-  // This code will be uncommented as soon as we finish the feedback form
-  // console.log(
-  //   boxen(
-  //     `Learn more about why we ask you to choose a workspace ${terminalLink(
-  //       'here',
-  //       ''
-  //     )}, and send us\nfeedback about this approach.`,
-  //     {
-  //       padding: 1,
-  //       margin: 1,
-  //     }
-  //   )
-  // )
+  console.log(
+    boxen(
+      `What do you think about checking the workspace before promote? Please, tell us ${formatHyperlink(
+        'here',
+        'https://forms.gle/RZk6gS2nWUZQ9KQr9'
+      )}.`,
+      {
+        padding: 1,
+        margin: 1,
+      }
+    )
+  )
 
   await useCmd('master')
 }
