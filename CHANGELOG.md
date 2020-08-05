@@ -5,15 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-<<<<<<< HEAD
 ### Changed
   - Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
+
+### Fixed
+  - [vtex login] Revert to use old login flow due to issues on local server port.
 
 ## [2.106.4] - 2020-07-30
 ### Changed
 - [vtex login] Use new VTEX ID login flow.
-=======
->>>>>>> parent of 801c34e0... Use new VTEXID login flow (#917)
 
 ## [2.106.3] - 2020-07-28
 ### Changed
