@@ -1,6 +1,8 @@
 import chalk from 'chalk'
 import { region } from '../../api/env'
-import { CommandError } from '../../api/error/errors'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import { createFlowIssueError } from '../../api/error/utils'
+
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import log from '../../api/logger'
 import { appLatestMajor, pickLatestVersion, wildVersionByMajor } from '../../api/modules/utils'
@@ -20,7 +22,7 @@ const infraLatestVersion = async (app: string) => {
     return wildVersionByMajor(latest)
   } catch (err) {
     if (err.response?.status === 404) {
-      throw new CommandError(`App ${chalk.green(`infra:${app}`)} not found`)
+      throw createFlowIssueError(`App ${chalk.green(`infra:${app}`)} not found`)
     }
 
     throw err
@@ -46,7 +48,7 @@ const addApps = async (apps: string[], manifest: ManifestEditor) => {
       log.debug('Starting to add app', app)
 
       if (!ManifestValidator.dependencyName.test(app)) {
-        throw new CommandError(invalidAppMessage)
+        throw createFlowIssueError(invalidAppMessage)
       }
       // eslint-disable-next-line no-await-in-loop
       await addApp(app, manifest)
@@ -63,7 +65,7 @@ export default async (apps: string[]) => {
   try {
     await addApps(apps, manifest)
   } catch (err) {
-    if (err instanceof CommandError) {
+    if (ErrorReport.isFlowIssue(err)) {
       log.error(err.message)
       return
     }

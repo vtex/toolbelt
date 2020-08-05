@@ -15,4 +15,5 @@ export const ErrorKinds = {
   APP_LOGS_SSE_ERROR: 'LogsSSEError',
   APP_LOGS_PARSE_ERROR: 'LogsParseError',
   STICKY_HOST_ERROR: 'StickyHostError',
+  FLOW_ISSUE_ERROR: 'FlowIssue',
 }

@@ -1,6 +1,6 @@
 import { readJson, writeJson, writeJsonSync } from 'fs-extra'
 import { resolve } from 'path'
-import { CommandError } from '../error/errors'
+import { createFlowIssueError } from '../error/utils'
 import { getAppRoot } from './ManifestUtil'
 import { ManifestValidator } from './ManifestValidator'
 
@@ -28,15 +28,14 @@ export class ManifestEditor {
     }
   }
 
-  public static readAndParseManifest(path: string) {
+  public static async readAndParseManifest(path: string) {
     try {
-      return readJson(path)
+      return await readJson(path)
     } catch (e) {
       if (e.code === 'ENOENT') {
         throw new Error(`Missing manifest.json on app root. ${e}`)
       }
-
-      throw new CommandError(`Malformed manifest.json file. ${e}`)
+      throw createFlowIssueError(`Malformed manifest.json file. ${e}`)
     }
   }
 

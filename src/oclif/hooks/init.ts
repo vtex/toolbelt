@@ -15,9 +15,10 @@ import * as conf from '../../conf'
 import { checkAndOpenNPSLink } from '../../nps'
 import { Metric } from '../../api/metrics/MetricReport'
 import authLogin from '../../modules/auth/login'
-import { CommandError, SSEConnectionError } from '../../api/error/errors'
 import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
+import { SSEConnectionError } from '../../api/error/errors'
+import { ErrorReport } from '../../api/error/ErrorReport'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -148,31 +149,26 @@ export const onError = async (e: any) => {
         }
         log.debug(e)
     }
-  } else {
-    switch (e.name) {
-      case CommandError.name:
-        if (e.message && e.message !== '') {
-          log.error(e.message)
-        }
-        break
-      case SSEConnectionError.name:
-        log.error(e.message ?? 'Connection to login server has failed')
-        break
-      default:
-        log.error('Unhandled exception')
-        log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
-        log.error('Raw error: ', e)
+  } else if (ErrorReport.isFlowIssue(e)) {
+    if (e.message && e.message !== '') {
+      log.error(e.message)
     }
+  } else if (e instanceof SSEConnectionError) {
+    log.error(e.message)
+  } else {
+    log.error('Unhandled exception')
+    log.error('Please report the issue in https://github.com/vtex/toolbelt/issues')
+    log.error('Raw error: ', e)
   }
 
   process.removeListener('unhandledRejection', onError)
 
-  if (e instanceof CommandError) {
-    process.exit(1)
+  const errorReport = TelemetryCollector.getCollector().registerError(e)
+
+  if (!ErrorReport.isFlowIssue(e)) {
+    log.error(`ErrorID: ${errorReport.metadata.errorId}`)
   }
 
-  const errorReport = TelemetryCollector.getCollector().registerError(e)
-  log.error(`ErrorID: ${errorReport.metadata.errorId}`)
   process.exit(1)
 }
 
