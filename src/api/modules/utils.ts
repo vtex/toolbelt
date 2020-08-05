@@ -4,7 +4,6 @@ import Table from 'cli-table2'
 import enquirer from 'enquirer'
 import R, { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
-import { CommandError } from '../error/errors'
 import { createAppsClient } from '../clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../clients/IOClients/infra/Registry'
 import { createWorkspacesClient } from '../clients/IOClients/infra/Workspaces'
@@ -17,6 +16,7 @@ import { execSync } from 'child-process-es6-promise'
 import { diffArrays } from 'diff'
 import { existsSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
+import { createFlowIssueError } from '../error/utils'
 
 import { createTable } from '../table'
 
@@ -63,7 +63,7 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
 
   if (workspace === 'master') {
     if (!contains(operation, workspaceMasterAllowedOperations)) {
-      throw new CommandError(workspaceMasterMessage)
+      throw createFlowIssueError(workspaceMasterMessage)
     } else {
       const confirm = await promptWorkspaceMaster(account)
       if (!confirm) {
@@ -75,13 +75,13 @@ export const validateAppAction = async (operation: string, app?): Promise<boolea
   const workspaces = createWorkspacesClient()
   const workspaceMeta = await workspaces.get(account, workspace)
   if (workspaceMeta.production && !contains(operation, workspaceProductionAllowedOperatios)) {
-    throw new CommandError(workspaceProductionMessage(workspace))
+    throw createFlowIssueError(workspaceProductionMessage(workspace))
   }
 
   // No app arguments and no manifest file.
   const isReadable = await ManifestEditor.isManifestReadable()
   if (!app && !isReadable) {
-    throw new CommandError(
+    throw createFlowIssueError(
       `No app was found, please fix your manifest.json${app ? ' or use <vendor>.<name>[@<version>]' : ''}`
     )
   }
@@ -105,7 +105,7 @@ export const pickLatestVersion = (versions: string[]): string => {
 
 export const handleError = curry((app: string, err: any) => {
   if (err.response && err.response.status === 404) {
-    return Promise.reject(new CommandError(`App ${chalk.green(app)} not found`))
+    return Promise.reject(createFlowIssueError(`App ${chalk.green(app)} not found`))
   }
   return Promise.reject(err)
 })
@@ -237,7 +237,7 @@ export async function showBuilderHubMessage(message: string, showPrompt: boolean
       const appNameInput = await promptConfirmName(confirmMsg)
       const AppName = `${manifest.vendor}.${manifest.name}`
       if (appNameInput !== AppName) {
-        throw new CommandError(`${appNameInput} doesn't match with the app name.`)
+        throw createFlowIssueError(`${appNameInput} doesn't match with the app name.`)
       }
     } else {
       log.info(message)

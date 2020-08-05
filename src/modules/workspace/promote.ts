@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { CommandError } from '../../api/error/errors'
+import { createFlowIssueError } from '../../api/error/utils'
 import { createWorkspacesClient } from '../../api/clients/IOClients/infra/Workspaces'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
@@ -11,7 +11,7 @@ const { account, workspace: currentWorkspace } = SessionManager.getSingleton()
 
 const throwIfIsMaster = (workspace: string) => {
   if (workspace === 'master') {
-    throw new CommandError(`It is not possible to promote workspace ${workspace} to master`)
+    throw createFlowIssueError(`It is not possible to promote workspace ${workspace} to master`)
   }
 }
 
@@ -19,7 +19,7 @@ const isPromotable = async (workspace: string) => {
   throwIfIsMaster(workspace)
   const meta = await get(account, currentWorkspace)
   if (!meta.production) {
-    throw new CommandError(
+    throw createFlowIssueError(
       `Workspace ${chalk.green(currentWorkspace)} is not a ${chalk.green(
         'production'
       )} workspace\nOnly production workspaces may be promoted\nUse the command ${chalk.blue(

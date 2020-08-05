@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { split } from 'ramda'
-import { CommandError } from '../../api/error/errors'
+import { createFlowIssueError } from '../../api/error/utils'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { promptConfirm } from '../../api/modules/prompts'
@@ -28,11 +28,11 @@ const checkAndSwitch = async (targetAccount: string, targetWorkspace: string) =>
   const isValidAccount = /^\s*[\w-]+\s*$/.test(targetAccount)
 
   if (!isValidAccount) {
-    throw new CommandError('Invalid account format')
+    throw createFlowIssueError('Invalid account format')
   } else if (!currAccount) {
-    throw new CommandError("You're not logged in right now")
+    throw createFlowIssueError("You're not logged in right now")
   } else if (currAccount === targetAccount) {
-    throw new CommandError(`You're already using the account ${chalk.blue(targetAccount)}`)
+    throw createFlowIssueError(`You're already using the account ${chalk.blue(targetAccount)}`)
   }
 
   await session.login(targetAccount, {
@@ -66,7 +66,7 @@ export const switchAccount = async (account: string, options: SwitchOptions): Pr
   if (account === '-') {
     account = lastUsedAccount
     if (account == null) {
-      throw new CommandError('No last used account was found')
+      throw createFlowIssueError('No last used account was found')
     }
   }
 
