@@ -57,6 +57,7 @@
     "@vtex/cli-plugin-abtest": "^0.0.5",
     "@vtex/cli-plugin-edition": "^0.0.1",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
+    "@vtex/cli-plugin-redirects": "^0.0.1",
     "@vtex/cli-plugin-test": "^0.0.5",
     "@vtex/node-error-report": "^0.0.2",
     "@vtex/toolbelt-message-renderer": "^0.0.1",
@@ -88,7 +89,6 @@
     "is-docker": "^2.0.0",
     "is-wsl": "^2.1.1",
     "js-yaml": "~3.13.1",
-    "json-array-split": "~1.0.0",
     "jsonwebtoken": "~8.5.1",
     "latest-version": "^4.0.0",
     "moment": "~2.24.0",
@@ -158,7 +158,8 @@
       "@vtex/cli-plugin-lighthouse",
       "@vtex/cli-plugin-test",
       "@vtex/cli-plugin-edition",
-      "@vtex/cli-plugin-abtest"
+      "@vtex/cli-plugin-abtest",
+      "@vtex/cli-plugin-redirects"
     ],
     "hooks": {
       "init": "./build/oclif/hooks/init"
