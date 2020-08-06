@@ -1,10 +1,9 @@
-import chalk from 'chalk'
 import { createFlowIssueError } from '../../api/error/utils'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from './create'
 import resetWks from './reset'
-import { ColorifyConstants } from '../../lib/constants/Colors'
+import { Messages } from '../../lib/constants/Messages'
 
 interface WorkspaceUseOptions {
   production: boolean
@@ -38,9 +37,5 @@ export default async (name: string, options?: WorkspaceUseOptions) => {
   }
 
   const { account, workspace } = session
-  log.info(
-    `${chalk.bold('Workspace change:')} You are now using the workspace ${ColorifyConstants.ID(
-      workspace
-    )} on account ${ColorifyConstants.ID(account)}.\n`
-  )
+  log.info(Messages.USE_SUCCESS(workspace, account))
 }
