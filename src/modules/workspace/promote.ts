@@ -11,7 +11,7 @@ import { promptConfirm } from '../../api/modules/prompts'
 import { VBase } from '../../api/clients/IOClients/infra/VBase'
 import authUrl from '../url'
 import useCmd from './use'
-import { ColorifyConstants } from '../../lib/constants/Colors'
+import { ColorifyConstants, COLORS } from '../../lib/constants/Colors'
 
 const { checkForConflicts } = VBase.createClient()
 const { promote, get } = createWorkspacesClient()
@@ -46,7 +46,7 @@ const isPromotable = async (workspace: string) => {
   }
 
   const spinner = ora('Preparing the workspace to be promoted').start()
-  spinner.color = 'magenta'
+  spinner.color = COLORS.MAGENTA
   await handleConflict()
   spinner.succeed()
 }

@@ -4,6 +4,7 @@ export enum COLORS {
   GREEN = '#8BC34A',
   PINK = '#FF4785',
   BLUE = '#477DFF',
+  MAGENTA = 'magenta',
 }
 
 export class ColorifyConstants {
