@@ -6,7 +6,7 @@ import {
   ProjectUploader,
 } from '../../api/modules/apps/ProjectUploader'
 import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from '../../api/modules/utils'
-import { CommandError } from '../../api/error/errors'
+import { createFlowIssueError } from '../../api/error/utils'
 import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
 import { createPathToFileObject } from '../../api/files/ProjectFilesManager'
@@ -350,7 +350,7 @@ export async function appLink(options: LinkOptions) {
       }
 
       if (data.code === 'link_on_production') {
-        throw new CommandError(
+        throw createFlowIssueError(
           `Please use a dev workspace to link apps. Create one with (${chalk.blue(
             'vtex use <workspace> -rp'
           )}) to be able to link apps`

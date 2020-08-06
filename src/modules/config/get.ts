@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 
-import { CommandError } from '../../api/error/errors'
+import { createFlowIssueError } from '../../api/error/utils'
 import { getEnvironment, getCluster } from '../../conf'
 
 export default (name: string) => {
@@ -12,6 +12,6 @@ export default (name: string) => {
       console.log(getCluster())
       break
     default:
-      throw new CommandError(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`)
+      throw createFlowIssueError(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`)
   }
 }

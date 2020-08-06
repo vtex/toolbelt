@@ -1,6 +1,6 @@
 import { accessSync } from 'fs'
 import path from 'path'
-import { CommandError } from '../error'
+import { createFlowIssueError } from '../error/utils'
 
 export const MANIFEST_FILE_NAME = 'manifest.json'
 
@@ -12,13 +12,12 @@ export const getAppRoot = () => {
     try {
       accessSync(path.join(dir, MANIFEST_FILE_NAME))
       return dir
-    } catch (e) {
+    } catch (err) {
       if (dir === rootDirName) {
-        throw new CommandError(
+        throw createFlowIssueError(
           "Manifest file doesn't exist or is not readable. Please make sure you're in the app's directory or add a manifest.json file in the root folder of the app."
         )
       }
-
       return find(path.resolve(dir, '..'))
     }
   }
