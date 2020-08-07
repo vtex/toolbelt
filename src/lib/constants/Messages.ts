@@ -25,7 +25,7 @@ export const Messages = {
     )}, taking your changes to the final users. All the content it had is now at the workspace ${ColorifyConstants.ID(
       'master'
     )} and the workspace ${ColorifyConstants.ID(workspace)} was deleted.`,
-  PROMOTE_ASK_FEEDBACK: `What do you think about checking the workspace before promote? Please, tell us ${formatHyperlink(
+  PROMOTE_ASK_FEEDBACK: `What do you think about checking the workspace before promoting it? Please, tell us ${formatHyperlink(
     'here',
     'https://forms.gle/RZk6gS2nWUZQ9KQr9'
   )}.`,
