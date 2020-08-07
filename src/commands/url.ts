@@ -13,6 +13,6 @@ export default class URL extends CustomCommand {
   async run() {
     this.parse(URL)
 
-    authUrl()
+    console.log(authUrl())
   }
 }
