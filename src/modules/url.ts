@@ -3,5 +3,5 @@ import { SessionManager } from '../api/session/SessionManager'
 
 export default () => {
   const { account, workspace } = SessionManager.getSingleton()
-  console.log(`https://${workspace}--${account}${clusterIdDomainInfix()}.${publicEndpoint()}`)
+  return `https://${workspace}--${account}${clusterIdDomainInfix()}.${publicEndpoint()}`
 }
