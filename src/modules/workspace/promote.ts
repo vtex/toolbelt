@@ -31,9 +31,6 @@ const handleConflict = async () => {
 }
 
 const isPromotable = async (workspace: string) => {
-  const spinner = ora(Messages.PROMOTE_SPINNER_START).start()
-  spinner.color = COLORS.MAGENTA
-
   throwIfIsMaster(workspace)
 
   const meta = await get(account, currentWorkspace)
@@ -41,8 +38,9 @@ const isPromotable = async (workspace: string) => {
     throw createFlowIssueError(Messages.PROMOTE_NOT_PRODUCTION_ERROR(workspace))
   }
 
+  const spinner = ora(Messages.PROMOTE_SPINNER_START).start()
+  spinner.color = COLORS.MAGENTA
   await handleConflict()
-
   spinner.succeed()
 }
 
