@@ -3,7 +3,7 @@ import { join } from 'path'
 import util from 'util'
 import { createLogger, format, transports } from 'winston'
 import { PathConstants } from '../lib/constants/Paths'
-import { isVerbose } from '../verbose'
+import { isVerbose } from './verbose'
 
 // The debug file is likely to be on ~/.config/configstore/vtex_debug.txt
 export const DEBUG_LOG_FILE_PATH = join(PathConstants.LOGS_FOLDER, 'debug.json')
