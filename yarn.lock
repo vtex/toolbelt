@@ -743,6 +743,11 @@
   resolved "https://registry.yarnpkg.com/@types/debounce/-/debounce-1.2.0.tgz#9ee99259f41018c640b3929e1bb32c3dcecdb192"
   integrity sha512-bWG5wapaWgbss9E238T0R6bfo5Fh3OkeoSt245CM7JJwVwpw6MEBCbIxLq5z8KzsE3uJhzcIuQkyiZmzV3M/Dw==
 
+"@types/diff@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-4.0.2.tgz#2e9bb89f9acc3ab0108f0f3dc4dbdcf2fff8a99c"
+  integrity sha512-mIenTfsIe586/yzsyfql69KRnA75S8SVXQbTLpDejRrjH0QSJcpu3AUOi/Vjnt9IOsXKxPhJfGpQUNMueIU1fQ==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -1134,6 +1139,17 @@
     "@oclif/command" "^1"
     "@oclif/config" "^1"
     numbro "2.1.0"
+    tslib "^1"
+
+"@vtex/cli-plugin-deps@^0.0.1-beta":
+  version "0.0.1-beta"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.0.1-beta.tgz#0e866335530ce24a6706e138f633ac3c1b8a70ca"
+  integrity sha512-PMIZrCzsyRfPgK+hn3fBoQnYhzdE0UYxSKa+sY8B8yiv5BRbi9jLoyhPhM/FwRoiPv7PlLKVXg4BjU4BDbzTBQ==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    "@types/diff" "^4.0.2"
+    "@types/ramda" "^0.27.14"
     tslib "^1"
 
 "@vtex/cli-plugin-edition@^0.0.1":
