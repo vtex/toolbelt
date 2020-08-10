@@ -1,9 +1,9 @@
 import asyncRetry from 'async-retry'
 import coBody from 'co-body'
-import getPort from 'get-port'
+import detectPort from 'detect-port'
 import { Server } from 'http'
 import Koa from 'koa'
-import { logger } from '../../../../api'
+import { ErrorKinds, logger } from '../../../../api'
 import { VTEXID } from '../../../../api/clients/IOClients/external/VTEXID'
 import { ErrorReport } from '../../../../api/error/ErrorReport'
 
@@ -23,6 +23,7 @@ const SUCCESS_PAGE = `
 
 export class LoginServer {
   private static readonly LOGIN_CALLBACK_PATH = '/login_callback'
+  private static readonly SERVER_START_RETRIES = 1
 
   public static async create(loginConfig: LoginConfig) {
     const loginServer = new LoginServer(loginConfig)
@@ -68,23 +69,31 @@ export class LoginServer {
 
   public start() {
     return asyncRetry(
-      async bail => {
+      async (bail, attemptNumber) => {
         try {
-          const port = await getPort({
-            port: getPort.makeRange(3000, 3050),
-          })
+          // detectPort will get the specified port or, if it's in use, another ramdom unnused port
+          this.port = await detectPort(3000)
+          this.server = await this.initServer(this.port)
 
-          this.server = await this.initServer(port)
-          this.port = port
           logger.debug(`LoginServer started on http://localhost:${this.port}`)
         } catch (err) {
           logger.debug(`LoginServer failed to start on port:${this.port}. Reason: ${err.message}.`)
           if (err.code !== 'EADDRINUSE') {
             return bail(err)
           }
+
+          if (attemptNumber < LoginServer.SERVER_START_RETRIES + 1) {
+            logger.debug(`Retrying to start LoginServer...`)
+          }
+
+          throw ErrorReport.createAndMaybeRegisterOnTelemetry({
+            originalError: err,
+            kind: ErrorKinds.LOGIN_SERVER_START_ERROR,
+            details: { attemptNumber },
+          })
         }
       },
-      { retries: 2, maxTimeout: 50, minTimeout: 50 }
+      { retries: LoginServer.SERVER_START_RETRIES, maxTimeout: 100, minTimeout: 100 }
     )
   }
 
@@ -95,14 +104,16 @@ export class LoginServer {
 
   private initServer(port: number): Promise<Server> {
     return new Promise((resolve, reject) => {
-      this.app.on('error', reject)
       const server = this.app.listen(port, () => {
         server.on('connection', socket => {
           socket.unref()
         })
 
+        server.removeListener('error', reject)
         resolve(server)
       })
+
+      server.on('error', reject)
     })
   }
 
