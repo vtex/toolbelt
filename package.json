@@ -175,9 +175,6 @@
       "debug": {
         "description": "Debug commands. Run 'vtex debug' to see all subcommands"
       },
-      "deps": {
-        "description": "Dependencies commands. Run 'vtex deps' to see all subcommands"
-      },
       "infra": {
         "description": "Infra commands. Run 'vtex infra' to see all subcommands"
       },
