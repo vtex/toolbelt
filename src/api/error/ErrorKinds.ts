@@ -16,4 +16,5 @@ export const ErrorKinds = {
   APP_LOGS_PARSE_ERROR: 'LogsParseError',
   STICKY_HOST_ERROR: 'StickyHostError',
   FLOW_ISSUE_ERROR: 'FlowIssue',
+  LOGIN_SERVER_START_ERROR: 'LoginServerStartError',
 }
