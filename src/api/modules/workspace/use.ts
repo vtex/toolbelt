@@ -2,7 +2,7 @@ import { createFlowIssueError } from '../../error/utils'
 import { SessionManager } from '../../session/SessionManager'
 import log from '../../logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from './create'
-import resetWks from './reset'
+import workspaceReset from './reset'
 import { Messages } from '../../../lib/constants/Messages'
 
 interface WorkspaceUseOptions {
@@ -33,7 +33,7 @@ export default async (name: string, options?: WorkspaceUseOptions) => {
   })
 
   if (reset && result !== 'created') {
-    await resetWks(name, { production })
+    await workspaceReset(name, { production })
   }
 
   const { account, workspace } = session
