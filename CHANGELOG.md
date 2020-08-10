@@ -11,9 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - [vtex workspace abtest] Update command plugin version
   - Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
 
-### Fixed
-  - [vtex login] Revert to use old login flow due to issues on local server port.
-
 ## [2.106.4] - 2020-07-30
 ### Changed
 - [vtex login] Use new VTEX ID login flow.
