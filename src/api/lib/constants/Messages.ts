@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { formatHyperlink } from '../utils/Messages'
+import { formatHyperlink } from '../../../lib/utils/Messages'
 import { ColorifyConstants } from './Colors'
 
 export const Messages = {
