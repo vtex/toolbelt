@@ -13,7 +13,7 @@ import { SessionManager } from '../session/SessionManager'
 import log from '../logger'
 import { promptConfirm } from './prompts'
 import { execSync } from 'child-process-es6-promise'
-import { diffArrays } from 'diff'
+import { diffArrays, ArrayChange } from 'diff'
 import { existsSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import { createFlowIssueError } from '../error/utils'
@@ -309,7 +309,7 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
   // Get deduplicated names (no version) of the changed deps.
   const depNames = [
     ...new Set(
-      R.compose<string[], any[], string[], string[], string[]>(
+      R.compose<string[] | Array<ArrayChange<string>>, any[], string[], string[], string[]>(
         R.map(k => R.head(R.split('@', k))),
         R.flatten,
         R.pluck('value'),
@@ -324,7 +324,7 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
 
   // Custom function to set the objects values.
   const setObjectValues = (obj, formatter, filterFunction) => {
-    R.compose<void, any[], any[], any[], any[]>(
+    R.compose<void | Array<ArrayChange<string>>, any[], any[], any[], any[]>(
       // eslint-disable-next-line array-callback-return
       R.map(k => {
         const index = R.head(R.split('@', k))
