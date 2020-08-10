@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- [vtex login] Use new VTEX ID login flow:
+  - Fix free TCP port retrieval: use `detect-port` package instead of `get-port`.
+  - Fix issue on WSL2 by specifying host binding to `127.0.0.1` when starting the server.
+
 ## [2.108.0] - 2020-08-11
 ### Added
 - [vtex workspace promote] Conflict handling.
@@ -18,6 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
   - [vtex workspace abtest] Update command plugin version
   - Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
+
+### Fixed
+  - [vtex login] Revert to use old login flow due to issues on local server port.
 
 ## [2.106.4] - 2020-07-30
 ### Changed
