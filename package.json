@@ -182,9 +182,6 @@
       },
       "settings": {
         "description": "Settings commands. Run 'vtex settings' to see all subcommands"
-      },
-      "workspace": {
-        "description": "Workspace commands. Run 'vtex workspace' to see all subcommands"
       }
     }
   }

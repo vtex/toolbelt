@@ -7,7 +7,7 @@ import { ErrorReport } from '../../api/error/ErrorReport'
 import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
 import { promptConfirm } from '../../api/modules/prompts'
-import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'
+import { handleErrorCreatingWorkspace, workspaceCreator } from '../../api/modules/workspace/create'
 import welcome from './welcome'
 
 const promptUsePreviousLogin = (account: string, userLogged: string, workspace: string) => {
