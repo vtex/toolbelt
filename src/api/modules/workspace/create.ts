@@ -7,7 +7,7 @@ import { createWorkspacesClient } from '../../clients/IOClients/infra/Workspaces
 import { SessionManager } from '../../session/SessionManager'
 import { WorkspaceCreator } from '../../session/WorkspaceCreator'
 import log from '../../logger'
-import { promptConfirm } from '../../modules/prompts'
+import { promptConfirm } from '../prompts'
 import { ensureValidEdition } from './common/edition'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/

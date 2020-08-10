@@ -3,8 +3,8 @@ import { Sponsor } from '../../../clients/IOClients/apps/Sponsor'
 import { ErrorKinds } from '../../../error/ErrorKinds'
 import { ErrorReport } from '../../../error/ErrorReport'
 import log from '../../../logger'
-import { promptConfirm } from '../../../modules/prompts'
-import { setEdition } from '../../../modules/sponsor'
+import { promptConfirm } from '../../prompts'
+import { setEdition } from '../../sponsor'
 
 const recommendedEdition = 'vtex.edition-store@2.x'
 

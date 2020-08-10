@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { SessionManager } from '../../session/SessionManager'
 import log from '../../logger'
-import { promptConfirm } from '../../modules/prompts'
+import { promptConfirm } from '../prompts'
 import { ensureValidEdition } from './common/edition'
 import { createWorkspacesClient } from '../../clients/IOClients/infra/Workspaces'
 
