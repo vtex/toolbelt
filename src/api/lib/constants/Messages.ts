@@ -1,6 +1,6 @@
 import chalk from 'chalk'
-import { formatHyperlink } from '../utils/Messages'
-import { ColorifyConstants } from '../../api/lib/constants/Colors'
+import { formatHyperlink } from '../../../lib/utils/Messages'
+import { ColorifyConstants } from './Colors'
 
 export const Messages = {
   PROMOTE_INIT: 'Promoting workspace',
