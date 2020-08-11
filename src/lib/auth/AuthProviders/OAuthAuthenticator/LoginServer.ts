@@ -24,6 +24,7 @@ const SUCCESS_PAGE = `
 export class LoginServer {
   private static readonly LOGIN_CALLBACK_PATH = '/login_callback'
   private static readonly SERVER_START_RETRIES = 1
+  private static readonly HOSTNAME = '127.0.0.1'
 
   public static async create(loginConfig: LoginConfig) {
     const loginServer = new LoginServer(loginConfig)
@@ -60,7 +61,7 @@ export class LoginServer {
       throw new Error('LoginServer not initialized')
     }
 
-    return `http://127.0.0.1:${this.port}${LoginServer.LOGIN_CALLBACK_PATH}`
+    return `http://${LoginServer.HOSTNAME}:${this.port}${LoginServer.LOGIN_CALLBACK_PATH}`
   }
 
   public setLoginState(val: string) {
@@ -74,8 +75,7 @@ export class LoginServer {
           // detectPort will get the specified port or, if it's in use, another ramdom unnused port
           this.port = await detectPort(3000)
           this.server = await this.initServer(this.port)
-
-          logger.debug(`LoginServer started on http://localhost:${this.port}`)
+          logger.debug(`LoginServer started on http://${LoginServer.HOSTNAME}:${this.port}`)
         } catch (err) {
           logger.debug(`LoginServer failed to start on port:${this.port}. Reason: ${err.message}.`)
           if (err.code !== 'EADDRINUSE') {
@@ -104,7 +104,7 @@ export class LoginServer {
 
   private initServer(port: number): Promise<Server> {
     return new Promise((resolve, reject) => {
-      const server = this.app.listen(port, () => {
+      const server = this.app.listen(port, LoginServer.HOSTNAME, () => {
         server.on('connection', socket => {
           socket.unref()
         })
