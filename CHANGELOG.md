@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.109.0-beta] - 2020-08-11
+
 ## [2.108.0] - 2020-08-11
 ### Added
 - [vtex workspace promote] Conflict handling.
