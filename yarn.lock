@@ -1153,13 +1153,14 @@
     numbro "2.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-deps@^0.0.1-beta":
-  version "0.0.1-beta"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.0.1-beta.tgz#0e866335530ce24a6706e138f633ac3c1b8a70ca"
-  integrity sha512-PMIZrCzsyRfPgK+hn3fBoQnYhzdE0UYxSKa+sY8B8yiv5BRbi9jLoyhPhM/FwRoiPv7PlLKVXg4BjU4BDbzTBQ==
+"@vtex/cli-plugin-deps@^0.0.1-beta.0":
+  version "0.0.1-beta.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.0.1-beta.0.tgz#4319ee5bc4aa16d80704655c9005b4b7767c12ae"
+  integrity sha512-tK+f6ZZbPTk/ZGsSzkR92K5bjXffMC8Xcgn03/JfY6bOhaW2SYO2OlZGIIcCiXl6CvjIEA/IqzB1HSbZbeCqCw==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
+    "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
     "@types/diff" "^4.0.2"
     "@types/ramda" "^0.27.14"
     tslib "^1"
