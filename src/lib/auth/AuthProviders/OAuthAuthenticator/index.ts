@@ -1,10 +1,13 @@
 import axios from 'axios'
 import { createHash } from 'crypto'
+import isWsl from 'is-wsl'
 import jwt from 'jsonwebtoken'
 import opn from 'opn'
 import { join } from 'path'
+import { logger } from '../../../../api'
 import { VTEXID } from '../../../../api/clients/IOClients/external/VTEXID'
 import { storeUrl } from '../../../../api/storeUrl'
+import { ColorifyConstants } from '../../../constants/Colors'
 import { randomCryptoString } from '../../../utils/randomCryptoString'
 import { spawnUnblockingChildProcess } from '../../../utils/spawnUnblockingChildProcess'
 import { AuthProviderBase } from '../AuthProviderBase'
@@ -38,6 +41,24 @@ export class OAuthAuthenticator extends AuthProviderBase {
 
       const url = await this.loginUrl(account, loginState)
       opn(url, { wait: false })
+
+      if (isWsl) {
+        logger.warn(
+          "We noticed you're using WSL, in which case you may face login issues depending on your WSL version."
+        )
+
+        logger.warn(
+          `If you do, make sure your Windows is up to date and try again (${ColorifyConstants.URL_INTERACTIVE(
+            'https://support.microsoft.com/en-us/help/4027667/windows-10-update'
+          )}).`
+        )
+
+        logger.warn(
+          `In case login errors persist after updating please create an issue on ${ColorifyConstants.URL_INTERACTIVE(
+            'https://github.com/vtex/toolbelt/issues'
+          )}. We'll promptly help you finding a solution.`
+        )
+      }
 
       const token = await loginServer.token
       const decodedToken = jwt.decode(token)
