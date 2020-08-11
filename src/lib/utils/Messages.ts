@@ -1,4 +1,4 @@
-import { ColorifyConstants } from '../constants/Colors'
+import { ColorifyConstants } from '../../api/lib/constants/Colors'
 import supportsHyperlinks from 'supports-hyperlinks'
 import ansiEscapes from 'ansi-escapes'
 

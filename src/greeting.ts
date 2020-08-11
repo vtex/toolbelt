@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import log from './api/logger'
 import { SessionManager } from './api/session/SessionManager'
 import { createWorkspacesClient } from './api/clients/IOClients/infra/Workspaces'
+import { WorkspaceResponse } from './api/typings'
 
 const workspaceState = (meta: WorkspaceResponse) => (meta.production ? 'production' : 'dev')
 

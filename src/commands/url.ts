@@ -1,5 +1,5 @@
 import { CustomCommand } from '../api/oclif/CustomCommand'
-import authUrl from '../modules/url'
+import authUrl from '../api/modules/url'
 
 export default class URL extends CustomCommand {
   static description = 'Prints base URL for current account, workspace and environment'

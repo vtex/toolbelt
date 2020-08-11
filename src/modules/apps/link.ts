@@ -31,7 +31,7 @@ import log from '../../api/logger'
 import moment from 'moment'
 import retry from 'async-retry'
 import startDebuggerTunnel from './debugger'
-import workspaceUse from '../workspace/use'
+import workspaceUse from '../../api/modules/workspace/use'
 import { BatchStream } from '../../api/typings'
 
 let nodeNotifier

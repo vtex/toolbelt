@@ -1,10 +1,10 @@
 import chalk from 'chalk'
-import { Sponsor } from '../../../api/clients/IOClients/apps/Sponsor'
-import { ErrorKinds } from '../../../api/error/ErrorKinds'
-import { ErrorReport } from '../../../api/error/ErrorReport'
-import log from '../../../api/logger'
-import { promptConfirm } from '../../../api/modules/prompts'
-import { setEdition } from '../../../api/modules/sponsor'
+import { Sponsor } from '../../../clients/IOClients/apps/Sponsor'
+import { ErrorKinds } from '../../../error/ErrorKinds'
+import { ErrorReport } from '../../../error/ErrorReport'
+import log from '../../../logger'
+import { promptConfirm } from '../../prompts'
+import { setEdition } from '../../sponsor'
 
 const recommendedEdition = 'vtex.edition-store@2.x'
 
