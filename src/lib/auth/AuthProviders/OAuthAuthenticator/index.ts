@@ -56,7 +56,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
         logger.warn(
           `In case login errors persist after updating please create an issue on ${ColorifyConstants.URL_INTERACTIVE(
             'https://github.com/vtex/toolbelt/issues'
-          )}. We'll promptly help you finding a solution.`
+          )}. We'll promptly help you find a solution.`
         )
       }
 
