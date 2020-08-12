@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.108.1] - 2020-08-12
+
+### Changed
+- [vtex login] Use new VTEX ID login flow:
+  - Fix free TCP port retrieval: use `detect-port` package instead of `get-port`.
+  - Fix issue on WSL2 by specifying host binding to `127.0.0.1` when starting the server.
+
 ## [2.108.0] - 2020-08-11
 ### Added
 - [vtex workspace promote] Conflict handling.

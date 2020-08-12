@@ -1,12 +1,11 @@
 import chalk from 'chalk'
 import { compose, contains, forEach, path, pathOr } from 'ramda'
-import { colossusEndpoint, publicEndpoint } from '../../api/env'
-import { SSEConnectionError } from '../../api/error/errors'
+import { colossusEndpoint } from '../../api/env'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
 import { removeVersion } from '../../api/locator'
 import log from '../../api/logger'
 import { isVerbose } from '../../api/verbose'
-import { ErrorKinds } from '../../api/error/ErrorKinds'
-import { ErrorReport } from '../../api/error/ErrorReport'
 import { CustomEventSource } from './CustomEventSource'
 import { EventSourceError } from './EventSourceError'
 
@@ -151,35 +150,4 @@ export const logAll = (context: Context, logLevel: string, id: string, senders?:
   }
 
   return onLog(context, id, logLevel, callback, senders)
-}
-
-export const onAuth = (
-  account: string,
-  workspace: string,
-  state: string,
-  returnUrl: string
-): Promise<[string, string]> => {
-  const source = `https://${workspace}--${account}.${publicEndpoint()}/_v/private/auth-server/v1/sse/${state}`
-  log.debug(`Listening for auth events from: ${source}`)
-  const es = CustomEventSource.create({ source })
-  return new Promise((resolve, reject) => {
-    es.onmessage = (msg: MessageJSON) => {
-      const { body: token } = JSON.parse(msg.data) as { body: string }
-      es.close()
-      resolve([token, returnUrl])
-    }
-
-    es.onerror = err => {
-      es.close()
-      const errMessage = `Connection to login server has failed${
-        err.event.status ? ` with status ${err.event.status}` : ''
-      }`
-      ErrorReport.createAndMaybeRegisterOnTelemetry({
-        kind: ErrorKinds.SSE_ERROR,
-        originalError: err,
-      }).logErrorForUser({ coreLogLevelDefault: 'debug', logLevels: { core: { errorId: 'error' } } })
-
-      reject(new SSEConnectionError(errMessage, err.event.status))
-    }
-  })
 }
