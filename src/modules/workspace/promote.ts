@@ -9,8 +9,8 @@ import { promptConfirm } from '../../api/modules/prompts'
 import { VBase } from '../../api/clients/IOClients/infra/VBase'
 import authUrl from '../url'
 import useCmd from './use'
-import { COLORS } from '../../lib/constants/Colors'
-import { Messages } from '../../lib/constants/Messages'
+import { COLORS } from '../../api/lib/constants/Colors'
+import { Messages } from '../../api/lib/constants/Messages'
 
 const { checkForConflicts } = VBase.createClient()
 const { promote, get } = createWorkspacesClient()
