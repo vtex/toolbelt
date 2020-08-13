@@ -13,7 +13,7 @@ import { ProjectUploader } from '../../api/modules/apps/ProjectUploader'
 import { listenBuild } from '../../api/modules/build'
 import { validateAppAction } from '../../api/modules/utils'
 import { fixPinnedDependencies, PinnedDeps } from '../../api/pinnedDependencies'
-import { BatchStream } from '../../api/typings'
+import { BatchStream } from '../../api/typings/types'
 import { runYarnIfPathExists } from '../utils'
 
 const buildersToRunLocalYarn = ['react', 'node']

@@ -32,7 +32,7 @@ import moment from 'moment'
 import retry from 'async-retry'
 import startDebuggerTunnel from './debugger'
 import workspaceUse from '../../api/modules/workspace/use'
-import { BatchStream } from '../../api/typings'
+import { BatchStream } from '../../api/typings/types'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
