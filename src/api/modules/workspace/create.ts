@@ -103,6 +103,12 @@ export const workspaceCreator: WorkspaceCreator = async ({
 
     return 'created'
   } catch (err) {
+    if (err.response?.data.code === 'ArgumentNull') {
+      throw createFlowIssueError(
+        `You need to pick a name for the new workspace. Run vtex worspace create [WORKSPACENAME]. You can name it using your name with a number, for example vtex workspace create johndoe01`
+      )
+    }
+
     if (err.response?.data.code === 'WorkspaceAlreadyExists') {
       maybeLogWorkspaceAlreadyExists(targetWorkspace, logIfAlreadyExists)
       return
