@@ -5,13 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed 
+- [vtex workspace] Refactor to use as oclif plugin.
 
 ## [2.108.1] - 2020-08-12
 
 ### Changed
 - [vtex login] Use new VTEX ID login flow:
-  - Fix free TCP port retrieval: use `detect-port` package instead of `get-port`.
-  - Fix issue on WSL2 by specifying host binding to `127.0.0.1` when starting the server.
+- Fix free TCP port retrieval: use `detect-port` package instead of `get-port`.
+- Fix issue on WSL2 by specifying host binding to `127.0.0.1` when starting the server.
 
 ## [2.108.0] - 2020-08-11
 ### Added
@@ -23,8 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.107.0] - 2020-08-06
 ### Changed
-  - [vtex workspace abtest] Update command plugin version
-  - Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
+- [vtex workspace abtest] Update command plugin version
+- Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
 
 ### Fixed
   - [vtex login] Revert to use old login flow due to issues on local server port.
