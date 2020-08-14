@@ -3,7 +3,7 @@ import { SessionManager } from '../../session/SessionManager'
 import log from '../../logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from './create'
 import workspaceReset from './reset'
-import { Messages } from '../../constants/Messages'
+import { Messages } from '../../../lib/constants/Messages'
 
 interface WorkspaceUseOptions {
   production: boolean
