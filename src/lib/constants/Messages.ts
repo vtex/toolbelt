@@ -1,6 +1,5 @@
 import chalk from 'chalk'
-import { formatHyperlink } from '../../lib/utils/Messages'
-import { ColorifyConstants } from './Colors'
+import { ColorifyConstants } from '../../api/constants/Colors'
 
 export const Messages = {
   USE_SUCCESS: (workspace: string, account: string) =>
