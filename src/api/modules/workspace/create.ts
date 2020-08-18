@@ -105,9 +105,11 @@ export const workspaceCreator: WorkspaceCreator = async ({
   } catch (err) {
     if (err.response?.data.code === 'ArgumentNull') {
       throw createFlowIssueError(
-        `You need to pick a name for the new workspace. Run ${chalk.yellow(
+        `You need to pick a name for the new workspace. Run ${chalk.green(
           'vtex workspace create [WORKSPACENAME]'
-        )}. You can name it using your name with a number, for example vtex workspace create johndoe01`
+        )}. You can name it using your name with a number, for example ${chalk.green(
+          `vtex workspace create johndoe01`
+        )}`
       )
     }
 
