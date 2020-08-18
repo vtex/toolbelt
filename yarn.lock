@@ -1197,10 +1197,10 @@
     chalk "^4.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-workspace@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-workspace/-/cli-plugin-workspace-0.0.1.tgz#02a33a43f00ebd2bf826f6793bc472bad3dbbf2e"
-  integrity sha512-UPEVUeq9ZzxEN4csd7LFwfiOSYtQIzw8jCfeI17CU7mi81+KOU67vWDYcyUMDbz/4jNWPIobhUjf1/ROHcBCYQ==
+"@vtex/cli-plugin-workspace@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-workspace/-/cli-plugin-workspace-0.0.2.tgz#c02efb9f211406b5c1b30b9b81156357f3a4e94d"
+  integrity sha512-bhRqC/SYXvw6Dy7IhL8S/EaCl/JxcPCG6J707RC6DC4m702DODfwdeXwtqZ671q1GAB+z850TlK90hNJuLpqDA==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
