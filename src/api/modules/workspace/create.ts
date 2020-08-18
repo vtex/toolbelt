@@ -9,6 +9,7 @@ import { WorkspaceCreator } from '../../session/WorkspaceCreator'
 import log from '../../logger'
 import { promptConfirm } from '../prompts'
 import { ensureValidEdition } from './common/edition'
+import { Messages } from '../../../lib/constants/Messages'
 
 const VALID_WORKSPACE = /^[a-z][a-z0-9]{0,126}[a-z0-9]$/
 
@@ -104,13 +105,7 @@ export const workspaceCreator: WorkspaceCreator = async ({
     return 'created'
   } catch (err) {
     if (err.response?.data.code === 'ArgumentNull') {
-      throw createFlowIssueError(
-        `You need to pick a name for the new workspace. Run ${chalk.green(
-          'vtex workspace create [WORKSPACENAME]'
-        )}. You can name it using your name with a number, for example ${chalk.green(
-          `vtex workspace create johndoe01`
-        )}`
-      )
+      throw createFlowIssueError(Messages.CREATE_MISSING_WORKSPACE_NAME())
     }
 
     if (err.response?.data.code === 'WorkspaceAlreadyExists') {
