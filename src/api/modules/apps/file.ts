@@ -1,8 +1,9 @@
-import { lstat, readFileSync } from 'fs-extra'
+import { lstat, readFileSync, readJsonSync, writeJsonSync } from 'fs-extra'
 import glob from 'globby'
 import { join } from 'path'
 import { reject } from 'ramda'
 import log from '../../logger'
+import { adaptPackageJsonForRender } from './vtexComponentsAdapter'
 
 const defaultIgnored = [
   '.DS_Store',
@@ -27,6 +28,19 @@ const safeFolder = folder => {
 
 const isTestOrMockPath = (p: string) => /.*(test|mock|snapshot).*/.test(p.toLowerCase())
 
+const vtexComponentsAdapterEnabled = () => {
+  try {
+    const manifest = readJsonSync('./manifest.json')
+    return manifest.vtexComponentsEnabled === true
+  } catch(e) {
+    return false
+  }
+}
+
+const vtexComponentsAdapterEnabledFilter = (path: string) => {
+  return vtexComponentsAdapterEnabled() ? path !== 'package.json' : true
+}
+
 export const getIgnoredPaths = (root: string, test = false): string[] => {
   try {
     const filesToIgnore = readFileSync(join(root, '.vtexignore'))
@@ -36,14 +50,29 @@ export const getIgnoredPaths = (root: string, test = false): string[] => {
       .filter(p => p !== '')
       .map(p => p.replace(/\/$/, '/**'))
       .concat(defaultIgnored)
+      .filter(vtexComponentsAdapterEnabledFilter)
     return test ? reject(isTestOrMockPath, filesToIgnore) : filesToIgnore
   } catch (e) {
     return defaultIgnored
   }
 }
 
-export const listLocalFiles = (root: string, test = false, folder?: string): Promise<string[]> =>
-  Promise.resolve(
+const loadVtexComponentsPackageJsonChanges = () => {
+  try {
+    const pkg = readJsonSync('./package.json')
+    adaptPackageJsonForRender(pkg)
+    writeJsonSync('./react/package.json', pkg)
+  } catch(e) {
+    console.log("Failed to link VTEX Components package.json")
+  }
+}
+
+export const listLocalFiles = (root: string, test = false, folder?: string): Promise<string[]> => {
+  if(vtexComponentsAdapterEnabled()) {
+    loadVtexComponentsPackageJsonChanges()
+  }
+
+  return Promise.resolve(
     glob(['manifest.json', 'policies.json', 'node/.*', 'react/.*', `${safeFolder(folder)}`], {
       cwd: root,
       follow: true,
@@ -60,3 +89,4 @@ export const listLocalFiles = (root: string, test = false, folder?: string): Pro
         return acc
       }, [])
     )
+}
