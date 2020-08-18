@@ -78,12 +78,6 @@ declare global {
     data: string
   }
 
-  interface WorkspaceResponse {
-    name: string
-    weight: number
-    production: boolean
-  }
-
   interface VersionByApp {
     location: string
     versionIdentifier: string

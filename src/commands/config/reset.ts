@@ -1,5 +1,5 @@
 import { CustomCommand } from '../../api/oclif/CustomCommand'
-import configReset from '../../modules/config/reset'
+import workspaceReset from '../../modules/config/reset'
 
 export default class ConfigReset extends CustomCommand {
   static description = 'Reset the requested configuration to the default value'
@@ -19,6 +19,6 @@ export default class ConfigReset extends CustomCommand {
       args: { configName },
     } = this.parse(ConfigReset)
 
-    configReset(configName)
+    workspaceReset(configName)
   }
 }

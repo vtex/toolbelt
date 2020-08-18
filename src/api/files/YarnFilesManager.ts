@@ -4,7 +4,7 @@ import { PassThrough } from 'stream'
 import log from '../logger'
 import { createPathToFileObject } from './ProjectFilesManager'
 import { YarnSymlinkedModulesConfig } from './YarnLinkedFilesConfig'
-import { BatchStream } from '../typings'
+import { BatchStream } from '../typings/types'
 
 const stringToStream = (str: string) => {
   const stream = new PassThrough()

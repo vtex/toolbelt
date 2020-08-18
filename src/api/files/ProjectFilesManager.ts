@@ -2,7 +2,7 @@ import { createReadStream, lstat, readFileSync, statSync } from 'fs-extra'
 import glob from 'globby'
 import { join } from 'path'
 import { reject } from 'ramda'
-import { BatchStream } from '../typings'
+import { BatchStream } from '../typings/types'
 
 export const createPathToFileObject = (root: string, prefix = '') => {
   return (path: string): BatchStream => {

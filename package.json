@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.108.1",
+  "version": "2.109.0",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "build/api/index.js",
@@ -58,6 +58,7 @@
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
     "@vtex/cli-plugin-redirects": "^0.0.1",
     "@vtex/cli-plugin-test": "^0.0.5",
+    "@vtex/cli-plugin-workspace": "^0.0.2",
     "@vtex/node-error-report": "^0.0.2",
     "@vtex/toolbelt-message-renderer": "^0.0.1",
     "@yarnpkg/lockfile": "^1.1.0",
@@ -163,7 +164,8 @@
       "@vtex/cli-plugin-test",
       "@vtex/cli-plugin-edition",
       "@vtex/cli-plugin-abtest",
-      "@vtex/cli-plugin-redirects"
+      "@vtex/cli-plugin-redirects",
+      "@vtex/cli-plugin-workspace"
     ],
     "hooks": {
       "init": "./build/oclif/hooks/init"
@@ -186,9 +188,6 @@
       },
       "settings": {
         "description": "Settings commands. Run 'vtex settings' to see all subcommands"
-      },
-      "workspace": {
-        "description": "Workspace commands. Run 'vtex workspace' to see all subcommands"
       }
     }
   }

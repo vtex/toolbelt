@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.109.0] - 2020-08-18
+
+## [2.108.2-beta] - 2020-08-14
+### Changed 
+- [vtex workspace] Refactor to use as oclif plugin.
+
 ## [2.108.1] - 2020-08-12
 
 ### Changed
@@ -23,8 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.107.0] - 2020-08-06
 ### Changed
-  - [vtex workspace abtest] Update command plugin version
-  - Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
+- [vtex workspace abtest] Update command plugin version
+- Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
 
 ### Fixed
   - [vtex login] Revert to use old login flow due to issues on local server port.

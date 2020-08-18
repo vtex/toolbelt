@@ -1,5 +1,5 @@
-import { clusterIdDomainInfix, publicEndpoint } from '../api/env'
-import { SessionManager } from '../api/session/SessionManager'
+import { clusterIdDomainInfix, publicEndpoint } from '../env'
+import { SessionManager } from '../session/SessionManager'
 
 export default () => {
   const { account, workspace } = SessionManager.getSingleton()

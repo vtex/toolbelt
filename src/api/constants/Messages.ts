@@ -1,6 +1,6 @@
-import { ColorifyConstants } from '../constants/Colors'
 import supportsHyperlinks from 'supports-hyperlinks'
 import ansiEscapes from 'ansi-escapes'
+import { ColorifyConstants } from './Colors'
 
 export const formatHyperlink = (text: string, url: string): string =>
   supportsHyperlinks.stdout
