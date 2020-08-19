@@ -756,6 +756,11 @@
   resolved "https://registry.yarnpkg.com/@types/detect-port/-/detect-port-1.3.0.tgz#3e9cbd049ec29e84a2ff7852dbc629c81245774c"
   integrity sha512-NnDUDk1Ry5cHljTFetg0BNT79FaJSddTh9RsGOS2v/97DwOUJ+hBkgxtQHF6T8IarZD4i+bFEL787Nz+xpodfA==
 
+"@types/diff@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/diff/-/diff-4.0.2.tgz#2e9bb89f9acc3ab0108f0f3dc4dbdcf2fff8a99c"
+  integrity sha512-mIenTfsIe586/yzsyfql69KRnA75S8SVXQbTLpDejRrjH0QSJcpu3AUOi/Vjnt9IOsXKxPhJfGpQUNMueIU1fQ==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -1147,6 +1152,18 @@
     "@oclif/command" "^1"
     "@oclif/config" "^1"
     numbro "2.1.0"
+    tslib "^1"
+
+"@vtex/cli-plugin-deps@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.0.1.tgz#6e07e1951f1a02719d800b08d92b73cb94d7c417"
+  integrity sha512-T0Zm7ByLjYm78K0jquCvZc7jbhiXtorFAGphW22iiPKxs8WtUX/VNqTsx0wHJOG2H5lnL3NE7PjiG4Aavi7K+g==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
+    "@types/diff" "^4.0.2"
+    "@types/ramda" "^0.27.14"
     tslib "^1"
 
 "@vtex/cli-plugin-edition@^0.0.1":
