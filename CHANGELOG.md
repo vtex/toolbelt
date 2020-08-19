@@ -5,10 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- [vtex deps] Refactor to use as oclif plugin.
 
 ## [2.109.0] - 2020-08-18
-
-## [2.108.2-beta] - 2020-08-14
 ### Changed 
 - [vtex workspace] Refactor to use as oclif plugin.
 
@@ -26,7 +26,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [vtex workspace promote] Log messages.
 - [vtex redirects] Refactor to use as oclif plugin.
-- [vtex deps] Refactor to use as oclif plugin.
 
 ## [2.107.0] - 2020-08-06
 ### Changed
