@@ -52,7 +52,7 @@ $ toolbelt-conf config-set -n minimumToolbeltPrereleaseVersion -v 2.92.0
 That's it, now you can check on splunk the latest config changes (all changes are logged):
 
 ```
-index=io_vtex_logs app=vtex.toolbelt-config-server@* data.event!=NULL workspace=master
+index=io_vtex_logs app=vtex.toolbelt-config-server@* data.event=CONFIG* workspace=master
 ```
 
 ### Deprecating a version
@@ -82,3 +82,84 @@ npm dist-tag add vtex@2.91.0 latest
 3. Make sure that we aren't enforcing the deprecated version (see [forcing a new version](##forcing-a-new-version))
 
 That's it!
+
+### Changing the release message
+
+Release notes are updated every month. Initially we manually updated the message on toolbelt and released
+a new version for every new release notes, but this flow had problems like:
+
+- The user had to update the CLI to see the new release message.
+- We had to go for the trouble of releasing a new version just for updating the release notes message.
+
+Because of this the app [vtex.toolbelt-config-server](https://github.com/vtex/toolbelt-config-server) was extended
+to provide messages via a REST API. When toolbelt has to show the release notes message it does a request to
+`vtex.toolbelt-config-server` and, with that, we can just update the message via the REST API and all users will
+start to see the updated message. The messages provided by the toolbelt-config-server are documented [here](https://github.com/vtex/toolbelt-config-server#messages).
+
+Now, here's how to update the release notes message:
+
+1. You'll have to install the [toolbelt-config-cli](https://github.com/vtex/toolbelt-config-cli):
+
+```
+yarn global add @vtex/toolbelt-config-cli
+```
+
+2. Login to `vtex` account.
+
+3. Download the current release notes message:
+
+```
+$ toolbelt-conf message:get --name releaseNotes --output file.json
+releaseNotes
+
+{
+  releaseNotes: {
+    type: 'box',
+    boxConfig: {
+      padding: 1,
+      margin: 1,
+      borderStyle: 'round',
+      borderColor: 'yellow',
+      align: 'center'
+    },
+    content: '{bold.green July 2020 Release Notes} are now available!\n' +
+      '{{emoji.memo}} Be up-to-date with the latest news on VTEX IO now:\n' +
+      '{blueBright https://bit.ly/316PVIj}'
+  }
+}
+```
+
+This command will download the message to the `file.json` file.
+
+4. Modify the message on the downloaded file. For more info on features provided when rendering the message check the
+[toolbelt-message-renderer](https://github.com/vtex/toolbelt-message-renderer) package.
+
+5. Preview the message:
+
+```
+$ toolbelt-conf message:preview --file file.json
+releaseNotes
+
+   ╭───────────────────────────────────────────────────────────╮
+   │                                                           │
+   │        July 2020 Release Notes are now available!         │
+   │   📝 Be up-to-date with the latest news on VTEX IO now:   │
+   │                  https://bit.ly/316PVIj                   │
+   │                                                           │
+   ╰───────────────────────────────────────────────────────────╯
+
+```
+
+6. When the editing and previewing cycle is done you can update the message on remote:
+
+```
+$ toolbelt-conf message:set --file file.json
+```
+
+That's it, now you can check on splunk the latest message changes (all changes are logged):
+
+```
+index=io_vtex_logs app=vtex.toolbelt-config-server@* data.event=MESSAGE* workspace=master
+```
+
+
