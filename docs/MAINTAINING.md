@@ -21,6 +21,11 @@ yarn global add @vtex/toolbelt-config-cli
 ```
 
 2. Login to `vtex` account.
+
+```
+$ vtex login vtex
+```
+
 3. Check the current version config:
 
 ```
@@ -105,6 +110,10 @@ yarn global add @vtex/toolbelt-config-cli
 ```
 
 2. Login to `vtex` account.
+
+```
+$ vtex login vtex
+```
 
 3. Download the current release notes message:
 
