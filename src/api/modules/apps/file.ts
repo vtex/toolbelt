@@ -32,7 +32,7 @@ const vtexComponentsAdapterEnabled = () => {
   try {
     const manifest = readJsonSync('./manifest.json')
     return manifest.vtexComponentsEnabled === true
-  } catch(e) {
+  } catch (e) {
     return false
   }
 }
@@ -62,13 +62,13 @@ const loadVtexComponentsPackageJsonChanges = () => {
     const pkg = readJsonSync('./package.json')
     adaptPackageJsonForRender(pkg)
     writeJsonSync('./react/package.json', pkg)
-  } catch(e) {
-    console.log("Failed to link VTEX Components package.json")
+  } catch (e) {
+    console.log('Failed to link VTEX Components package.json')
   }
 }
 
 export const listLocalFiles = (root: string, test = false, folder?: string): Promise<string[]> => {
-  if(vtexComponentsAdapterEnabled()) {
+  if (vtexComponentsAdapterEnabled()) {
     loadVtexComponentsPackageJsonChanges()
   }
 
