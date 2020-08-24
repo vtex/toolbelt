@@ -1186,10 +1186,10 @@
     "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
     tslib "^1"
 
-"@vtex/cli-plugin-redirects@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-redirects/-/cli-plugin-redirects-0.0.1.tgz#8ff1998843861e8d9d0c9bb2734d2c167ab5b6d9"
-  integrity sha512-B4oCNhfW10R/5FYtpCvMPRw5B9dmAaKYqR5PbYrLVxCNtzqLOAFWrFHd4xzuvLaoZnWQJh0p/cyBswbE/3WHCQ==
+"@vtex/cli-plugin-redirects@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-redirects/-/cli-plugin-redirects-0.0.2.tgz#de993cd0d6ae1b5106fc524225debecb87dac7b9"
+  integrity sha512-CCUYv2U6fgQ16ZZV7DOeVE8p/I16TQ8LU1qrRF78Jk9BdYseDnPKlSRK9alGUmXqB6rSrgacun/De/vn8xAhgA==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
@@ -1200,6 +1200,7 @@
     "@types/ramda" "^0.27.14"
     json-array-split "^1.0.0"
     json2csv "^5.0.1"
+    progress "^2.0.3"
     tslib "^1"
 
 "@vtex/cli-plugin-test@^0.0.5":
@@ -6988,7 +6989,7 @@ process-nextick-args@~2.0.0:
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
   integrity sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==
 
-progress@^2.0.0:
+progress@^2.0.0, progress@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/progress/-/progress-2.0.3.tgz#7e8cf8d8f5b8f239c1bc68beb4eb78567d572ef8"
   integrity sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==

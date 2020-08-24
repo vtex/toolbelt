@@ -57,7 +57,7 @@
     "@vtex/cli-plugin-deps": "^0.0.1",
     "@vtex/cli-plugin-edition": "^0.0.1",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
-    "@vtex/cli-plugin-redirects": "^0.0.1",
+    "@vtex/cli-plugin-redirects": "^0.0.2",
     "@vtex/cli-plugin-test": "^0.0.5",
     "@vtex/cli-plugin-workspace": "^0.0.2",
     "@vtex/node-error-report": "^0.0.2",
