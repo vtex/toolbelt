@@ -155,6 +155,9 @@
     "ts-node": "^8.0.0",
     "typescript": "^3.8.2"
   },
+  "resolutions": {
+    "axios": "0.19.2"
+  },
   "oclif": {
     "commands": "./build/commands",
     "bin": "vtex",
