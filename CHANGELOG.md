@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.110.1] - 2020-08-24
 ### Changed
-- [vtex redirects] Update plugin version.
+- [vtex redirects] Update plugin version:
+  - Add missing `progress` dependency.
 
 ## [2.110.0] - 2020-08-19
 ### Changed
