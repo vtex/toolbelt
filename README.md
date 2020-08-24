@@ -2,148 +2,200 @@
 
 [![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt) [![npm version](https://img.shields.io/npm/v/vtex.svg?style=flat)](https://www.npmjs.com/package/vtex) [![Greenkeeper badge](https://badges.greenkeeper.io/vtex/toolbelt.svg)](https://greenkeeper.io/)
 
-All you need to start using the VTEX platform.
+The CLI that offers all you need to start using the VTEX platform efficiently.
 
-### What is this?
+#### Summary
+- [How do we empower you?](#how-do-we-empower-you)
+- [First step: Installing the VTEX Toolbelt](#installing-the-toolbelt-with-yarn)
+- [Developing an app locally](#to-develop-locally-use-vtex-link)
+- [Customize your prompt](#wanna-know-something-cool-you-can-customize-your-prompt)
+- [FAQ](#frequently-asked-questions)
+- [Contributing](#contributing)
+- [Send us feedback](#tell-us-what-you-think-about-toolbelt)
 
-VTEX Toolbelt is a command-line program that gives you access to all of the features in the VTEX platform.
+# How do we empower you? 
 
-With it you can:
+VTEX Toolbelt is a command-line program that gives you access to all of 
+the features in the VTEX platform and increases your productivity, allowing you to:
 
-- List, install and uninstall available apps in your account.
-- List, create and remove workspaces.
-- Promote a workspace to `master`, making it public in your account URL.
-- Develop new apps in link mode, using automatic synchronization.
-- Publish apps to the VTEX App Store.
+- **Manage your apps quickly:** List, install and uninstall available apps in your account;
+- **Work safely on your personal environments:** List, create and remove workspaces;
+- **Easily take changes to your final user:** Promote a workspace to `master`, making it public in your account URL;
+- **See what you are creating in real time:** Develop new apps in link mode, using automatic synchronization;
+- **Go live from the command line:** Publish apps to the VTEX App Store.
 
-# Getting started
+# Getting started: Installing the VTEX Toolbelt
+To use the VTEX Toolbelt, you'll need to install other engines 
+(that also will be useful when developing for VTEX).
 
-The VTEX Toolbelt can be installed via [npm](https://www.npmjs.com/).
-If you don't have it installed, you can get it bundled with [node](https://nodejs.org/):
- - [Linux](https://nodejs.org/en/download/package-manager/)
- - [Mac and Windows](https://nodejs.org/en/download/)
+#### Node.js to run the tool
+- Install Node.js here: Toolbelt is written in JavaScript and Node.js. 
+Node is the engine that executes the JS and allows our tool to run and work at your computer) 
+- Install yarn here: yarn is a way to manage your code, organize content in packages 
+that you can download, share and... install, just like our CLI :) 
 
-## Installing the VTEX Toolbelt
+Already has Node.js and Yarn? Lets install the Tooltbelt. 
 
-It's recommended that you install it globally using `yarn`:
+#### Installing the Toolbelt with yarn
+`yarn` powers app development to React, Node and VTEX IO! Install the Toolbelt using yarn and start working with us generating automatically all the files you'll need to create apps in the future. 
+To install it, run: 
+ 
+ ```
+ yarn global add vtex
+ ```
 
-```sh
-yarn global add vtex
-```
+<details>
+  <summary>Alternative installation using npm</summary>
+  You can install using `npm`. But, remember, if in the future 
+  you want develop an VTEX IO app, you'll need to install `yarn` 
 
-Or, using `npm`:
+  To start with `npm`, run:
 
-```sh
-npm install -g vtex
-```
+  ```
+  npm install -g vtex
+  ```
+</details>
 
-Now you can use the `vtex` command:
+# Using the CLI 
 
-```
-$ vtex
-  Welcome to VTEX I/O
-  Login with vtex login <account>
+After install, run `vtex` to see our commands and what each one of them do.
 
-  Usage: vtex <command> [options]
+<details>
+    <summary>Or, check all our commands here</summary>
 
-  Commands:
+  ```
+  $ vtex
+    Welcome to VTEX I/O
+    Login with vtex login <account>
 
-    add <app>               Add app(s) to the manifest dependencies
-    deprecate [app]         Deprecate app(s)
-    init                    Create basic files and folders for your VTEX app
-    install [app]           Install an app (defaults to the app in the current directory)
-    link                    Start a development session for this app
-    setup                   Setup your development environment (configure tsconfig and tslint, run yarn)
-    list                    List your installed VTEX apps
-    logs                    Show apps production logs
-    login                   Log into a VTEX account
-    logout                  Logout of the current VTEX account
-    promote                 Promote this workspace to master
-    publish [path]          Publish the current app or a path containing an app
-    switch <account>        Switch to another VTEX account
-    test                    Run your VTEX app unit tests
-    uninstall [app]         Uninstall an app (defaults to the app in the current directory)
-    unlink [app]            Unlink an app on the current directory or a specified one
-    update                  Update all installed apps to the latest version
-    use <name>              Use a workspace to perform operations
-    whoami                  See your credentials current status
+    Usage: vtex <command> [options]
 
-    browse [endpoint]       Browse an endpoint of the store under development
+    Commands:
 
-    config get <name>                 Gets the current value for the requested configuration
-    config set <name> <value>         Sets the current value for the given configuration
+      add <app>               Add app(s) to the manifest dependencies
+      deprecate [app]         Deprecate app(s)
+      init                    Create basic files and folders for your VTEX app
+      install [app]           Install an app (defaults to the app in the current directory)
+      link                    Start a development session for this app
+      setup                   Setup your development environment (configure tsconfig and tslint, run yarn)
+      list                    List your installed VTEX apps
+      logs                    Show apps production logs
+      login                   Log into a VTEX account
+      logout                  Logout of the current VTEX account
+      promote                 Promote this workspace to master
+      publish [path]          Publish the current app or a path containing an app
+      switch <account>        Switch to another VTEX account
+      test                    Run your VTEX app unit tests
+      uninstall [app]         Uninstall an app (defaults to the app in the current directory)
+      unlink [app]            Unlink an app on the current directory or a specified one
+      update                  Update all installed apps to the latest version
+      use <name>              Use a workspace to perform operations
+      whoami                  See your credentials current status
 
-    deps list                              List your workspace dependencies
-    deps update [app]                      Update all workspace dependencies or a specific app@version
-    deps diff [workspace1] [workspace2]    Show dependencies difference between two workspaces
+      browse [endpoint]       Browse an endpoint of the store under development
 
-    infra install <name>     Install a service
-    infra list [name]        List installed services
-    infra update             Update all installed services
+      config get <name>                 Gets the current value for the requested configuration
+      config set <name> <value>         Sets the current value for the given configuration
 
-    local manifest    Generate manifest from package.json
-    local package     Generate package.json from manifest
-    local account     Show current account and copy it to clipboard
-    local workspace   Show current workspace and copy it to clipboard
-    local token       Show user's auth token and copy it to clipboard
+      deps list                              List your workspace dependencies
+      deps update [app]                      Update all workspace dependencies or a specific app@version
+      deps diff [workspace1] [workspace2]    Show dependencies difference between two workspaces
 
-    port react       Convert your app from React 0.x to React 2.x
+      infra install <name>     Install a service
+      infra list [name]        List installed services
+      infra update             Update all installed services
 
-    release [releaseType/Version] [tagName]          Bump app version, commit and push to remote (git only)
+      local manifest    Generate manifest from package.json
+      local package     Generate package.json from manifest
+      local account     Show current account and copy it to clipboard
+      local workspace   Show current workspace and copy it to clipboard
+      local token       Show user's auth token and copy it to clipboard
 
-    settings <app> [fields]                     Get app settings
-    settings set <app> <fields> <value>         Set a value
-    settings unset <app> <fields>               Unset a value
+      port react       Convert your app from React 0.x to React 2.x
 
-    redirects import <csvPath>      Import redirects for the current account and workspace
-    redirects export <csvPath>      Export all redirects in the current account and workspace
-    redirects delete <csvPath>      Delete redirects in the current account and workspace
+      release [releaseType/Version] [tagName]          Bump app version, commit and push to remote (git only)
 
-    url                               Prints base URL for current account, workspace and account
+      settings <app> [fields]                     Get app settings
+      settings set <app> <fields> <value>         Set a value
+      settings unset <app> <fields>               Unset a value
 
-    workspace                         Alias for vtex workspace info
-    workspace create <name>           Create a new workspace with this name
-    workspace delete <name>           Delete a single or various workspaces
-    workspace info                    Display information about the current workspace
-    workspace list                    List workspaces on this account
-    workspace promote                 Promote this workspace to master
-    workspace reset [name]            Delete and create a workspace
-    workspace use <name>              Use a workspace to perform operations
+      redirects import <csvPath>      Import redirects for the current account and workspace
+      redirects export <csvPath>      Export all redirects in the current account and workspace
+      redirects delete <csvPath>      Delete redirects in the current account and workspace
 
-  Options:
+      url                               Prints base URL for current account, workspace and account
 
-    -h, --help  show help information
-```
+      workspace                         Alias for vtex workspace info
+      workspace create <name>           Create a new workspace with this name
+      workspace delete <name>           Delete a single or various workspaces
+      workspace info                    Display information about the current workspace
+      workspace list                    List workspaces on this account
+      workspace promote                 Promote this workspace to master
+      workspace reset [name]            Delete and create a workspace
+      workspace use <name>              Use a workspace to perform operations
 
-## Login
+    Options:
 
-Start by using `vtex login` to receive your credentials and be able to access other features.
-Simply type this command and follow the instructions.
+      -h, --help  show help information
+  ```
+</details>
 
-## Using link
+# Second step: login on your VTEX account
 
-On an app directory, run `vtex link` and click on or copy the provided URL into your browser.
+Start by using `vtex login` to receive your credentials and be able 
+to access other features. Simply type this command and follow the instructions.
 
-VTEX Toolbelt will now monitor your files for changes and sync them automatically.
+<details>
+<summary>Having trouble with login? Follow these steps</summary>
 
-## Customizing your prompt
+You can use `vtex login` to login with your VTEX ID credentials or vtex logout if you're already logged in and want to change credentials.
 
-You can configure your **terminal prompt** to display relevant information about your current context, like  which **account** you're logged into and which **workspace** you are currently using.
+When logging in, you will be asked for 3 things:
+- The `account` name of the store you wish to work on, that would be your company or clients `account` name;
+- Your VTEX ID email, the one you received access to work with VTEX. Missing the email? Send us a message here.
+- Your VTEX ID password, the one you chose when creating your user. 
+
+If you wish to work on another `account`, run `vtex logout` and, then `vtex login` again with the one you want to move to. 
+
+</details>
+
+> 😉 Note that `link` and `publish` implicitly checks if you're logged, and if you're not, it asks your credentials before proceeding.
+
+# To develop locally: use vtex link
+
+When you log in at an account, you can create your own workspaces to work on your ideias or see what is on air. To do so:
+
+1. On an app directory, run `vtex link` and click on or copy the provided URL into your browser;
+2. Now on, VTEX Toolbelt will monitor your files for change and sync them with what you see automatically. 
+
+<details>
+<summary>Know more about local development with Toolbelt</summary>
+
+Toolbelt will upload all your app files to the developer environment, print an URL for your use, and watch for any changes you make to the files, which will be automatically synchronized.
+
+</details>
+
+
+# Wanna know something cool? You can customize your prompt
+
+You can configure your **terminal prompt** to display relevant information about your current context, like which account you're logged into and which `workspace` you are currently using.
 
 Just like knowing which `git` branch you're currently in, having this info in your prompt you help you avoid mistakes and be faster when using VTEX IO.
 
-### `bash` users
+## How to do so? 
 
-If you are a _bash_ user you can customize your command prompt by running the following command:
+#### `bash` users
+
+If you are a bash user you can start customizing your command prompt by running the following command:
 
 ```sh
 echo "source $(npm root -g)/vtex/plugins/bash/vtex.bash" >> ~/.bashrc
 echo "source $(npm root -g)/vtex/plugins/bash/prompt.bash" >> ~/.bashrc
 ```
 
-For fine grained control, use only the first script and add `__vtex_ps1` manually to your prompt.
+> 😉 For fine grained control, use only the first script and add `__vtex_ps1` manually to your prompt.
 
-### `fish` users
+#### `fish` users
 
 If you want a pretty, ready-made Git + VTEX prompt you can copy `plugins/fish/fish_prompt.fish` to the  `~/.config/fish/functions` folder. To see the changes, simply restart your shell by typing `fish`.
 
@@ -152,46 +204,27 @@ cp (npm root -g)/vtex/plugins/fish/fish_prompt.fish ~/.config/fish/functions/
 fish
 ```
 
-PS: If you used `yarn` to install, you should replace `(npm root -g)` with `(yarn global dir)`.
+> 💡 If you installed Toolbelt using `yarn`, you should replace `(npm root -g)` with `(yarn global dir)`.
 
 ---
 
 # Frequently Asked Questions
 
-## How do I login?
-
-You can use `vtex login` to login with your VTEX ID credentials or `vtex logout` if you're already logged in and want to change credentials.
-
-When logging in, you will be asked for **3** things:
-
-- The `account` name of the store you wish to work on
-- Your VTEX ID `e-mail`
-- Your VTEX ID `password`
-
-If you wish to work on another `account`, logout and login again with that `account`.
-
-Note that `link` and `publish` implicitly checks if you're logged, and if you're not, it asks your credentials before proceeding.
-
-
-## How do I develop an app locally?
-
-To develop an app locally, open the directory where your VTEX app is and then type:
-
-```sh
-vtex link
-```
-
-Toolbelt will upload all your app files to the developer environment, print an URL for your use and watch for any changes you make to the files, which will be automatically synchronized.
-
-## How do I ignore specific files or directories in my app so that they are not uploaded?
+<details>
+<summary>How do I ignore specific files or directories in my app so that they are not uploaded?</summary>
 
 Create a `.vtexignore` file containing, on each line, paths you wish to ignore.
 If no `.vtexignore` is found, your [.gitignore](http://git-scm.com/docs/gitignore) file is used instead.
 
+</details>
 
-## I don't like the default toolbelt prompt customization. It's ugly or it messes with some of my other configurations, but I still want to be able to see the account and workspace I'm logged into. What do I do?
+<details>
+<summary>Is there another way to customize the prompt?</summary>
 
 You can do so by adding the `vtex_get_account` and `vtex_get_workspace` commands to your PS1 environment variable the way it pleases you.
+
+</details>
+
 
 ---
 ## Contributing
@@ -201,3 +234,6 @@ Follow the steps on [CONTRIBUTING.md](./CONTRIBUTING.md).
 ## License
 
 MIT
+
+## Tell us what you think about Toolbelt  
+📡 We are always looking for ways to improve your experience. Please, send us feedback about the **VTEX Toolbelt** [here](https://forms.gle/hA7mGGdPBm5ssCUh9).
