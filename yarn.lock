@@ -972,10 +972,10 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
-"@vtex/api@3.71.2-toolbelt":
-  version "3.71.2-toolbelt"
-  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.71.2-toolbelt.tgz#5c7b3e62ba0b7d06c85a7b23fbd80e94211614de"
-  integrity sha512-0Jk6NzpvZWElXCdWKL6zrngEI4LVCeM2hW80vpftfqAAEgFzFLX5vaGw8xZtPge3bOTbJPAlmiHizexgUwSeMQ==
+"@vtex/api@3.71.2-toolbelt.0":
+  version "3.71.2-toolbelt.0"
+  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.71.2-toolbelt.0.tgz#5f0b3abce29a80a2f99eb2dc869665e3000533c1"
+  integrity sha512-Augd9///D7sHVv9mERonwKoeUkp8+WVpAJRPIwQ5r44eQ5xI/0LZ0T2ZU444QRa8wWxfggk3J8ZQWxNDDffMTg==
   dependencies:
     "@types/koa" "^2.0.48"
     "@types/koa-compose" "^3.2.3"
@@ -7528,7 +7528,7 @@ static-extend@^0.1.1, static-extend@^0.1.2:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-stats-lite@vtex/node-stats-lite#dist:
+"stats-lite@github:vtex/node-stats-lite#dist":
   version "2.2.0"
   resolved "https://codeload.github.com/vtex/node-stats-lite/tar.gz/1b0d39cc41ef7aaecfd541191f877887a2044797"
   dependencies:
