@@ -52,7 +52,7 @@
     "@oclif/config": "^1.0.0",
     "@oclif/plugin-help": "^2.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
-    "@vtex/api": "3.71.2-toolbelt",
+    "@vtex/api": "3.71.2-toolbelt.0",
     "@vtex/cli-plugin-abtest": "^0.0.5",
     "@vtex/cli-plugin-deps": "^0.0.1",
     "@vtex/cli-plugin-edition": "^0.0.1",
