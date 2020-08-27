@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt) [![npm version](https://img.shields.io/npm/v/vtex.svg?style=flat)](https://www.npmjs.com/package/vtex) [![Greenkeeper badge](https://badges.greenkeeper.io/vtex/toolbelt.svg)](https://greenkeeper.io/)
 
-The CLI that offers all you need to start using the VTEX platform efficiently.
+The CLI that offers all you need to start using the VTEX IO platform efficiently.
 
 #### Summary
 - [How do we empower you?](#how-do-we-empower-you)
@@ -20,7 +20,7 @@ the features in the VTEX platform and increases your productivity, allowing you 
 
 - **Manage your apps quickly:** List, install and uninstall available apps in your account;
 - **Work safely on your personal environments:** List, create and remove workspaces;
-- **Easily take changes to your final user:** Promote a workspace to `master`, making it public in your account URL;
+- **Easily ship changes to your final user:** Promote a workspace to `master`, making it public in your account URL;
 - **See what you are creating in real time:** Develop new apps in link mode, using automatic synchronization;
 - **Go live from the command line:** Publish apps to the VTEX App Store.
 
