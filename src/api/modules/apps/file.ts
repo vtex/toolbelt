@@ -53,7 +53,7 @@ export const getIgnoredPaths = (root: string, test = false): string[] => {
       .filter(vtexComponentsAdapterEnabledFilter)
     return test ? reject(isTestOrMockPath, filesToIgnore) : filesToIgnore
   } catch (e) {
-    return defaultIgnored
+    return defaultIgnored.filter(vtexComponentsAdapterEnabledFilter)
   }
 }
 
