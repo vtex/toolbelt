@@ -3235,6 +3235,11 @@ doctrine@^3.0.0:
   dependencies:
     esutils "^2.0.2"
 
+dom-walk@^0.1.0:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/dom-walk/-/dom-walk-0.1.2.tgz#0c548bef048f4d1f2a97249002236060daa3fd84"
+  integrity sha512-6QvTW9mrGeIegrFXdtQi9pk7O/nSK6lSdXW2eqUspN5LWD7UTji2Fqw5V2YLjBpHEoU9Xl/eUWNpDeZvoyOv2w==
+
 domexception@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/domexception/-/domexception-1.0.1.tgz#937442644ca6a31261ef36e3ec677fe805582c90"
@@ -4194,6 +4199,14 @@ global-dirs@^0.1.0:
   integrity sha1-sxnA3UYH81PzvpzKTHL8FIxJ9EU=
   dependencies:
     ini "^1.3.4"
+
+global@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/global/-/global-4.4.0.tgz#3e7b105179006a323ed71aafca3e9c57a5cc6406"
+  integrity sha512-wv/LAoHdRE3BeTGz53FAamhGlPLhlssK45usmGFThIi4XqnBmjKQ16u+RNbP7WvigRZDxUsM0J3gcQ5yicaL0w==
+  dependencies:
+    min-document "^2.19.0"
+    process "^0.11.10"
 
 globals@^11.1.0, globals@^11.12.0:
   version "11.12.0"
@@ -6194,6 +6207,13 @@ mimic-response@^1.0.0, mimic-response@^1.0.1:
   resolved "https://registry.yarnpkg.com/mimic-response/-/mimic-response-1.0.1.tgz#4923538878eef42063cb8a3e3b0798781487ab1b"
   integrity sha512-j5EctnkH7amfV/q5Hgmoal1g2QHFJRraOtmx0JpIqkxhBhI/lJSl1nMpQ45hVarwNETOoWEimndZ4QK0RHxuxQ==
 
+min-document@^2.19.0:
+  version "2.19.0"
+  resolved "https://registry.yarnpkg.com/min-document/-/min-document-2.19.0.tgz#7bd282e3f5842ed295bb748cdd9f1ffa2c824685"
+  integrity sha1-e9KC4/WELtKVu3SM3Z8f+iyCRoU=
+  dependencies:
+    dom-walk "^0.1.0"
+
 minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
@@ -6988,6 +7008,11 @@ process-nextick-args@~2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.1.tgz#7820d9b16120cc55ca9ae7792680ae7dba6d7fe2"
   integrity sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==
+
+process@^0.11.10:
+  version "0.11.10"
+  resolved "https://registry.yarnpkg.com/process/-/process-0.11.10.tgz#7332300e840161bda3e69a1d1d91a7d4bc16f182"
+  integrity sha1-czIwDoQBYb2j5podHZGn1LwW8YI=
 
 progress@^2.0.0, progress@^2.0.3:
   version "2.0.3"
@@ -8730,6 +8755,87 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+vtex@^2.110.1:
+  version "2.110.1"
+  resolved "https://registry.yarnpkg.com/vtex/-/vtex-2.110.1.tgz#543becb1d727ea72694759e2695fee1de727548a"
+  integrity sha512-MRIzGasN3wr4vQKqigP40Y8QdWCzOzl9jQzPUzxuyUkNRtinki6R/JXaUfEh8Dy4Jp4moZ/kADXAYMmX0bCVjw==
+  dependencies:
+    "@oclif/command" "^1.0.0"
+    "@oclif/config" "^1.0.0"
+    "@oclif/plugin-help" "^2.0.0"
+    "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
+    "@vtex/api" "3.71.1"
+    "@vtex/cli-plugin-abtest" "^0.0.5"
+    "@vtex/cli-plugin-deps" "^0.0.1"
+    "@vtex/cli-plugin-edition" "^0.0.1"
+    "@vtex/cli-plugin-lighthouse" "^0.0.3"
+    "@vtex/cli-plugin-redirects" "^0.0.2"
+    "@vtex/cli-plugin-test" "^0.0.5"
+    "@vtex/cli-plugin-workspace" "^0.0.2"
+    "@vtex/node-error-report" "^0.0.2"
+    "@vtex/toolbelt-message-renderer" "^0.0.1"
+    "@yarnpkg/lockfile" "^1.1.0"
+    ajv "~6.10.2"
+    ansi-escapes "^4.3.1"
+    any-promise "^1.3.0"
+    archiver "^3.1.1"
+    async-retry "~1.2.3"
+    bluebird "^3.5.0"
+    boxen "^4.2.0"
+    chalk "~2.3.2"
+    child-process-es6-promise "~1.2.1"
+    chokidar "~3.3.0"
+    cli-table "~0.3.1"
+    cli-table2 "~0.2.0"
+    clipboardy "~2.1.0"
+    co-body "^6.0.0"
+    configstore "^5.0.1"
+    csvtojson "~2.0.10"
+    debounce "~1.2.0"
+    detect-port "^1.3.0"
+    diff "~3.5.0"
+    enquirer "~2.3.2"
+    eventsource "~1.0.7"
+    extendable-error "~0.1.5"
+    fs-extra "~7.0.0"
+    get-stream "~4.0.0"
+    globby "~8.0.1"
+    graphql "^14.2.1"
+    is-docker "^2.0.0"
+    is-wsl "^2.1.1"
+    js-yaml "~3.13.1"
+    jsonwebtoken "~8.5.1"
+    koa "^2.13.0"
+    latest-version "^4.0.0"
+    moment "~2.24.0"
+    node-notifier "^6.0.0"
+    numbro "2.1.0"
+    open "^7.0.2"
+    opn "~5.2.0"
+    ora "^4.0.3"
+    pad "~2.0.3"
+    pipe-streams-to-promise "~0.2.0"
+    prompt-confirm "^2.0.4"
+    prompts "~2.3.0"
+    proper-lockfile "^4.1.1"
+    qrcode-terminal "~0.12.0"
+    ramda "~0.25.0"
+    ramda-adjunct "~2.23.0"
+    randomstring "~1.1.5"
+    request "~2.88.0"
+    semver "~7.1.1"
+    semver-diff "~2.1.0"
+    supports-hyperlinks "^2.1.0"
+    tar "~4.4.10"
+    tslib "^1.0.0"
+    unzip-stream "~0.3.0"
+    update-notifier "~3.0.1"
+    v8-compile-cache "^2.1.0"
+    winston "~3.2.1"
+    winston-transport "~4.3.0"
+    ws "^7.2.3"
+    yarn "^1.22.4"
 
 w3c-hr-time@^1.0.1:
   version "1.0.2"
