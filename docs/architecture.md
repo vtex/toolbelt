@@ -1,3 +1,11 @@
+**Table of contents**
+- [Entrypoint](#entrypoint)
+- [Local Metadata](#local-metadata)
+- [Toolbelt config server](#toolbelt-config-server)
+- [Init Hook and CLIPreTasks](#init-hook-and-clipretasks)
+- [Telemetry](#telemetry)
+- [Appendix A: The fire and forget child_process pattern](#appendix-a-the-fire-and-forget-child_process-pattern)
+
 ## Entrypoint
 
 The CLI entrypoint script is placed on `bin/run`. This script is written in javascript and is
