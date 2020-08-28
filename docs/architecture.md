@@ -1,4 +1,5 @@
 **Table of contents**
+
 - [Entrypoint](#entrypoint)
 - [Local Metadata](#local-metadata)
 - [Toolbelt config server](#toolbelt-config-server)
@@ -16,7 +17,7 @@ js compilation a little (improved init times for our CLI).
 
 Toolbelt's `package.json` refer this file on the `bin` field (`"bin": "bin/run"`), specifying for
 package managers (`npm`, `yarn`, etc) that this script is a binary and should be exposed to the user
-as such (just as a curiosity check the symlinks `yarn` creates for the global binaries:
+as such (just as a curiosity you can check the symlinks `yarn` creates for the global binaries:
 `ls -l $(yarn global bin)`).
 
 <details> 
@@ -144,6 +145,32 @@ uses is `$HOME/.vtex`, with some subdirectories:
 All of these paths are defined as constants on the `PathConstants` class.
 
 ## Toolbelt config server
+
+The (`vtex.toolbelt-config-server`)[https://github.com/vtex/toolbelt-config-server] app was created
+for us to be able to create dynamic toolbelt configurations (not hardcoded on a version's code) and
+be able to easily change these configurations via an API. This app runs on VTEX IO, on the `vtex`
+account, workspace `master` and to make interactions with it easier a CLI was created, the
+[`toolbelt-config-cli`](https://github.com/vtex/toolbelt-config-cli).
+
+The updated list of configurations `toolbelt-config-server` provides is available
+[here](https://github.com/vtex/toolbelt-config-server#configs).
+
+Also, `toolbelt-config-server` can be used to serve toolbelt messages and logs that need to be
+dynamic (they are frequently modified and we want all toolbelt users to see the most updated version
+of them). The messages that can be added follow a templating scheme
+((toolbelt-message-renderer)[https://github.com/vtex/toolbelt-message-renderer]) that allow us to
+add colors to the messages, emojis and surrounding boxes. The updated list of messages provided by
+`toolbelt-config-server` is available
+[here](https://github.com/vtex/toolbelt-config-server#messages).
+
+Lastly, `toolbelt-config-server` provides a route to validate a version (check for outdated). Both
+toolbelt and builder-hub use this feature (builder-hub doesn't allow outdated toolbelt versions to
+link or publish - it can identify the toolbelt version based on the `user-agent` header: all
+toolbelt requests should properly setup this header).
+
+Check the [`toolbelt-config-server` repository](https://github.com/vtex/toolbelt-config-server) and
+[`toolbelt-config-cli` repository](https://github.com/vtex/toolbelt-config-cli) for more useful
+information.
 
 ## Init Hook and CLIPreTasks
 
