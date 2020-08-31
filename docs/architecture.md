@@ -244,10 +244,7 @@ outputs.
 
 ## Telemetry
 
-- Metrics
-- ErrorReport package
-- TelemetryCollector
-- TelemetryReporter
+[TODO]
 
 ## Appendix A: The fire and forget child_process pattern
 
