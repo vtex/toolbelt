@@ -152,7 +152,7 @@ You can use `vtex login` to login with your VTEX ID credentials or vtex logou
 
 When logging in, you will be asked for 3 things:
 - The `account` name of the store you wish to work on, that would be your company's or client's `account` name;
-- Your VTEX ID email, the one you received access to work with VTEX. Missing the email? Send us a message here.
+- Your VTEX ID email, the one you received access to work with VTEX.
 - Your VTEX ID password, the one you chose when creating your user. 
 
 If you wish to work on another `account`, run `vtex switch <account>` specifying the account you want to move to.
