@@ -30,7 +30,7 @@ To use the VTEX Toolbelt, you'll need to install other engines
 
 #### Node.js to run the tool
 - Install Node.js [here](https://nodejs.org/en/download/): Toolbelt is written in Typescript and designed to run on Node.js. 
-Node is the engine that executes the JS and allows our tool to run and work at your computer) 
+(Node is the runtime that executes the JS and allows our tool to run and work at your computer) 
 - Install yarn here: yarn is a way to manage your code, organize content in packages 
 that you can download, share and... install, just like our CLI :) 
 
