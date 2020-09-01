@@ -180,7 +180,7 @@ Toolbelt will upload all your app files to the developer environment, print an U
 
 You can configure your **terminal prompt** to display relevant information about your current context, like which account you're logged into and which `workspace` you are currently using.
 
-Just like knowing which `git` branch you're currently in, having this info in your prompt you help you avoid mistakes and be faster when using VTEX IO.
+Just like knowing which `git` branch you're currently in, having this info in your prompt will help you avoid mistakes and be faster when using VTEX IO.
 
 ## How to do so? 
 
