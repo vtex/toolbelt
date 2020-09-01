@@ -229,7 +229,7 @@ You can do so by adding the `vtex_get_account` and `vtex_get_workspace` commands
 ---
 ## Contributing
 
-Follow the steps on [CONTRIBUTING.md](./CONTRIBUTING.md).
+Follow the steps on [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
 ## License
 
