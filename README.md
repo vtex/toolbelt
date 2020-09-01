@@ -26,7 +26,7 @@ the features in the VTEX platform and increases your productivity, allowing you 
 
 # Getting started: Installing the VTEX Toolbelt
 To use the VTEX Toolbelt, you'll need to install other engines 
-(that also will be useful when developing for VTEX).
+that will also be useful when developing for VTEX.
 
 #### Node.js to run the tool
 - Install Node.js [here](https://nodejs.org/en/download/): Toolbelt is written in Typescript and designed to run on Node.js. 
