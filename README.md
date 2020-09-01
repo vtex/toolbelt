@@ -49,7 +49,7 @@ To install it, run:
   You can install using `npm`. But remember, if in the future 
   you want to develop a VTEX IO app, you'll need to install `yarn` 
 
-  To start with `npm`, run:
+  To install with `npm`, run:
 
   ```
   npm install -g vtex
