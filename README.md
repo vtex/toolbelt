@@ -155,7 +155,7 @@ When logging in, you will be asked for 3 things:
 - Your VTEX ID email, the one you received access to work with VTEX. Missing the email? Send us a message here.
 - Your VTEX ID password, the one you chose when creating your user. 
 
-If you wish to work on another `account`, run `vtex logout` and, then `vtex login` again with the one you want to move to. 
+If you wish to work on another `account`, run `vtex switch <account>` specifying the account you want to move to.
 
 </details>
 
