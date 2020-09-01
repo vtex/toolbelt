@@ -163,7 +163,7 @@ If you wish to work on another `account`, run `vtex logout` and, then `vtex log
 
 # To develop locally: use vtex link
 
-When you log in at an account, you can create your own workspaces to work on your ideias or see what is on air. To do so:
+When you log in to an account, you can create your own workspaces to work on your ideas or see what is in production. To do so:
 
 1. On an app directory, run `vtex link` and click on or copy the provided URL into your browser;
 2. Now on, VTEX Toolbelt will monitor your files for change and sync them with what you see automatically. 
