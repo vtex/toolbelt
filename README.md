@@ -140,7 +140,7 @@ After installation, run `vtex` to see our commands and what each one of them do.
   ```
 </details>
 
-# Second step: login on your VTEX account
+# Second step: log into your VTEX account
 
 Start by using `vtex login` to receive your credentials and be able 
 to access other features. Simply type this command and follow the instructions.
