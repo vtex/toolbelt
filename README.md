@@ -58,7 +58,7 @@ To install it, run:
 
 # Using the CLI 
 
-After install, run `vtex` to see our commands and what each one of them do.
+After installation, run `vtex` to see our commands and what each one of them do.
 
 <details>
     <summary>Or, check all our commands here</summary>
