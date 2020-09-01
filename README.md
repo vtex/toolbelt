@@ -34,7 +34,7 @@ To use the VTEX Toolbelt, you'll need to install other engines
 - Install yarn here: yarn is a way to manage your code, organize content in packages 
 that you can download, share and... install, just like our CLI :) 
 
-Already has Node.js and Yarn? Lets install the Tooltbelt. 
+Already has Node.js and Yarn? Let's install the Toolbelt. 
 
 #### Installing the Toolbelt with yarn
 `yarn` powers app development to React, Node and VTEX IO! Install the Toolbelt using yarn and start working with us generating automatically all the files you'll need to create apps in the future. 
