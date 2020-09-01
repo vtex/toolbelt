@@ -46,8 +46,8 @@ To install it, run:
 
 <details>
   <summary>Alternative installation method using npm</summary>
-  You can install using `npm`. But, remember, if in the future 
-  you want develop an VTEX IO app, you'll need to install `yarn` 
+  You can install using `npm`. But remember, if in the future 
+  you want to develop a VTEX IO app, you'll need to install `yarn` 
 
   To start with `npm`, run:
 
