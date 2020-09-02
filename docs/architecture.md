@@ -11,9 +11,9 @@
 
 The CLI entrypoint script is placed on `bin/run`. This script is written in javascript and is
 responsible for starting up OCLIF and requiring
-[`v8-compile-cache`](https://www.npmjs.com/package/v8-compile-cache) (ideally `v8-compile-cache`
-should be `require`d before any other require or import happens), which is responsible for speeding
-js compilation a little (improved init times for our CLI).
+[`v8-compile-cache`](https://www.npmjs.com/package/v8-compile-cache) (ideally the `require` for
+`v8-compile-cache` should be before any other `require` or `import` happens), which is responsible
+for speeding js compilation a little (improved init times for our CLI).
 
 Toolbelt's `package.json` refer this file on the `bin` field (`"bin": "bin/run"`), specifying for
 package managers (`npm`, `yarn`, etc) that this script is a binary and should be exposed to the user
@@ -146,7 +146,7 @@ All of these paths are defined as constants on the `PathConstants` class.
 
 ## Toolbelt config server
 
-The (`vtex.toolbelt-config-server`)[https://github.com/vtex/toolbelt-config-server] app was created
+The [`vtex.toolbelt-config-server`](https://github.com/vtex/toolbelt-config-server) app was created
 for us to be able to create dynamic toolbelt configurations (not hardcoded on a version's code) and
 be able to easily change these configurations via an API. This app runs on VTEX IO, on the `vtex`
 account, workspace `master` and to make interactions with it easier a CLI was created, the
@@ -158,7 +158,7 @@ The updated list of configurations `toolbelt-config-server` provides is availabl
 Also, `toolbelt-config-server` can be used to serve toolbelt messages and logs that need to be
 dynamic (they are frequently modified and we want all toolbelt users to see the most updated version
 of them). The messages that can be added follow a templating scheme
-((toolbelt-message-renderer)[https://github.com/vtex/toolbelt-message-renderer]) that allow us to
+([toolbelt-message-renderer](https://github.com/vtex/toolbelt-message-renderer)) that allow us to
 add colors to the messages, emojis and surrounding boxes. The updated list of messages provided by
 `toolbelt-config-server` is available
 [here](https://github.com/vtex/toolbelt-config-server#messages).
@@ -175,12 +175,11 @@ information.
 ## Init Hook and CLIPreTasks
 
 OCLIF provides the feature of [lifecycle hooks](https://oclif.io/docs/hooks#lifecycle-events) and
-one of the hooks it exposes is the `init` hook. In toolbelt we use this feature very useful feature
-for setting up error handling and running the so called CLI pre-tasks, which are tasks and checks
-made on every command run (with some optimizations). Some checks are crucial for the correct
-operation of the CLI, so the CLIPretasks may block the user from running commands (this behavior can
-be worked aroung using the `IGNORE_CLIPRETASKS=*` environment variable) - as of now the tasks
-executed are:
+one of the hooks it exposes is the `init` hook. In toolbelt we use this feature for setting up error
+handling and running the so called CLI pre-tasks, which are tasks and checks made on every command
+run (with some optimizations). Some checks are crucial for the correct operation of the CLI, so the
+CLIPretasks may block the user from running commands (this behavior can be worked aroung using the
+`IGNORE_CLIPRETASKS=*` environment variable) - as of now the tasks executed are:
 
 - **Ensure compatible node version**: Some features used by toolbelt require a minimum node.js
   version.
