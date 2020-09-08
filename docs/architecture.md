@@ -9,7 +9,7 @@
   - [Errors](#errors)
   - [Metrics](#metrics)
 - [Appendix A: The fire and forget child_process pattern](#appendix-a-the-fire-and-forget-child_process-pattern)
-    
+
 ## Applications supporting toolbelt core
 
 VTEX IO Apps:
@@ -41,7 +41,7 @@ as such (just as a curiosity you can check the symlinks `yarn` creates for the g
 `ls -l $(yarn global bin)`).
 
 <details> 
-  <summary> How the terminal resolves a command? </summary>
+  <summary> <b> <i> How the terminal resolves a command? </b> </i> </summary>
 
 When we run:
 
@@ -90,7 +90,7 @@ symlink will be created there.
 </details>
 
 <details>
-  <summary> Identifying the path the terminal resolved for the CLI  </summary>
+  <summary><i><b> Identifying the path the terminal resolved for the CLI  </i></b></summary>
 
 Sometimes it's useful to identify the path to which the terminal resolved the command `vtex`. For
 example, if we have multiple package managers installed, when we run `vtex` the command is being
@@ -122,7 +122,7 @@ $ which vtex-test
 </details>
 
 <details>
-  <summary> Using Chrome's debugger when running the CLI </summary>
+  <summary><i><b> Using Chrome's debugger when running the CLI </i></b></summary>
 
 Sometimes using a debugger to follow step by step our code is useful. In order to use this in the
 CLI we'll have, as of now, to run `bin/run` manually like this:
@@ -218,7 +218,7 @@ user, so we use the pattern explained on
 child process responsible for doing a status check for the desired information.
 
 <details>
-  <summary> How checking for outdated or deprecation works </summary>
+  <summary><i><b> How checking for outdated or deprecation works </i></b></summary>
 
 These tasks follow the same pattern. Each one of them have a storage in the format of a json at
 `~/.vtex/pretasks/` where the status check result and last status check date will be persisted,
@@ -250,7 +250,7 @@ information.
 </details>
 
 <details>
-  <summary> Debugging toolbelt's fire and forget child processes </summary>
+  <summary><i><b> Debugging toolbelt's fire and forget child processes </i></b></summary>
 
 As described in [Appendix A](#appendix-a-the-fire-and-forget-child_process-pattern), the fire and
 forget child processes created doesn't inherit the parent stdio, so we don't get to see their
@@ -268,13 +268,13 @@ timings for example) and errors. This is very important for us to have data to i
 experience and debug errors that happened with our users.
 
 All this telemetry data is collected on the client and sent to the
-[`vtex.toolbelt-telemetry`](https://github.com/vtex/toolbelt-telemetry) app, which logs it to
-splunk - making it available to query. In order to be able to interact with
-`vtex.toolbelt-telemetry` (send telemetry) the user has to be logged - if the user is not logged,
-telemetry will be stored until the moment the user is logged, and then the data is sent.
+[vtex.toolbelt-telemetry](https://github.com/vtex/toolbelt-telemetry) app, which logs it to splunk -
+making it available to query. In order to be able to interact with `vtex.toolbelt-telemetry` (send
+telemetry) the user has to be logged - if the user is not logged, telemetry will be stored until the
+moment the user is logged, and then the data is sent.
 
 <details> 
-  <summary> How toolbelt collects and reports metrics? </summary>
+  <summary><i><b> How toolbelt collects and reports metrics? </i></b></summary>
 
 Currently toolbelt collect and reports metrics using the modules `TelemetryCollector` and
 `TelemetryReporter`. The `TelemetryCollector` is a singleton created on every command execution and
@@ -298,7 +298,7 @@ send the file received as argument of the script and all the files on
 reporter script (if a report of a file is unsuccessful this file is moved to `pendingData`, for new
 report tries in the future). Meta metrics of the report script (e.g., init time, `pendingData` files
 count) and telemetry report errors (`errorKind=TelemetryReporterError`) are also written in the
-`pendingData` folder, for the next report try.
+`pendingData` folder, for the next report attempt.
 
 A note on the report script is that many processes running the script may be running simultaneously
 (the user ran many toolbelt commands and each command may have started the report script). To avoid
@@ -310,7 +310,7 @@ concurrency problems on the `pendingData` folder, each script tries to hold a fi
 ### Errors
 
 All toolbelt errors reported to `vtex.toolbelt-telemetry` are wrapped around the `ErrorReport`
-class, which in turn is wrapped around the `ErrorReportBase` class, from the
+class, which in turn extends the `ErrorReportBase` class, from the
 [`@vtex/node-error-report`](https://github.com/vtex/node-error-report) package. The
 `ErrorReportBase` class is responsible for parsing errors (for example axios errors), token
 sanitization, strings truncation (in case of big strings) - for more info check the
@@ -342,7 +342,7 @@ toolbelt version. Every metric has a name specifying what is it measuring - all 
 located on the `MetricNames.ts` file. You can query toolbelt metrics on splunk:
 
 ```
-index=io_vtex_logs level=info app=vtex.toolbelt-telemetry@* data.metric.metricName!=NULL
+index=io_vtex_logs app=vtex.toolbelt-telemetry@* data.metric.$metricName!=NULL
 ```
 
 ## Appendix A: The fire and forget child_process pattern
