@@ -1,11 +1,31 @@
 **Table of contents**
 
+- [Applications supporting toolbelt core](#applications-supporting-toolbelt-core)
 - [Entrypoint](#entrypoint)
 - [Local Metadata](#local-metadata)
 - [Toolbelt config server](#toolbelt-config-server)
 - [Init Hook and CLIPreTasks](#init-hook-and-clipretasks)
 - [Telemetry](#telemetry)
+  - [Errors](#errors)
+  - [Metrics](#metrics)
 - [Appendix A: The fire and forget child_process pattern](#appendix-a-the-fire-and-forget-child_process-pattern)
+    
+## Applications supporting toolbelt core
+
+VTEX IO Apps:
+
+- [vtex.toolbelt-config-server](https://github.com/vtex/toolbelt-config-server): See
+  [Toolbelt config server](#toolbelt-config-server).
+- [vtex.toolbelt-telemetry](https://github.com/vtex/toolbelt-telemetry): See
+  [Telemetry](#telemetry).
+
+NPM Packages:
+
+- [@vtex/toolbelt-message-renderer](https://github.com/vtex/toolbelt-message-renderer): See
+  [Toolbelt config server](#toolbelt-config-server).
+- [@vtex/node-error-report](https://github.com/vtex/node-error-report): See [Telemetry](#telemetry).
+- [@vtex/api](https://github.com/vtex/node-vtex-api/tree/3.x): Provides the HTTP clients used by
+  toolbelt to interact with VTEX services and VTEX IO services and apps.
 
 ## Entrypoint
 
@@ -243,7 +263,87 @@ outputs.
 
 ## Telemetry
 
-[TODO]
+Toolbelt collects anonymous telemetry data from users - usage metrics, execution metrics (init
+timings for example) and errors. This is very important for us to have data to improve user
+experience and debug errors that happened with our users.
+
+All this telemetry data is collected on the client and sent to the
+[`vtex.toolbelt-telemetry`](https://github.com/vtex/toolbelt-telemetry) app, which logs it to
+splunk - making it available to query. In order to be able to interact with
+`vtex.toolbelt-telemetry` (send telemetry) the user has to be logged - if the user is not logged,
+telemetry will be stored until the moment the user is logged, and then the data is sent.
+
+<details> 
+  <summary> How toolbelt collects and reports metrics? </summary>
+
+Currently toolbelt collect and reports metrics using the modules `TelemetryCollector` and
+`TelemetryReporter`. The `TelemetryCollector` is a singleton created on every command execution and
+it exposes functions to register an error or metric to be reported. When something is registered
+during the command's execution it's added on an array. At the end of the command execution, when
+toolbelt is about to exit, the `flush` function from the collector is called. This function will
+decide whether the script responsible for reporting the data to `vtex.toolbelt-telemetry` will be
+executed or not:
+
+- If it decides not to execute the script then the collected data will only be written to a local
+  disk store (at the telemetry directory `~/.vtex/telemetry` - see
+  [Local Metadata](#local-metadata)).
+- Otherwise it resets the local disk store and writes all data into a file named randomly, at the
+  `~/.vtex/telemetry` directory. Then it starts the telemetry reporter script as a fire and forget
+  child process (see [Appendix A](#appendix-a-the-fire-and-forget-child_process-pattern)) passing
+  this file name as argument.
+
+The telemetry reporter script tries to report telemetry to `vtex.toolbelt-telemetry` - it tries to
+send the file received as argument of the script and all the files on
+`~/.vtex/telemetry/pendingData`, which has files from previous unsuccessful executions of the
+reporter script (if a report of a file is unsuccessful this file is moved to `pendingData`, for new
+report tries in the future). Meta metrics of the report script (e.g., init time, `pendingData` files
+count) and telemetry report errors (`errorKind=TelemetryReporterError`) are also written in the
+`pendingData` folder, for the next report try.
+
+A note on the report script is that many processes running the script may be running simultaneously
+(the user ran many toolbelt commands and each command may have started the report script). To avoid
+concurrency problems on the `pendingData` folder, each script tries to hold a file lock located on
+`pendingData` whenever it tries to report the files there.
+
+</details>
+
+### Errors
+
+All toolbelt errors reported to `vtex.toolbelt-telemetry` are wrapped around the `ErrorReport`
+class, which in turn is wrapped around the `ErrorReportBase` class, from the
+[`@vtex/node-error-report`](https://github.com/vtex/node-error-report) package. The
+`ErrorReportBase` class is responsible for parsing errors (for example axios errors), token
+sanitization, strings truncation (in case of big strings) - for more info check the
+[repository](https://github.com/vtex/node-error-report). The `ErrorReport` class extends the
+`ErrorReportBase` adding toolbelt specific functionality, for example it adds metadata on the
+current toolbelt version and environment the user is running on.
+
+All errors created are associated with an `ErrorID`, which is usually shown to the user when an
+error happens. This `ErrorID` can be used to query the error on splunk:
+
+```
+index=io_vtex_logs app=vtex.toolbelt-telemetry* $ErrorID
+```
+
+Errors can also be annotated with a custom `ErrorKind`, which are all defined on the `ErrorKinds.ts`
+file (except the generic ones from `@vtex/node-error-report` - `RequestError` and `GenericError`).
+This may provide a way for us to aggregate similar errors and have better understanding on where
+errors are happening - we can query errors with a specific kind on splunk like this:
+
+```
+index=io_vtex_logs app=vtex.toolbelt-telemetry@* data.kind=TelemetryReporterError
+```
+
+### Metrics
+
+The class responsible for wrapping a metric is the `MetricReport` class - it adds some metadata to
+the metric specifying the environment in which the user is running, for example the OS or the
+toolbelt version. Every metric has a name specifying what is it measuring - all metric names are
+located on the `MetricNames.ts` file. You can query toolbelt metrics on splunk:
+
+```
+index=io_vtex_logs level=info app=vtex.toolbelt-telemetry@* data.metric.metricName!=NULL
+```
 
 ## Appendix A: The fire and forget child_process pattern
 
