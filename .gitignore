@@ -9,5 +9,6 @@ package-lock.json
 .eslintcache
 .eslintcache-react
 oclif.manifest.json
-
+/dist
+/tmp
 
