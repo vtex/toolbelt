@@ -3,13 +3,13 @@
   "version": "2.111.0",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
-  "main": "build/api/index.js",
+  "main": "lib/api/index.js",
   "scripts": {
     "watch": "yarn build-clean && bash ./scripts/symlink.sh && yarn nodemon",
     "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
     "lint:node": "yarn eslint ./src --cache --ext ts --config .eslintrc",
     "format-lint": "yarn format && yarn lint:node",
-    "build-clean": "rm -rf build",
+    "build-clean": "rm -rf lib",
     "build-incremental": "yarn tsc --incremental && bash ./scripts/symlinkPlugin.sh && yarn oclif-dev manifest",
     "build": "yarn build-clean && yarn tsc && yarn oclif-dev manifest",
     "test": "jest",
@@ -23,7 +23,7 @@
   },
   "files": [
     "/scripts/closeChrome.scpt",
-    "/build",
+    "/lib",
     "/bin",
     "/oclif.manifest.json"
   ],
@@ -158,7 +158,7 @@
     "typescript": "^3.8.2"
   },
   "oclif": {
-    "commands": "./build/commands",
+    "commands": "./lib/commands",
     "bin": "vtex",
     "plugins": [
       "@oclif/plugin-help",
@@ -181,7 +181,7 @@
       }
     },
     "hooks": {
-      "init": "./build/oclif/hooks/init"
+      "init": "./lib/oclif/hooks/init"
     },
     "topics": {
       "config": {
