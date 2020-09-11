@@ -31,6 +31,7 @@ const printAvailableServiceVersions = (name: string, filter: string) =>
     const region = Object.keys(versions)[0]
     return versions[region]
       .filter(v => !filter || v.indexOf(filter) >= 0)
+      // @ts-ignore
       .map<string>(semver.valid)
       .filter(v => v !== null)
       .sort(semver.compare)

@@ -51,6 +51,7 @@
     "@oclif/command": "^1.0.0",
     "@oclif/config": "^1.0.0",
     "@oclif/plugin-help": "^2.0.0",
+    "@thiagoveras/plugin-update": "^1.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
     "@vtex/cli-plugin-abtest": "^0.0.5",
@@ -163,6 +164,7 @@
     "plugins": [
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands",
+      "@thiagoveras/plugin-update",
       "@vtex/cli-plugin-lighthouse",
       "@vtex/cli-plugin-test",
       "@vtex/cli-plugin-edition",
