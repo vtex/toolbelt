@@ -2,7 +2,7 @@ import retry from 'async-retry'
 import moment from 'moment'
 import { map, reduce } from 'ramda'
 import { Builder } from './api/clients/IOClients/apps/Builder'
-import { getStickyHost, hasStickyHost, saveStickyHost } from './conf'
+import { getStickyHost, hasStickyHost, saveStickyHost } from './api/conf'
 import { BuilderHubTimeoutError } from './api/error/errors'
 import log from './api/logger'
 
