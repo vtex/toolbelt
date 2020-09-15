@@ -29,21 +29,23 @@ const printAvailableServices = () =>
 const printAvailableServiceVersions = (name: string, filter: string) =>
   getAvailableVersions(name).then(({ versions }: InfraResourceVersions) => {
     const region = Object.keys(versions)[0]
-    return versions[region]
-      .filter(v => !filter || v.indexOf(filter) >= 0)
-      // @ts-ignore
-      .map<string>(semver.valid)
-      .filter(v => v !== null)
-      .sort(semver.compare)
-      .reverse()
-      .slice(0, 20)
-      .forEach(v => {
-        if (semver.prerelease(v) !== null) {
-          console.log(`  ${chalk.yellow(v)}`)
-        } else {
-          console.log(`  ${chalk.bold.green(v)}`)
-        }
-      })
+    return (
+      versions[region]
+        .filter(v => !filter || v.indexOf(filter) >= 0)
+        // @ts-ignore
+        .map<string>(semver.valid)
+        .filter(v => v !== null)
+        .sort(semver.compare)
+        .reverse()
+        .slice(0, 20)
+        .forEach(v => {
+          if (semver.prerelease(v) !== null) {
+            console.log(`  ${chalk.yellow(v)}`)
+          } else {
+            console.log(`  ${chalk.bold.green(v)}`)
+          }
+        })
+    )
   })
 
 const printInstalledServices = () =>
