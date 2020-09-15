@@ -671,10 +671,10 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@thiagoveras/plugin-update@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@thiagoveras/plugin-update/-/plugin-update-1.0.0.tgz#4e41f4dad0993663279673d2b95bbddc94175eb9"
-  integrity sha512-hS/adjfGptI6d7mu65PDe6tLd5VVJeDJy8Sxz4Ugw5UsS52H/JW5fCNMcHEWglUtBNgaGFLv3jHRMMLX0i2T8A==
+"@thiagoveras/plugin-update@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@thiagoveras/plugin-update/-/plugin-update-1.0.1.tgz#af6ad432cad83fb2769cd14885dda55ad9b65bc8"
+  integrity sha512-enQphMVSou+3pNC0hmqlS7wPlzOEQlPUOeSssP5atXB/TxlNyAc1zJoFq46AdkFBwcn3YsNDrcsQ4DwX5pnC7g==
   dependencies:
     "@oclif/color" "^0.1.0"
     "@oclif/command" "^1.7.0"
@@ -6963,13 +6963,6 @@ package-json@^6.3.0:
     registry-auth-token "^4.0.0"
     registry-url "^5.0.0"
     semver "^6.2.0"
-
-pad@~2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/pad/-/pad-2.0.3.tgz#e2b877496c5576c299ee3df93bee95b76532dffb"
-  integrity sha512-YVlBmpDQilhUl69RY/0Ku9Il0sNPLgVOVePhCJUfN8qDZKrq1zIY+ZwtCLtaWFtJzuJswwAcZHxf4a5RliV2pQ==
-  dependencies:
-    wcwidth "^1.0.1"
 
 parent-module@^1.0.0:
   version "1.0.1"
