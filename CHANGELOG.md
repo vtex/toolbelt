@@ -6,10 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- [installer] New deploy method by using `oclif-dev pack` and `oclif-dev publish`
+- [installer] New deploy method using `oclif-dev pack` and `oclif-dev publish`.
 
 ### Changed
-- [tsconfig] Changed build folder name from `build` to `lib`
+- [tsconfig] Changed build folder name from `build` to `lib`.
 
 ## [2.111.0] - 2020-09-08
 ### Added
