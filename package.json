@@ -53,6 +53,10 @@
     "@oclif/command": "^1.0.0",
     "@oclif/config": "^1.0.0",
     "@oclif/plugin-help": "^2.0.0",
+<<<<<<< HEAD
+=======
+    "@thiagoveras/plugin-update": "^1.0.1",
+>>>>>>> Remove useless package && update auto-update plugin
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
     "@vtex/cli-plugin-abtest": "^0.0.5",
@@ -105,7 +109,6 @@
     "open": "^7.0.2",
     "opn": "~5.2.0",
     "ora": "^4.0.3",
-    "pad": "~2.0.3",
     "pipe-streams-to-promise": "~0.2.0",
     "prompt-confirm": "^2.0.4",
     "prompts": "~2.3.0",
