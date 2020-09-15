@@ -63,7 +63,9 @@
     rm -f \$(command -v vtex) || true
     rm -f /usr/local/bin/vtex
 
-    ln -s /usr/local/lib/vtex /usr/local/lib/vtex/node_modules/vtex 
+    # Solve vtex plugin import of vtex
+    ln -s /usr/local/lib/vtex /usr/local/lib/vtex/node_modules/vtex
+    
     ln -s /usr/local/lib/vtex/bin/vtex /usr/local/bin/vtex
 
     # on alpine (and maybe others) the basic node binary does not work
