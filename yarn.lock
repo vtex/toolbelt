@@ -671,6 +671,30 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+<<<<<<< HEAD
+=======
+"@thiagoveras/plugin-update@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@thiagoveras/plugin-update/-/plugin-update-1.0.1.tgz#af6ad432cad83fb2769cd14885dda55ad9b65bc8"
+  integrity sha512-enQphMVSou+3pNC0hmqlS7wPlzOEQlPUOeSssP5atXB/TxlNyAc1zJoFq46AdkFBwcn3YsNDrcsQ4DwX5pnC7g==
+  dependencies:
+    "@oclif/color" "^0.1.0"
+    "@oclif/command" "^1.7.0"
+    "@oclif/config" "^1.16.0"
+    "@oclif/errors" "^1.2.2"
+    "@types/semver" "^7.3.1"
+    cli-ux "^5.4.7"
+    cross-spawn "^7.0.3"
+    debug "^4.1.0"
+    filesize "^6.1.0"
+    fs-extra "^9.0.1"
+    http-call "^5.3.0"
+    lodash "^4.17.19"
+    log-chopper "^1.0.2"
+    semver "^7.3.2"
+    tar-fs "^2.1.0"
+
+>>>>>>> Remove useless package && update auto-update plugin
 "@tiagonapoli/oclif-plugin-spaced-commands@^0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@tiagonapoli/oclif-plugin-spaced-commands/-/oclif-plugin-spaced-commands-0.0.6.tgz#c1fef84cd4066b75871ea5405f44f2efbd680151"
@@ -6963,13 +6987,6 @@ package-json@^6.3.0:
     registry-auth-token "^4.0.0"
     registry-url "^5.0.0"
     semver "^6.2.0"
-
-pad@~2.0.3:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/pad/-/pad-2.0.3.tgz#e2b877496c5576c299ee3df93bee95b76532dffb"
-  integrity sha512-YVlBmpDQilhUl69RY/0Ku9Il0sNPLgVOVePhCJUfN8qDZKrq1zIY+ZwtCLtaWFtJzuJswwAcZHxf4a5RliV2pQ==
-  dependencies:
-    wcwidth "^1.0.1"
 
 parent-module@^1.0.0:
   version "1.0.1"
