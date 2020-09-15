@@ -1,4 +1,4 @@
-import { Region, getCluster } from '../conf'
+import { Region, getCluster } from './conf'
 
 export const envTimeout = process.env.VTEX_API_TIMEOUT as number | string
 
