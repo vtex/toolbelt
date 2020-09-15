@@ -18,11 +18,11 @@
     echoerr() { echo "\$@" 1>&2; }
 
     if [[ ! ":\$PATH:" == *":/usr/local/bin:"* ]]; then
-        echoerr "You don't have /usr/local/bin path. So your CLI are not installed"
+        choerr "You don't have /usr/local/bin path. VTEX CLI is not installed"
         exit 1
     fi
 
-    echo "Uninstalling VTEX"
+    echo "Uninstalling VTEX CLI"
 
     echo "removing /usr/local/bin/vtex ..."
     rm -rf /usr/local/bin/vtex
@@ -34,5 +34,5 @@
     rm -rf /usr/local/lib/vtex
     
 SCRIPT
-    echo "VTEX Uninstalled"
+    echo "VTEX CLI Uninstalled"
 }
