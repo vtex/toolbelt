@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.112.0-beta",
+  "version": "2.111.0",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -63,6 +63,7 @@
     "@vtex/cli-plugin-autoupdate": "^1.0.0-beta.0",
     "@vtex/cli-plugin-deps": "^0.0.1",
     "@vtex/cli-plugin-edition": "^0.0.1",
+    "@vtex/cli-plugin-infra": "^0.0.1-beta",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
     "@vtex/cli-plugin-redirects": "^0.0.2",
     "@vtex/cli-plugin-submit": "^0.1.0",
@@ -177,7 +178,8 @@
       "@vtex/cli-plugin-redirects",
       "@vtex/cli-plugin-workspace",
       "@vtex/cli-plugin-deps",
-      "@vtex/cli-plugin-submit"
+      "@vtex/cli-plugin-submit",
+      "@vtex/cli-plugin-infra"
     ],
     "update": {
       "node": {
@@ -196,9 +198,6 @@
       },
       "debug": {
         "description": "Debug commands. Run 'vtex debug' to see all subcommands"
-      },
-      "infra": {
-        "description": "Infra commands. Run 'vtex infra' to see all subcommands"
       },
       "local": {
         "description": "Local commands. Run 'vtex local' to see all subcommands"

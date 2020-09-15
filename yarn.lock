@@ -1261,6 +1261,17 @@
     "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
     tslib "^1"
 
+"@vtex/cli-plugin-infra@^0.0.1-beta":
+  version "0.0.1-beta"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-infra/-/cli-plugin-infra-0.0.1-beta.tgz#c67308f879eb943d9d813f008f977e400bfecca4"
+  integrity sha512-UPl4IypHOMT+jt7XQpIZsdz9yimfoGUnrJSPHcfpMPr709ogRYFoG+IWmUu9UvSEhzaUudRB7ubmIQP7uI9Kgg==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    pad "^3.2.0"
+    ramda "~0.25.0"
+    tslib "^1"
+
 "@vtex/cli-plugin-lighthouse@^0.0.3":
   version "0.0.3"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-lighthouse/-/cli-plugin-lighthouse-0.0.3.tgz#cdfcfe4b5c6cb0579f0b4be65d5e94bf0858eb91"
@@ -6987,6 +6998,13 @@ package-json@^6.3.0:
     registry-auth-token "^4.0.0"
     registry-url "^5.0.0"
     semver "^6.2.0"
+
+pad@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/pad/-/pad-3.2.0.tgz#be7a1d1cb6757049b4ad5b70e71977158fea95d1"
+  integrity sha512-2u0TrjcGbOjBTJpyewEl4hBO3OeX5wWue7eIFPzQTg6wFSvoaHcBTTUY5m+n0hd04gmTCPuY0kCpVIVuw5etwg==
+  dependencies:
+    wcwidth "^1.0.1"
 
 parent-module@^1.0.0:
   version "1.0.1"
