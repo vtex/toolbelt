@@ -12,7 +12,7 @@ import { listenBuild } from '../../api/modules/build'
 import { promptConfirm } from '../../api/modules/prompts'
 import { checkBuilderHubMessage, showBuilderHubMessage } from '../../api/modules/utils'
 import { SessionManager } from '../../api/session/SessionManager'
-import * as conf from '../../conf'
+import * as conf from '../../api/conf'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { runYarnIfPathExists } from '../utils'
 

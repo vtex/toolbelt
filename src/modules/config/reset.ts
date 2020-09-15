@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 
 import { createFlowIssueError } from '../../api/error/utils'
-import { saveEnvironment, saveCluster, ENV_DEFAULT_VALUE, CLUSTER_DEFAULT_VALUE } from '../../conf'
+import { saveEnvironment, saveCluster, ENV_DEFAULT_VALUE, CLUSTER_DEFAULT_VALUE } from '../../api/conf'
 
 export default (name: string) => {
   switch (name) {
