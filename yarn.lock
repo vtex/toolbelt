@@ -1247,17 +1247,10 @@
     "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
     tslib "^1"
 
-<<<<<<< HEAD
 "@vtex/cli-plugin-infra@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-infra/-/cli-plugin-infra-0.1.0.tgz#fd3894dab13962921da280228bb998f0851a695c"
   integrity sha512-v3Xig7iOzKgjaV3xZZ3NRiAX78Y9iHLAUU8wSyqIaYKOEGd8kzEh7zT09gYW1MLD++CAFkJMFc0DBYCT9zmBfA==
-=======
-"@vtex/cli-plugin-infra@^0.0.1-beta":
-  version "0.0.1-beta"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-infra/-/cli-plugin-infra-0.0.1-beta.tgz#c67308f879eb943d9d813f008f977e400bfecca4"
-  integrity sha512-UPl4IypHOMT+jt7XQpIZsdz9yimfoGUnrJSPHcfpMPr709ogRYFoG+IWmUu9UvSEhzaUudRB7ubmIQP7uI9Kgg==
->>>>>>> Add beta infra plugin
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
