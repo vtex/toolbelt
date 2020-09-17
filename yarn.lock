@@ -671,10 +671,10 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@thiagoveras/plugin-update@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@thiagoveras/plugin-update/-/plugin-update-1.0.1.tgz#af6ad432cad83fb2769cd14885dda55ad9b65bc8"
-  integrity sha512-enQphMVSou+3pNC0hmqlS7wPlzOEQlPUOeSssP5atXB/TxlNyAc1zJoFq46AdkFBwcn3YsNDrcsQ4DwX5pnC7g==
+"@thiagoveras/plugin-update@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@thiagoveras/plugin-update/-/plugin-update-3.0.0.tgz#43481fc820ce60a81d28edd91bdb8bc40cfbba1e"
+  integrity sha512-rZB+MyFFSic2yIPyxB8mXHa/M54IBUd/t/Tx66wyxZ7LFtGhbaKnIto1LVZ2pUssgVgs8yRItzXii+cTUb6tSQ==
   dependencies:
     "@oclif/color" "^0.1.0"
     "@oclif/command" "^1.7.0"
