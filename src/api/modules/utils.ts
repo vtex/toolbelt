@@ -1,24 +1,23 @@
 import axios from 'axios'
 import chalk from 'chalk'
+import { execSync } from 'child-process-es6-promise'
 import Table from 'cli-table2'
+import { ArrayChange, diffArrays } from 'diff'
 import enquirer from 'enquirer'
+import { existsSync } from 'fs-extra'
+import { resolve as resolvePath } from 'path'
 import R, { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
 import { createAppsClient } from '../clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../clients/IOClients/infra/Registry'
 import { createWorkspacesClient } from '../clients/IOClients/infra/Workspaces'
+import { createFlowIssueError } from '../error/utils'
+import log from '../logger'
 import { ManifestEditor } from '../manifest'
 import { getAppRoot } from '../manifest/ManifestUtil'
 import { SessionManager } from '../session/SessionManager'
-import log from '../logger'
-import { promptConfirm } from './prompts'
-import { execSync } from 'child-process-es6-promise'
-import { diffArrays, ArrayChange } from 'diff'
-import { existsSync } from 'fs-extra'
-import { resolve as resolvePath } from 'path'
-import { createFlowIssueError } from '../error/utils'
-
 import { createTable } from '../table'
+import { promptConfirm } from './prompts'
 
 const workspaceExampleName = process.env.USER || 'example'
 
@@ -129,22 +128,26 @@ export const appIdFromRegistry = (app: string, majorLocator: string) => {
     .catch(handleError(app))
 }
 
-export function optionsFormatter(billingOptions: BillingOptions) {
+const FREE_BILLING_OPTIONS_TYPE = 'free'
+export const isFreeApp = (billingOptions: BillingOptions) =>
+  billingOptions.type === FREE_BILLING_OPTIONS_TYPE || billingOptions.free
+
+export function optionsFormatter(billingOptions: BillingOptions, termsURL?: string) {
   /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({
     head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }],
     chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' },
   })
 
-  if (billingOptions.free) {
+  if (isFreeApp(billingOptions)) {
     table.push([{ content: chalk.green('This app is free'), colSpan: 2, hAlign: 'center' }])
   } else {
     table.push([
-      { content: 'Plan', hAlign: 'center' },
+      { content: 'Billing type', hAlign: 'center' },
       { content: 'Values', hAlign: 'center' },
     ])
 
-    billingOptions.policies.forEach(policy => {
+    billingOptions.policies?.forEach(policy => {
       let rowCount = 0
       const itemsArray = []
 
@@ -181,7 +184,7 @@ export function optionsFormatter(billingOptions: BillingOptions) {
       table.push(
         [
           {
-            content: `${chalk.yellow(policy.plan)}\n(Charged montlhy)`,
+            content: `Metric\n(Charged montlhy)`,
             rowSpan: rowCount,
             colSpan: 1,
             vAlign: 'center',
@@ -200,10 +203,12 @@ export function optionsFormatter(billingOptions: BillingOptions) {
       ])
     })
   }
-  table.push([
-    { content: chalk.bold('Terms of use:'), hAlign: 'center' },
-    { content: billingOptions.termsURL, hAlign: 'center' },
-  ])
+  if (termsURL) {
+    table.push([
+      { content: chalk.bold('App Terms of Service:'), hAlign: 'center' },
+      { content: termsURL, hAlign: 'center' },
+    ])
+  }
   return table.toString()
 }
 

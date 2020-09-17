@@ -1,11 +1,12 @@
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
-import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
-import { ManifestEditor, ManifestValidator } from '../../api/manifest'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import log from '../../api/logger'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
-import { optionsFormatter, validateAppAction } from '../../api/modules/utils'
+import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
+import { createRegistryClient } from './../../api/clients/IOClients/infra/Registry'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
@@ -24,11 +25,25 @@ const promptPolicies = async () => {
   return promptConfirm('Do you accept all the Terms?')
 }
 
+const getTermsURL = async (app: string, billingOptions: BillingOptions): Promise<string | undefined> => {
+  const client = createRegistryClient()
+  const [name, argVersion] = app.split('@')
+  const version = argVersion ?? 'x'
+  try {
+    await client.getAppFile(name, version, '/public/metadata/licenses/en-US.md')
+    return `https://extensions.myvtex.com/_v/public/assets/v1/published/${name}@${version}/public/metadata/licenses/en-US.md`
+  } catch (err) {
+    return billingOptions.termsURL
+  }
+}
+
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
+  const termsURL = await getTermsURL(app, billingOptions)
+  console.log({ billingOptions, termsURL })
   log.warn(
     `${chalk.blue(app)} is a ${
-      billingOptions.free ? chalk.green('free') : chalk.red('paid')
-    } app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`
+      isFreeApp(billingOptions) ? chalk.green('free') : chalk.red('paid')
+    } app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions, termsURL)}\n`
   )
   const confirm = await promptPolicies()
   if (!confirm) {
@@ -42,6 +57,7 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
 
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
   for (const app of appsList) {
+    console.log({ app })
     ManifestValidator.validateApp(app)
     try {
       log.debug('Starting to install app', app)

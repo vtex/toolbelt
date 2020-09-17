@@ -98,11 +98,12 @@ declare global {
   }
 
   interface BillingOptions {
-    version: string
-    free: boolean
-    policies: Policy[]
-    deactivationRoute: string
-    termsURL: string
+    version?: string
+    type?: string
+    free?: boolean
+    policies?: Policy[]
+    deactivationRoute?: string
+    termsURL?: string
   }
 
   interface Policy {
