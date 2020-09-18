@@ -25,21 +25,27 @@ const promptPolicies = async () => {
   return promptConfirm('Do you accept all the Terms?')
 }
 
-const getTermsURL = async (app: string, billingOptions: BillingOptions): Promise<string | undefined> => {
+const hasLicenseFile = async (name: string, version: string) => {
   const client = createRegistryClient()
-  const [name, argVersion] = app.split('@')
-  const version = argVersion ?? 'x'
   try {
     await client.getAppFile(name, version, '/public/metadata/licenses/en-US.md')
-    return `https://extensions.myvtex.com/_v/public/assets/v1/published/${name}@${version}/public/metadata/licenses/en-US.md`
+    return true
   } catch (err) {
-    return billingOptions.termsURL
+    return false
   }
+}
+
+const getTermsURL = async (app: string, billingOptions: BillingOptions): Promise<string | undefined> => {
+  const [name, argVersion] = app.split('@')
+  const version = argVersion ?? 'x'
+  return (await hasLicenseFile(name, version))
+    ? `https://extensions.myvtex.com/_v/terms/${name}@${version}`
+    : billingOptions.termsURL
 }
 
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
   const termsURL = await getTermsURL(app, billingOptions)
-  console.log({ billingOptions, termsURL })
+  console.log(JSON.stringify({ billingOptions, termsURL }, null, 2))
   log.warn(
     `${chalk.blue(app)} is a ${
       isFreeApp(billingOptions) ? chalk.green('free') : chalk.red('paid')
