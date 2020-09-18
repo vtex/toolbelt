@@ -134,7 +134,7 @@ export const isFreeApp = (billingOptions: BillingOptions) =>
 
 type BillingInfo = {
   subscription?: number
-  currency: string
+  currency?: string
   termsURL?: string
   metrics?: {
     name: string
@@ -164,7 +164,7 @@ const chalkBillingTable = (table: any, { subscription, metrics, currency }: Bill
         content: ranges.reduce<string>((text, { exclusiveFrom, multiplier }) => {
           text += `${text.length > 0 ? `\n` : ''}${multiplier} (${currency}) per unit`
           if (exclusiveFrom > 0) {
-            text += ` (After ${exclusiveFrom + 1} units)`
+            text += ` - for ${exclusiveFrom + 1} or more units`
           }
           return text
         }, ''),
@@ -174,8 +174,7 @@ const chalkBillingTable = (table: any, { subscription, metrics, currency }: Bill
   })
 }
 
-const buildBillingInfo = (billingOptions: BillingOptions): BillingInfo => {
-  const policy = billingOptions.policies[0]
+const billingInfoFromPolicy = (policy: Policy): BillingInfo => {
   const {
     currency,
     billing: { items },
@@ -197,17 +196,32 @@ const buildBillingInfo = (billingOptions: BillingOptions): BillingInfo => {
   return { currency, subscription, metrics }
 }
 
+const billingInfoFromPlan = ({ currency, price: { subscription, metrics } }: Plan): BillingInfo => ({
+  currency,
+  subscription,
+  metrics: metrics.map(({ id, ranges }) => ({ name: id, ranges })),
+})
+
+const buildBillingInfo = (billingOptions: BillingOptions): BillingInfo => {
+  const { plans, policies } = billingOptions
+  if (plans && plans.length > 0) {
+    return billingInfoFromPlan(billingOptions.plans[0]) // Currenly only a single plan is supporte in App Store
+  } else if (policies && policies.length > 0) {
+    return billingInfoFromPolicy(billingOptions.policies[0])
+  }
+}
+
 export function optionsFormatter(billingOptions: BillingOptions, termsURL?: string) {
   /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({
     head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }],
     chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' },
   })
-
-  if (isFreeApp(billingOptions)) {
+  const billingInfo = buildBillingInfo(billingOptions)
+  if (isFreeApp(billingOptions) || !billingInfo) {
     table.push([{ content: chalk.green('Free app'), colSpan: 2, hAlign: 'center' }])
   } else {
-    chalkBillingTable(table, buildBillingInfo(billingOptions))
+    chalkBillingTable(table, billingInfo)
   }
   if (termsURL) {
     table.push([{ content: chalk.yellow.bold('App Terms of Service: ') }, { content: termsURL }])
