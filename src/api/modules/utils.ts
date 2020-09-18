@@ -158,7 +158,7 @@ const chalkBillingTable = (table: any, { subscription, metrics, currency }: Bill
   metrics?.forEach(({ name, ranges }) => {
     table.push([
       {
-        content: `Metric ${name}`,
+        content: name,
       },
       {
         content: ranges.reduce<string>((text, { exclusiveFrom, multiplier }) => {
@@ -201,15 +201,16 @@ export function optionsFormatter(billingOptions: BillingOptions, termsURL?: stri
   /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({
     head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }],
+    chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' },
   })
 
   if (isFreeApp(billingOptions)) {
-    table.push([{ content: chalk.green('This app is free'), colSpan: 2 }])
+    table.push([{ content: chalk.green('Free app'), colSpan: 2, hAlign: 'center' }])
   } else {
     chalkBillingTable(table, buildBillingInfo(billingOptions))
   }
   if (termsURL) {
-    table.push([{ content: chalk.yellow('App Terms of Service: ') + termsURL, colSpan: 2, hAlign: 'center' }])
+    table.push([{ content: chalk.yellow.bold('App Terms of Service: ') }, { content: termsURL }])
   }
   return table.toString()
 }
