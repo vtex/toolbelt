@@ -31,25 +31,26 @@ const hasLicenseFile = async (name: string, version: string) => {
     await client.getAppFile(name, version, '/public/metadata/licenses/en-US.md')
     return true
   } catch (err) {
-    return false
+    if (err.response?.status === 404) {
+      return false
+    }
+    throw err
   }
 }
 
-const getTermsURL = async (app: string, billingOptions: BillingOptions): Promise<string | undefined> => {
+const licenseURL = async (app: string, termsURL?: string): Promise<string | undefined> => {
   const [name, argVersion] = app.split('@')
   const version = argVersion ?? 'x'
-  return (await hasLicenseFile(name, version))
-    ? `https://extensions.myvtex.com/_v/terms/${name}@${version}`
-    : billingOptions.termsURL
+  return (await hasLicenseFile(name, version)) ? `https://extensions.myvtex.com/_v/terms/${name}@${version}` : termsURL
 }
 
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
-  const termsURL = await getTermsURL(app, billingOptions)
-  console.log(JSON.stringify({ billingOptions, termsURL }, null, 2))
+  const { termsURL, type, free } = billingOptions
+  const license = await licenseURL(app, termsURL)
   log.warn(
     `${chalk.blue(app)} is a ${
-      isFreeApp(billingOptions) ? chalk.green('free') : chalk.red('paid')
-    } app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions, termsURL)}\n`
+      isFreeApp(type, free) ? chalk.green('free') : chalk.red('paid')
+    } app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions, license)}\n`
   )
   const confirm = await promptPolicies()
   if (!confirm) {
@@ -63,7 +64,6 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
 
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
   for (const app of appsList) {
-    console.log({ app })
     ManifestValidator.validateApp(app)
     try {
       log.debug('Starting to install app', app)

@@ -95,17 +95,19 @@ declare global {
   interface InstallResponse {
     code: string
     billingOptions?: string
-    
   }
+
   interface PriceMetric {
     id: string
     ranges: Range[]
     customUrl: string
   }
+
   interface Price {
     subscription?: number
     metrics?: PriceMetric[]
   }
+
   interface Plan {
     id: string
     currency: string
