@@ -135,10 +135,10 @@ type BillingInfo = {
   subscription?: number
   currency?: string
   termsURL?: string
-  metrics?: {
+  metrics?: Array<{
     name: string
     ranges: Range[]
-  }[]
+  }>
 }
 
 const chalkBillingTable = (table: any, { subscription, metrics, currency }: BillingInfo) => {
@@ -200,7 +200,8 @@ const billingInfoFromPlan = ({ currency, price: { subscription, metrics } }: Pla
 const buildBillingInfo = (plans?: Plan[], policies?: Policy[]): BillingInfo => {
   if (plans && plans.length > 0) {
     return billingInfoFromPlan(plans[0]) // Currenly only a single plan is supported in App Store
-  } else if (policies && policies.length > 0) {
+  }
+  if (policies && policies.length > 0) {
     return billingInfoFromPolicy(policies[0])
   }
 }

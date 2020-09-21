@@ -2,11 +2,11 @@ import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
 import log from '../../api/logger'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
 import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
-import { createRegistryClient } from './../../api/clients/IOClients/infra/Registry'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
