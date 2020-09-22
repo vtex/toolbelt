@@ -41,7 +41,7 @@ const hasLicenseFile = async (name: string, version: string) => {
 const licenseURL = async (app: string, termsURL?: string): Promise<string | undefined> => {
   const [name, argVersion] = app.split('@')
   const version = argVersion ?? 'x'
-  return (await hasLicenseFile(name, version)) ? `https://extensions.myvtex.com/_v/terms/${name}@${version}` : termsURL
+  return (await hasLicenseFile(name, version)) ? `https://apps.vtex.com/_v/terms/${name}@${version}` : termsURL
 }
 
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {

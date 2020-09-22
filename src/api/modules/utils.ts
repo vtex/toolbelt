@@ -174,12 +174,7 @@ const chalkBillingTable = (table: any, { subscription, metrics, currency }: Bill
 }
 
 const billingInfoFromPolicy = ({ currency, billing: { items } }: Policy): BillingInfo => {
-  const subscription = items.reduce<number>((sum, { fixed }) => {
-    if (fixed) {
-      sum += fixed
-    }
-    return sum
-  }, 0)
+  const subscription = items.reduce<number>((sum, { fixed }) => (fixed ? sum + fixed : sum), 0)
 
   const metrics = items.reduce((metricsInfo, { calculatedByMetricUnit }) => {
     if (calculatedByMetricUnit) {
