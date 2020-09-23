@@ -16,8 +16,8 @@
     "prepublishOnly": "bash ./scripts/publishLock.sh",
     "ci:test": "yarn test --ci",
     "ci:prettier-check": "prettier --check --config ./.prettierrc \"./src/**/*.{ts,tsx,js,jsx,json}\"",
-    "release": "yarn build && yarn oclif-dev pack && yarn oclif-dev publish",    
-    "release:win": "yarn build && yarn oclif-dev pack:win && yarn oclif-dev publish:win"  
+    "release": "yarn build && yarn oclif-dev pack && yarn oclif-dev publish",
+    "release:win": "yarn build && yarn oclif-dev pack:win && yarn oclif-dev publish:win"
   },
   "engineStrict": true,
   "engines": {
@@ -53,7 +53,6 @@
     "@oclif/command": "^1.0.0",
     "@oclif/config": "^1.0.0",
     "@oclif/plugin-help": "^2.0.0",
-    "@thiagoveras/plugin-update": "^3.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
     "@vtex/cli-plugin-abtest": "^0.0.5",
