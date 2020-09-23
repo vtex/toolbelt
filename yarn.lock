@@ -692,7 +692,6 @@
     semver "^7.3.2"
     tar-fs "^2.1.0"
 
->>>>>>> Remove useless package && update auto-update plugin
 "@tiagonapoli/oclif-plugin-spaced-commands@^0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@tiagonapoli/oclif-plugin-spaced-commands/-/oclif-plugin-spaced-commands-0.0.6.tgz#c1fef84cd4066b75871ea5405f44f2efbd680151"
