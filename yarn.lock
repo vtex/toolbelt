@@ -671,27 +671,6 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
-"@thiagoveras/plugin-update@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@thiagoveras/plugin-update/-/plugin-update-3.0.0.tgz#43481fc820ce60a81d28edd91bdb8bc40cfbba1e"
-  integrity sha512-rZB+MyFFSic2yIPyxB8mXHa/M54IBUd/t/Tx66wyxZ7LFtGhbaKnIto1LVZ2pUssgVgs8yRItzXii+cTUb6tSQ==
-  dependencies:
-    "@oclif/color" "^0.1.0"
-    "@oclif/command" "^1.7.0"
-    "@oclif/config" "^1.16.0"
-    "@oclif/errors" "^1.2.2"
-    "@types/semver" "^7.3.1"
-    cli-ux "^5.4.7"
-    cross-spawn "^7.0.3"
-    debug "^4.1.0"
-    filesize "^6.1.0"
-    fs-extra "^9.0.1"
-    http-call "^5.3.0"
-    lodash "^4.17.19"
-    log-chopper "^1.0.2"
-    semver "^7.3.2"
-    tar-fs "^2.1.0"
-
 "@tiagonapoli/oclif-plugin-spaced-commands@^0.0.6":
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/@tiagonapoli/oclif-plugin-spaced-commands/-/oclif-plugin-spaced-commands-0.0.6.tgz#c1fef84cd4066b75871ea5405f44f2efbd680151"
