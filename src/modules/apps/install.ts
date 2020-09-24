@@ -6,7 +6,8 @@ import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry
 import log from '../../api/logger'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
-import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
+import { isFreeApp, validateAppAction } from '../../api/modules/utils'
+import { BillingMessages } from '../../api/modules/billingMessages'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
@@ -47,19 +48,15 @@ const licenseURL = async (app: string, termsURL?: string): Promise<string | unde
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
   const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
-  log.warn(
-    `${chalk.blue(app)} is a ${
-      isFreeApp(billingOptions) ? chalk.green('free') : chalk.red('paid')
-    } app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions, license)}\n`
-  )
+  log.warn(BillingMessages.acceptToInstall(app, isFreeApp(billingOptions), license))
   const confirm = await promptPolicies()
   if (!confirm) {
     return
   }
 
-  log.info('Starting to install app with accepted Terms')
+  log.info(BillingMessages.INSTALL_STARTED)
   await installApp(app, true, force)
-  log.debug('Installed after accepted terms')
+  log.debug(BillingMessages.INSTALL_SUCCESS)
 }
 
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {

@@ -17,6 +17,7 @@ import { ManifestEditor } from '../manifest'
 import { getAppRoot } from '../manifest/ManifestUtil'
 import { SessionManager } from '../session/SessionManager'
 import { createTable } from '../table'
+import { BillingMessages } from './billingMessages'
 import { promptConfirm } from './prompts'
 
 const workspaceExampleName = process.env.USER || 'example'
@@ -143,15 +144,15 @@ type BillingInfo = {
 }
 
 const chalkBillingTable = (table: any, { subscription, metrics, currency }: BillingInfo) => {
-  table.push([{ content: chalk.bold('Billable item') }, { content: chalk.bold('Pricing') }])
+  table.push([{ content: BillingMessages.BILLABLE_ITEM }, { content: BillingMessages.PRICING }])
 
   if (subscription) {
     table.push([
       {
-        content: `Subscription (monthly)`,
+        content: BillingMessages.SUBSCRIPTION_MONTHLY,
       },
       {
-        content: `${subscription} (${currency})`,
+        content: BillingMessages.price(subscription, currency),
       },
     ])
   }
@@ -162,9 +163,12 @@ const chalkBillingTable = (table: any, { subscription, metrics, currency }: Bill
       },
       {
         content: ranges.reduce<string>((text, { exclusiveFrom, multiplier }) => {
-          text += `${text.length > 0 ? `\n` : ''}${multiplier} (${currency}) per unit`
+          if (text.length > 0) {
+            text += '\n'
+          }
+          text += BillingMessages.pricePerUnit(multiplier, currency)
           if (exclusiveFrom > 0) {
-            text += ` - for ${exclusiveFrom + 1} or more units`
+            text += BillingMessages.forUnitsOrMore(exclusiveFrom + 1)
           }
           return text
         }, ''),
@@ -206,17 +210,20 @@ export function optionsFormatter(billingOptions: BillingOptions, licenseURL?: st
   const { plans, policies } = billingOptions
   /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({
-    head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }],
+    head: [{ content: BillingMessages.BILLING_OPTIONS, colSpan: 2, hAlign: 'center' }],
     chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' },
   })
   const billingInfo = buildBillingInfo(plans, policies)
   if (isFreeApp(billingOptions) || !billingInfo) {
-    table.push([{ content: chalk.green('Free app'), colSpan: 2, hAlign: 'center' }])
+    table.push([{ content: BillingMessages.FREE_APP, colSpan: 2, hAlign: 'center' }])
   } else {
     chalkBillingTable(table, billingInfo)
   }
   if (licenseURL && licenseURL.length > 0) {
-    table.push([{ content: chalk.yellow.bold('App Terms of Service: ') }, { content: licenseURL }])
+    table.push([
+      { content: BillingMessages.APP_STORE_TERMS_OF_SERVICE },
+      { content: BillingMessages.licenseLink(licenseURL) },
+    ])
   }
   return table.toString()
 }
