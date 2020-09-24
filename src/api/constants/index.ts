@@ -1,2 +1,2 @@
-export * from './Messages'
 export * from './Colors'
+export * from './Messages'

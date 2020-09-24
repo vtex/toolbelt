@@ -6,8 +6,8 @@ import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry
 import log from '../../api/logger'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
-import { isFreeApp, validateAppAction } from '../../api/modules/utils'
-import { BillingMessages } from '../../api/modules/billingMessages'
+import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
+import { BillingMessages } from '../../lib/constants/BillingMessages'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
@@ -48,7 +48,7 @@ const licenseURL = async (app: string, termsURL?: string): Promise<string | unde
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
   const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
-  log.warn(BillingMessages.acceptToInstall(app, isFreeApp(billingOptions), license))
+  log.warn(BillingMessages.acceptToInstall(app, isFreeApp(billingOptions), optionsFormatter(billingOptions, license)))
   const confirm = await promptPolicies()
   if (!confirm) {
     return
