@@ -129,7 +129,8 @@ export const appIdFromRegistry = (app: string, majorLocator: string) => {
 }
 
 const FREE_BILLING_OPTIONS_TYPE = 'free'
-export const isFreeApp = (type?: string, free?: boolean) => type === FREE_BILLING_OPTIONS_TYPE || free
+export const isFreeApp = ({ type, free }: { type?: string; free?: boolean }) =>
+  type === FREE_BILLING_OPTIONS_TYPE || free
 
 type BillingInfo = {
   subscription?: number
@@ -201,14 +202,15 @@ const buildBillingInfo = (plans?: Plan[], policies?: Policy[]): BillingInfo => {
   }
 }
 
-export function optionsFormatter({ plans, policies, type, free }: BillingOptions, licenseURL?: string) {
+export function optionsFormatter(billingOptions: BillingOptions, licenseURL?: string) {
+  const { plans, policies } = billingOptions
   /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({
     head: [{ content: chalk.cyan.bold('Billing Options'), colSpan: 2, hAlign: 'center' }],
     chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' },
   })
   const billingInfo = buildBillingInfo(plans, policies)
-  if (isFreeApp(type, free) || !billingInfo) {
+  if (isFreeApp(billingOptions) || !billingInfo) {
     table.push([{ content: chalk.green('Free app'), colSpan: 2, hAlign: 'center' }])
   } else {
     chalkBillingTable(table, billingInfo)

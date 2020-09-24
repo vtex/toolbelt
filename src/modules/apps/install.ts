@@ -45,11 +45,11 @@ const licenseURL = async (app: string, termsURL?: string): Promise<string | unde
 }
 
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
-  const { termsURL, type, free } = billingOptions
+  const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
   log.warn(
     `${chalk.blue(app)} is a ${
-      isFreeApp(type, free) ? chalk.green('free') : chalk.red('paid')
+      isFreeApp(billingOptions) ? chalk.green('free') : chalk.red('paid')
     } app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions, license)}\n`
   )
   const confirm = await promptPolicies()
