@@ -1,21 +1,27 @@
 import chalk from 'chalk'
-import { COLORS } from '../../api'
+import { COLORS } from '../../api/constants/Colors'
 
 export const BillingMessages = {
-  APP_STORE_TERMS_OF_SERVICE: chalk.hex(COLORS.YELLOW).bold('App Terms of Service: '),
-  BILLING_OPTIONS: chalk.hex(COLORS.AQUA).bold('Billing Options'),
-  FREE_APP: chalk.hex(COLORS.GREEN)('Free app'),
-  SUBSCRIPTION_MONTHLY: 'Subscription (monthly)',
-  BILLABLE_ITEM: chalk.bold('Billable item'),
-  PRICING: chalk.bold('Pricing'),
+  APP_STORE_TERMS_OF_SERVICE: chalk.hex(COLORS.WHITE).bold('App Terms of Service'),
+  FREE_APP: chalk.hex(COLORS.WHITE)('Free app'),
+  NA: chalk.hex(COLORS.WHITE).italic('N/A'),
+  SUBSCRIPTION_MONTHLY: 'Subscription',
+  CHARGED_COLUMN: chalk.hex(COLORS.WHITE).bold('What is being charged'),
+  PRICING_COLUMN: chalk.hex(COLORS.WHITE).bold('Pricing (monthly)'),
   INSTALL_STARTED: 'Starting to install app with accepted Terms',
   INSTALL_SUCCESS: 'Installed after accepted terms',
+  app: (app: string) => chalk.hex(COLORS.PINK)(app),
+  billingOptionsForApp: (app: string) =>
+    chalk.bold(`${chalk.hex(COLORS.WHITE)('Billing Options for app ')}${BillingMessages.app(app)}`),
   licenseLink: (url: string) => chalk.underline(url),
   price: (amount: number, currency: string) => `${amount} (${currency})`,
   pricePerUnit: (amount: number, currency = 'BRL') => `${BillingMessages.price(amount, currency)} per unit`,
   forUnitsOrMore: (units: number) => ` - for ${units} or more units`,
-  acceptToInstall: (app: string, free: boolean, terms: string) =>
-    `${chalk.hex(COLORS.BLUE)(app)} is a ${
-      free ? chalk.hex(COLORS.GREEN)('free') : chalk.hex(COLORS.MAGENTA)('paid')
-    } app. To install it, you need to accept the following Terms:\n\n${terms}\n`,
+  acceptToInstallFree: (app: string) =>
+    `${BillingMessages.app(app)} is a free app! Accept the app's terms to install it.`,
+  acceptToInstallPaid: (app: string) =>
+    `Here are some details about the pricing of ${BillingMessages.app(
+      app
+    )} app . To install it, you need to accept the app's terms.`,
+  billingTable: (table: string) => `\n${table}`,
 }

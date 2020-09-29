@@ -144,8 +144,6 @@ type BillingInfo = {
 }
 
 const chalkBillingTable = (table: any, { subscription, metrics, currency }: BillingInfo) => {
-  table.push([{ content: BillingMessages.BILLABLE_ITEM }, { content: BillingMessages.PRICING }])
-
   if (subscription) {
     table.push([
       {
@@ -206,16 +204,16 @@ const buildBillingInfo = (plans?: Plan[], policies?: Policy[]): BillingInfo => {
   }
 }
 
-export function optionsFormatter(billingOptions: BillingOptions, licenseURL?: string) {
+export function optionsFormatter(billingOptions: BillingOptions, app: string, licenseURL?: string) {
   const { plans, policies } = billingOptions
   /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
   const table = new Table({
-    head: [{ content: BillingMessages.BILLING_OPTIONS, colSpan: 2, hAlign: 'center' }],
-    chars: { 'top-mid': '─', 'bottom-mid': '─', 'mid-mid': '─', middle: ' ' },
+    head: [{ content: BillingMessages.billingOptionsForApp(app), colSpan: 2 }],
   })
+  table.push([{ content: BillingMessages.CHARGED_COLUMN }, { content: BillingMessages.PRICING_COLUMN }])
   const billingInfo = buildBillingInfo(plans, policies)
   if (isFreeApp(billingOptions) || !billingInfo) {
-    table.push([{ content: BillingMessages.FREE_APP, colSpan: 2, hAlign: 'center' }])
+    table.push([{ content: BillingMessages.NA }, { content: BillingMessages.FREE_APP }])
   } else {
     chalkBillingTable(table, billingInfo)
   }

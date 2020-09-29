@@ -48,7 +48,10 @@ const licenseURL = async (app: string, termsURL?: string): Promise<string | unde
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
   const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
-  log.warn(BillingMessages.acceptToInstall(app, isFreeApp(billingOptions), optionsFormatter(billingOptions, license)))
+  log.info(
+    isFreeApp(billingOptions) ? BillingMessages.acceptToInstallFree(app) : BillingMessages.acceptToInstallPaid(app)
+  )
+  log.info(BillingMessages.billingTable(optionsFormatter(billingOptions, app, license)))
   const confirm = await promptPolicies()
   if (!confirm) {
     return
