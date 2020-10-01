@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import { join } from 'path'
 import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
 import { DeprecationCheckerStore, IDeprecationCheckerStore, VersionDeprecationInfo } from './DeprecationCheckerStore'
+import { ColorifyConstants } from '../../api/constants/Colors'
 
 export class DeprecationChecker {
   private static readonly DEPRECATION_CHECK_INTERVAL = 1 * 3600 * 1000
@@ -23,11 +24,18 @@ export class DeprecationChecker {
       return
     }
 
-    const errMsg = chalk.bold(
-      `This version ${pkgJson.version} was deprecated. Please update to the latest version: ${chalk.green(
-        'yarn global add vtex'
+    const errMsg =
+      `${chalk.bold(
+        `Your Toolbelt version (${pkgJson.version}) was deprecated`
+      )}. You must update using the same method you used to install. Here are some examples:` +
+      `\n\n` +
+      `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+        `yarn`
+      )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`yarn global add vtex`)}.` +
+      `\n\n` +
+      `• If you installed using our new method there is in alpha-version, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+        `vtex autoupdate`
       )}.`
-    )
 
     console.error(errMsg)
     process.exit(1)

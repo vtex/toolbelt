@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import updateNotifier from 'update-notifier'
+import { ColorifyConstants } from './api/constants/Colors'
 
 import * as pkg from '../package.json'
 
@@ -27,9 +28,15 @@ export function updateNotify() {
       isGlobal: true,
       isYarnGlobal: true,
       message: [
-        `New ${type} version of ${pkg.name} available! ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}`,
-        `${chalk.yellow('Changelog:')} ${chalk.cyan(changelog)}`,
-        `Run ${chalk.green(`yarn global add ${pkg.name}`)} to update!`,
+        `There is a new Toolbelt version avaible: ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}`,
+        `To update, you must use the same method you used to install. As the following examples:\n`,
+        `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+          `yarn`
+        )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`yarn global add vtex`)}.\n`,
+        `• If you installed using our new method there is in alpha-version, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+          `vtex autoupdate`
+        )}.\n`,
+        `Changelog: ${ColorifyConstants.URL_INTERACTIVE(changelog)}`,
       ].join('\n'),
     })
   }
