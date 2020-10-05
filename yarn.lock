@@ -1194,10 +1194,10 @@
     numbro "2.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-autoupdate@^1.0.0-beta.0":
-  version "1.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-autoupdate/-/cli-plugin-autoupdate-1.0.0-beta.0.tgz#d1f86dff03af4e19f75efa3af6b0ede4334c5d16"
-  integrity sha512-Rz5OoaAwKB5PVbst30FVjoYjVDX8lVXd0lDN2MKoQe+dIj3Wdkj0AOdIsYTjsFQCLa3+AIRCf3juSQkb1kf3Gw==
+"@vtex/cli-plugin-autoupdate@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-autoupdate/-/cli-plugin-autoupdate-0.0.1.tgz#1f296f2a1e8589df480be5abe3bec1831faee0db"
+  integrity sha512-bwSlCJCxtvRf7deOt116v4QKq8VdMDp+vIhVIXV9Hm+KbV/XB/6b9I5MR+IaZRqpGsNc6WeG7w+WyVIgI9v1qg==
   dependencies:
     "@oclif/color" "^0.1.0"
     "@oclif/command" "^1.7.0"
