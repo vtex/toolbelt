@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { join } from 'path'
 import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
 import { IOutdatedCheckerStore, OutdatedCheckerStore, OutdatedInfo } from './OutdatedCheckerStore'
-import { ColorifyConstants } from '../../api/constants/Colors'
+import { Messages } from '../../lib/constants/Messages'
 
 export class OutdatedChecker {
   private static readonly OUTDATED_CHECK_INTERVAL = 1 * 3600 * 1000
@@ -24,18 +24,9 @@ export class OutdatedChecker {
       return
     }
 
-    const errMsg =
-      `${chalk.bold(
-        `Your Toolbelt version (${pkgJson.version}) is outdated`
-      )}. You must update using the same method you used to install. Here are some examples:` +
-      `\n\n` +
-      `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-        `yarn`
-      )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`yarn global add vtex`)}.` +
-      `\n\n` +
-      `• If you installed using our new method there is in alpha-version, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-        `vtex autoupdate`
-      )}.`
+    const errMsg = `${chalk.bold(
+      `Your Toolbelt version (${pkgJson.version}) is outdated`
+    )}. ${Messages.UPDATE_TOOLBELT()}`
 
     console.error(errMsg)
     process.exit(1)

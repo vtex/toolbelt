@@ -33,7 +33,7 @@ import retry from 'async-retry'
 import startDebuggerTunnel from './debugger'
 import workspaceUse from '../../api/modules/workspace/use'
 import { BatchStream } from '../../api/typings/types'
-import { ColorifyConstants } from '../../api/constants/Colors'
+import { Messages } from '../../lib/constants/Messages'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
@@ -116,18 +116,7 @@ const performInitialLink = async (
 
       const data = err?.response?.data
       if (data?.code === 'bad_toolbelt_version') {
-        const errMsg =
-          `${data.message}` +
-          '\n' +
-          `To update, you must use the same method you used to install. As the following examples:` +
-          `\n\n` +
-          `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-            `yarn`
-          )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`yarn global add vtex`)}.` +
-          `\n\n` +
-          `• If you installed using our new method there is in alpha-version, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-            `vtex autoupdate`
-          )}.`
+        const errMsg = `${data.message}\n${Messages.UPDATE_TOOLBELT()}`
         log.error(errMsg)
         process.exit(1)
       }
@@ -371,18 +360,7 @@ export async function appLink(options: LinkOptions) {
       }
 
       if (data.code === 'bad_toolbelt_version') {
-        const errMsg =
-          `${data.message}` +
-          '\n' +
-          `To update, you must use the same method you used to install. As the following examples:` +
-          `\n\n` +
-          `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-            `yarn`
-          )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`yarn global add vtex`)}.` +
-          `\n\n` +
-          `• If you installed using our new method there is in alpha-version, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-            `vtex autoupdate`
-          )}.`
+        const errMsg = `${data.message}\n${Messages.UPDATE_TOOLBELT}`
         return log.error(errMsg)
       }
     }
