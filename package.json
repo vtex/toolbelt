@@ -59,7 +59,7 @@
     "@vtex/cli-plugin-autoupdate": "^0.0.1",
     "@vtex/cli-plugin-deps": "^0.0.1",
     "@vtex/cli-plugin-edition": "^0.0.1",
-    "@vtex/cli-plugin-infra": "^0.0.1-beta",
+    "@vtex/cli-plugin-infra": "^0.1.0",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
     "@vtex/cli-plugin-redirects": "^0.0.2",
     "@vtex/cli-plugin-submit": "^0.1.0",
