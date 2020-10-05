@@ -47,6 +47,7 @@ const diff = (a: string | string[], b: string | string[]): string[] => {
 export const getLastStableAndPrerelease = (service: InfraResourceVersions): [string, string] => {
   const region = Object.keys(service.versions)[0]
   const versions = service.versions[region]
+    // @ts-ignore
     .map<string>(semver.valid)
     .filter(v => v !== null)
     .sort(semver.compare)
@@ -65,9 +66,9 @@ export const diffVersions = (a: string, b: string): [string, string] => {
   const semverA = semver.parse(a)
   const semverB = semver.parse(b)
   const [aMain, bMain] = diff(
-    [semverA.major, semverA.minor, semverA.patch],
-    [semverB.major, semverB.minor, semverB.patch]
+    [semverA.major.toString(), semverA.minor.toString(), semverA.patch.toString()],
+    [semverB.major.toString(), semverB.minor.toString(), semverB.patch.toString()]
   )
-  const [aPre, bPre] = diff(semverA.prerelease, semverB.prerelease)
+  const [aPre, bPre] = diff(semverA.prerelease.map(String), semverB.prerelease.map(String))
   return [stitch(aMain, aPre), stitch(bMain, bPre)]
 }

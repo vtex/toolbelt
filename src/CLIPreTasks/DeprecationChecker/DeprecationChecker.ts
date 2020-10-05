@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import { join } from 'path'
 import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
 import { DeprecationCheckerStore, IDeprecationCheckerStore, VersionDeprecationInfo } from './DeprecationCheckerStore'
+import { Messages } from '../../lib/constants/Messages'
 
 export class DeprecationChecker {
   private static readonly DEPRECATION_CHECK_INTERVAL = 1 * 3600 * 1000
@@ -23,11 +24,9 @@ export class DeprecationChecker {
       return
     }
 
-    const errMsg = chalk.bold(
-      `This version ${pkgJson.version} was deprecated. Please update to the latest version: ${chalk.green(
-        'yarn global add vtex'
-      )}.`
-    )
+    const errMsg = `${chalk.bold(
+      `Your Toolbelt version (${pkgJson.version}) was deprecated`
+    )}. ${Messages.UPDATE_TOOLBELT()}`
 
     console.error(errMsg)
     process.exit(1)

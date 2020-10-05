@@ -1,21 +1,23 @@
 {
   "name": "vtex",
-  "version": "2.111.0",
+  "version": "2.112.0",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
-  "main": "build/api/index.js",
+  "main": "lib/api/index.js",
   "scripts": {
     "watch": "yarn build-clean && bash ./scripts/symlink.sh && yarn nodemon",
     "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
     "lint:node": "yarn eslint ./src --cache --ext ts --config .eslintrc",
     "format-lint": "yarn format && yarn lint:node",
-    "build-clean": "rm -rf build",
+    "build-clean": "rm -rf lib",
     "build-incremental": "yarn tsc --incremental && bash ./scripts/symlinkPlugin.sh && yarn oclif-dev manifest",
     "build": "yarn build-clean && yarn tsc && yarn oclif-dev manifest",
     "test": "jest",
     "prepublishOnly": "bash ./scripts/publishLock.sh",
     "ci:test": "yarn test --ci",
-    "ci:prettier-check": "prettier --check --config ./.prettierrc \"./src/**/*.{ts,tsx,js,jsx,json}\""
+    "ci:prettier-check": "prettier --check --config ./.prettierrc \"./src/**/*.{ts,tsx,js,jsx,json}\"",
+    "release": "yarn build && yarn oclif-dev pack && yarn oclif-dev publish",
+    "release:win": "yarn build && yarn oclif-dev pack:win && yarn oclif-dev publish:win"
   },
   "engineStrict": true,
   "engines": {
@@ -23,7 +25,7 @@
   },
   "files": [
     "/scripts/closeChrome.scpt",
-    "/build",
+    "/lib",
     "/bin",
     "/oclif.manifest.json"
   ],
@@ -54,6 +56,7 @@
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.71.1",
     "@vtex/cli-plugin-abtest": "^0.0.5",
+    "@vtex/cli-plugin-autoupdate": "^0.0.1",
     "@vtex/cli-plugin-deps": "^0.0.1",
     "@vtex/cli-plugin-edition": "^0.0.1",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
@@ -145,6 +148,7 @@
     "@types/semver-diff": "2.1.1",
     "@types/tar": "4.0.3",
     "@types/yarnpkg__lockfile": "^1.1.3",
+    "aws-sdk": "^2.750.0",
     "eslint": "^6.8.0",
     "eslint-config-vtex": "^12.3.1",
     "eslint-config-vtex-react": "^6.3.1",
@@ -157,11 +161,12 @@
     "typescript": "^3.8.2"
   },
   "oclif": {
-    "commands": "./build/commands",
+    "commands": "./lib/commands",
     "bin": "vtex",
     "plugins": [
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands",
+      "@vtex/cli-plugin-autoupdate",
       "@vtex/cli-plugin-lighthouse",
       "@vtex/cli-plugin-test",
       "@vtex/cli-plugin-edition",
@@ -171,8 +176,16 @@
       "@vtex/cli-plugin-deps",
       "@vtex/cli-plugin-submit"
     ],
+    "update": {
+      "node": {
+        "version": "12.12.0"
+      },
+      "s3": {
+        "bucket": "vtex-toolbelt-test"
+      }
+    },
     "hooks": {
-      "init": "./build/oclif/hooks/init"
+      "init": "./lib/oclif/hooks/init"
     },
     "topics": {
       "config": {
