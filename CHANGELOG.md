@@ -6,12 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.113.0] - 2020-10-06
+### Changed
+- [vtex infra] Refactor to use as oclif plugin.
+
 ## [2.112.0] - 2020-10-05
 ### Added
-- [installer] New deploy method by using `oclif-dev pack` and `oclif-dev publish`
+- [installer] New deploy method by using `oclif-dev pack` and `oclif-dev publish`.
 
 ### Changed
-- [tsconfig] Changed build folder name from `build` to `lib`
+- [tsconfig] Changed build folder name from `build` to `lib`.
 
 ## [2.111.0] - 2020-09-08
 ### Added

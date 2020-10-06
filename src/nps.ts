@@ -2,7 +2,7 @@ import enquirer from 'enquirer'
 import moment from 'moment'
 import opn from 'opn'
 
-import { getNextFeedbackDate, saveNextFeedbackDate } from './conf'
+import { getNextFeedbackDate, saveNextFeedbackDate } from './api/conf'
 import { promptConfirm } from './api/modules/prompts'
 
 const NPSFormURL = 'https://forms.gle/CRRHn6P3x9AeaWTQ8'
