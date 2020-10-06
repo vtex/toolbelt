@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.114.0-beta] - 2020-10-06
+
 ## [2.113.0] - 2020-10-06
 ### Changed
 - [vtex infra] Refactor to use as oclif plugin.
