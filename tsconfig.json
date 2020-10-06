@@ -3,7 +3,7 @@
     "types": ["node", "jest"],
     "target": "es2018",
     "lib": ["es2018"],
-    "outDir": "build",
+    "outDir": "lib",
     "sourceMap": false,
     "module": "commonjs",
     "noUnusedLocals": true,

@@ -1,5 +1,7 @@
 import chalk from 'chalk'
 import updateNotifier from 'update-notifier'
+import { ColorifyConstants } from './api/constants/Colors'
+import { Messages } from './lib/constants/Messages'
 
 import * as pkg from '../package.json'
 
@@ -27,9 +29,9 @@ export function updateNotify() {
       isGlobal: true,
       isYarnGlobal: true,
       message: [
-        `New ${type} version of ${pkg.name} available! ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}`,
-        `${chalk.yellow('Changelog:')} ${chalk.cyan(changelog)}`,
-        `Run ${chalk.green(`yarn global add ${pkg.name}`)} to update!`,
+        `There is a new Toolbelt version avaible: ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}`,
+        Messages.UPDATE_TOOLBELT(),
+        `\n` + `Changelog: ${ColorifyConstants.URL_INTERACTIVE(changelog)}`,
       ].join('\n'),
     })
   }

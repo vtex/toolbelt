@@ -44,10 +44,10 @@ export class ReleaseUtils {
     return version
   }
 
-  public incrementVersion = (rawOldVersion: string, releaseType: string, tagName: string) => {
+  public incrementVersion = (rawOldVersion: string, releaseType: semver.ReleaseType, tagName: string) => {
     const oldVersion = semver.valid(rawOldVersion, true)
     if (tagName !== 'stable' && releaseType !== 'prerelease') {
-      return semver.inc(oldVersion, `pre${releaseType}`, tagName)
+      return semver.inc(oldVersion, `pre${releaseType}` as semver.ReleaseType, false, tagName)
     }
     return semver.inc(oldVersion, releaseType)
   }

@@ -1,7 +1,7 @@
 .vscode
 coverage
 node_modules
-/build
+/lib
 *-debug.log
 *-error.log
 package-lock.json
@@ -9,5 +9,6 @@ package-lock.json
 .eslintcache
 .eslintcache-react
 oclif.manifest.json
-
+/dist
+/tmp
 

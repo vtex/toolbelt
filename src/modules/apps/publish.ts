@@ -12,8 +12,8 @@ import { listenBuild } from '../../api/modules/build'
 import { promptConfirm } from '../../api/modules/prompts'
 import { checkBuilderHubMessage, showBuilderHubMessage } from '../../api/modules/utils'
 import { SessionManager } from '../../api/session/SessionManager'
-import * as conf from '../../conf'
-import { returnToPreviousAccount, switchAccount } from '../auth/switch'
+import * as conf from '../../api/conf'
+import { returnToPreviousAccount, switchAccount } from '../../api/modules/auth/switch'
 import { runYarnIfPathExists } from '../utils'
 
 const buildersToRunLocalYarn = ['node', 'react']

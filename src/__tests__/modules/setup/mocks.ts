@@ -24,9 +24,9 @@ export const mockCreateClients = () => {
 }
 
 export const mockConf = () => {
-  jest.doMock('../../../conf', () => {
+  jest.doMock('../../../api/conf', () => {
     return {
-      ...jest.requireActual('../../../conf'),
+      ...jest.requireActual('../../../api/conf'),
       getAccount: jest.fn().mockReturnValue('logged-account'),
       getWorkspace: jest.fn().mockReturnValue('current-workspace'),
       getToken: jest.fn().mockReturnValue('token'),

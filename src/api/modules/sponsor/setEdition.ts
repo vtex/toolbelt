@@ -4,7 +4,7 @@ import { Sponsor } from '../../clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../session/SessionManager'
 import log from '../../logger'
 import { promptWorkspaceMaster } from '../utils'
-import { returnToPreviousAccount, switchAccount } from '../../../modules/auth/switch'
+import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
 
 const promptSwitchToAccount = async (account: string, initial: boolean) => {

@@ -18,32 +18,12 @@ declare global {
     app: string
   }
 
-  interface InfraResourceVersions {
-    versions: {
-      [region: string]: string[]
-    }
-  }
-
   interface IoVersions {
     version: string
     tested: boolean
     services: {
       [name: string]: string
     }
-  }
-
-  interface InfraUpdate {
-    [name: string]: {
-      latest: string
-      current: string
-    }
-  }
-
-  interface InfraVersionMap {
-    latest: {
-      [name: string]: string
-    }
-    update: InfraUpdate
   }
 
   interface File {
