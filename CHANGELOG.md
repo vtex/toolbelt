@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.114.2] - 2020-10-06
+### Changed
+- [vtex submit] Update command plugin version
+  - Handle App Store validation errors
+
 ## [2.114.1] - 2020-10-06
 ### Added
 - Support to new `billingOptions` types
