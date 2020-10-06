@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- [vtex submit] Update command plugin version
+  - Handle App Store validation errors
 
 ## [2.114.1] - 2020-10-06
 ### Added

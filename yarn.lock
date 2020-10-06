@@ -1285,10 +1285,10 @@
     progress "^2.0.3"
     tslib "^1"
 
-"@vtex/cli-plugin-submit@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-submit/-/cli-plugin-submit-0.1.0.tgz#23fb0668f4a1c582b655bd35988dc6d9f751693c"
-  integrity sha512-Rcza9+mN0mRAy31f9TnfW8U2cSaFQfeZmXy5P6IzugvIIB2C/uFPb+qtzAPbSvou26H84pEZHNVJ/C/Woasyng==
+"@vtex/cli-plugin-submit@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-submit/-/cli-plugin-submit-0.1.1.tgz#d37ab91c4ce014a12e17f52ef2bc866376666c3b"
+  integrity sha512-4pB38USkFcKmqiUE9OnMK4F+Dd6YKYT0CuOABudSIyjKiZxozgdx1XOrajhNpVV85ctMH92pviKTRVyRoWuy4g==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
