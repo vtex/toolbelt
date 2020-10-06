@@ -1215,6 +1215,16 @@
     semver "^7.3.2"
     tar-fs "^2.1.0"
 
+"@vtex/cli-plugin-deploy@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deploy/-/cli-plugin-deploy-0.1.1.tgz#569599d66592517abc26e3844b21d4c48199d58c"
+  integrity sha512-jmtpjr+xpKzYh/THudMweGkajh+tZCHAajUNyF5BzsZ4RB3hyG9ZJ59VQnOQHWqm1nulpC+k1QHn3d9BQQkpaA==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    chalk "^4.1.0"
+    tslib "^1"
+
 "@vtex/cli-plugin-deps@^0.0.1":
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.0.1.tgz#6e07e1951f1a02719d800b08d92b73cb94d7c417"

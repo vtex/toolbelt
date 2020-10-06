@@ -1,7 +1,7 @@
 import { flags as oclifFlags } from '@oclif/command'
 
 import { CustomCommand } from '../api/oclif/CustomCommand'
-import { switchAccount } from '../modules/auth/switch'
+import { switchAccount } from '../api/modules/auth/switch'
 
 export default class Switch extends CustomCommand {
   static description = 'Switch to another VTEX account'
