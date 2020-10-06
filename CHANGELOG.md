@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.114.1] - 2020-10-06
+### Added
+- Support to new `billingOptions` types
+
 ## [2.114.0] - 2020-10-06
 ### Changed
 - [vtex deploy] Refactor to use as oclif plugin.

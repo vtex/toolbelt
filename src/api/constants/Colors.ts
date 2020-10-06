@@ -5,6 +5,7 @@ export enum COLORS {
   PINK = '#FF4785',
   BLUE = '#477DFF',
   MAGENTA = 'magenta',
+  WHITE = '#FFFFFF',
   YELLOW = '#FFB100',
 }
 

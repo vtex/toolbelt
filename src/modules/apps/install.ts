@@ -1,11 +1,13 @@
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
-import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
-import { ManifestEditor, ManifestValidator } from '../../api/manifest'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
 import log from '../../api/logger'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
-import { optionsFormatter, validateAppAction } from '../../api/modules/utils'
+import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
+import { BillingMessages } from '../../lib/constants/BillingMessages'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
@@ -24,20 +26,40 @@ const promptPolicies = async () => {
   return promptConfirm('Do you accept all the Terms?')
 }
 
+const hasLicenseFile = async (name: string, version: string) => {
+  const client = createRegistryClient()
+  try {
+    await client.getAppFile(name, version, '/public/metadata/licenses/en-US.md')
+    return true
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return false
+    }
+    throw err
+  }
+}
+
+const licenseURL = async (app: string, termsURL?: string): Promise<string | undefined> => {
+  const [name, argVersion] = app.split('@')
+  const version = argVersion ?? 'x'
+  return (await hasLicenseFile(name, version)) ? `https://apps.vtex.com/_v/terms/${name}@${version}` : termsURL
+}
+
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
-  log.warn(
-    `${chalk.blue(app)} is a ${
-      billingOptions.free ? chalk.green('free') : chalk.red('paid')
-    } app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`
+  const { termsURL } = billingOptions
+  const license = await licenseURL(app, termsURL)
+  log.info(
+    isFreeApp(billingOptions) ? BillingMessages.acceptToInstallFree(app) : BillingMessages.acceptToInstallPaid(app)
   )
+  log.info(BillingMessages.billingTable(optionsFormatter(billingOptions, app, license)))
   const confirm = await promptPolicies()
   if (!confirm) {
     return
   }
 
-  log.info('Starting to install app with accepted Terms')
+  log.info(BillingMessages.INSTALL_STARTED)
   await installApp(app, true, force)
-  log.debug('Installed after accepted terms')
+  log.debug(BillingMessages.INSTALL_SUCCESS)
 }
 
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
