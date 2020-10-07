@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.115.1] - 2020-10-07
+### Changed
+- [vtex submit] Update command plugin version
+  - Fix relative imports
+  - Update `vtex`
+
 ## [2.115.0] - 2020-10-07
 ### Added
 - [vtex workspace] Update command plugin version
