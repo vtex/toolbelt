@@ -1315,6 +1315,15 @@
     chalk "^4.1.0"
     tslib "^1"
 
+"@vtex/cli-plugin-whoami@^0.1.0-beta":
+  version "0.1.0-beta"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-whoami/-/cli-plugin-whoami-0.1.0-beta.tgz#ed6a5100497d8b851828ce46639179abc2464943"
+  integrity sha512-mSq+tQohXM4Y9Kg+fv0+JkqufpHoid3Qz1t0kRWk8PEr7Ft3LOQKdszRyIdBNodLt5Bg1DEkQivql0rxmdf0MA==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    tslib "^1"
+
 "@vtex/cli-plugin-workspace@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-workspace/-/cli-plugin-workspace-0.1.0.tgz#286ad48062decc9522f539d997f8cc9f72d08854"
