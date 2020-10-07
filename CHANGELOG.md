@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.115.0] - 2020-10-07
+### Added
+- [vtex workspace] Update command plugin version
+  - Add `--conflict` flag to `workspace promote` command.
+
 ## [2.114.2] - 2020-10-06
 ### Changed
 - [vtex submit] Update command plugin version
