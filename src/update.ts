@@ -16,7 +16,7 @@ export function updateNotify() {
 
     notifier.notify({
       isGlobal: true,
-      //@ts-ignore
+      // @ts-ignore
       isYarnGlobal: true,
       message: [
         `There is a new Toolbelt version avaible: ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}`,

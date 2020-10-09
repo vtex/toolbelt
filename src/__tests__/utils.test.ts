@@ -1,4 +1,4 @@
-import { getDistTag, getSimpleVersion } from '../modules/utils';
+import { getDistTag, getSimpleVersion } from '../modules/utils'
 
 test.each([
   ['2.115.0-beta', 'beta'],
