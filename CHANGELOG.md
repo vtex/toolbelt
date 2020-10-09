@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.115.3-beta] - 2020-10-09
+
 ## [2.115.2-beta] - 2020-10-09
 ### Changed
 - Update @vtex/api
