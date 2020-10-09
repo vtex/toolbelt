@@ -21,5 +21,5 @@ export const Messages = {
     `\n\n` +
     `• If you installed using our new method there is in alpha-version, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `vtex autoupdate`
-    )}.`,
+    )}.\n`,
 }
