@@ -64,16 +64,17 @@ const cleanVersion = (appId: string) => {
 // Example: 2.115.0-beta.somehash   -> beta
 // Example: 2.115.0                 -> latest
 export const getDistTag = (version: string) => {
-  const distTag = version.split('-')[1]
-  return distTag ? distTag.split('.')[0] : 'latest'
+  const regex = /(?:-([0-9A-Za-z-]*))/g
+  const distTag = version.match(regex)
+  return distTag ? distTag[0].substring(1) : 'latest'
 }
 
 // Return version and tag only
 // Example: 2.115.0-beta.somehash   -> 2.115.0-beta
 // Example: 2.115.0                 -> 2.115.0
-export const getSimpleVersion = (_version: string) => {
-  const [version, distTag] = _version.split('-')
-  return version.concat(distTag ? '-'.concat(distTag.split('.')[0]) : '')
+export const getSimpleVersion = (version: string) => {
+  const regex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+))?/g
+  return version.match(regex)[0]
 }
 
 export const matchedDepsDiffTable = (title1: string, title2: string, deps1: string[], deps2: string[]) => {
