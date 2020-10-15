@@ -60,6 +60,23 @@ const cleanVersion = (appId: string) => {
   )(appId)
 }
 
+// Return version tag
+// Example: 2.115.0-beta.somehash   -> beta
+// Example: 2.115.0                 -> latest
+export const getDistTag = (version: string) => {
+  const regex = /(?:-([0-9A-Za-z-]*))/g
+  const distTag = version.match(regex)
+  return distTag ? distTag[0].substring(1) : 'latest'
+}
+
+// Return version and tag only
+// Example: 2.115.0-beta.somehash   -> 2.115.0-beta
+// Example: 2.115.0                 -> 2.115.0
+export const getSimpleVersion = (version: string) => {
+  const regex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+))?/g
+  return version.match(regex)[0]
+}
+
 export const matchedDepsDiffTable = (title1: string, title2: string, deps1: string[], deps2: string[]) => {
   const depsDiff = diffArrays(deps1, deps2)
   // Get deduplicated names (no version) of the changed deps.
