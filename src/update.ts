@@ -12,7 +12,7 @@ export function updateNotify() {
   const distTag = getDistTag(pkg.version)
   const notifier = updateNotifier({ pkg, distTag, updateCheckInterval: ONE_HOUR })
 
-  if (notifier.update?.latest !== getSimpleVersion(pkg.version)) {
+  if (notifier.update && notifier.update.latest !== getSimpleVersion(pkg.version)) {
     const oldVersion = getSimpleVersion(notifier.update.current)
     const latestVersion = notifier.update.latest
     const changelog = `https://github.com/vtex/toolbelt/blob/master/CHANGELOG.md`
