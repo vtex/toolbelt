@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.115.2] - 2020-10-15
 ### Fixed
-- [updateNotify] Display new version update based on `vtex` channel (e.g., stablße and beta).
+- [updateNotify] Display new version update based on `vtex` channel (e.g., stable and beta).
 
 ## [2.115.1] - 2020-10-07
 ### Changed
