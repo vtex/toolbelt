@@ -8,16 +8,16 @@ export const BUILDERS_WITH_TOOLING = ['react', 'node']
 export const DEPENDENCIES = {
   // Common dependencies between projects
   common: {
-    '@vtex/prettier-config': '^0.1.3',
-    eslint: '^6.8.0',
-    'eslint-config-vtex': '^12.2.1',
-    'lint-staged': '^10.0.2',
-    husky: '^4.2.0',
-    prettier: '^1.19.1',
-    typescript: '^3.7.5',
+    '@vtex/prettier-config': '^0.1.4',
+    eslint: '^7.12.1',
+    'eslint-config-vtex': '^12.3.2',
+    husky: '^4.2.3',
+    'lint-staged': '^10.1.1',
+    prettier: '^2.0.2',
+    typescript: '^3.8.3',
   },
   react: {
-    'eslint-config-vtex-react': '^6.2.1',
+    'eslint-config-vtex-react': '^6.3.2',
   },
   node: {
     '@types/node': '^12.12.21',
@@ -37,18 +37,11 @@ export const CONTENT_BASE_ESLINT_RC = {
   root: true,
   env: {
     node: true,
-    es6: true,
-    jest: true,
   },
 }
 
 export const CONTENT_ESLINT_RC_BUILDERS = {
   react: {
     extends: 'vtex-react/io',
-    env: {
-      browser: true,
-      es6: true,
-      jest: true,
-    },
   },
 }
