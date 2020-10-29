@@ -25,6 +25,7 @@
   },
   "files": [
     "/scripts/closeChrome.scpt",
+    "/plugins",
     "/lib",
     "/bin",
     "/oclif.manifest.json"
