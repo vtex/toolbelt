@@ -177,7 +177,12 @@ export class Builder extends AppClient {
     return data
   }
 
-  private updateStickyHost(sentStickyHostHeader: string, responseStickyHostHeader: string, traceID: string, relinkCall?: boolean) {
+  private updateStickyHost(
+    sentStickyHostHeader: string,
+    responseStickyHostHeader: string,
+    traceID: string,
+    relinkCall?: boolean
+  ) {
     if (!responseStickyHostHeader) {
       ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.STICKY_HOST_ERROR,
@@ -199,7 +204,7 @@ export class Builder extends AppClient {
         })
       }
       if (relinkCall) {
-        throw new NewStickyHostError('New StickyHost on relink', 'Relink')
+        throw new NewStickyHostError('Relink', 'New StickyHost on relink')
       }
     }
 

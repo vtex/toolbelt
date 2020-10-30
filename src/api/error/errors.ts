@@ -15,10 +15,10 @@ export class SSEConnectionError extends ExtendableError {
 
 export class NewStickyHostError extends ExtendableError {
   public command: CommandType
-  public code: string = 'initial_link_required'
+  public code = 'initial_link_required'
   public message: string
 
-  constructor(message: string = 'StickyHost has changed', command: CommandType) {
+  constructor(command: CommandType, message = 'StickyHost has changed') {
     super(message)
     this.message = message
     this.command = command

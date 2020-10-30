@@ -34,7 +34,7 @@ import startDebuggerTunnel from './debugger'
 import workspaceUse from '../../api/modules/workspace/use'
 import { BatchStream } from '../../api/typings/types'
 import { Messages } from '../../lib/constants/Messages'
-import { NewStickyHostError } from '../../api/error/errors';
+import { NewStickyHostError } from '../../api/error/errors'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
@@ -196,7 +196,7 @@ const watchAndSendChanges = async (
         tsErrorsAsWarnings: unsafe,
       })
     } catch (err) {
-      const commandType = err instanceof NewStickyHostError ? err.command:'link'
+      const commandType = err instanceof NewStickyHostError ? err.command : 'link'
 
       nodeNotifier?.notify({
         title: appId,
