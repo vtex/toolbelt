@@ -199,7 +199,7 @@ export class Builder extends AppClient {
         })
       }
       if (relinkCall) {
-        throw new NewStickyHostError('New StickyHost on relink')
+        throw new NewStickyHostError('New StickyHost on relink', 'Relink')
       }
     }
 
