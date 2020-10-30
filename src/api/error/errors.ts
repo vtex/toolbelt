@@ -3,6 +3,7 @@ import { compose, join, map, prop, reject } from 'ramda'
 import { isFunction } from 'ramda-adjunct'
 
 const joinErrorMessages = compose<any[], any[], string[], string>(join('\n'), map(prop('message')), reject(isFunction))
+type CommandType = 'Link' | 'Relink' | 'Unlink'
 
 export class SSEConnectionError extends ExtendableError {
   public statusCode: number
@@ -13,12 +14,14 @@ export class SSEConnectionError extends ExtendableError {
 }
 
 export class NewStickyHostError extends ExtendableError {
+  public command: CommandType
   public code: string = 'initial_link_required'
   public message: string
 
-  constructor(message: string = 'StickyHost has changed') {
+  constructor(message: string = 'StickyHost has changed', command: CommandType) {
     super(message)
     this.message = message
+    this.command = command
   }
 }
 
