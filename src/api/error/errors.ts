@@ -12,6 +12,16 @@ export class SSEConnectionError extends ExtendableError {
   }
 }
 
+export class NewStickyHostError extends ExtendableError {
+  public code: string = 'initial_link_required'
+  public message: string
+
+  constructor(message: string = 'StickyHost has changed') {
+    super(message)
+    this.message = message
+  }
+}
+
 export class BuildFailError extends ExtendableError {
   public code: string
   public message: string
