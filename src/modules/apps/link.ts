@@ -273,7 +273,7 @@ export async function appLink(options: LinkOptions) {
 
   const appId = manifest.appLocator
 
-  const builder = Builder.createClient({}, { timeout: 60000 })
+  const builder = Builder.createClient({}, { timeout: 60000, retries: 3 })
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
   if (options.setup) {

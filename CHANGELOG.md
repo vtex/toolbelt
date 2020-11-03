@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.115.5] - 2020-11-03
+### Changed
+- Add retries to builder hub app link client
+
 ## [2.115.4] - 2020-11-03
 ### Fixed
 - [relink] Force app to `link` from scratch when `StickyHost` change on `relink`
