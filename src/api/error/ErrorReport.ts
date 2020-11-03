@@ -84,7 +84,7 @@ export class ErrorReport extends ErrorReportBase {
       },
     })
 
-    this.shouldRemoteReport = args.shouldRemoteReport
+    this.shouldRemoteReport = args.shouldRemoteReport ?? true
   }
 
   public logErrorForUser(opts?: LogToUserOptions) {

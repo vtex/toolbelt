@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.115.4] - 2020-11-03
+### Fixed
+- [relink] Force app to `link` from scratch when `StickyHost` change on `relink`
+
 ## [2.115.3] - 2020-10-16
 ### Fixed 
 - [update] updateNotify access propety of undefined object.

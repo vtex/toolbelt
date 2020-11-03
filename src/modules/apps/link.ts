@@ -34,6 +34,7 @@ import startDebuggerTunnel from './debugger'
 import workspaceUse from '../../api/modules/workspace/use'
 import { BatchStream } from '../../api/typings/types'
 import { Messages } from '../../lib/constants/Messages'
+import { NewStickyHostError } from '../../api/error/errors'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
@@ -52,6 +53,7 @@ interface LinkOptions {
 
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
+const INITIAL_LINK_CODE = 'initial_link_required'
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const linkID = randomBytes(8).toString('hex')
 
@@ -161,12 +163,12 @@ const watchAndSendChanges = async (
 ): Promise<any> => {
   const changeQueue: ChangeToSend[] = []
 
-  const onInitialLinkRequired = e => {
-    const data = e.response && e.response.data
-    if (data?.code === 'initial_link_required') {
+  const onInitialLinkRequired = err => {
+    const data = err.response && err.response.data
+    if (data?.code === INITIAL_LINK_CODE || err?.code === INITIAL_LINK_CODE) {
       return warnAndLinkFromStart(root, projectUploader, unsafe, { yarnFilesManager })
     }
-    throw e
+    throw err
   }
 
   const defaultPatterns = ['*/**', 'manifest.json', 'policies.json', 'cypress.json']
@@ -194,9 +196,11 @@ const watchAndSendChanges = async (
         tsErrorsAsWarnings: unsafe,
       })
     } catch (err) {
+      const commandType = err instanceof NewStickyHostError ? err.command : 'link'
+
       nodeNotifier?.notify({
         title: appId,
-        message: 'Link died',
+        message: `${commandType} died`,
       })
 
       if (err instanceof ChangeSizeLimitError) {

@@ -4,6 +4,7 @@ import { Headers } from '../../../../lib/constants/Headers'
 import { ErrorKinds } from '../../../error/ErrorKinds'
 import { ErrorReport } from '../../../error/ErrorReport'
 import { IOClientFactory } from '../IOClientFactory'
+import { NewStickyHostError } from '../../../error/errors'
 
 interface StickyOptions {
   sticky?: boolean
@@ -44,7 +45,7 @@ const routes = {
 }
 
 export class Builder extends AppClient {
-  private static TOO_MANY_HOST_CHANGES = 3
+  private static TOO_MANY_HOST_CHANGES = 4
 
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
     return IOClientFactory.createClient<Builder>(Builder, customContext, customOptions)
@@ -129,7 +130,7 @@ export class Builder extends AppClient {
       data,
       headers: { [Headers.VTEX_STICKY_HOST]: host, [Headers.VTEX_TRACE_ID]: traceID },
     } = await (this.http as any).request(putConfig)
-    this.updateStickyHost(this.stickyHost, host, traceID)
+    this.updateStickyHost(this.stickyHost, host, traceID, true)
     return data as BuildResult
   }
 
@@ -176,7 +177,12 @@ export class Builder extends AppClient {
     return data
   }
 
-  private updateStickyHost(sentStickyHostHeader: string, responseStickyHostHeader: string, traceID: string) {
+  private updateStickyHost(
+    sentStickyHostHeader: string,
+    responseStickyHostHeader: string,
+    traceID: string,
+    relinkCall?: boolean
+  ) {
     if (!responseStickyHostHeader) {
       ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.STICKY_HOST_ERROR,
@@ -196,6 +202,9 @@ export class Builder extends AppClient {
             hostChanges: this.hostChanges,
           },
         })
+      }
+      if (relinkCall) {
+        throw new NewStickyHostError('Relink', 'New StickyHost on relink')
       }
     }
 
