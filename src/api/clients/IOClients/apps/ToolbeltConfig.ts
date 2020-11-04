@@ -11,6 +11,7 @@ interface VersionCheckRes {
 interface GlobalConfig {
   config: Record<string, any>
   messages: Record<string, NodeToRender>
+  featureFlags: Record<string, any>
 }
 
 export class ToolbeltConfig extends IOClient {
