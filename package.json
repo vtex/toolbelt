@@ -65,7 +65,7 @@
     "@vtex/cli-plugin-redirects": "^0.0.2",
     "@vtex/cli-plugin-submit": "^0.1.2",
     "@vtex/cli-plugin-test": "^0.0.5",
-    "@vtex/cli-plugin-whoami": "^0.1.0-beta",
+    "@vtex/cli-plugin-whoami": "^0.1.0",
     "@vtex/cli-plugin-workspace": "^0.1.0",
     "@vtex/node-error-report": "^0.0.2",
     "@vtex/toolbelt-message-renderer": "^0.0.1",
