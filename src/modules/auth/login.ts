@@ -20,6 +20,7 @@ const promptUsePreviousAccount = (previousAccount: string) => {
 }
 
 const promptDesiredAccount = async () => {
+  // @ts-ignore
   const { account } = await enquirer.prompt({
     type: 'input',
     result: s => s.trim(),

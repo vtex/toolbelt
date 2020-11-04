@@ -43,6 +43,7 @@ export async function checkAndOpenNPSLink() {
       )
       opn(NPSFormURL, { wait: false })
     } else {
+      // @ts-ignore
       let { remindChoice } = await enquirer.prompt({
         name: 'remindChoice',
         message: 'When would you like to be reminded?',
