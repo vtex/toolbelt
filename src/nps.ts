@@ -1,6 +1,8 @@
 import enquirer from 'enquirer'
 import moment from 'moment'
+import open from 'open'
 import opn from 'opn'
+import { ToolbeltConfig } from './api/clients/IOClients/apps/ToolbeltConfig'
 
 import { getNextFeedbackDate, saveNextFeedbackDate } from './api/conf'
 import { promptConfirm } from './api/modules/prompts'
@@ -41,7 +43,15 @@ export async function checkAndOpenNPSLink() {
           .add(3, 'months')
           .toISOString()
       )
-      opn(NPSFormURL, { wait: false })
+      const configClient = ToolbeltConfig.createClient()
+      const { featureFlags } = await configClient.getGlobalConfig()
+
+      if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
+        open(NPSFormURL, { wait: false })
+      } else {
+        opn(NPSFormURL, { wait: false })
+      } 
+      
     } else {
       // @ts-ignore
       let { remindChoice } = await enquirer.prompt({
