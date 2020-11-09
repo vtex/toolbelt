@@ -1,7 +1,9 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
+import open from 'open'
 import opn from 'opn'
 import querystring from 'querystring'
 import { storeUrl } from '../../../storeUrl'
+import { ToolbeltConfig } from '../apps/ToolbeltConfig'
 import { IOClientFactory } from '../IOClientFactory'
 
 export class VTEXID extends IOClient {
@@ -16,8 +18,17 @@ export class VTEXID extends IOClient {
     return IOClientFactory.createClient<VTEXID>(VTEXID, customContext, customOptions, { requireAuth: false })
   }
 
-  public static invalidateBrowserAuthCookie(account: string) {
-    return opn(
+  public static async invalidateBrowserAuthCookie(account: string) {
+    const configClient = ToolbeltConfig.createClient()
+    const { featureFlags } = await configClient.getGlobalConfig()
+
+    if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
+      return opn(
+        storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
+        { wait: false }
+      )
+    }
+    return open(
       storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
       { wait: false }
     )

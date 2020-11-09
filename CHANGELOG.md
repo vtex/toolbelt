@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.117.2] - 2020-11-09
+### Changed
+- [vtex login] Change package responsable to open the browser
+
 ## [2.117.1] - 2020-11-06
 ### Changed
 - [vtex setup] Update tooling dependency versions.
