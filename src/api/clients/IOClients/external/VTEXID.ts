@@ -27,13 +27,11 @@ export class VTEXID extends IOClient {
         storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
         { wait: false }
       )
-    } else {
-      return open(
-        storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
-        { wait: false }
-      )
     }
-
+    return open(
+      storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
+      { wait: false }
+    )
   }
 
   constructor(ioContext: IOContext, opts: InstanceOptions) {

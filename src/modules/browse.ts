@@ -23,6 +23,6 @@ export default async (path: string, { qr }: BrowseOptions) => {
   if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
     open(uri, { wait: false })
   } else {
-    opn(uri, { wait: false})
+    opn(uri, { wait: false })
   }
 }

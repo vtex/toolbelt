@@ -48,7 +48,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
       if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
         open(url, { wait: false })
       } else {
-        opn(url, { wait: false})
+        opn(url, { wait: false })
       }
 
       if (isWsl) {
