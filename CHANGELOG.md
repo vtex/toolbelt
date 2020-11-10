@@ -5,11 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
-## [2.118.0] - 2020-11-10
-### Changed
-- [vtex deploy] Update plugin version
-- [@vtex/api] Update package version 
+### Fixed
+- [ToolbeltConfig] Force client to `requireAuth: false`
 
 ## [2.117.2] - 2020-11-09
 ### Changed
@@ -27,9 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [Toolbelt Config Server] Enable use of feature flag inside `vtex.toolbelt-config-server`
 
-## [2.115.5] - 2020-11-03
-### Changed
-- Add retries to builder hub app link client
+N
 
 ## [2.115.4] - 2020-11-03
 ### Fixed
