@@ -21,10 +21,7 @@ export class ToolbeltConfig extends IOClient {
   private static readonly GLOBAL_CONFIG_PATH = `${ToolbeltConfig.PUBLIC_PATH_PREFIX}/global-config`
   private static readonly VERSION_VALIDATE_PATH = `${ToolbeltConfig.PUBLIC_PATH_PREFIX}/version-validate`
 
-  public static createClient(
-    customContext: Partial<IOContext> = {},
-    customOptions: Partial<InstanceOptions> = {},
-  ) {
+  public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
     return IOClientFactory.createClient<ToolbeltConfig>(
       ToolbeltConfig,
       customContext,
@@ -33,7 +30,7 @@ export class ToolbeltConfig extends IOClient {
         ...customOptions,
       },
       {
-        requireAuth: false
+        requireAuth: false,
       }
     )
   }

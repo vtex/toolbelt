@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - [ToolbeltConfig] Force client to `requireAuth: false`
 
+## [2.118.0] - 2020-11-10
+### Changed
+- [vtex deploy] Update plugin version
+- [@vtex/api] Update package version 
+
 ## [2.117.2] - 2020-11-09
 ### Changed
 - [vtex login] Change package responsable to open the browser
@@ -24,7 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - [Toolbelt Config Server] Enable use of feature flag inside `vtex.toolbelt-config-server`
 
-N
+## [2.115.5] - 2020-11-03
+### Changed
+- Add retries to builder hub app link client
 
 ## [2.115.4] - 2020-11-03
 ### Fixed
