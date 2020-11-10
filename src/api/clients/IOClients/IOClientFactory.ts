@@ -13,7 +13,7 @@ interface IOContextOptions {
   workspace?: string
 }
 
-interface InstantiationOpts {
+export interface InstantiationOpts {
   /**
    * If the user is not logged in (there's no AuthToken stored)
    * and this option is set to true the client's functions
