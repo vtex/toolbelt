@@ -1,6 +1,6 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import { NodeToRender } from '@vtex/toolbelt-message-renderer'
-import { InstantiationOpts, IOClientFactory } from '../IOClientFactory'
+import { IOClientFactory } from '../IOClientFactory'
 
 interface VersionCheckRes {
   minVersion: string
@@ -24,7 +24,6 @@ export class ToolbeltConfig extends IOClient {
   public static createClient(
     customContext: Partial<IOContext> = {},
     customOptions: Partial<InstanceOptions> = {},
-    instantiationOpts?: InstantiationOpts
   ) {
     return IOClientFactory.createClient<ToolbeltConfig>(
       ToolbeltConfig,
@@ -33,7 +32,9 @@ export class ToolbeltConfig extends IOClient {
         timeout: ToolbeltConfig.DEFAULT_TIMEOUT,
         ...customOptions,
       },
-      instantiationOpts
+      {
+        requireAuth: false
+      }
     )
   }
 
