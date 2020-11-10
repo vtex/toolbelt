@@ -78,16 +78,38 @@ const { featureFlags } = await configClient.getGlobalConfig()
 
 - Example of usage:
 
-```javascript
-async run() {
-  this.parse(WhoAmI)
+  - First create the function inside `featureFlagDecider.ts`
+  - Import where it need to be used
 
-  const configClient = ToolbeltConfig.createClient()
-  const { featureFlags } = await configClient.getGlobalConfig()
 
-  if (featureFlags.FEATURE_FLAG_WHOAMI_PLUGIN.VTEX)
-    await newAuthWhoami()
-  else
-    await oldAuthWhoami()
-}
-```
+  ```javascript
+  // featureFlagDecider.ts
+  export async function switchWhoami() {
+    try {
+      const configClient = ToolbeltConfig.createClient()
+      const { featureFlags } = await configClient.getGlobalConfig()
+
+      if (featureFlags.FEATURE_FLAG_WHOAMI_PLUGIN.VTEX){
+        return newAuthWhoami()
+      } else {
+        return oldAuthWhoami()
+      }
+    } catch (err) {
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.TOOLBELT_CONFIG_FEATURE_FLAG_ERROR,
+        originalError: err,
+      }).logErrorForUser({ coreLogLevelDefault: 'debug' })
+    }
+  }
+  ```
+
+  ```javascript
+  // main.ts
+  import { switchWhoami } from './featureFlagDecider'
+
+  async run() {
+    this.parse(WhoAmI)
+
+    await switchWhoami()
+  }
+  ```
