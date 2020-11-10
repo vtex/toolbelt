@@ -71,10 +71,10 @@ Today it's only possible to access all feature flags inside `toolbelt`, all othe
 
 - Get all feature flags:
 
-```javascript
-const configClient = ToolbeltConfig.createClient()
-const { featureFlags } = await configClient.getGlobalConfig()
-```
+  ```javascript
+  const configClient = ToolbeltConfig.createClient()
+  const { featureFlags } = await configClient.getGlobalConfig()
+  ```
 
 - Example of usage:
 
