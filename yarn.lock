@@ -1153,10 +1153,10 @@
     semver "^6.3.0"
     tsutils "^3.17.1"
 
-"@vtex/api@3.71.1":
-  version "3.71.1"
-  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.71.1.tgz#996a9148cceadb8cd68939f47ce739b88b6bad97"
-  integrity sha512-CurrRU1U/svHbbyvhsICD8/IqtSQplH/AzS9q0iQ0OC6AH4H8hLUvaNuFMIDW4jSMInqepqKkcS3BQsw9wBxBQ==
+"@vtex/api@3.77.0":
+  version "3.77.0"
+  resolved "https://registry.yarnpkg.com/@vtex/api/-/api-3.77.0.tgz#b5a4a2c34fc9c166f2acc0d6e8474d01114bba19"
+  integrity sha512-y9e87H8VlxkFvCnEbSv+EGfEMsyN1470lsq6cQRPjmshbLjBEUm5+K6dv0Cnmiwl8LDB/sGGV73ZyKH5Zu5s4Q==
   dependencies:
     "@types/koa" "^2.0.48"
     "@types/koa-compose" "^3.2.3"
@@ -8206,7 +8206,7 @@ static-extend@^0.1.1, static-extend@^0.1.2:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-stats-lite@vtex/node-stats-lite#dist:
+"stats-lite@github:vtex/node-stats-lite#dist":
   version "2.2.0"
   resolved "https://codeload.github.com/vtex/node-stats-lite/tar.gz/1b0d39cc41ef7aaecfd541191f877887a2044797"
   dependencies:
