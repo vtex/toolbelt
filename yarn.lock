@@ -1223,10 +1223,10 @@
     semver "^7.3.2"
     tar-fs "^2.1.0"
 
-"@vtex/cli-plugin-deploy@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deploy/-/cli-plugin-deploy-0.1.1.tgz#569599d66592517abc26e3844b21d4c48199d58c"
-  integrity sha512-jmtpjr+xpKzYh/THudMweGkajh+tZCHAajUNyF5BzsZ4RB3hyG9ZJ59VQnOQHWqm1nulpC+k1QHn3d9BQQkpaA==
+"@vtex/cli-plugin-deploy@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deploy/-/cli-plugin-deploy-0.2.0.tgz#c13eb6084fa1253ff315438d0102dfd13e8a800e"
+  integrity sha512-DQJbgt3Mr3PwYbkfkzB2bSgZGjSjG39F+bIO94FJjuaaictIQcJjQfdfMVr4tICbJnfmzU2h9CmWhbMXXDiPNw==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
@@ -8206,7 +8206,7 @@ static-extend@^0.1.1, static-extend@^0.1.2:
     define-property "^0.2.5"
     object-copy "^0.1.0"
 
-"stats-lite@github:vtex/node-stats-lite#dist":
+stats-lite@vtex/node-stats-lite#dist:
   version "2.2.0"
   resolved "https://codeload.github.com/vtex/node-stats-lite/tar.gz/1b0d39cc41ef7aaecfd541191f877887a2044797"
   dependencies:
