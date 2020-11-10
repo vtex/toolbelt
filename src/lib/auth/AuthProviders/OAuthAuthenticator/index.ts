@@ -14,6 +14,8 @@ import { spawnUnblockingChildProcess } from '../../../utils/spawnUnblockingChild
 import { AuthProviderBase } from '../AuthProviderBase'
 import { LoginServer } from './LoginServer'
 import { ToolbeltConfig } from '../../../../api/clients/IOClients/apps/ToolbeltConfig'
+import { ErrorReport } from '../../../../api/error/ErrorReport'
+import { ErrorKinds } from '../../../../api/error/ErrorKinds'
 
 export class OAuthAuthenticator extends AuthProviderBase {
   public static readonly AUTH_TYPE = 'oauth'
@@ -41,14 +43,21 @@ export class OAuthAuthenticator extends AuthProviderBase {
 
       loginServer.setLoginState(loginState)
 
-      const url = await this.loginUrl(account, loginState)
-      const configClient = ToolbeltConfig.createClient()
-      const { featureFlags } = await configClient.getGlobalConfig()
+      try {
+        const url = await this.loginUrl(account, loginState)
+        const configClient = ToolbeltConfig.createClient()
+        const { featureFlags } = await configClient.getGlobalConfig()
 
-      if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
-        open(url, { wait: false })
-      } else {
-        opn(url, { wait: false })
+        if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
+          open(url, { wait: false })
+        } else {
+          opn(url, { wait: false })
+        }
+      } catch (err) {
+        ErrorReport.createAndMaybeRegisterOnTelemetry({
+          kind: ErrorKinds.TOOLBELT_CONFIG_FEATURE_FLAG_ERROR,
+          originalError: err,
+        }).logErrorForUser({ coreLogLevelDefault: 'debug' })
       }
 
       if (isWsl) {

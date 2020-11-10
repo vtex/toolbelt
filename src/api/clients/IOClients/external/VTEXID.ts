@@ -2,9 +2,11 @@ import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import open from 'open'
 import opn from 'opn'
 import querystring from 'querystring'
+import { ErrorReport } from '../../../error/ErrorReport'
 import { storeUrl } from '../../../storeUrl'
 import { ToolbeltConfig } from '../apps/ToolbeltConfig'
 import { IOClientFactory } from '../IOClientFactory'
+import { ErrorKinds } from '../../../error/ErrorKinds'
 
 export class VTEXID extends IOClient {
   private static readonly DEFAULT_TIMEOUT = 10000
@@ -19,19 +21,26 @@ export class VTEXID extends IOClient {
   }
 
   public static async invalidateBrowserAuthCookie(account: string) {
-    const configClient = ToolbeltConfig.createClient()
-    const { featureFlags } = await configClient.getGlobalConfig()
+    try {
+      const configClient = ToolbeltConfig.createClient()
+      const { featureFlags } = await configClient.getGlobalConfig()
 
-    if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
-      return opn(
+      if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
+        return opn(
+          storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
+          { wait: false }
+        )
+      }
+      return open(
         storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
         { wait: false }
       )
+    } catch (err) {
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
+        kind: ErrorKinds.TOOLBELT_CONFIG_FEATURE_FLAG_ERROR,
+        originalError: err,
+      }).logErrorForUser({ coreLogLevelDefault: 'debug' })
     }
-    return open(
-      storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
-      { wait: false }
-    )
   }
 
   constructor(ioContext: IOContext, opts: InstanceOptions) {

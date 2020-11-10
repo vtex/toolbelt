@@ -5,7 +5,9 @@ import opn from 'opn'
 import { ToolbeltConfig } from './api/clients/IOClients/apps/ToolbeltConfig'
 
 import { getNextFeedbackDate, saveNextFeedbackDate } from './api/conf'
+import { ErrorReport } from './api/error/ErrorReport'
 import { promptConfirm } from './api/modules/prompts'
+import { ErrorKinds } from './api/error/ErrorKinds'
 
 const NPSFormURL = 'https://forms.gle/CRRHn6P3x9AeaWTQ8'
 
@@ -43,13 +45,21 @@ export async function checkAndOpenNPSLink() {
           .add(3, 'months')
           .toISOString()
       )
-      const configClient = ToolbeltConfig.createClient()
-      const { featureFlags } = await configClient.getGlobalConfig()
 
-      if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
-        open(NPSFormURL, { wait: false })
-      } else {
-        opn(NPSFormURL, { wait: false })
+      try {
+        const configClient = ToolbeltConfig.createClient()
+        const { featureFlags } = await configClient.getGlobalConfig()
+
+        if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
+          open(NPSFormURL, { wait: false })
+        } else {
+          opn(NPSFormURL, { wait: false })
+        }
+      } catch (err) {
+        ErrorReport.createAndMaybeRegisterOnTelemetry({
+          kind: ErrorKinds.TOOLBELT_CONFIG_FEATURE_FLAG_ERROR,
+          originalError: err,
+        }).logErrorForUser({ coreLogLevelDefault: 'debug' })
       }
     } else {
       // @ts-ignore
