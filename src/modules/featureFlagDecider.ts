@@ -11,9 +11,8 @@ export async function switchOpen(url: string, options) {
 
     if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
       return open(url, options)
-    } else {
-      return opn(url, options)
     }
+    return opn(url, options)
   } catch (err) {
     ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.TOOLBELT_CONFIG_FEATURE_FLAG_ERROR,
