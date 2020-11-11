@@ -22,10 +22,17 @@ export class ToolbeltConfig extends IOClient {
   private static readonly VERSION_VALIDATE_PATH = `${ToolbeltConfig.PUBLIC_PATH_PREFIX}/version-validate`
 
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
-    return IOClientFactory.createClient<ToolbeltConfig>(ToolbeltConfig, customContext, {
-      timeout: ToolbeltConfig.DEFAULT_TIMEOUT,
-      ...customOptions,
-    })
+    return IOClientFactory.createClient<ToolbeltConfig>(
+      ToolbeltConfig,
+      customContext,
+      {
+        timeout: ToolbeltConfig.DEFAULT_TIMEOUT,
+        ...customOptions,
+      },
+      {
+        requireAuth: false,
+      }
+    )
   }
 
   constructor(context: IOContext, options?: InstanceOptions) {

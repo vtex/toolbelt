@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.118.1] - 2020-11-10
+### Fixed
+- [ToolbeltConfig] Force client to `requireAuth: false`
+
 ## [2.118.0] - 2020-11-10
 ### Changed
 - [vtex deploy] Update plugin version

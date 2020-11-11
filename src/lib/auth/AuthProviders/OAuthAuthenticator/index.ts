@@ -2,8 +2,6 @@ import axios from 'axios'
 import { createHash } from 'crypto'
 import isWsl from 'is-wsl'
 import jwt from 'jsonwebtoken'
-import open from 'open'
-import opn from 'opn'
 import { join } from 'path'
 import logger from '../../../../api/logger'
 import { VTEXID } from '../../../../api/clients/IOClients/external/VTEXID'
@@ -13,7 +11,7 @@ import { randomCryptoString } from '../../../utils/randomCryptoString'
 import { spawnUnblockingChildProcess } from '../../../utils/spawnUnblockingChildProcess'
 import { AuthProviderBase } from '../AuthProviderBase'
 import { LoginServer } from './LoginServer'
-import { ToolbeltConfig } from '../../../../api/clients/IOClients/apps/ToolbeltConfig'
+import { switchOpen } from '../../../../modules/featureFlagDecider'
 
 export class OAuthAuthenticator extends AuthProviderBase {
   public static readonly AUTH_TYPE = 'oauth'
@@ -42,14 +40,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
       loginServer.setLoginState(loginState)
 
       const url = await this.loginUrl(account, loginState)
-      const configClient = ToolbeltConfig.createClient()
-      const { featureFlags } = await configClient.getGlobalConfig()
-
-      if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
-        open(url, { wait: false })
-      } else {
-        opn(url, { wait: false })
-      }
+      switchOpen(url, { wait: false })
 
       if (isWsl) {
         logger.warn(

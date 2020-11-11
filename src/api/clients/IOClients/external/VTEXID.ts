@@ -1,10 +1,8 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
-import open from 'open'
-import opn from 'opn'
 import querystring from 'querystring'
 import { storeUrl } from '../../../storeUrl'
-import { ToolbeltConfig } from '../apps/ToolbeltConfig'
 import { IOClientFactory } from '../IOClientFactory'
+import { switchOpen } from '../../../../modules/featureFlagDecider'
 
 export class VTEXID extends IOClient {
   private static readonly DEFAULT_TIMEOUT = 10000
@@ -19,16 +17,7 @@ export class VTEXID extends IOClient {
   }
 
   public static async invalidateBrowserAuthCookie(account: string) {
-    const configClient = ToolbeltConfig.createClient()
-    const { featureFlags } = await configClient.getGlobalConfig()
-
-    if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
-      return opn(
-        storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
-        { wait: false }
-      )
-    }
-    return open(
+    return switchOpen(
       storeUrl({ account, addWorkspace: false, path: `${VTEXID.API_PATH_PREFIX}/pub/single-sign-out?scope=` }),
       { wait: false }
     )
