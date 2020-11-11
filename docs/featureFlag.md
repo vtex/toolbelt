@@ -71,10 +71,9 @@ Today it's only possible to access all feature flags inside `toolbelt`, all othe
 
 - Get all feature flags:
 
-  ```javascript
-  const configClient = ToolbeltConfig.createClient()
-  const { featureFlags } = await configClient.getGlobalConfig()
-  ```
+```javascript
+const featureFlags: Record<string, any> = FeatureFlag.getSingleton().getFeatureFlagInfo()
+```
 
 - Example of usage:
 
@@ -86,8 +85,7 @@ Today it's only possible to access all feature flags inside `toolbelt`, all othe
   // featureFlagDecider.ts
   export async function switchWhoami() {
     try {
-      const configClient = ToolbeltConfig.createClient()
-      const { featureFlags } = await configClient.getGlobalConfig()
+      const featureFlags: Record<string, any> = FeatureFlag.getSingleton().getFeatureFlagInfo()
 
       if (featureFlags.FEATURE_FLAG_WHOAMI_PLUGIN.VTEX){
         return newAuthWhoami()
