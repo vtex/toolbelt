@@ -1,11 +1,11 @@
-const initTime = process.hrtime()
-
 import { ToolbeltConfig } from '../../api/clients/IOClients/apps/ToolbeltConfig'
 import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
-import { IFeatureFlag, FeatureFlag } from './featureFlag';
+import { IFeatureFlag, FeatureFlag } from './featureFlag'
+
+const initTime = process.hrtime()
 
 export const updateFeatureFlagsFile = async (store: IFeatureFlag) => {
   try {
@@ -14,7 +14,6 @@ export const updateFeatureFlagsFile = async (store: IFeatureFlag) => {
 
     store.setFeatureFlagInfo(featureFlags)
     store.setLastFeatureFlagUpdate(Date.now())
-
   } catch (err) {
     const telemetryCollector = TelemetryCollector.getCollector()
     const errorReport = telemetryCollector.registerError(
