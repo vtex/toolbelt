@@ -8,7 +8,7 @@ import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 import { OutdatedChecker } from './OutdatedChecker/OutdatedChecker'
 import { EnvVariablesConstants } from '../lib/constants/EnvVariables'
 import { FeatureFlagUpdateChecker } from '../modules/featureFlag/featureFlagUpdateChecker'
-import { FeatureFlag } from '../modules/featureFlag/featureFlag' 
+import { FeatureFlag } from '../modules/featureFlag/featureFlag'
 
 export class CLIPreTasks {
   public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER

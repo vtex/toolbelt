@@ -12,14 +12,16 @@ export class FeatureFlagUpdateChecker {
   }
 
   private static shouldUpdateFeatureFlagFile() {
-    return Date.now() - FeatureFlag.getSingleton().getLastFeatureFlagUpdate() >= FeatureFlagUpdateChecker.FEATURE_FLAG_CHECK_INTERVAL
+    return (
+      Date.now() - FeatureFlag.getSingleton().getLastFeatureFlagUpdate() >=
+      FeatureFlagUpdateChecker.FEATURE_FLAG_CHECK_INTERVAL
+    )
   }
 
   private static startUpdateFileProcess() {
     spawnUnblockingChildProcess(process.execPath, [
       join(__dirname, 'featureFlagUpdateExec.js'),
-      FeatureFlag.getSingleton().storeFilePath
+      FeatureFlag.getSingleton().storeFilePath,
     ])
   }
-
 }

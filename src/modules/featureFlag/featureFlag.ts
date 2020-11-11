@@ -22,7 +22,7 @@ export class FeatureFlag implements IFeatureFlag {
   }
 
   private store: Configstore
-  
+
   constructor(public storeFilePath: string) {
     this.store = new Configstore('', null, { configPath: storeFilePath })
   }
