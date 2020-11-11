@@ -6,6 +6,7 @@ export const ErrorKinds = {
   EDITION_REQUEST_ERROR: 'EditionRequestError',
   INVALID_OR_EXPIRED_TOKEN_ERROR: 'InvalidOrExpiredTokenError',
   OUTDATED_CHECK_ERROR: 'OutdatedCheckError',
+  FEATURE_FLAG_CHECK_ERROR: 'FeatureFlagCheckError',
   SETUP_TOOLING_ERROR: 'SetupToolingError',
   SETUP_TSCONFIG_ERROR: 'SetupTSConfigError',
   SETUP_TYPINGS_ERROR: 'SetupTypingsError',
