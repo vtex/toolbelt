@@ -29,9 +29,7 @@ export const updateFeatureFlagsFile = async (store: IFeatureFlag) => {
 }
 
 if (require.main === module) {
-  // eslint-disable-next-line prefer-destructuring
   const store = FeatureFlag.getSingleton()
-  // eslint-disable-next-line prefer-destructuring
   updateFeatureFlagsFile(store)
   console.log(`Finished checking for feature flag after ${hrTimeToMs(process.hrtime(initTime))}`)
 }
