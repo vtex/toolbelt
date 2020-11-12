@@ -19,9 +19,6 @@ export class FeatureFlagUpdateChecker {
   }
 
   private static startUpdateFileProcess() {
-    spawnUnblockingChildProcess(process.execPath, [
-      join(__dirname, 'featureFlagUpdateExec.js'),
-      FeatureFlag.getSingleton().storeFilePath,
-    ])
+    spawnUnblockingChildProcess(process.execPath, [join(__dirname, 'featureFlagUpdateExec.js')])
   }
 }

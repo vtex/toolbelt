@@ -8,7 +8,6 @@ import { DeprecationChecker } from './DeprecationChecker/DeprecationChecker'
 import { OutdatedChecker } from './OutdatedChecker/OutdatedChecker'
 import { EnvVariablesConstants } from '../lib/constants/EnvVariables'
 import { FeatureFlagUpdateChecker } from '../modules/featureFlag/featureFlagUpdateChecker'
-import { FeatureFlag } from '../modules/featureFlag/featureFlag'
 
 export class CLIPreTasks {
   public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER
@@ -58,7 +57,6 @@ export class CLIPreTasks {
 
     this.ensureCompatibleNode()
     this.removeOutdatedPaths()
-    FeatureFlag.getSingleton(join(CLIPreTasks.PRETASKS_LOCAL_DIR, FeatureFlag.FEATURE_FLAG_STORE_FILENAME))
     DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
     OutdatedChecker.checkForOutdate(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
     FeatureFlagUpdateChecker.checkForUpdateFeatureFlag()
