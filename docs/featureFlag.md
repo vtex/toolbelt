@@ -72,7 +72,13 @@ Today it's only possible to access all feature flags inside `toolbelt`, all othe
 - Get all feature flags:
 
 ```javascript
-const featureFlags: Record<string, any> = FeatureFlag.getSingleton().getFeatureFlagInfo()
+const featureFlags: Record<string, any> = FeatureFlag.getSingleton().getAllFeatureFlagInfo()
+```
+
+- Get specific feature flag (typed):
+
+```javascript
+const flagTest: boolean = FeatureFlag.getSingleton().getFeatureFlagInfo<boolean>("FEATURE_FLAG_TEST")
 ```
 
 - Example of usage:
@@ -85,9 +91,9 @@ const featureFlags: Record<string, any> = FeatureFlag.getSingleton().getFeatureF
   // featureFlagDecider.ts
   export async function switchWhoami() {
     try {
-      const featureFlags: Record<string, any> = FeatureFlag.getSingleton().getFeatureFlagInfo()
+      const flagWhoami: boolean = FeatureFlag.getSingleton().getFeatureFlagInfo<boolean>("FEATURE_FLAG_WHOAMI_PLUGIN")
 
-      if (featureFlags.FEATURE_FLAG_WHOAMI_PLUGIN.VTEX){
+      if (flagWhoami){
         return newAuthWhoami()
       } else {
         return oldAuthWhoami()
@@ -103,7 +109,7 @@ const featureFlags: Record<string, any> = FeatureFlag.getSingleton().getFeatureF
 
   ```javascript
   // main.ts
-  import { switchWhoami } from './featureFlagDecider'
+  import { switchWhoami } from '../featureFlag/featureFlagDecider'
 
   async run() {
     this.parse(WhoAmI)
