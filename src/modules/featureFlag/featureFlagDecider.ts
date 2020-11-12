@@ -1,7 +1,7 @@
-import { ToolbeltConfig } from '../api/clients/IOClients/apps/ToolbeltConfig'
+import { ToolbeltConfig } from '../../api/clients/IOClients/apps/ToolbeltConfig'
 import open from 'open'
-import { ErrorReport } from '../api/error/ErrorReport'
-import { ErrorKinds } from '../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
 import opn from 'opn'
 
 export async function switchOpen(url: string, options) {
