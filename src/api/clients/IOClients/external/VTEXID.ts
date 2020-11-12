@@ -2,7 +2,7 @@ import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import querystring from 'querystring'
 import { storeUrl } from '../../../storeUrl'
 import { IOClientFactory } from '../IOClientFactory'
-import { switchOpen } from '../../../../modules/featureFlagDecider'
+import { switchOpen } from '../../../../modules/featureFlag/featureFlagDecider'
 
 export class VTEXID extends IOClient {
   private static readonly DEFAULT_TIMEOUT = 10000

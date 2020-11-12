@@ -1,6 +1,6 @@
 import enquirer from 'enquirer'
 import moment from 'moment'
-import { switchOpen } from './modules/featureFlagDecider'
+import { switchOpen } from './modules/featureFlag/featureFlagDecider'
 import { getNextFeedbackDate, saveNextFeedbackDate } from './api/conf'
 import { promptConfirm } from './api/modules/prompts'
 

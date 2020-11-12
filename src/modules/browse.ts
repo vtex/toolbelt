@@ -1,7 +1,7 @@
 import QRCode from 'qrcode-terminal'
 import { SessionManager } from '../api/session/SessionManager'
 import { storeUrl } from '../api/storeUrl'
-import { switchOpen } from './featureFlagDecider'
+import { switchOpen } from './featureFlag/featureFlagDecider'
 
 interface BrowseOptions {
   qr: boolean

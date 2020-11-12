@@ -11,7 +11,7 @@ import { randomCryptoString } from '../../../utils/randomCryptoString'
 import { spawnUnblockingChildProcess } from '../../../utils/spawnUnblockingChildProcess'
 import { AuthProviderBase } from '../AuthProviderBase'
 import { LoginServer } from './LoginServer'
-import { switchOpen } from '../../../../modules/featureFlagDecider'
+import { switchOpen } from '../../../../modules/featureFlag/featureFlagDecider'
 
 export class OAuthAuthenticator extends AuthProviderBase {
   public static readonly AUTH_TYPE = 'oauth'
