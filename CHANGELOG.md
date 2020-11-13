@@ -6,7 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Changed
-- [Feature Flags] Cache locally all flags
+- [Feature Flags] 
+  - Cache locally all flags
+  - New class to use feature flags
 
 ## [2.118.1] - 2020-11-10
 ### Fixed
