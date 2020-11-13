@@ -3,11 +3,11 @@ import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
-import { IFeatureFlag, FeatureFlag } from './featureFlag'
+import { FeatureFlag } from './featureFlag'
 
 const initTime = process.hrtime()
 
-export const updateFeatureFlagsFile = async (store: IFeatureFlag) => {
+export const updateFeatureFlagsFile = async (store: FeatureFlag) => {
   try {
     const client = ToolbeltConfig.createClient({}, { retries: 3 })
     const { featureFlags } = await client.getGlobalConfig()

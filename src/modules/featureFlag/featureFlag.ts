@@ -2,16 +2,7 @@ import Configstore from 'configstore'
 import { join } from 'path'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
 
-export interface IFeatureFlag {
-  storeFilePath: string
-  getLastFeatureFlagUpdate: () => number
-  setLastFeatureFlagUpdate: (date: number) => void
-  getAllFeatureFlagInfo: () => Record<string, any>
-  getFeatureFlagInfo: <T>(flagName: string) => T
-  setFeatureFlagInfo: (info: Record<string, any>) => void
-}
-
-export class FeatureFlag implements IFeatureFlag {
+export class FeatureFlag {
   public static readonly FEATURE_FLAG_STORE_FILENAME = 'feature-flag.json'
   private static singleton: FeatureFlag
 
@@ -20,9 +11,8 @@ export class FeatureFlag implements IFeatureFlag {
       return FeatureFlag.singleton
     }
 
-    FeatureFlag.singleton = new FeatureFlag(
-      join(CLIPreTasks.PRETASKS_LOCAL_DIR, FeatureFlag.FEATURE_FLAG_STORE_FILENAME)
-    )
+    const filePath: string = join(CLIPreTasks.PRETASKS_LOCAL_DIR, FeatureFlag.FEATURE_FLAG_STORE_FILENAME)
+    FeatureFlag.singleton = new FeatureFlag(filePath)
     return FeatureFlag.singleton
   }
 

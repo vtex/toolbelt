@@ -12,10 +12,8 @@ export class FeatureFlagUpdateChecker {
   }
 
   private static shouldUpdateFeatureFlagFile() {
-    return (
-      Date.now() - FeatureFlag.getSingleton().getLastFeatureFlagUpdate() >=
-      FeatureFlagUpdateChecker.FEATURE_FLAG_CHECK_INTERVAL
-    )
+    const invervalFromLastUpdate: number = Date.now() - FeatureFlag.getSingleton().getLastFeatureFlagUpdate()
+    return invervalFromLastUpdate >= FeatureFlagUpdateChecker.FEATURE_FLAG_CHECK_INTERVAL
   }
 
   private static startUpdateFileProcess() {
