@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.119.1] - 2020-11-13
+### Fixed
+- [npm] Fix inconsistent deploy
+
+## [2.119.0] - 2020-11-13
+### Changed
+- [Feature Flags] 
+  - Cache locally all flags
+  - New class to use feature flags
+
 ## [2.118.2] - 2020-11-11
 ### Fixed
 - Upgrade @vtex/cli-plugin-workspace to 0.1.2
