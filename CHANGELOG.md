@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.119.2] - 2020-11-18
+
 ### Added
 - Upgrade @vtex/cli-plugin-submit to 0.2.0
   - Adjustments to First Party App teams usage
