@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { ColorifyConstants } from '../../api/constants/Colors'
-import { FeatureFlag } from '../../modules/featureFlag/featureFlag';
+import { FeatureFlag } from '../../modules/featureFlag/featureFlag'
 
 export const Messages = {
   USE_SUCCESS: (workspace: string, account: string) =>
@@ -24,16 +24,16 @@ export const Messages = {
       `vtex autoupdate`
     )}.\n`,
   UPDATE_TOOLBELT_NPM: () =>
-  `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-    `yarn`
-  )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`yarn global add vtex`)}.`,
+    `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+      `yarn`
+    )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`yarn global add vtex`)}.`,
   UPDATE_TOOLBELT_BREW: () =>
-  `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-    `brew`
+    `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+      `brew`
     )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`brew upgrade vtex/vtex`)}.`,
   UPDATE_TOOLBELT_APT_GET: () =>
-  `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-    `apt-get`
+    `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+      `apt-get`
     )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`sudo apt-get upgrade vtex`)}.`,
   UPDATE_TOOLBELT_CHOCOLATEY: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
@@ -50,53 +50,57 @@ export const Messages = {
   DEPRECATE_TOOLBELT_CHOCOLATEY: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `chocolatey`
-      )}, deprecate running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`chocolatey deprecate vtex`)}.`,
+    )}, deprecate running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`chocolatey deprecate vtex`)}.`,
 }
 
 export function updateMessageSwitch() {
-  var allMessages: string[] = new Array
+  const allMessages: string[] = []
   allMessages.push(Messages.UPDATE_TOOLBELT_NPM())
 
-  const flagOSVersionMessage: boolean = FeatureFlag.getSingleton().getFeatureFlagInfo<boolean>("FEATURE_FLAG_OS_VERSION_MESSAGE")
-  
+  const flagOSVersionMessage: boolean = FeatureFlag.getSingleton().getFeatureFlagInfo<boolean>(
+    'FEATURE_FLAG_OS_VERSION_MESSAGE'
+  )
+
   if (flagOSVersionMessage) {
     switch (process.platform) {
       case 'darwin':
         allMessages.push(Messages.UPDATE_TOOLBELT_BREW())
-        break;
+        break
       case 'linux':
         allMessages.push(Messages.UPDATE_TOOLBELT_APT_GET())
-        break;
+        break
       case 'win32':
         allMessages.push(Messages.UPDATE_TOOLBELT_CHOCOLATEY())
-        break;
+        break
       default:
-        break;
+        break
     }
   }
-  
+
   return allMessages
 }
 
 export function deprecateMessageSwitch() {
-  var allMessages: string[] = new Array
+  const allMessages: string[] = []
   allMessages.push(Messages.UPDATE_TOOLBELT_NPM())
 
-  const flagOSVersionMessage: boolean = FeatureFlag.getSingleton().getFeatureFlagInfo<boolean>("FEATURE_FLAG_OS_VERSION_MESSAGE")
+  const flagOSVersionMessage: boolean = FeatureFlag.getSingleton().getFeatureFlagInfo<boolean>(
+    'FEATURE_FLAG_OS_VERSION_MESSAGE'
+  )
 
   if (flagOSVersionMessage) {
     switch (process.platform) {
       case 'darwin':
         allMessages.push(Messages.DEPRECATE_TOOLBELT_BREW())
-        break;
+        break
       case 'linux':
         allMessages.push(Messages.DEPRECATE_TOOLBELT_APT_GET())
-        break;
+        break
       case 'win32':
         allMessages.push(Messages.DEPRECATE_TOOLBELT_CHOCOLATEY())
-        break;
+        break
       default:
-        break;
+        break
     }
   }
 

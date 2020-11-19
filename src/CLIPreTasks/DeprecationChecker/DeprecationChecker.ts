@@ -29,7 +29,7 @@ export class DeprecationChecker {
       `To deprecate, you must use the same method you used to install. As the following example(s):`,
       ...deprecateMessageSwitch(),
     ].join('\n')
-    
+
     console.error(errMsg)
     process.exit(1)
   }
