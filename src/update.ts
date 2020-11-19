@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import updateNotifier from 'update-notifier'
 import { ColorifyConstants } from './api/constants/Colors'
-import { Messages } from './lib/constants/Messages'
+import { updateMessageSwitch } from './lib/constants/Messages'
 
 import * as pkg from '../package.json'
 import { getDistTag, getSimpleVersion } from './modules/utils'
@@ -23,7 +23,8 @@ export function updateNotify() {
       isYarnGlobal: true,
       message: [
         `There is a new Toolbelt version avaible: ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}`,
-        Messages.UPDATE_TOOLBELT(),
+        `To update, you must use the same method you used to install. As the following example(s):`,
+        ...updateMessageSwitch(),
         `Changelog: ${ColorifyConstants.URL_INTERACTIVE(changelog)}`,
       ].join('\n'),
     })
