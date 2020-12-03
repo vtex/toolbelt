@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.119.2",
+  "version": "2.119.3",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -65,6 +65,7 @@
     "@vtex/cli-plugin-redirects": "^0.0.2",
     "@vtex/cli-plugin-submit": "^0.2.0",
     "@vtex/cli-plugin-test": "^0.0.5",
+    "@vtex/cli-plugin-url": "^0.0.0",
     "@vtex/cli-plugin-whoami": "^0.1.0",
     "@vtex/cli-plugin-workspace": "^0.1.2",
     "@vtex/node-error-report": "^0.0.2",
@@ -180,7 +181,8 @@
       "@vtex/cli-plugin-submit",
       "@vtex/cli-plugin-infra",
       "@vtex/cli-plugin-deploy",
-      "@vtex/cli-plugin-whoami"
+      "@vtex/cli-plugin-whoami",
+      "@vtex/cli-plugin-url"
     ],
     "update": {
       "node": {
