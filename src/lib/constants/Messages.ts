@@ -31,26 +31,30 @@ export const Messages = {
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `brew`
     )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`brew upgrade vtex/vtex`)}.`,
-  UPDATE_TOOLBELT_APT_GET: () =>
+  UPDATE_TOOLBELT_STANDALONE: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-      `apt-get`
-    )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`sudo apt-get upgrade vtex`)}.`,
+      `AWS Standalone`
+    )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`vtex autoupdate`)}.`,
   UPDATE_TOOLBELT_CHOCOLATEY: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `chocolatey`
-    )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`chocolatey upgrade vtex`)}.`,
+    )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco upgrade vtex`)}.`,
   DEPRECATE_TOOLBELT_BREW: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `brew`
     )}, deprecate running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`brew unlink vtex && brew install vtex/vtex`)}.`,
-  DEPRECATE_TOOLBELT_APT_GET: () =>
+  DEPRECATE_TOOLBELT_STANDALONE: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
-      `apt-get`
-    )}, deprecate running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`sudo apt-get deprecate vtex`)}.`,
+      `AWS Standalone`
+    )}, deprecate running:
+    ${ColorifyConstants.COMMAND_OR_VTEX_REF(`curl https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/uninstall.sh | sh`)}
+    ${ColorifyConstants.COMMAND_OR_VTEX_REF(`curl https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/install.sh | sh`)}`,
   DEPRECATE_TOOLBELT_CHOCOLATEY: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `chocolatey`
-    )}, deprecate running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`chocolatey deprecate vtex`)}.`,
+    )}, deprecate running:
+    ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco uninstall vtex`)}.
+    ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco install vtex`)}.`,
 }
 
 export function updateMessageSwitch() {
@@ -67,7 +71,7 @@ export function updateMessageSwitch() {
         allMessages.push(Messages.UPDATE_TOOLBELT_BREW())
         break
       case 'linux':
-        allMessages.push(Messages.UPDATE_TOOLBELT_APT_GET())
+        allMessages.push(Messages.UPDATE_TOOLBELT_STANDALONE())
         break
       case 'win32':
         allMessages.push(Messages.UPDATE_TOOLBELT_CHOCOLATEY())
@@ -94,7 +98,7 @@ export function deprecateMessageSwitch() {
         allMessages.push(Messages.DEPRECATE_TOOLBELT_BREW())
         break
       case 'linux':
-        allMessages.push(Messages.DEPRECATE_TOOLBELT_APT_GET())
+        allMessages.push(Messages.DEPRECATE_TOOLBELT_STANDALONE())
         break
       case 'win32':
         allMessages.push(Messages.DEPRECATE_TOOLBELT_CHOCOLATEY())
