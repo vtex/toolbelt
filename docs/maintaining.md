@@ -40,9 +40,14 @@ This will release a `github tag` and trigger the `npm-publish github action`
 
 This deploy will contain the `toolbelt standalone tarball` that is compatible with `MacOS` and `Linux`
 
-Here's how you deploy on `NPM`: 
+Here's how you deploy on `AWS S3`: 
 
-- Fire this command on terminal in `toolbelt` project root path
+- First set your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` env variables, this keys values is under the possession and control of `@vtex/io-devtools`.
+
+- *Ps*: You might have `7-zip` installed on your machine.
+
+
+- Fire this command on terminal in `toolbelt` project root path.
 
 ```bash
 yarn release
