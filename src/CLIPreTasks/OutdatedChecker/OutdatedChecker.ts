@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { join } from 'path'
 import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
 import { IOutdatedCheckerStore, OutdatedCheckerStore, OutdatedInfo } from './OutdatedCheckerStore'
-import { Messages } from '../../lib/constants/Messages'
+import { updateMessageSwitch } from '../../lib/constants/Messages'
 
 export class OutdatedChecker {
   private static readonly OUTDATED_CHECK_INTERVAL = 1 * 3600 * 1000
@@ -24,9 +24,11 @@ export class OutdatedChecker {
       return
     }
 
-    const errMsg = `${chalk.bold(
-      `Your Toolbelt version (${pkgJson.version}) is outdated`
-    )}. ${Messages.UPDATE_TOOLBELT()}`
+    const errMsg = [
+      `${chalk.bold(`Your Toolbelt version (${pkgJson.version}) is outdated`)}.`,
+      `To update, you must use the same method you used to install. As the following example(s):`,
+      ...updateMessageSwitch(),
+    ].join('\n')
 
     console.error(errMsg)
     process.exit(1)
