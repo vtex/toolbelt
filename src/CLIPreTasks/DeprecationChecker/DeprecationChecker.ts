@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { join } from 'path'
 import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
 import { DeprecationCheckerStore, IDeprecationCheckerStore, VersionDeprecationInfo } from './DeprecationCheckerStore'
-import { deprecateMessageSwitch } from '../../lib/constants/Messages'
+import { updateFromDeprecatedMessageSwitch } from '../../lib/constants/Messages'
 
 export class DeprecationChecker {
   private static readonly DEPRECATION_CHECK_INTERVAL = 1 * 3600 * 1000
@@ -27,7 +27,7 @@ export class DeprecationChecker {
     const errMsg = [
       `${chalk.bold(`Your Toolbelt version (${pkgJson.version}) was deprecated`)}.`,
       `To update, you must use the same method you used to install. As the following example(s):`,
-      ...deprecateMessageSwitch(),
+      ...updateFromDeprecatedMessageSwitch(),
     ].join('\n')
 
     console.error(errMsg)

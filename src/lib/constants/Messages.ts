@@ -39,11 +39,11 @@ export const Messages = {
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `chocolatey`
     )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco upgrade vtex`)}.`,
-  DEPRECATE_TOOLBELT_BREW: () =>
+  UPDATE_FROM_DEPRECATED_BREW: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `brew`
     )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`brew unlink vtex && brew install vtex/vtex`)}.`,
-  DEPRECATE_TOOLBELT_STANDALONE: () =>
+  UPDATE_FROM_DEPRECATED_STANDALONE: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(`AWS Standalone`)}, update running:
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `curl https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/uninstall.sh | sh`
@@ -51,7 +51,7 @@ export const Messages = {
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `curl https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/install.sh | sh`
     )}`,
-  DEPRECATE_TOOLBELT_CHOCOLATEY: () =>
+  UPDATE_FROM_DEPRECATED_CHOCOLATEY: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(`chocolatey`)}, update running:
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco uninstall vtex`)}.
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco install vtex`)}.`,
@@ -84,7 +84,7 @@ export function updateMessageSwitch() {
   return allMessages
 }
 
-export function deprecateMessageSwitch() {
+export function updateFromDeprecatedMessageSwitch() {
   const allMessages: string[] = []
   allMessages.push(Messages.UPDATE_TOOLBELT_NPM())
 
@@ -95,13 +95,13 @@ export function deprecateMessageSwitch() {
   if (flagOSVersionMessage) {
     switch (process.platform) {
       case 'darwin':
-        allMessages.push(Messages.DEPRECATE_TOOLBELT_BREW())
+        allMessages.push(Messages.UPDATE_FROM_DEPRECATED_BREW())
         break
       case 'linux':
-        allMessages.push(Messages.DEPRECATE_TOOLBELT_STANDALONE())
+        allMessages.push(Messages.UPDATE_FROM_DEPRECATED_STANDALONE())
         break
       case 'win32':
-        allMessages.push(Messages.DEPRECATE_TOOLBELT_CHOCOLATEY())
+        allMessages.push(Messages.UPDATE_FROM_DEPRECATED_CHOCOLATEY())
         break
       default:
         break
