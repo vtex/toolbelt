@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
+### Added
+- [Update / Deprecate message] Custom message based on user OS.
 ## [2.119.4] - 2020-12-03
 ### Fixed
 - [authUrl] Returning function that was exported to `vtex url`
@@ -14,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [vtex url] Refactor to use as oclif plugin.
 
 ## [2.119.2] - 2020-11-18
-
 ### Added
 - Upgrade @vtex/cli-plugin-submit to 0.2.0
   - Adjustments to First Party App teams usage
