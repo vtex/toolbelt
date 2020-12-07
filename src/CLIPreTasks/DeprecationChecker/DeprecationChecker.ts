@@ -26,7 +26,7 @@ export class DeprecationChecker {
 
     const errMsg = [
       `${chalk.bold(`Your Toolbelt version (${pkgJson.version}) was deprecated`)}.`,
-      `To deprecate, you must use the same method you used to install. As the following example(s):`,
+      `To update, you must use the same method you used to install. As the following example(s):`,
       ...deprecateMessageSwitch(),
     ].join('\n')
 

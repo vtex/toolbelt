@@ -42,9 +42,9 @@ export const Messages = {
   DEPRECATE_TOOLBELT_BREW: () =>
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `brew`
-    )}, deprecate running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`brew unlink vtex && brew install vtex/vtex`)}.`,
+    )}, update running ${ColorifyConstants.COMMAND_OR_VTEX_REF(`brew unlink vtex && brew install vtex/vtex`)}.`,
   DEPRECATE_TOOLBELT_STANDALONE: () =>
-    `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(`AWS Standalone`)}, deprecate running:
+    `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(`AWS Standalone`)}, update running:
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(
       `curl https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/uninstall.sh | sh`
     )}
@@ -52,7 +52,7 @@ export const Messages = {
       `curl https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/install.sh | sh`
     )}`,
   DEPRECATE_TOOLBELT_CHOCOLATEY: () =>
-    `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(`chocolatey`)}, deprecate running:
+    `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(`chocolatey`)}, update running:
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco uninstall vtex`)}.
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco install vtex`)}.`,
 }
