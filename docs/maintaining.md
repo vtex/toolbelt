@@ -4,10 +4,71 @@ This document is for people working on VTEX as Toolbelt maintainers.
 
 **Table of Contents**
 
+- [Deploying a new version](#deploying-a-new-version)
 - [Forcing a new version](#forcing-a-new-version)
 - [Deprecating a version](#deprecating-a-version)
 - [Changing the release message](#changing-the-release-message)
 - [Monitoring and debugging user errors](#monitoring-and-debugging-user-errors)
+
+### Deploying a new version
+
+#### **NPM**
+
+The main deploy of `toolbelt` is on [NPM](https://www.npmjs.com/package/vtex). This deploy is reponsable for warning `new and deprecated versions`
+
+Here's how you deploy on `NPM`:
+
+- Fire this command on terminal in `toolbelt` project root path (*Stable version*):
+
+```bash
+    releasy patch --stable
+    releasy minor --stable
+    releasy major --stable
+```
+
+- Fire this command on terminal in `toolbelt` project root path (*Beta version*):
+
+```bash
+    releasy patch
+    releasy minor
+    releasy major
+```
+
+This will release a `github tag` and trigger the `npm-publish github action`
+
+#### **AWS S3**
+
+This deploy will contain the `toolbelt standalone tarball` that is compatible with `MacOS` and `Linux`
+
+Here's how you deploy on `AWS S3`: 
+
+- First set your `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` env variables, this keys values is under the possession and control of `@vtex/io-devtools`.
+
+- *Ps*: You might have `7-zip` installed on your machine.
+
+
+- Fire this command on terminal in `toolbelt` project root path.
+
+```bash
+yarn release
+yarn release:win
+```
+
+This [command](https://github.com/vtex/toolbelt/blob/ef67f52cd200ab08445684767c839319b86b5454/package.json#L19) will pack and publish on AWS S3.
+
+#### **BREW**
+
+To deploy on brew, you should change 3 lines of [Toolbelt Formula](https://github.com/vtex/homebrew-vtex).
+
+All this values can be found [here](https://tinyurl.com/yxgcuf5a). **Just make sure that was deployed first on S3**
+
+Here's the 3 lines of `Toolbelt Formula` repo to edit in order to deploy on `BREW`:
+
+```ruby
+  url "URL_OF_TAR_GZ_FILE"
+  sha256 "SHASUM_OF_FILE"
+  version "DEPLOY_VERSION"
+```
 
 ### Forcing a new version
 
