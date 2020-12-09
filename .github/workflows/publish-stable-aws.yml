@@ -18,6 +18,7 @@ jobs:
             registry-url: https://registry.npmjs.org/
       - run: yarn install --ignore-scripts
       - run: yarn release
+      - run: yarn release:win
         env:
             IS_CI: "true"
             AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
