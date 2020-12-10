@@ -32,6 +32,8 @@
     rm -rf ~/.local/share/vtex
     echo "removing /usr/local/lib/vtex ..."
     rm -rf /usr/local/lib/vtex
+    echo "removing ~/.vtex ..."
+    rm -rf ~/.vtex
     
 SCRIPT
     echo "VTEX CLI Uninstalled"

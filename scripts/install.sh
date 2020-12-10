@@ -41,18 +41,21 @@
         exit 1
     fi
         
+    TAR_ARGS="xz"
+    versionUrl=https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/\$OS-\$ARCH
+
+    echo "Downloading latest version from \$versionUrl"
+    URL=\$(curl -sk \$versionUrl | jq --raw-output '.gz')
+
     mkdir -p /usr/local/lib
     cd /usr/local/lib
+
     rm -rf vtex
+    rm -rf ~/.vtex
     rm -rf ~/.local/share/vtex/client
 
-    URL=https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/vtex-\$OS-\$ARCH.tar.gz
-    TAR_ARGS="xz"
-    
-
-    
     echo "Installing VTEX from \$URL"
-    
+
     if [ \$(command -v curl) ]; then
         curl "\$URL" | tar "\$TAR_ARGS"
     else
@@ -76,5 +79,5 @@ SCRIPT
   # test the CLI
   LOCATION=$(command -v vtex)
   echo "vtex installed to $LOCATION"
-  vtex version
+  vtex -v
 }
