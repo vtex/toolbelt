@@ -71,12 +71,12 @@ export class ReleaseUtils {
   }
 
   public gitStatus = () => {
-    return this.runCommand('git status', '', true)
+    return this.runCommand('git status --porcelain', '', true)
   }
 
   public checkNothingToCommit = () => {
-    const response = this.gitStatus()
-    return /nothing to commit/.test(response)
+    const response = this.gitStatus().toString()
+    return !response
   }
 
   public checkIfGitPushWorks = () => {
