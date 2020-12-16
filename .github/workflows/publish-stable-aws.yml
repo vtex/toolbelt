@@ -11,6 +11,7 @@ jobs:
   aws-publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Deploy on AWS
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
@@ -23,7 +24,16 @@ jobs:
             IS_CI: "true"
             AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
             AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
-      
+      - name: Get deploy version
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+      - name: Trigger slack notification bot [Success]
+        if: success()
+        run: 'curl --data "status=success&user=${{ github.actor }}&platform=brew&version=${{ steps.branch_name.outputs.SOURCE_TAG }}" --header "token: super-secret-token" https://master--vtex.myvtex.com/_v/public/toolbelt-notification/status'
+      - name: Trigger slack notification bot [Fail]
+        if: failure()
+        run: 'curl --data "status=failed&user=${{ github.actor }}&platform=brew&version=${{ steps.branch_name.outputs.SOURCE_TAG }}" --header "token: super-secret-token" https://master--vtex.myvtex.com/_v/public/toolbelt-notification/status'
       - name: Trigger next workflow
         if: success()
         uses: peter-evans/repository-dispatch@v1
