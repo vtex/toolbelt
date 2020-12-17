@@ -37,13 +37,13 @@ jobs:
       - name: Get deploy version
         id: branch_name
         run: |
-          echo ::set-output name=SOURCE_TAG::$(curl https://api.github.com/repos/vtex/toolbelt/releases/latest -s | jq .name -r)
+          echo ::set-output name=SOURCE_TAG::$(curl https://api.github.com/repos/vtex/toolbelt/releases/latest -s | jq .tag_name -r)
       - name: Trigger slack notification bot [Success]
         if: success()
-        run: 'curl --data "status=success&user=${{ github.actor }}&platform=AWS-S3&version=${{ steps.branch_name.outputs.SOURCE_TAG }}" --header "token: ${{ secrets.TOOLBELT_NOTIFICATION_KEY }}" https://master--vtex.myvtex.com/_v/public/toolbelt-notification/status'
+        run: 'curl --connect-timeout 30 --retry 3 --retry-delay 120 --data "status=success&user=${{ github.actor }}&platform=AWS-S3&version=${{ steps.branch_name.outputs.SOURCE_TAG }}" --header "token: ${{ secrets.TOOLBELT_NOTIFICATION_KEY }}" https://master--vtex.myvtex.com/_v/public/toolbelt-notification/status'
       - name: Trigger slack notification bot [Fail]
         if: failure()
-        run: 'curl --data "status=failed&user=${{ github.actor }}&platform=AWS-S3&version=${{ steps.branch_name.outputs.SOURCE_TAG }}" --header "token: ${{ secrets.TOOLBELT_NOTIFICATION_KEY }}" https://master--vtex.myvtex.com/_v/public/toolbelt-notification/status'
+        run: 'curl --connect-timeout 30 --retry 3 --retry-delay 120 --data "status=failed&user=${{ github.actor }}&platform=AWS-S3&version=${{ steps.branch_name.outputs.SOURCE_TAG }}" --header "token: ${{ secrets.TOOLBELT_NOTIFICATION_KEY }}" https://master--vtex.myvtex.com/_v/public/toolbelt-notification/status'
       - name: Trigger next workflow
         if: success()
         uses: peter-evans/repository-dispatch@v1
