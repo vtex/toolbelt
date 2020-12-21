@@ -9,6 +9,10 @@ import { OutdatedChecker } from './OutdatedChecker/OutdatedChecker'
 import { EnvVariablesConstants } from '../lib/constants/EnvVariables'
 import { FeatureFlagUpdateChecker } from '../modules/featureFlag/featureFlagUpdateChecker'
 
+const COMMANDS = {
+  AUTOUPDATE: 'autoupdate',
+}
+
 export class CLIPreTasks {
   public static readonly PRETASKS_LOCAL_DIR = PathConstants.PRETASKS_FOLDER
 
@@ -50,15 +54,17 @@ export class CLIPreTasks {
     })
   }
 
-  public runTasks() {
+  public runTasks(command: string) {
     if (process.env[EnvVariablesConstants.IGNORE_CLIPRETASKS]) {
       return
     }
 
     this.ensureCompatibleNode()
     this.removeOutdatedPaths()
-    DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
-    OutdatedChecker.checkForOutdate(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
+    if (command !== COMMANDS.AUTOUPDATE) {
+      DeprecationChecker.checkForDeprecation(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
+      OutdatedChecker.checkForOutdate(CLIPreTasks.PRETASKS_LOCAL_DIR, this.pkg)
+    }
     FeatureFlagUpdateChecker.checkForUpdateFeatureFlag()
   }
 }
