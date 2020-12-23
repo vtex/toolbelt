@@ -76,7 +76,7 @@ export class ReleaseUtils {
 
   public checkNothingToCommit = () => {
     const response = this.gitStatus()
-    return /nothing to commit/.test(response)
+    return /nothing to commit/.test(response) || /nada para hacer commit/.test(response)
   }
 
   public checkIfGitPushWorks = () => {

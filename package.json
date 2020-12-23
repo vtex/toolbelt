@@ -181,8 +181,7 @@
       "@vtex/cli-plugin-submit",
       "@vtex/cli-plugin-infra",
       "@vtex/cli-plugin-deploy",
-      "@vtex/cli-plugin-url",
-      "@oclif/plugin-plugins"
+      "@vtex/cli-plugin-url"
     ],
     "update": {
       "node": {
