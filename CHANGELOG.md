@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.121.0-beta.1] - 2020-12-28
+
 ## [2.121.0-beta.0] - 2020-12-28
 ### Added
 -[autoupdate] skip `checkForDeprecation` and `checkForOutdate` for `autoupdate` command.
