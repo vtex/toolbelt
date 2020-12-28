@@ -1285,23 +1285,6 @@
     ramda "~0.25.0"
     tslib "^1"
 
-"@vtex/cli-plugin-plugins@../plugins/cli-plugin-plugins":
-  version "1.9.5"
-  dependencies:
-    "@oclif/color" "^0.x"
-    "@oclif/command" "^1.5.12"
-    "@oclif/errors" "^1.2.2"
-    chalk "^4.1.0"
-    cli-ux "^5.2.1"
-    debug "^4.1.0"
-    fs-extra "^9.0"
-    http-call "^5.2.2"
-    load-json-file "^5.2.0"
-    npm-run-path "^4.0.1"
-    semver "^7.3.2"
-    tslib "^2.0.0"
-    yarn "^1.21.1"
-
 "@vtex/cli-plugin-redirects@^0.0.2":
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-redirects/-/cli-plugin-redirects-0.0.2.tgz#de993cd0d6ae1b5106fc524225debecb87dac7b9"
