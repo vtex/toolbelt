@@ -1,6 +1,6 @@
 import { join } from 'path'
 import { spawnUnblockingChildProcess } from '../../lib/utils/spawnUnblockingChildProcess'
-import { FeatureFlag } from './featureFlag'
+import { FeatureFlag } from '../../api/modules/featureFlag'
 
 export class FeatureFlagUpdateChecker {
   private static readonly FEATURE_FLAG_CHECK_INTERVAL = 1000 * 60 * 2 // 2 Minutes
