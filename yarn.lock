@@ -1285,22 +1285,15 @@
     ramda "~0.25.0"
     tslib "^1"
 
-"@vtex/cli-plugin-plugins@../plugins/cli-plugin-plugins":
-  version "1.9.5"
+"@vtex/cli-plugin-lighthouse@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-lighthouse/-/cli-plugin-lighthouse-0.0.3.tgz#cdfcfe4b5c6cb0579f0b4be65d5e94bf0858eb91"
+  integrity sha512-qEp44cMhwsPklg4ue/uHwXJk4ENPuqmZ+s2QK8EikCTbU4Mx0B+VVZfDfpHTrqiKavKSfhXGmXILYMxYo/YPSA==
   dependencies:
-    "@oclif/color" "^0.x"
-    "@oclif/command" "^1.5.12"
-    "@oclif/errors" "^1.2.2"
-    chalk "^4.1.0"
-    cli-ux "^5.2.1"
-    debug "^4.1.0"
-    fs-extra "^9.0"
-    http-call "^5.2.2"
-    load-json-file "^5.2.0"
-    npm-run-path "^4.0.1"
-    semver "^7.3.2"
-    tslib "^2.0.0"
-    yarn "^1.21.1"
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
+    tslib "^1"
 
 "@vtex/cli-plugin-redirects@^0.0.2":
   version "0.0.2"
@@ -1350,6 +1343,15 @@
     "@oclif/config" "^1"
     configstore "^5.0.1"
     jsonwebtoken "^8.5.1"
+    tslib "^1"
+
+"@vtex/cli-plugin-whoami@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-whoami/-/cli-plugin-whoami-0.1.0.tgz#87c49dc1f0b4523a2eecb5d6b53c68b6e56ec83a"
+  integrity sha512-A/+fVDB7AxQ59+6z9IY45mWqjeRTlKDE1ghN3u3J5iAmovEt4PQRgxwkXatOZmyMOCLUrg5gXu0cm4DWWjKZ7Q==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
     tslib "^1"
 
 "@vtex/cli-plugin-workspace@^0.1.2":
