@@ -62,7 +62,7 @@
     "@vtex/cli-plugin-deps": "^0.0.1",
     "@vtex/cli-plugin-edition": "^0.0.1",
     "@vtex/cli-plugin-infra": "^0.1.0",
-    "@vtex/cli-plugin-lighthouse": "^0.0.3",
+    "@vtex/cli-plugin-plugins": "../plugins/cli-plugin-plugins",
     "@vtex/cli-plugin-redirects": "^0.0.2",
     "@vtex/cli-plugin-submit": "^0.2.0",
     "@vtex/cli-plugin-test": "^0.0.5",
@@ -167,11 +167,11 @@
   "oclif": {
     "commands": "./lib/commands",
     "bin": "vtex",
+    "scope": "vtex",
     "plugins": [
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands",
       "@vtex/cli-plugin-autoupdate",
-      "@vtex/cli-plugin-lighthouse",
       "@vtex/cli-plugin-test",
       "@vtex/cli-plugin-edition",
       "@vtex/cli-plugin-abtest",
@@ -182,7 +182,7 @@
       "@vtex/cli-plugin-infra",
       "@vtex/cli-plugin-deploy",
       "@vtex/cli-plugin-url",
-      "@oclif/plugin-plugins"
+      "@vtex/cli-plugin-plugins"
     ],
     "update": {
       "node": {

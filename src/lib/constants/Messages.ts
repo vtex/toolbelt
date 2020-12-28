@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import { ColorifyConstants } from '../../api/constants/Colors'
-import { FeatureFlag } from '../../modules/featureFlag/featureFlag'
+import { FeatureFlag } from '../../api/modules/featureFlag'
 
 export const Messages = {
   USE_SUCCESS: (workspace: string, account: string) =>
