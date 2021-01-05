@@ -11,6 +11,11 @@ jobs:
   aws-publish:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -22,14 +27,10 @@ jobs:
           draft: false
           prerelease: false
       - name: Deploy on AWS
-        uses: actions/checkout@v2
-        uses: actions/setup-node@v1
-        with:
-            node-version: 12
-            registry-url: https://registry.npmjs.org/
-      - run: yarn install --ignore-scripts
-      - run: yarn release
-      - run: yarn release:win
+        run: |
+          yarn install --ignore-scripts
+          yarn release
+          yarn release:win
         env:
             IS_CI: "true"
             AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
