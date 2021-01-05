@@ -56,7 +56,7 @@ const checkLogin = async (command: string) => {
 
 const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: boolean) => {
   const cliPreTasksStart = process.hrtime()
-  CLIPreTasks.getCLIPreTasks(pkg).runTasks()
+  CLIPreTasks.getCLIPreTasks(pkg).runTasks(options.id)
   TelemetryCollector.getCollector().registerMetric({
     command: 'not-applicable',
     [MetricNames.CLI_PRE_TASKS_LATENCY]: hrTimeToMs(process.hrtime(cliPreTasksStart)),
