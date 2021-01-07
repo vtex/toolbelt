@@ -62,6 +62,7 @@
     "@vtex/cli-plugin-edition": "^0.0.1",
     "@vtex/cli-plugin-infra": "^0.1.0",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
+    "@vtex/cli-plugin-plugins": "^1.10.0",
     "@vtex/cli-plugin-redirects": "^0.0.2",
     "@vtex/cli-plugin-submit": "^0.2.0",
     "@vtex/cli-plugin-test": "^0.0.5",
@@ -183,6 +184,7 @@
       "@vtex/cli-plugin-deploy",
       "@vtex/cli-plugin-url",
       "@vtex/cli-plugin-whoami",
+      "@vtex/cli-plugin-plugins",
       "@vtex/cli-plugin-lighthouse"
     ],
     "update": {
