@@ -199,9 +199,6 @@
       "init": "./lib/oclif/hooks/init"
     },
     "topics": {
-      "config": {
-        "description": "Config commands. Run 'vtex config' to see all subcommands"
-      },
       "debug": {
         "description": "Debug commands. Run 'vtex debug' to see all subcommands"
       },
