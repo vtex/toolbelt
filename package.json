@@ -201,9 +201,6 @@
     "topics": {
       "local": {
         "description": "Local commands. Run 'vtex local' to see all subcommands"
-      },
-      "settings": {
-        "description": "Settings commands. Run 'vtex settings' to see all subcommands"
       }
     }
   }
