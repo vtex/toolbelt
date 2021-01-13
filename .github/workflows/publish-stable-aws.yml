@@ -1,4 +1,4 @@
-name: publish-stable:aws
+name: publish-stable-aws
 
 on:
   push:
