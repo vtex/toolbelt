@@ -3,7 +3,7 @@ import { ErrorKinds } from '../../api/error/ErrorKinds'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
-import { FeatureFlag } from './featureFlag'
+import { FeatureFlag } from '../../api/modules/featureFlag'
 
 const initTime = process.hrtime()
 
