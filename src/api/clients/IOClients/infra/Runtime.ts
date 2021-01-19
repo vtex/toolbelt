@@ -3,7 +3,7 @@ import * as url from 'url'
 import WebSocket from 'ws'
 import { cluster } from '../../../env'
 import logger from '../../../logger'
-import { Headers } from '../../../../lib/constants/Headers'
+import { Headers } from '../../../constants/Headers'
 import { SessionManager } from '../../../session/SessionManager'
 import { IOClientFactory } from '../IOClientFactory'
 

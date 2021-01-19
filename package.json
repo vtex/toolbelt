@@ -199,17 +199,8 @@
       "init": "./lib/oclif/hooks/init"
     },
     "topics": {
-      "config": {
-        "description": "Config commands. Run 'vtex config' to see all subcommands"
-      },
-      "debug": {
-        "description": "Debug commands. Run 'vtex debug' to see all subcommands"
-      },
       "local": {
         "description": "Local commands. Run 'vtex local' to see all subcommands"
-      },
-      "settings": {
-        "description": "Settings commands. Run 'vtex settings' to see all subcommands"
       }
     }
   }
