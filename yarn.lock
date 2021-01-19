@@ -501,6 +501,7 @@
     is-wsl "^2.1.1"
     tslib "^1.9.3"
 
+<<<<<<< HEAD
 "@oclif/config@^1.17.0":
   version "1.17.0"
   resolved "https://registry.yarnpkg.com/@oclif/config/-/config-1.17.0.tgz#ba8639118633102a7e481760c50054623d09fcab"
@@ -513,6 +514,8 @@
     is-wsl "^2.1.1"
     tslib "^2.0.0"
 
+=======
+>>>>>>> Release v3.0.0-beta
 "@oclif/dev-cli@^1":
   version "1.22.2"
   resolved "https://registry.yarnpkg.com/@oclif/dev-cli/-/dev-cli-1.22.2.tgz#e890f93d0335c0e3faaa25741999776259b2171f"
