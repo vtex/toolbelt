@@ -50,7 +50,7 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "@oclif/command": "^1.0.0",
+    "@oclif/command": "^1.6.0",
     "@oclif/config": "^1.0.0",
     "@oclif/plugin-help": "^2.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
@@ -162,6 +162,7 @@
     "commands": "./lib/commands",
     "bin": "vtex",
     "scope": "vtex",
+    "helpClass": "./src/help",
     "plugins": [
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands",
