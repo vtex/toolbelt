@@ -50,9 +50,9 @@
     "url": "https://github.com/vtex/toolbelt/issues"
   },
   "dependencies": {
-    "@oclif/command": "^1.6.0",
-    "@oclif/config": "^1.0.0",
-    "@oclif/plugin-help": "^2.0.0",
+    "@oclif/command": "^1.8.0",
+    "@oclif/config": "^1.17.0",
+    "@oclif/plugin-help": "^3.2.1",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.77.0",
     "@vtex/cli-plugin-abtest": "^0.0.5",
@@ -91,6 +91,7 @@
     "get-stream": "~4.0.0",
     "globby": "~8.0.1",
     "graphql": "^14.2.1",
+    "indent-string": "^4.0.0",
     "is-docker": "^2.0.0",
     "is-wsl": "^2.1.1",
     "js-yaml": "~3.13.1",
@@ -162,7 +163,6 @@
     "commands": "./lib/commands",
     "bin": "vtex",
     "scope": "vtex",
-    "helpClass": "./src/help",
     "plugins": [
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands",

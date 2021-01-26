@@ -1,8 +1,11 @@
 import axios from 'axios'
 import os from 'os'
 import help from '@oclif/plugin-help'
+import { renderList } from '../../../node_modules/@oclif/plugin-help/lib/list'
+
 import * as Config from '@oclif/config'
 import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
+import { error } from '@oclif/errors'
 
 import { envCookies } from '../../api/env'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
@@ -19,6 +22,10 @@ import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
 import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
+import { FeatureFlag } from '../../api'
+import { getHelpSubject } from './utils'
+import chalk from 'chalk'
+import indent from 'indent-string'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -27,6 +34,11 @@ let loginPending = false
 
 const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
+}
+
+interface CommandI {
+  name: string
+  description: string
 }
 
 const checkLogin = async (command: string) => {
@@ -173,8 +185,12 @@ export const onError = async (e: any) => {
 }
 
 export default async function(options: HookKeyOrOptions<'init'>) {
+  // public confirmRelease = async (): Promise<boolean> => {
+
   // overwrite Help#showCommandHelp to customize help formating
-  help.prototype.showCommandHelp = function(command: Config.Command, topics: Config.Topic[]) {
+  help.prototype.showCommandHelp = function(command: Config.Command) {
+    let topics = this._topics
+    topics = topics.filter(t => this.opts.all || !t.hidden)
     const name = command.id
     const depth = name.split(':').length
     topics = topics.filter(t => t.name.startsWith(`${name}:`) && t.name.split(':').length === depth + 1)
@@ -186,6 +202,81 @@ export default async function(options: HookKeyOrOptions<'init'>) {
       console.log(this.topics(topics))
       console.log('')
     }
+  }
+
+  help.prototype.showHelp = function(_argv: string[]) {
+    const subject = getHelpSubject(_argv)
+    if (subject) {
+      const command = this.config.findCommand(subject)
+      if (command) {
+        this.showCommandHelp(command)
+        return
+      }
+
+      const topic = this.config.findTopic(subject)
+      if (topic) {
+        this.showTopicHelp(topic)
+        return
+      }
+
+      error(`command ${subject} not found`)
+    }
+
+    const renderCommands = (commands: any): string => {
+      return renderList(
+        commands.map(c => [c.name, c.description && this.render(c.description.split('\n')[0])]),
+        {
+          spacer: '\n',
+          stripAnsi: this.opts.stripAnsi,
+          maxWidth: this.opts.maxWidth - 2,
+        }
+      )
+    }
+
+    const commandsGroup: Record<string, number> = FeatureFlag.getSingleton().getFeatureFlagInfo<Record<string, number>>(
+      'COMMANDS_GROUP'
+    )
+    const commandsId: Record<number, string> = FeatureFlag.getSingleton().getFeatureFlagInfo<Record<number, string>>(
+      'COMMANDS_GROUP_ID'
+    )
+    const commandsGroupLength: number = Object.keys(commandsId).length
+
+    const commands = this.config.commands
+      .filter(c => !c.id.includes(':'))
+      .map(c => {
+        return { name: c.id, description: c.description }
+      })
+    const topics = this.config.topics
+      .filter(t => !t.name.includes(':'))
+      .map(c => {
+        return { name: c.name, description: c.description }
+      })
+    const allCommands = commands.concat(topics)
+
+    const groups = []
+    for (let i = 0; i < commandsGroupLength; i++) groups.push([])
+
+    const cachedObject: Map<string, boolean> = new Map<string, boolean>()
+    for (let i = 0; i < allCommands.length; i++) {
+      const command: CommandI = allCommands[i]
+      if (cachedObject.has(command.name)) continue
+      cachedObject.set(command.name, true)
+
+      const commandGroupId = commandsGroup[command.name]
+
+      if (commandGroupId) {
+        groups[commandGroupId].push(command)
+      } else {
+        groups[commandsGroupLength - 1].push(command)
+      }
+    }
+    const body = []
+    for (let i = 0; i < commandsGroupLength; i++) {
+      body.push(chalk.bold(commandsId[i < commandsGroupLength - 1 ? i : 255]))
+      body.push(indent(renderCommands(groups[i]), 2))
+      body.push('\n')
+    }
+    console.log(body.join('\n'))
   }
 
   axios.interceptors.request.use(config => {
