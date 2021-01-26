@@ -223,7 +223,7 @@ export default async function(options: HookKeyOrOptions<'init'>) {
 
     const renderCommands = (commands: any): string => {
       return renderList(
-        commands.map(c => [c.name, c.description && this.render(c.description.split('\n')[0])]),
+        commands.map(c => [chalk.hex(COLORS.PINK)(c.name), c.description && this.render(c.description.split('\n')[0])]),
         {
           spacer: '\n',
           stripAnsi: this.opts.stripAnsi,
@@ -271,7 +271,7 @@ export default async function(options: HookKeyOrOptions<'init'>) {
     }
     const body = []
     for (let i = 0; i < commandsGroupLength; i++) {
-      body.push(chalk.hex(COLORS.PINK)(commandsId[i < commandsGroupLength - 1 ? i : 255]))
+      body.push(chalk.bold(commandsId[i < commandsGroupLength - 1 ? i : 255]))
       body.push(indent(renderCommands(groups[i]), 2))
       body.push('\n')
     }
