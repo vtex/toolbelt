@@ -163,7 +163,6 @@
     "commands": "./lib/commands",
     "bin": "vtex",
     "scope": "vtex",
-    "helpClass": "./src/help",
     "plugins": [
       "@oclif/plugin-help",
       "@tiagonapoli/oclif-plugin-spaced-commands",
