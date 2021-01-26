@@ -26,6 +26,7 @@ import { FeatureFlag } from '../../api'
 import { getHelpSubject } from './utils'
 import chalk from 'chalk'
 import indent from 'indent-string'
+import { COLORS } from '../../api/constants/Colors'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -185,8 +186,6 @@ export const onError = async (e: any) => {
 }
 
 export default async function(options: HookKeyOrOptions<'init'>) {
-  // public confirmRelease = async (): Promise<boolean> => {
-
   // overwrite Help#showCommandHelp to customize help formating
   help.prototype.showCommandHelp = function(command: Config.Command) {
     let topics = this._topics
@@ -272,7 +271,7 @@ export default async function(options: HookKeyOrOptions<'init'>) {
     }
     const body = []
     for (let i = 0; i < commandsGroupLength; i++) {
-      body.push(chalk.bold(commandsId[i < commandsGroupLength - 1 ? i : 255]))
+      body.push(chalk.hex(COLORS.PINK)(commandsId[i < commandsGroupLength - 1 ? i : 255]))
       body.push(indent(renderCommands(groups[i]), 2))
       body.push('\n')
     }
