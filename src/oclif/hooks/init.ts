@@ -1,7 +1,6 @@
 import axios from 'axios'
 import os from 'os'
 import help from '@oclif/plugin-help'
-import { renderList } from '../../../node_modules/@oclif/plugin-help/lib/list'
 
 import * as Config from '@oclif/config'
 import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
@@ -23,10 +22,7 @@ import { SessionManager } from '../../api/session/SessionManager'
 import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { FeatureFlag } from '../../api'
-import { getHelpSubject } from './utils'
-import chalk from 'chalk'
-import indent from 'indent-string'
-import { COLORS } from '../../api/constants/Colors'
+import { getHelpSubject, CommandI, renderCommands } from './utils';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -35,11 +31,6 @@ let loginPending = false
 
 const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
-}
-
-interface CommandI {
-  name: string
-  description: string
 }
 
 const checkLogin = async (command: string) => {
@@ -221,17 +212,6 @@ export default async function(options: HookKeyOrOptions<'init'>) {
       error(`command ${subject} not found`)
     }
 
-    const renderCommands = (commands: any): string => {
-      return renderList(
-        commands.map(c => [chalk.hex(COLORS.PINK)(c.name), c.description && this.render(c.description.split('\n')[0])]),
-        {
-          spacer: '\n',
-          stripAnsi: this.opts.stripAnsi,
-          maxWidth: this.opts.maxWidth - 2,
-        }
-      )
-    }
-
     const commandsGroup: Record<string, number> = FeatureFlag.getSingleton().getFeatureFlagInfo<Record<string, number>>(
       'COMMANDS_GROUP'
     )
@@ -252,13 +232,12 @@ export default async function(options: HookKeyOrOptions<'init'>) {
       })
     const allCommands = commands.concat(topics)
 
-    const groups = []
-    for (let i = 0; i < commandsGroupLength; i++) groups.push([])
+    const groups: CommandI[][] = Object.keys(commandsId).map(_ => [])
 
     const cachedObject: Map<string, boolean> = new Map<string, boolean>()
-    for (let i = 0; i < allCommands.length; i++) {
-      const command: CommandI = allCommands[i]
-      if (cachedObject.has(command.name)) continue
+
+    allCommands.forEach((command: CommandI) => {
+      if (cachedObject.has(command.name)) return
       cachedObject.set(command.name, true)
 
       const commandGroupId = commandsGroup[command.name]
@@ -268,14 +247,14 @@ export default async function(options: HookKeyOrOptions<'init'>) {
       } else {
         groups[commandsGroupLength - 1].push(command)
       }
-    }
-    const body = []
-    for (let i = 0; i < commandsGroupLength; i++) {
-      body.push(chalk.bold(commandsId[i < commandsGroupLength - 1 ? i : 255]))
-      body.push(indent(renderCommands(groups[i]), 2))
-      body.push('\n')
-    }
-    console.log(body.join('\n'))
+    })
+
+    const renderedCommands = renderCommands(commandsId, groups, {
+      render: this.render,
+      opts: this.opts,
+    })
+
+    console.log(renderedCommands)
   }
 
   axios.interceptors.request.use(config => {
