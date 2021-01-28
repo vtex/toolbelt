@@ -21,8 +21,8 @@ import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
 import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import { FeatureFlag } from '../../api'
-import { getHelpSubject, CommandI, renderCommands } from './utils';
+import { FeatureFlag } from '../../api/modules/featureFlag'
+import { getHelpSubject, CommandI, renderCommands } from './utils'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')

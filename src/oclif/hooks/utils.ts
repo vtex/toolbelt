@@ -33,7 +33,7 @@ export function renderCommands(commandsId: Record<number, string>, groups: Comma
 
   for (const [key, value] of Object.entries(commandsId)) {
     body.push(chalk.bold(value))
-    body.push(indent(renderCommand(groups[parseInt(key) != 255? key:commandsGroupLength - 1], ctx), 2))
+    body.push(indent(renderCommand(groups[key !== '255' ? key : commandsGroupLength - 1], ctx), 2))
     body.push('\n')
   }
 
