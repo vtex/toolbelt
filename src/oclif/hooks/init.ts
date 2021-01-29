@@ -1,8 +1,10 @@
 import axios from 'axios'
 import os from 'os'
 import help from '@oclif/plugin-help'
+
 import * as Config from '@oclif/config'
 import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
+import { error } from '@oclif/errors'
 
 import { envCookies } from '../../api/env'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
@@ -19,6 +21,8 @@ import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
 import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
+import { FeatureFlag } from '../../api/modules/featureFlag'
+import { getHelpSubject, CommandI, renderCommands } from './utils'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -174,7 +178,9 @@ export const onError = async (e: any) => {
 
 export default async function(options: HookKeyOrOptions<'init'>) {
   // overwrite Help#showCommandHelp to customize help formating
-  help.prototype.showCommandHelp = function(command: Config.Command, topics: Config.Topic[]) {
+  help.prototype.showCommandHelp = function(command: Config.Command) {
+    let topics = this._topics
+    topics = topics.filter(t => this.opts.all || !t.hidden)
     const name = command.id
     const depth = name.split(':').length
     topics = topics.filter(t => t.name.startsWith(`${name}:`) && t.name.split(':').length === depth + 1)
@@ -186,6 +192,70 @@ export default async function(options: HookKeyOrOptions<'init'>) {
       console.log(this.topics(topics))
       console.log('')
     }
+  }
+
+  help.prototype.showHelp = function(_argv: string[]) {
+    const subject = getHelpSubject(_argv)
+    if (subject) {
+      const command = this.config.findCommand(subject)
+      if (command) {
+        this.showCommandHelp(command)
+        return
+      }
+
+      const topic = this.config.findTopic(subject)
+      if (topic) {
+        this.showTopicHelp(topic)
+        return
+      }
+
+      error(`command ${subject} not found`)
+    }
+
+    const commandsGroup: Record<string, number> = FeatureFlag.getSingleton().getFeatureFlagInfo<Record<string, number>>(
+      'COMMANDS_GROUP'
+    )
+    const commandsId: Record<number, string> = FeatureFlag.getSingleton().getFeatureFlagInfo<Record<number, string>>(
+      'COMMANDS_GROUP_ID'
+    )
+    const commandsGroupLength: number = Object.keys(commandsId).length
+
+    const commands = this.config.commands
+      .filter(c => !c.id.includes(':'))
+      .map(c => {
+        return { name: c.id, description: c.description }
+      })
+    const topics = this.config.topics
+      .filter(t => !t.name.includes(':'))
+      .map(c => {
+        return { name: c.name, description: c.description }
+      })
+    const allCommands = commands.concat(topics)
+
+    const groups: CommandI[][] = Object.keys(commandsId).map(_ => [])
+
+    const cachedObject: Map<string, boolean> = new Map<string, boolean>()
+
+    allCommands.forEach((command: CommandI) => {
+      if (cachedObject.has(command.name)) return
+      cachedObject.set(command.name, true)
+
+      const commandGroupId = commandsGroup[command.name]
+
+      if (commandGroupId) {
+        groups[commandGroupId].push(command)
+      } else {
+        groups[commandsGroupLength - 1].push(command)
+      }
+    })
+
+    const renderedCommands = renderCommands(commandsId, groups, {
+      render: this.render,
+      opts: this.opts,
+      config: this.config,
+    })
+
+    console.log(renderedCommands)
   }
 
   axios.interceptors.request.use(config => {
