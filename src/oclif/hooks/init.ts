@@ -252,6 +252,7 @@ export default async function(options: HookKeyOrOptions<'init'>) {
     const renderedCommands = renderCommands(commandsId, groups, {
       render: this.render,
       opts: this.opts,
+      config: this.config,
     })
 
     console.log(renderedCommands)

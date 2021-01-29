@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import indent from 'indent-string'
 import { COLORS } from '../../api'
 import { renderList } from '../../../node_modules/@oclif/plugin-help/lib/list'
+import RootHelp from '../../../node_modules/@oclif/plugin-help/lib/root'
 
 export interface CommandI {
   name: string
@@ -30,11 +31,15 @@ function renderCommand(commands: CommandI[], ctx: any): string {
 export function renderCommands(commandsId: Record<number, string>, groups: CommandI[][], ctx: any) {
   const body = []
   const commandsGroupLength: number = Object.keys(commandsId).length
+  const help = new RootHelp(ctx.config, ctx.opts)
+
+  body.push(help.root())
+  body.push(' ')
 
   for (const [key, value] of Object.entries(commandsId)) {
     body.push(chalk.bold(value))
     body.push(indent(renderCommand(groups[key !== '255' ? key : commandsGroupLength - 1], ctx), 2))
-    body.push('\n')
+    body.push(' ')
   }
 
   return body.join('\n')
