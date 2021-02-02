@@ -113,6 +113,12 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         )
       } else if (hasErrorMessage(e)) {
         log.error(e.response.data.message)
+        /**
+         * TODO:
+         * else if (error === new Error('Failed to get billing options')) {
+         *   log that we didn't find the billing options
+         * }
+         */
       } else {
         switch (e.message) {
           case 'no_buy_app_license':
