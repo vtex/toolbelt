@@ -79,19 +79,19 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         // eslint-disable-next-line no-await-in-loop
         const { code, billingOptions } = await installApp(app, false, force)
         switch (code) {
-          case 'installed_from_own_registry':
+          case InstallStatus.OWN_REGISTRY:
             log.debug('Installed from own registry')
             break
-          case 'public_app':
+          case InstallStatus.PUBLIC_REGISTRY:
             log.debug('Installed from public registry')
             break
-          case 'installed_by_previous_purchase':
+          case InstallStatus.PREVIOUS_PURCHASE:
             log.debug('Installed from previous purchase')
             break
-          case 'installed_free':
+          case InstallStatus.FREE:
             log.debug('Free app')
             break
-          case 'check_terms':
+          case InstallStatus.CHECK_TERMS:
             if (!billingOptions) {
               throw new Error('Failed to get billing options')
             }
