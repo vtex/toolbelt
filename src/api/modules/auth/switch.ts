@@ -1,9 +1,10 @@
 import chalk from 'chalk'
 import { createFlowIssueError } from '../../error/utils'
 import { SessionManager } from '../../session/SessionManager'
-import log from '../../logger'
+import logger from '../../logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'
 import welcome from '../../../modules/auth/welcome'
+import { COLORS } from '../../constants'
 
 interface SwitchOptions {
   showWelcomeMessage?: boolean
@@ -45,7 +46,7 @@ const checkAndSwitch = async (targetAccount: string, targetWorkspace: string): P
 
   const { account, workspace, userLogged } = session
 
-  log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(userLogged)} at workspace ${chalk.green(workspace)}`)
+  logger.info(`Logged into ${chalk.hex(COLORS.BLUE)(account)} as ${chalk.green(userLogged)} at workspace ${chalk.green(workspace)}`)
 
   if (initialAccount !== targetAccount) {
     return SwitchStatus.SwitchedAccount
@@ -78,15 +79,15 @@ export const switchAccount = async (targetAccount: string, options: SwitchOption
 
   const switchStatus = await checkAndSwitch(parsedAccount, options.workspace || 'master')
   if (switchStatus === SwitchStatus.SwitchedAccount) {
-    log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(parsedAccount)}`)
+    logger.info(`Switched from ${chalk.hex(COLORS.BLUE)(previousAccount)} to ${chalk.hex(COLORS.BLUE)(parsedAccount)}`)
   } else if (switchStatus === SwitchStatus.SwitchedOnlyWorkspace) {
-    log.info(
-      `Switched from workspace ${chalk.blue(currWorkspace)} to ${chalk.blue(parsedWorkspace)} in account ${chalk.blue(
-        parsedAccount
-      )}`
+    logger.info(
+      `Switched from workspace ${chalk.hex(COLORS.BLUE)(currWorkspace)} to ${chalk.hex(COLORS.BLUE)(
+        parsedWorkspace
+      )} in account ${chalk.hex(COLORS.BLUE)(parsedAccount)}`
     )
   } else if (switchStatus === SwitchStatus.SwitchedNothing) {
-    log.info(`You're already logged in ${chalk.blue(targetAccount)}`)
+    logger.info(`You're already logged in ${chalk.hex(COLORS.BLUE)(targetAccount)}`)
   }
 
   if (options.showWelcomeMessage && switchStatus === SwitchStatus.SwitchedAccount) {
@@ -108,9 +109,9 @@ export function returnToPreviousAccount({
     ...(promptConfirmation
       ? {
           initialPrompt: {
-            message: `Now you are logged in ${chalk.blue(
+            message: `Now you are logged in ${chalk.hex(COLORS.BLUE)(
               SessionManager.getSingleton().account
-            )}. Do you want to return to ${chalk.blue(previousAccount)} account?`,
+            )}. Do you want to return to ${chalk.hex(COLORS.BLUE)(previousAccount)} account?`,
           },
         }
       : null),
