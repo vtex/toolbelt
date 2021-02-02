@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { compose, equals, head, path } from 'ramda'
+import { compose, equals, path } from 'ramda'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
@@ -62,12 +62,17 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
   log.debug(BillingMessages.INSTALL_SUCCESS)
 }
 
+export const isBillingApp = (app: string) => {
+  const billingRegex = /^vtex\.billing(@.*)?$/
+  return billingRegex.test(app)
+}
+
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
   for (const app of appsList) {
     ManifestValidator.validateApp(app)
     try {
       log.debug('Starting to install app', app)
-      if (app === 'vtex.billing' || head(app.split('@')) === 'vtex.billing') {
+      if (isBillingApp(app)) {
         // eslint-disable-next-line no-await-in-loop
         await legacyInstallApp(app)
       } else {
