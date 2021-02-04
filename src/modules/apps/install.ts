@@ -1,5 +1,4 @@
 import chalk from 'chalk'
-import { compose, equals, path } from 'ramda'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
@@ -12,10 +11,10 @@ import { BillingMessages } from '../../lib/constants/BillingMessages'
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
 
-const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
-const isForbiddenError = isError(403)
-const isNotFoundError = isError(404)
-const hasErrorMessage = path(['response', 'data', 'message'])
+const isError = (errorCode: number) => (e: any) => e?.response?.status === errorCode
+export const isForbiddenError = isError(403)
+export const isNotFoundError = isError(404)
+export const hasErrorMessage = (e: any) => e?.response?.data?.message !== undefined
 
 const logGraphQLErrorMessage = e => {
   log.error('Installation failed!')
@@ -37,6 +36,12 @@ const hasLicenseFile = async (name: string, version: string) => {
     }
     throw err
   }
+}
+
+const isMissingBillingOptions = (err: any) => {
+  // TODO
+  console.log(err)
+  return false
 }
 
 const licenseURL = async (app: string, termsURL?: string): Promise<string | undefined> => {
@@ -119,14 +124,16 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
          *   log that we didn't find the billing options
          * }
          */
+      } else if (isMissingBillingOptions(e)) {
+        console.log(';')
       } else {
         switch (e.message) {
-          case 'no_buy_app_license':
+          case InstallStatus.USER_HAS_NO_BUY_APP_LICENSE:
             log.error(
               `You do not have permission to purchase apps. Please check your VTEX IO 'Buy Apps' resource access in Account Managament`
             )
             break
-          case 'area_unavailable':
+          case InstallStatus.AREA_UNAVAILABLE:
             log.error('Unfortunately, app purchases are not yet available in your region')
             break
           default:
