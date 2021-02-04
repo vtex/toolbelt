@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.1.1-beta] - 2021-02-04
 ### Changed
 - [Github Action] Detach create release and integrate slack notification inside npm workflow
+## [3.1.1-beta] - 2021-02-04
+### Changed
+- [Github Action] Detach create release and integrate slack notification inside npm workflow
 ## [3.1.0-beta] - 2021-01-29
 ### Changed
 - [Help] `vtex --help` new commands format (Groups)
