@@ -1,4 +1,11 @@
-import { isBillingApp, isForbiddenError, isNotFoundError, hasErrorMessage } from '../../../modules/apps/install'
+import {
+  isBillingApp,
+  isForbiddenError,
+  isNotFoundError,
+  isMissingBillingOptions,
+  hasErrorMessage,
+  IS_MISSING_BILLING_OPTIONS,
+} from '../../../modules/apps/install'
 
 test('hasErrorMessage function', () => {
   expect(hasErrorMessage({})).toBeFalsy
@@ -44,6 +51,11 @@ test('isForbiddenError and isNotFoundError', () => {
   expect(isNotFoundError({})).toBeFalsy
   expect(isNotFoundError({response: {status: 403}})).toBeFalsy
   expect(isNotFoundError({response: {status: 404}})).toBeTruthy
+})
+
+test('isMissingBillingOptions', () => {
+  expect(isMissingBillingOptions(new Error(''))).toBeFalsy
+  expect(isMissingBillingOptions(new Error(IS_MISSING_BILLING_OPTIONS))).toBeTruthy
 })
 
 test('isBillingApp function', () => {

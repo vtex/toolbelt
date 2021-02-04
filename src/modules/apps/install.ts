@@ -8,6 +8,8 @@ import { promptConfirm } from '../../api/modules/prompts'
 import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
 import { BillingMessages } from '../../lib/constants/BillingMessages'
 
+export const IS_MISSING_BILLING_OPTIONS = 'missing_billing_options'
+
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
 
@@ -15,6 +17,8 @@ const isError = (errorCode: number) => (e: any) => e?.response?.status === error
 export const isForbiddenError = isError(403)
 export const isNotFoundError = isError(404)
 export const hasErrorMessage = (e: any) => e?.response?.data?.message !== undefined
+
+export const isMissingBillingOptions = (err: any) => err?.message === IS_MISSING_BILLING_OPTIONS
 
 const logGraphQLErrorMessage = e => {
   log.error('Installation failed!')
@@ -36,12 +40,6 @@ const hasLicenseFile = async (name: string, version: string) => {
     }
     throw err
   }
-}
-
-const isMissingBillingOptions = (err: any) => {
-  // TODO
-  console.log(err)
-  return false
 }
 
 const licenseURL = async (app: string, termsURL?: string): Promise<string | undefined> => {
@@ -98,7 +96,7 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
             break
           case InstallStatus.CHECK_TERMS:
             if (!billingOptions) {
-              throw new Error('Failed to get billing options')
+              throw new Error(IS_MISSING_BILLING_OPTIONS)
             }
             // eslint-disable-next-line no-await-in-loop
             await checkBillingOptions(app, JSON.parse(billingOptions), force)
@@ -118,14 +116,10 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         )
       } else if (hasErrorMessage(e)) {
         log.error(e.response.data.message)
-        /**
-         * TODO:
-         * else if (error === new Error('Failed to get billing options')) {
-         *   log that we didn't find the billing options
-         * }
-         */
       } else if (isMissingBillingOptions(e)) {
-        console.log(';')
+        log.error(
+          `The app is missing billingOptions. For further information on how to add it, go to https://help.vtex.com/tutorial/app-pricing-options--2ZKBKxLe08Q6seA6sCi6o2`
+        )
       } else {
         switch (e.message) {
           case InstallStatus.USER_HAS_NO_BUY_APP_LICENSE:
