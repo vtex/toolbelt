@@ -1,54 +1,57 @@
-import {
-  isBillingApp,
-  isForbiddenError,
-  isNotFoundError,
-  hasErrorMessage,
-} from '../../../modules/apps/install'
+import { isBillingApp, isForbiddenError, isNotFoundError, hasErrorMessage } from '../../../modules/apps/install'
 
 test('hasErrorMessage function', () => {
   expect(hasErrorMessage({})).toBeFalsy
 
-  expect(hasErrorMessage({
-    response: {
-      data: {
-        message: 'has message',
-      }
-    }
-  })).toBeTruthy
+  expect(
+    hasErrorMessage({
+      response: {
+        data: {
+          message: 'has message',
+        },
+      },
+    })
+  ).toBeTruthy
 
-  expect(hasErrorMessage({
-    response: {
-      data: {
-        message: '',
-      }
-    }
-  })).toBeFalsy
+  expect(
+    hasErrorMessage({
+      response: {
+        data: {
+          message: '',
+        },
+      },
+    })
+  ).toBeFalsy
 
-  expect(hasErrorMessage({
-    response: {
-      data: {
-        message: null,
-      }
-    }
-  })).toBeFalsy
+  expect(
+    hasErrorMessage({
+      response: {
+        data: {
+          message: null,
+        },
+      },
+    })
+  ).toBeFalsy
 
-  expect(hasErrorMessage({
-    response: {
-      data: {
-        message: undefined,
-      }
-    }
-  })).toBeFalsy
+  expect(
+    hasErrorMessage({
+      response: {
+        data: {
+          message: undefined,
+        },
+      },
+    })
+  ).toBeFalsy
 })
 
 test('isForbiddenError and isNotFoundError', () => {
   expect(isForbiddenError({})).toBeFalsy
-  expect(isForbiddenError({response: {status: 404}})).toBeFalsy
-  expect(isForbiddenError({response: {status: 403}})).toBeTruthy
+  expect(isForbiddenError({ response: { status: 404 } })).toBeFalsy
+  expect(isForbiddenError({ response: { status: 403 } })).toBeTruthy
 
   expect(isNotFoundError({})).toBeFalsy
-  expect(isNotFoundError({response: {status: 403}})).toBeFalsy
-  expect(isNotFoundError({response: {status: 404}})).toBeTruthy
+  expect(isNotFoundError({ response: { status: 403 } })).toBeFalsy
+  expect(isNotFoundError({ response: { status: 404 } })).toBeTruthy
 })
 
 test('isBillingApp function', () => {
