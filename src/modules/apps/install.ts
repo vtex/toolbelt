@@ -1,5 +1,4 @@
 import chalk from 'chalk'
-import { compose, equals, head, path } from 'ramda'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
@@ -12,10 +11,10 @@ import { BillingMessages } from '../../lib/constants/BillingMessages'
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
 
-const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
-const isForbiddenError = isError(403)
-const isNotFoundError = isError(404)
-const hasErrorMessage = path(['response', 'data', 'message'])
+const isError = (errorCode: number) => (e: any) => e?.response?.status === errorCode
+export const isForbiddenError = isError(403)
+export const isNotFoundError = isError(404)
+export const hasErrorMessage = (e: any) => e?.response?.data?.message !== undefined
 
 const logGraphQLErrorMessage = e => {
   log.error('Installation failed!')
@@ -62,31 +61,36 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
   log.debug(BillingMessages.INSTALL_SUCCESS)
 }
 
+export const isBillingApp = (app: string) => {
+  const billingRegex = /^vtex\.billing(@.*)?$/
+  return billingRegex.test(app)
+}
+
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
   for (const app of appsList) {
     ManifestValidator.validateApp(app)
     try {
       log.debug('Starting to install app', app)
-      if (app === 'vtex.billing' || head(app.split('@')) === 'vtex.billing') {
+      if (isBillingApp(app)) {
         // eslint-disable-next-line no-await-in-loop
         await legacyInstallApp(app)
       } else {
         // eslint-disable-next-line no-await-in-loop
         const { code, billingOptions } = await installApp(app, false, force)
         switch (code) {
-          case 'installed_from_own_registry':
+          case InstallStatus.OWN_REGISTRY:
             log.debug('Installed from own registry')
             break
-          case 'public_app':
+          case InstallStatus.PUBLIC_REGISTRY:
             log.debug('Installed from public registry')
             break
-          case 'installed_by_previous_purchase':
+          case InstallStatus.PREVIOUS_PURCHASE:
             log.debug('Installed from previous purchase')
             break
-          case 'installed_free':
+          case InstallStatus.FREE:
             log.debug('Free app')
             break
-          case 'check_terms':
+          case InstallStatus.CHECK_TERMS:
             if (!billingOptions) {
               throw new Error('Failed to get billing options')
             }
@@ -110,12 +114,12 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         log.error(e.response.data.message)
       } else {
         switch (e.message) {
-          case 'no_buy_app_license':
+          case InstallStatus.USER_HAS_NO_BUY_APP_LICENSE:
             log.error(
               `You do not have permission to purchase apps. Please check your VTEX IO 'Buy Apps' resource access in Account Managament`
             )
             break
-          case 'area_unavailable':
+          case InstallStatus.AREA_UNAVAILABLE:
             log.error('Unfortunately, app purchases are not yet available in your region')
             break
           default:
