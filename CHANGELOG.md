@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.1.2-beta] - 2021-02-04
+### Changed
+- Don't throw error when switching to same account
+
 ## [3.1.1-beta] - 2021-02-04
 ### Changed
 - [Github Action] Detach create release and integrate slack notification inside npm workflow

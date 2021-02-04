@@ -1,19 +1,15 @@
 import chalk from 'chalk'
-import { split } from 'ramda'
 import { createFlowIssueError } from '../../error/utils'
 import { SessionManager } from '../../session/SessionManager'
-import log from '../../logger'
-import { promptConfirm } from '../prompts'
+import logger from '../../logger'
 import { handleErrorCreatingWorkspace, workspaceCreator } from '../workspace/create'
 import welcome from '../../../modules/auth/welcome'
+import { COLORS } from '../../constants'
 
 interface SwitchOptions {
   showWelcomeMessage?: boolean
   workspace?: string
   gracefulAccountCheck?: boolean
-  initialPrompt?: {
-    message: string
-  }
 }
 
 interface AccountReturnArgs {
@@ -22,17 +18,21 @@ interface AccountReturnArgs {
   promptConfirmation?: boolean
 }
 
-const checkAndSwitch = async (targetAccount: string, targetWorkspace: string) => {
+enum SwitchStatus {
+  SwitchedAccount,
+  SwitchedOnlyWorkspace,
+  SwitchedNothing,
+}
+
+const checkAndSwitch = async (targetAccount: string, targetWorkspace: string): Promise<SwitchStatus> => {
   const session = SessionManager.getSingleton()
-  const { account: currAccount } = session
+  const { account: initialAccount, workspace: initialWorkspace } = session
   const isValidAccount = /^\s*[\w-]+\s*$/.test(targetAccount)
 
   if (!isValidAccount) {
     throw createFlowIssueError('Invalid account format')
-  } else if (!currAccount) {
+  } else if (!initialAccount) {
     throw createFlowIssueError("You're not logged in right now")
-  } else if (currAccount === targetAccount) {
-    throw createFlowIssueError(`You're already using the account ${chalk.blue(targetAccount)}`)
   }
 
   await session.login(targetAccount, {
@@ -46,42 +46,55 @@ const checkAndSwitch = async (targetAccount: string, targetWorkspace: string) =>
 
   const { account, workspace, userLogged } = session
 
-  log.info(`Logged into ${chalk.blue(account)} as ${chalk.green(userLogged)} at workspace ${chalk.green(workspace)}`)
+  logger.info(
+    `Logged into ${chalk.hex(COLORS.BLUE)(account)} as ${chalk.green(userLogged)} at workspace ${chalk.green(
+      workspace
+    )}`
+  )
+
+  if (initialAccount !== targetAccount) {
+    return SwitchStatus.SwitchedAccount
+  }
+  if (initialWorkspace !== targetWorkspace) {
+    return SwitchStatus.SwitchedOnlyWorkspace
+  }
+  return SwitchStatus.SwitchedNothing
 }
 
-export const switchAccount = async (account: string, options: SwitchOptions): Promise<boolean> => {
-  const { account: currAccount, lastUsedAccount } = SessionManager.getSingleton()
+export const switchAccount = async (targetAccount: string, options: SwitchOptions): Promise<boolean> => {
+  const { account: currAccount, lastUsedAccount, workspace: currWorkspace } = SessionManager.getSingleton()
 
-  if (options.gracefulAccountCheck && currAccount === account) {
+  if (options.gracefulAccountCheck && currAccount === targetAccount) {
     return false
   }
 
-  if (options.initialPrompt) {
-    const confirm = await promptConfirm(options.initialPrompt.message)
-    if (!confirm) {
-      return false
-    }
-  }
-
-  if (account === '-') {
-    account = lastUsedAccount
-    if (account == null) {
+  if (targetAccount === '-') {
+    targetAccount = lastUsedAccount
+    if (targetAccount == null) {
       throw createFlowIssueError('No last used account was found')
     }
   }
 
   const previousAccount = currAccount
-  // Enable users to type `vtex switch {account}/{workspace}` and switch
-  // directly to a workspace without typing the `-w` option.
-  const [parsedAccount, parsedWorkspace] = split('/', account)
+  const [parsedAccount, parsedWorkspace] = targetAccount.split('/')
   if (parsedWorkspace) {
     options = { ...options, workspace: parsedWorkspace }
   }
 
-  await checkAndSwitch(parsedAccount, options.workspace || 'master')
-  log.info(`Switched from ${chalk.blue(previousAccount)} to ${chalk.blue(parsedAccount)}`)
+  const switchStatus = await checkAndSwitch(parsedAccount, options.workspace || 'master')
+  if (switchStatus === SwitchStatus.SwitchedAccount) {
+    logger.info(`Switched from ${chalk.hex(COLORS.BLUE)(previousAccount)} to ${chalk.hex(COLORS.BLUE)(parsedAccount)}`)
+  } else if (switchStatus === SwitchStatus.SwitchedOnlyWorkspace) {
+    logger.info(
+      `Switched from workspace ${chalk.hex(COLORS.BLUE)(currWorkspace)} to ${chalk.hex(COLORS.BLUE)(
+        parsedWorkspace
+      )} in account ${chalk.hex(COLORS.BLUE)(parsedAccount)}`
+    )
+  } else if (switchStatus === SwitchStatus.SwitchedNothing) {
+    logger.info(`You're already logged in ${chalk.hex(COLORS.BLUE)(targetAccount)}`)
+  }
 
-  if (options.showWelcomeMessage) {
+  if (options.showWelcomeMessage && switchStatus === SwitchStatus.SwitchedAccount) {
     await welcome()
   }
 
@@ -100,9 +113,9 @@ export function returnToPreviousAccount({
     ...(promptConfirmation
       ? {
           initialPrompt: {
-            message: `Now you are logged in ${chalk.blue(
+            message: `Now you are logged in ${chalk.hex(COLORS.BLUE)(
               SessionManager.getSingleton().account
-            )}. Do you want to return to ${chalk.blue(previousAccount)} account?`,
+            )}. Do you want to return to ${chalk.hex(COLORS.BLUE)(previousAccount)} account?`,
           },
         }
       : null),
