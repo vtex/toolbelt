@@ -46,7 +46,11 @@ const checkAndSwitch = async (targetAccount: string, targetWorkspace: string): P
 
   const { account, workspace, userLogged } = session
 
-  logger.info(`Logged into ${chalk.hex(COLORS.BLUE)(account)} as ${chalk.green(userLogged)} at workspace ${chalk.green(workspace)}`)
+  logger.info(
+    `Logged into ${chalk.hex(COLORS.BLUE)(account)} as ${chalk.green(userLogged)} at workspace ${chalk.green(
+      workspace
+    )}`
+  )
 
   if (initialAccount !== targetAccount) {
     return SwitchStatus.SwitchedAccount
