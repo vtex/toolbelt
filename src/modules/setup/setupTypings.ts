@@ -11,6 +11,7 @@ import { appIdFromRegistry, isLinked, resolveAppId } from '../../api/modules/uti
 import { runYarn } from '../utils'
 import { BUILDERS_WITH_TYPES } from './consts'
 import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
+import { TypingsInfo } from 'BuilderHub'
 
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/
@@ -66,18 +67,18 @@ const appsWithTypingsURLs = async (appDependencies: Record<string, any>, ignoreL
   return result
 }
 
-const getBuilderDependencies = (
-  manifestDependencies: Pick<Manifest, 'dependencies'>,
-  typingsData: any,
+export const getBuilderDependencies = (
+  manifestDependencies: Pick<Manifest, 'dependencies' | 'peerDependencies'>,
+  typingsData: TypingsInfo,
   version: string,
   builder: string
 ) => {
-  const builderTypingsData = R.prop(builder, typingsData)
-  let injectedDependencies = {}
-  if (builderTypingsData && R.has(version, builderTypingsData)) {
-    injectedDependencies = R.path([version, 'injectedDependencies'], builderTypingsData)
+  const injectedDependencies = typingsData?.[builder]?.[version]?.injectedDependencies || {}
+  return {
+    ...manifestDependencies.dependencies,
+    ...manifestDependencies.peerDependencies,
+    ...injectedDependencies,
   }
-  return R.merge(manifestDependencies, injectedDependencies)
 }
 
 const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLinked: boolean, builder: string) => {
@@ -131,11 +132,15 @@ export const setupTypings = async (
   try {
     log.info('Fetching names of dependencies injected by BuilderHub')
     const typingsData = await builderClient.typingsInfo()
+    const allDependencies: Pick<Manifest, 'dependencies' | 'peerDependencies'> = {
+      dependencies: manifest.dependencies,
+      peerDependencies: manifest.peerDependencies,
+    }
     const buildersWithAllDeps = filteredBuilders.map((builder: string) => {
       return {
         builder,
         deps: {
-          ...getBuilderDependencies(manifest.dependencies, typingsData, manifest.builders[builder], builder),
+          ...getBuilderDependencies(allDependencies, typingsData, manifest.builders[builder], builder),
           ...(builder === 'node' ? { [appName]: appMajor } : {}),
         },
       }
