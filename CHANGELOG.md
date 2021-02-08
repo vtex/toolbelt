@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 - Don't throw error when switching to same account
+### Fixed
+- [setup] including types of peerDependencies
 
 ## [3.1.2-beta] - 2021-02-04
 ### Changed
