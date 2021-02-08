@@ -20,33 +20,54 @@ beforeEach(() => {
 })
 
 describe('Dependencies management', () => {
-  test ('getBuilderDependencies', () => {
-    expect(getBuilderDependencies({
-      dependencies: {},
-      peerDependencies: {},
-    }, {
-      "builder": {
-        "version": {
-          "injectedDependencies": {},
+  test('getBuilderDependencies', () => {
+    expect(
+      getBuilderDependencies(
+        {
+          dependencies: {},
+          peerDependencies: {},
         },
-      },
-    }, "version", "builder")).toEqual({})
-
-    expect(getBuilderDependencies({
-      dependencies: { "app": "3.x" },
-      peerDependencies: { "app2": "1.x" },
-    }, {
-      "builder": {
-        "version": {
-          "injectedDependencies": { "app3": "5.x" },
+        {
+          builder: {
+            version: {
+              injectedDependencies: {},
+            },
+          },
         },
-      },
-    }, "version", "builder")).toEqual({ "app": "3.x", "app2": "1.x", "app3": "5.x" })
+        'version',
+        'builder'
+      )
+    ).toEqual({})
 
-    expect(getBuilderDependencies({
-      dependencies: { "app": "3.x" },
-      peerDependencies: { "app2": "1.x" },
-    }, {}, "version", "builder")).toEqual({ "app": "3.x", "app2": "1.x" })
+    expect(
+      getBuilderDependencies(
+        {
+          dependencies: { app: '3.x' },
+          peerDependencies: { app2: '1.x' },
+        },
+        {
+          builder: {
+            version: {
+              injectedDependencies: { app3: '5.x' },
+            },
+          },
+        },
+        'version',
+        'builder'
+      )
+    ).toEqual({ app: '3.x', app2: '1.x', app3: '5.x' })
+
+    expect(
+      getBuilderDependencies(
+        {
+          dependencies: { app: '3.x' },
+          peerDependencies: { app2: '1.x' },
+        },
+        {},
+        'version',
+        'builder'
+      )
+    ).toEqual({ app: '3.x', app2: '1.x' })
   })
 })
 
