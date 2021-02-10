@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import enquirer from 'enquirer'
 import { compose, equals, head, path } from 'ramda'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
@@ -8,6 +9,8 @@ import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
 import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
 import { BillingMessages } from '../../lib/constants/BillingMessages'
+
+const PROMPT_PLAN_CHOICES_NAME = 'billingOptionsPlanChoices'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
@@ -45,12 +48,35 @@ const licenseURL = async (app: string, termsURL?: string): Promise<string | unde
   return (await hasLicenseFile(name, version)) ? `https://apps.vtex.com/_v/terms/${name}@${version}` : termsURL
 }
 
+const buildBillingOptionsPlanChoices = ({ plans }: BillingOptions) => plans?.map(({ currency }) => currency) ?? []
+
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
   const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
-  log.info(
-    isFreeApp(billingOptions) ? BillingMessages.acceptToInstallFree(app) : BillingMessages.acceptToInstallPaid(app)
-  )
+  if (isFreeApp(billingOptions)) {
+    log.info(BillingMessages.acceptToInstallFree(app))
+  } else {
+    log.info(BillingMessages.acceptToInstallPaid(app))
+    console.log({ billingOptions: JSON.stringify(billingOptions, null, 2) })
+    const planChoices = buildBillingOptionsPlanChoices(billingOptions)
+    let [selectedChoice] = planChoices
+    if (planChoices.length > 1) {
+      const answer = await enquirer.prompt({
+        name: PROMPT_PLAN_CHOICES_NAME,
+        message:
+          'This app can be purchased in different currencies. What currency do you want to use to complete the purchase?',
+        type: 'select',
+        choices: planChoices,
+      })
+      selectedChoice = answer[PROMPT_PLAN_CHOICES_NAME]
+    }
+    console.log(`selectedChoice = ${selectedChoice}`)
+    if (selectedChoice !== 'BRL') {
+      log.info('Please continue the installation in the App Store page')
+      return
+    }
+  }
+
   log.info(BillingMessages.billingTable(optionsFormatter(billingOptions, app, license)))
   const confirm = await promptPolicies()
   if (!confirm) {
