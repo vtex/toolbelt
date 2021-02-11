@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.121.3] - 2021-02-11
+### Fixed
+-[install] Fix app's plan message for plans without metrics.
+
 ## [2.121.2] - 2021-01-13
 ### Fixed
 -[release] Fix `nothing to commit` algorithm in order to release app.
