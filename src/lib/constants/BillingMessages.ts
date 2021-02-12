@@ -10,8 +10,7 @@ export const BillingMessages = {
   PRICING_COLUMN: chalk.hex(COLORS.WHITE).bold('Pricing (monthly)'),
   INSTALL_STARTED: 'Starting to install app with accepted Terms',
   INSTALL_SUCCESS: 'Installed after accepted terms',
-  CURRENCY_OPTIONS:
-    'This app can be purchased in different currencies. What currency do you want to use to complete the purchase?',
+  CURRENCY_OPTIONS: 'Which currency do you prefer to use to buy this app?',
   app: (app: string) => chalk.hex(COLORS.PINK)(app),
   billingOptionsForApp: (app: string) =>
     chalk.bold(`${chalk.hex(COLORS.WHITE)('Billing Options for app ')}${BillingMessages.app(app)}`),
@@ -27,5 +26,6 @@ export const BillingMessages = {
     )} app . To install it, you need to accept the app's terms.`,
   billingTable: (table: string) => `\n${table}`,
   appCurrencyPage: (currency: string, link: string) =>
-    `Please follow to the App Store page to buy this app in '${currency}' currency: ${link}`,
+    `To buy this app in '${currency}' currency, go to the VTEX App Store at the following link: ${link}`,
+  shouldOpenPage: () => `Would you like to open the VTEX App Store page?`,
 }

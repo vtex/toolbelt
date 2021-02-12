@@ -9,6 +9,7 @@ import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
 import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
 import { BillingMessages } from '../../lib/constants/BillingMessages'
+import { switchOpen } from '../featureFlag/featureFlagDecider'
 
 const PROMPT_PLAN_CHOICES_NAME = 'billingOptionsPlanChoices'
 const BRAZILIAN_REAL_CURRENCY_CODE = 'BRL'
@@ -72,6 +73,16 @@ const promptCurrencyChoices = async (billingOptions: BillingOptions) => {
   return selectedCurrency
 }
 
+const handleInternationalAppInstall = async (app: string, selectedCurrency: string) => {
+  const appLink = appStoreProductPage(app)
+  log.info(BillingMessages.appCurrencyPage(selectedCurrency, appLink))
+
+  const shouldOpenProductPage = await promptConfirm(BillingMessages.shouldOpenPage(), true)
+  if (shouldOpenProductPage) {
+    switchOpen(appLink, { wait: false })
+  }
+}
+
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
   const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
@@ -81,8 +92,7 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
     log.info(BillingMessages.acceptToInstallPaid(app))
     const selectedCurrency = await promptCurrencyChoices(billingOptions)
     if (selectedCurrency !== BRAZILIAN_REAL_CURRENCY_CODE) {
-      log.info(BillingMessages.appCurrencyPage(selectedCurrency, appStoreProductPage(app)))
-      return
+      return handleInternationalAppInstall(app, selectedCurrency)
     }
   }
 
