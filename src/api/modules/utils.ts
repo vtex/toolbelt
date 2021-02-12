@@ -192,7 +192,7 @@ const billingInfoFromPolicy = ({ currency, billing: { items } }: Policy): Billin
 const billingInfoFromPlan = ({ currency, price: { subscription, metrics } }: Plan): BillingInfo => ({
   currency,
   subscription,
-  metrics: metrics.map(({ id, ranges }) => ({ name: id, ranges })),
+  metrics: metrics?.map(({ id, ranges }) => ({ name: id, ranges })),
 })
 
 const buildBillingInfo = (plans?: Plan[], policies?: Policy[]): BillingInfo => {

@@ -63,6 +63,10 @@ export class ManifestEditor {
     return this.manifest.dependencies
   }
 
+  public get peerDependencies() {
+    return this.manifest.peerDependencies
+  }
+
   public get builders() {
     return this.manifest.builders
   }

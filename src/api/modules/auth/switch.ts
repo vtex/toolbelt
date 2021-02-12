@@ -19,9 +19,9 @@ interface AccountReturnArgs {
 }
 
 enum SwitchStatus {
-  SwitchedAccount,
-  SwitchedOnlyWorkspace,
-  SwitchedNothing,
+  SwitchedAccount = 'SwitchedAccount',
+  SwitchedOnlyWorkspace = 'SwitchedOnlyWorkspace',
+  SwitchedNothing = 'SwitchedNothing',
 }
 
 const checkAndSwitch = async (targetAccount: string, targetWorkspace: string): Promise<SwitchStatus> => {
