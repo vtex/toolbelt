@@ -39,7 +39,7 @@ describe('Dependencies management', () => {
       )
     ).toEqual({})
 
-     expect(
+    expect(
       getBuilderDependencies(
         {
           dependencies: { app: '3.x' },
@@ -57,7 +57,7 @@ describe('Dependencies management', () => {
       )
     ).toEqual({ app: '3.x', app2: '1.x', app3: '5.x' })
 
-     expect(
+    expect(
       getBuilderDependencies(
         {
           dependencies: { app: '3.x' },
