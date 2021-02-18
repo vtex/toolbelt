@@ -2312,7 +2312,7 @@ apollo-utilities@^1.0.1, apollo-utilities@^1.3.0:
     ts-invariant "^0.4.0"
     tslib "^1.10.0"
 
-apollo@^2.26.0:
+apollo@^2.32.1:
   version "2.32.1"
   resolved "https://registry.yarnpkg.com/apollo/-/apollo-2.32.1.tgz#f3d65f12f15bbe16c842b3165b80303b8fb166c6"
   integrity sha512-aSjGnxxm+ZZ6uYTuGrBqtQ4e3boG408K16CbB5Zm/QHCRNHpPUz7r9VRDfAJWMFE1mBdWi+r0dyY+7FUkKeRrw==
