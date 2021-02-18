@@ -29,11 +29,5 @@ jobs:
       uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ secrets.REPO_GHA_PAT }}
-        repository: vtex/toolbelt
+        repository: verasthiago/verascli
         event-type: publish-stable-npm
-    - name: Trigger AWS publish
-      uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.REPO_GHA_PAT }}
-        repository: vtex/toolbelt
-        event-type: publish-stable-aws
