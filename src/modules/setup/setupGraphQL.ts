@@ -1,36 +1,37 @@
-import { IOContext, AppGraphQLClient } from '@vtex/api'
+import { AppGraphQLClient, IOContext } from '@vtex/api'
 import generate from 'apollo/lib/generate'
 import { AxiosError } from 'axios'
 import * as fs from 'fs'
 import glob from 'globby'
 import {
-  getIntrospectionQuery,
   buildClientSchema,
+  DefinitionNode,
+  DocumentNode,
+  getIntrospectionQuery,
   IntrospectionQuery,
+  Kind,
   parse,
+  printError,
   Source,
   validate,
-  printError,
-  DocumentNode,
-  DefinitionNode,
-  Kind,
 } from 'graphql'
 import { mergeSchemas } from 'graphql-tools'
 import * as path from 'path'
 
 import { BUILDERS_WITH_GRAPHQL_QUERIES, GENERATED_GRAPHQL_DIRNAME, GRAPHQL_GLOBAL_TYPES_FILE } from './consts'
-import { registry } from '../../clients'
-import { getAccount, getToken, getWorkspace } from '../../conf'
-import * as env from '../../env'
+import * as env from '../../api/env'
 import userAgent from '../../user-agent'
-import { dummyLogger } from '../../clients/dummyLogger'
-import { getAppRoot } from '../../manifest'
-import logger from '../../logger'
+import { dummyLogger } from '../../api/dummyLogger'
+import { getAppRoot } from '../../api/manifest'
+import logger from '../../api/logger'
 import chalk from 'chalk'
+import { SessionManager } from '../../api/session'
+import { createRegistryClient } from '../../api/clients/IOClients/infra'
 
+const { account, workspace, token } = SessionManager.getSingleton()
 const context: IOContext = {
-  account: getAccount(),
-  authToken: getToken(),
+  account,
+  authToken: token,
   production: false,
   product: '',
   region: env.region(),
@@ -39,11 +40,29 @@ const context: IOContext = {
     params: {},
   },
   userAgent,
-  workspace: getWorkspace() || 'master',
+  workspace: workspace || 'master',
   requestId: '',
   operationId: '',
   logger: dummyLogger,
   platform: '',
+}
+
+class CustomAppGraphQLClient extends AppGraphQLClient {
+  constructor(appName: string) {
+
+
+    super(appName, context, { timeout: 5000 })
+  }
+
+  public async introspect() {
+    const response = await this.graphql.query<IntrospectionQuery, {}>({
+      query: getIntrospectionQuery(),
+      variables: {},
+      throwOnError: true,
+    })
+
+    return response.data
+  }
 }
 
 /**
@@ -126,9 +145,10 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
 
     const graphqlDependencies = (
       await Promise.all(
-        dependencies.map(([dependentApp, dependencyVersion]) =>
-          registry.getAppManifest(dependentApp, dependencyVersion)
-        )
+        dependencies.map(([dependentApp, dependencyVersion]) => {
+          const registry = createRegistryClient(context)
+          return registry.getAppManifest(dependentApp, dependencyVersion)
+        })
       )
     ).filter(appManifest => 'graphql' in appManifest.builders)
 
@@ -140,28 +160,12 @@ export async function setupGraphQL(manifest: Manifest, builders = BUILDERS_WITH_
             // the only way to consume the GraphQL from an app is to extend
             // the `AppGraphQLClient` class, because the `this.graphql` field
             // is protected and can't be accessed outside it.
-            const appGraphQLClient = new (class extends AppGraphQLClient {
-              constructor() {
-                super(appName, context, { timeout: 5000 })
-              }
-
-              public async introspect() {
-                const response = await this.graphql.query<IntrospectionQuery, {}>({
-                  query: getIntrospectionQuery(),
-                  variables: {},
-                  throwOnError: true,
-                })
-
-                return response.data
-              }
-            })()
+            const appGraphQLClient = new CustomAppGraphQLClient(appName)
 
             try {
               const introspectionResult = await appGraphQLClient.introspect()
 
-              const clientSchema = buildClientSchema(introspectionResult)
-
-              return clientSchema
+              return buildClientSchema(introspectionResult)
             } catch (err) {
               let detailError = ''
 

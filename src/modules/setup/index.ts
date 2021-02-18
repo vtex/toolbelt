@@ -4,6 +4,7 @@ import logger from '../../api/logger'
 import { setupTooling } from './setupTooling'
 import { setupTSConfig } from './setupTSConfig'
 import { setupTypings } from './setupTypings'
+import { setupGraphQL } from './setupGraphQL'
 
 interface SetupOpts {
   i?: boolean

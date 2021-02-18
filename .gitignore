@@ -11,4 +11,5 @@ package-lock.json
 oclif.manifest.json
 /dist
 /tmp
+/.idea
 
