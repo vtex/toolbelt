@@ -1,22 +1,23 @@
 import chalk from 'chalk'
 import R from 'ramda'
-
-import { createClients } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
-import { publicEndpoint } from '../../env'
-import { toMajorRange } from '../../locator'
-import log from '../../logger'
-import { isLinked, resolveAppId, appIdFromRegistry } from '../apps/utils'
+import { publicEndpoint } from '../../api/env'
+import { Builder } from '../../api/clients/IOClients/apps/Builder'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import { SessionManager } from '../../api/session/SessionManager'
+import { toMajorRange } from '../../api/locator'
+import log from '../../api/logger'
+import { appIdFromRegistry, isLinked, resolveAppId } from '../../api/modules/utils'
 import { runYarn } from '../utils'
-import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
 import { BUILDERS_WITH_TYPES } from './consts'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
+import { checkIfTarGzIsEmpty, packageJsonEditor, sortObject } from './utils'
 
 const getVendor = (appId: string) => appId.split('.')[0]
 const typingsURLRegex = /_v\/\w*\/typings/
 
 const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLinked: boolean): Promise<string> => {
+  const { workspace, account } = SessionManager.getSingleton()
+
   const appId = ignoreLinked
     ? await appIdFromRegistry(appName, appMajorLocator)
     : await resolveAppId(appName, appMajorLocator)
@@ -29,7 +30,7 @@ const appTypingsURL = async (appName: string, appMajorLocator: string, ignoreLin
 
   const base =
     linked && !ignoreLinked
-      ? `https://${getWorkspace()}--${getAccount()}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/public`
+      ? `https://${workspace}--${account}.${publicEndpoint()}/_v/private/typings/linked/v1/${appId}/public`
       : `http://${vendor}.vtexassets.com/_v/public/typings/v1/${appId}/public`
 
   log.info(`Checking if ${chalk.bold(appId)} has new types format`)
@@ -51,7 +52,7 @@ const appsWithTypingsURLs = async (appDependencies: Record<string, any>, ignoreL
         result[appName] = await appTypingsURL(appName, appVersion, ignoreLinked)
       } catch (err) {
         log.error(`Unable to generate typings URL for ${appName}@${appVersion}.`)
-        TelemetryCollector.createAndRegisterErrorReport({
+        ErrorReport.createAndMaybeRegisterOnTelemetry({
           kind: ErrorKinds.SETUP_TYPINGS_ERROR,
           originalError: err,
         }).logErrorForUser({
@@ -104,7 +105,7 @@ const injectTypingsInPackageJson = async (appDeps: Record<string, any>, ignoreLi
       runYarn(builder, true)
     } catch (e) {
       log.error(`Error running Yarn in ${builder}.`)
-      TelemetryCollector.createAndRegisterErrorReport({
+      ErrorReport.createAndMaybeRegisterOnTelemetry({
         kind: ErrorKinds.SETUP_TSCONFIG_ERROR,
         originalError: e,
       })
@@ -123,7 +124,7 @@ export const setupTypings = async (
   const appName = `${manifest.vendor}.${manifest.name}`
   const appMajor = toMajorRange(manifest.version)
 
-  const { builder: builderClient } = createClients({}, { retries: 2, timeout: 10000 })
+  const builderClient = Builder.createClient({}, { retries: 2, timeout: 10000 })
   const builders = R.keys(R.prop('builders', manifest) || {})
   const filteredBuilders = R.intersection(builders, buildersWithTypes)
 
@@ -145,7 +146,7 @@ export const setupTypings = async (
     )
     log.info('Finished setting up typings')
   } catch (err) {
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TYPINGS_ERROR,
       originalError: err,
     }).logErrorForUser()

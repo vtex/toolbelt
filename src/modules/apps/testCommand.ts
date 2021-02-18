@@ -1,22 +1,21 @@
 import retry from 'async-retry'
 import chalk from 'chalk'
 import { concat, map, prop } from 'ramda'
-import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getWorkspace } from '../../conf'
-import { CommandError } from '../../errors'
-import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
-import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
-import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
-import { toAppLocator } from '../../locator'
-import log from '../../logger'
-import { getAppRoot, getManifest, writeManifestSchema } from '../../manifest'
-import { listenBuild } from '../build'
+import { ManifestEditor } from '../../api'
+import { Builder } from '../../api/clients/IOClients/apps/Builder'
+import { createFlowIssueError } from '../../api/error/utils'
+import { createPathToFileObject } from '../../api/files/ProjectFilesManager'
+import { YarnFilesManager } from '../../api/files/YarnFilesManager'
+import log from '../../api/logger'
+import { getAppRoot } from '../../api/manifest/ManifestUtil'
+import { listLocalFiles } from '../../api/modules/apps/file'
+import { ProjectUploader } from '../../api/modules/apps/ProjectUploader'
+import { listenBuild } from '../../api/modules/build'
+import { validateAppAction } from '../../api/modules/utils'
+import { fixPinnedDependencies, PinnedDeps } from '../../api/pinnedDependencies'
+import { BatchStream } from '../../api/typings/types'
 import { runYarnIfPathExists } from '../utils'
-import { listLocalFiles } from './file'
-import { ProjectUploader } from './ProjectUploader'
-import { validateAppAction } from './utils'
 
-const root = getAppRoot()
 const buildersToRunLocalYarn = ['react', 'node']
 const RETRY_OPTS_TEST = {
   retries: 2,
@@ -25,6 +24,7 @@ const RETRY_OPTS_TEST = {
 }
 
 const performTest = async (
+  root: string,
   projectUploader: ProjectUploader,
   extraData: { yarnFilesManager: YarnFilesManager },
   unsafe: boolean
@@ -79,16 +79,13 @@ const performTest = async (
 export default async options => {
   await validateAppAction('test')
   const unsafe = !!(options.unsafe || options.u)
-  const manifest = await getManifest()
-  try {
-    await writeManifestSchema()
-  } catch (e) {
-    log.debug('Failed to write schema on manifest.')
-  }
 
-  const appId = toAppLocator(manifest)
-  const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  const { builder } = createClients(context, { timeout: 60000 })
+  const root = getAppRoot()
+  const manifest = await ManifestEditor.getManifestEditor()
+  await manifest.writeSchema()
+  const appId = manifest.appLocator
+
+  const builder = Builder.createClient({}, { timeout: 60000 })
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
   try {
@@ -115,7 +112,7 @@ export default async options => {
 
   const extraData = { linkConfig: null }
   try {
-    const buildTrigger = performTest.bind(this, projectUploader, extraData, unsafe)
+    const buildTrigger = performTest.bind(this, root, projectUploader, extraData, unsafe)
     const [subject] = appId.split('@')
     await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(prop('unlisten'))
   } catch (e) {
@@ -128,7 +125,7 @@ export default async options => {
       }
 
       if (data.code === 'link_on_production') {
-        throw new CommandError(
+        throw createFlowIssueError(
           `Please use a dev workspace to test apps. Create one with (${chalk.blue(
             'vtex use <workspace> -rp'
           )}) to be able to test apps`

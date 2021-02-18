@@ -1,5 +1,5 @@
 {
-  "extends": "vtex",
+  "extends": ["vtex"],
   "root": true,
   "env": {
     "node": true,
@@ -14,7 +14,8 @@
     "default-case": "off",
     "global-require": "off",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "_+" }],
-    "@typescript-eslint/interface-name-prefix": "off"
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/ban-ts-ignore": "warn"
   },
   "overrides": [
     {
@@ -24,13 +25,22 @@
       }
     },
     {
-      "files": ["./src/logger.ts"],
+      "files": ["./src/api/logger.ts"],
       "rules": {
         "@typescript-eslint/ban-ts-ignore": "off"
       }
     },
     {
-      "files": ["./src/cli.ts"],
+      "files": ["./src/api/oclif/CustomCommand.ts"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "warn"
+      }
+    },
+    {
+      "files": [
+        "./src/lib/telemetry/TelemetryReporter/report.ts",
+        "./src/CLIPreTasks/OutdatedChecker/checkForOutdated.ts"
+      ],
       "rules": {
         "import/first": "off"
       }

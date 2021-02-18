@@ -6,6 +6,343 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.121.3] - 2021-02-11
+### Fixed
+-[install] Fix app's plan message for plans without metrics.
+
+## [2.121.2] - 2021-01-13
+### Fixed
+-[release] Fix `nothing to commit` algorithm in order to release app.
+## [2.121.1] - 2021-01-05
+### Added
+-[autoupdate] skip `checkForDeprecation` and `checkForOutdate` for `autoupdate` command.
+## [2.121.0] - 2021-01-04
+### Added
+- [Toolbelt Notification] Integrate `toolbelt` with `toolbelt-notification`
+
+## [2.120.0] - 2020-12-07
+### Added
+- [Update / Deprecate message] Custom message based on user OS.
+## [2.119.4] - 2020-12-03
+### Fixed
+- [authUrl] Returning function that was exported to `vtex url`
+## [2.119.3] - 2020-12-03
+### Changed
+- [vtex url] Refactor to use as oclif plugin.
+
+## [2.119.2] - 2020-11-18
+### Added
+- Upgrade @vtex/cli-plugin-submit to 0.2.0
+  - Adjustments to First Party App teams usage
+
+## [2.119.1] - 2020-11-13
+### Fixed
+- [npm] Fix inconsistent deploy
+
+## [2.119.0] - 2020-11-13
+### Changed
+- [Feature Flags] 
+  - Cache locally all flags
+  - New class to use feature flags
+
+## [2.118.2] - 2020-11-11
+### Fixed
+- Upgrade @vtex/cli-plugin-workspace to 0.1.2
+  - Fix vtex workspace promote
+
+## [2.118.1] - 2020-11-10
+### Fixed
+- [ToolbeltConfig] Force client to `requireAuth: false`
+
+## [2.118.0] - 2020-11-10
+### Changed
+- [vtex deploy] Update plugin version
+- [@vtex/api] Update package version 
+
+## [2.117.2] - 2020-11-09
+### Changed
+- [vtex login] Change package responsable to open the browser
+
+## [2.117.1] - 2020-11-06
+### Changed
+- [vtex setup] Update tooling dependency versions.
+
+## [2.117.0] - 2020-11-04
+### Changed
+- [vtex whoami] Refactor to use as oclif plugin.
+
+## [2.116.0] - 2020-11-04
+### Changed
+- [Toolbelt Config Server] Enable use of feature flag inside `vtex.toolbelt-config-server`
+
+## [2.115.5] - 2020-11-03
+### Changed
+- Add retries to builder hub app link client
+
+## [2.115.4] - 2020-11-03
+### Fixed
+- [relink] Force app to `link` from scratch when `StickyHost` change on `relink`
+
+## [2.115.3] - 2020-10-16
+### Fixed 
+- [update] updateNotify access propety of undefined object.
+
+## [2.115.2] - 2020-10-15
+### Fixed
+- [updateNotify] Display new version update based on `vtex` channel (e.g., stable and beta).
+
+## [2.115.1] - 2020-10-07
+### Changed
+- [vtex submit] Update command plugin version
+  - Fix relative imports
+  - Update `vtex`
+
+## [2.115.0] - 2020-10-07
+### Added
+- [vtex workspace] Update command plugin version
+  - Add `--conflict` flag to `workspace promote` command.
+
+## [2.114.2] - 2020-10-06
+### Changed
+- [vtex submit] Update command plugin version
+  - Handle App Store validation errors
+
+## [2.114.1] - 2020-10-06
+### Added
+- Support to new `billingOptions` types
+
+## [2.114.0] - 2020-10-06
+### Changed
+- [vtex deploy] Refactor to use as oclif plugin.
+
+## [2.113.0] - 2020-10-06
+### Changed
+- [vtex infra] Refactor to use as oclif plugin.
+
+## [2.112.0] - 2020-10-05
+### Added
+- [installer] New deploy method by using `oclif-dev pack` and `oclif-dev publish`.
+
+### Changed
+- [tsconfig] Changed build folder name from `build` to `lib`.
+
+## [2.111.0] - 2020-09-08
+### Added
+- [vtex submit] Add plugin package.
+
+## [2.110.1] - 2020-08-24
+### Changed
+- [vtex redirects] Update plugin version:
+  - Add missing `progress` dependency.
+
+## [2.110.0] - 2020-08-19
+### Changed
+- [vtex deps] Refactor to use as oclif plugin.
+
+## [2.109.0] - 2020-08-18
+### Changed 
+- [vtex workspace] Refactor to use as oclif plugin.
+
+## [2.108.1] - 2020-08-12
+
+### Changed
+- [vtex login] Use new VTEX ID login flow:
+  - Fix free TCP port retrieval: use `detect-port` package instead of `get-port`.
+  - Fix issue on WSL2 by specifying host binding to `127.0.0.1` when starting the server.
+
+## [2.108.0] - 2020-08-11
+### Added
+- [vtex workspace promote] Conflict handling.
+
+### Changed
+- [vtex workspace promote] Log messages.
+- [vtex redirects] Refactor to use as oclif plugin.
+
+## [2.107.0] - 2020-08-06
+### Changed
+- [vtex workspace abtest] Update command plugin version
+- Remove `CommandError` class and move to `FLOW_ISSUE_ERROR` kind inside `ErrorReport` class.
+
+### Fixed
+  - [vtex login] Revert to use old login flow due to issues on local server port.
+
+## [2.106.4] - 2020-07-30
+### Changed
+- [vtex login] Use new VTEX ID login flow.
+
+## [2.106.3] - 2020-07-28
+### Changed
+- Remove function calls on the root of the module on the commands: `vtex release`, `vtex test unit`, `vtex setup`, `vtex publish`, `vtex link` and `vtex deploy`
+- [ManifestUtil] Remove duplicated manifest functions
+
+## [2.106.2] - 2020-07-24
+### Changed
+- [vtex abtest] Refactor to use as oclif plugin.
+
+## [2.106.1] - 2020-07-22
+### Changed
+- [vtex workspace abtest] Revert `vtex abtest` to subcommand of `workspace` command
+
+## [2.106.0] - 2020-07-22
+### Changed
+
+- [vtex abtest] Rename command from `vtex workspace abtest`  to `vtex abtest`
+- [vtex abtest] Refactor to use as oclif plugin.
+- [dependencies] Remove unused dependencies
+
+### Fixed
+- [vtex browse] Fix workspace not being added to url.
+- [vtex login] Revert to use old login flow due to issues on Safari browsers.
+
+## [2.105.1] - 2020-07-16
+### Fixed
+- [oclif:entrypoint] Only run oclif command when the entrypoint is the main script.
+- [vtex settings set] Cast value before setting field.
+- [vtex logout] Local token is now invalidated before deleting local data. Also a URL is opened on the browser to invalidate the auth cookie stored.
+
+### Changed
+- [vtex edition] Refactor command to use as oclif plugin.
+- [vtex login] Use new VTEX ID login flow.
+
+### Removed
+- [vtex browse] Remove support authority logic, as VTEX ID token doesn't expose user roles.
+
+## [2.105.0] - 2020-07-09
+### Changed
+- [vtex test / vtex lighthouse] Refactored this commands to use them as oclif plugins.
+
+## [2.104.0] - 2020-07-06
+### Changed
+- [vtex test e2e] Simplified test summary linking to full report.
+
+## [2.103.0] - 2020-06-29
+
+### Added
+- [vtex link] Parameters to enable login singleline.
+
+## [2.102.1] - 2020-06-16
+### Changed
+- [docs] Update session about development.
+- [vtex link/relink] Add telemetry on builder-hub host changes.
+
+## [2.102.0] - 2020-06-08
+### Fixed
+- [vtex test e2e] Handle error when executed on an unlinked app.
+
+### Added
+- [All Commands] new flag `--trace` that sets the `jaeger-debug-id` header automatically on all requests.
+- [vtex link] Added `cypress.json` to the list of watched files.
+
+## [2.101.1] - 2020-05-28
+### Added
+- [vtex test e2e] Added retry count to account for cold `tester-hub` start.
+- [vtex link] Generate `linkID` and set the `x-vtex-bh-link-id` header on link and relink requests to `builder-hub`.
+
+### Changed
+- [vtex publish/link] Ignore Cypress generated videos/screenshots.
+- [ErrorReport] Do not send wrong usage errors to telemetry.
+
+### Fixed
+- [vtex login, vtex switch] Prompt workspace creation if it doesn't exist.
+
+## [2.101.0] - 2020-05-19
+### Added
+- [vtex publish] Message referencing location of the published docs if any.
+- [vtex logs] Add logs command.
+
+### Changed
+- [vtex promote] Remove report to evolution manager.
+
+## [2.100.1] - 2020-05-12
+### Changed
+- [ErrorReport] Use `@vtex/node-error-report`.
+- [vtex promote] Change log level on evolution manager report error from `error` to `debug`.
+
+## [2.100.0] - 2020-05-11
+### Added
+- [vtex config] Config reset command.
+- [welcome, login, switch] Add welcome command.
+
+### Changed
+- Refactor clients organization and instantiation.
+- [edition-check] Change error log from `warn` to `debug` level.
+- [vtex login] Get release notes message from `vtex.toolbelt-config-server`.
+
+### Fixed
+- [clients:billing] Use new URL format.
+- [vtex test e2e] Show screenshot and videos assets URLs received from `vtex.tester-hub` new API.
+- [vtex undeprecate] 403 error when account switch is necessary.
+
+### Updated
+- [oclif] `oclif-plugin-spaced-commands` to fix alias documentation.
+
+## [2.99.3] - 2020-05-05
+### Fixed
+- [telemetry] Sanitize jwt tokens and simplify buffers serializtion.
+- [dependencies] Add graphql - @vtex/api's peer dependency.
+- Session management.
+
+## [2.99.2] - 2020-04-30
+### Fixed
+- [vtex link] `no-watch` flag behaviour.
+- [vtex workspace delete] `force` flag type.
+
+### Added
+- [CLIPreTasks] Outdated version checking.
+
+## [2.99.1] - 2020-04-29
+### Fixed
+- Treat errors when checking edition of account on a workspace command.
+
+## [2.99.0] - 2020-04-29
+### Fixed
+- [redirects] Encode delimiter before exporing `.csv` file to avoid conflicts.
+- [vtex install, vtex uninstall] Behaviour when action is cancelled by the user.
+
+### Added
+- [hooks:init] Allow to customize help.
+- [child-processes] `DEBUG_CP` environment variable for debugging child processes.
+- Command `vtex lighthouse` for vtex internal Google's Lighthouse tool
+- [vtex promote] Save workspace promotion info in evolution manager.
+
+### Changed
+- Update release notes message.
+- Improve SSE errors logs.
+- [vtex setup] Add GraphQL files to `lint-staged` config.
+- [vtex workspace] Auto-switch to edition-store when creating new workspace.
+- [dependencies] Update yarn from `~1.21.0` to `^1.22.4`.
+
+## [2.98.0] - 2020-04-22
+### Added
+- [telemetry:reporter] Create and send reporter meta metrics.
+
+### Changed
+- Migrate to framework `oclif`.
+- [vtex install] Improve error logging.
+- [telemetry:reporter] Refactor reporting.
+
+### Fixed
+- [telemetry:ErrorReport] Increase ErrorReport serialization depth.
+- [telemetry:reporter] File locking error.
+- [vtex setup] Not running when flag `--all` is omitted.
+
+## [2.97.0] - 2020-04-09
+### Changed
+- [local-data] Use new paths on `~/.vtex` for persisting data. (older session path at ~/.config/configstore/vtex.json will still be updated).
+
+## [2.96.1] - 2020-04-07
+### Fixed
+- [vtex rewriter] Use rewriter new redirects API with single binding support.
+
+### Changed
+- [debugger:node, debugger:dotnet] Use `wss` protocol instead of `ws` and new `app.io.vtex.com` URL format.
+- [clients:sponsor, vtex support] Use HTTPS and new URL `app.io.vtex.com` format.
+- [telemetry:collector] Flush just before exiting process.
+- [sse] Check if token is valid before creating connection.
+- [sse] Abort process on 401 or 403 server errors.
+- [sse:telemetry] Register sse errors with errorKind `SSEError`.
+- Update release notes message.
+
 ## [2.96.0] - 2020-04-06
 ### Added
 - [vtex test e2e] Show test's logs.
@@ -22,7 +359,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
  - Command `vtex test e2e` for end-to-end testing.
- 
+
 ## [2.94.0] - 2020-03-31
 ### Added
 - [vtex init] Show `checkout-ui-settings` template for users outside VTEX.

@@ -1,9 +1,8 @@
 import enquirer from 'enquirer'
 import moment from 'moment'
-import opn from 'opn'
-
-import { getNextFeedbackDate, saveNextFeedbackDate } from './conf'
-import { promptConfirm } from './modules/prompts'
+import { switchOpen } from './modules/featureFlag/featureFlagDecider'
+import { getNextFeedbackDate, saveNextFeedbackDate } from './api/conf'
+import { promptConfirm } from './api/modules/prompts'
 
 const NPSFormURL = 'https://forms.gle/CRRHn6P3x9AeaWTQ8'
 
@@ -41,8 +40,9 @@ export async function checkAndOpenNPSLink() {
           .add(3, 'months')
           .toISOString()
       )
-      opn(NPSFormURL, { wait: false })
+      switchOpen(NPSFormURL, { wait: false })
     } else {
+      // @ts-ignore
       let { remindChoice } = await enquirer.prompt({
         name: 'remindChoice',
         message: 'When would you like to be reminded?',

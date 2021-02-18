@@ -4,9 +4,9 @@ import { pipeline } from 'stream'
 import axios from 'axios'
 import tar from 'tar'
 
-import { getToken } from '../../conf'
-import log from '../../logger'
+import log from '../../api/logger'
 import { FileReaderWriter } from './includes/FileReaderWriter'
+import { SessionManager } from '../../api/session/SessionManager'
 
 export const packageJsonEditor = new FileReaderWriter('packageJson')
 export const eslintrcEditor = new FileReaderWriter('eslintrc')
@@ -20,7 +20,7 @@ export const checkIfTarGzIsEmpty = (url: string) => {
     try {
       const res = await axios.get(url, {
         responseType: 'stream',
-        headers: { Authorization: getToken() },
+        headers: { Authorization: SessionManager.getSingleton().token },
       })
       let fileCount = 0
       const fileEmitter = tar.list()

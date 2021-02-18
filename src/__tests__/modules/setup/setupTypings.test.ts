@@ -1,5 +1,7 @@
 import { manifestSamples } from '../../fixtures/manifests'
-import { mockAppsUtils, mockCreateClients, mockConf, mockEnv, mockRunYarn, mockSetupUtils } from './mocks'
+import { mockAppsUtils, mockConf, mockCreateClients, mockEnv, mockRunYarn, mockSetupUtils } from './mocks'
+
+jest.mock('../../../api/session/SessionManager')
 
 mockConf()
 mockEnv()
@@ -110,7 +112,7 @@ describe('React type dependencies are correctly inserted', () => {
         'storecomponents.test':
           'http://storecomponents.vtexassets.com/_v/public/typings/v1/storecomponents.test@1.0.0/public/_types/react',
         'vtex.admin':
-          'https://current-workspace--logged-account.public-endpoint/_v/private/typings/linked/v1/vtex.admin@1.18.0+build123/public/_types/react',
+          'https://currWorkspace--currAccount.public-endpoint/_v/private/typings/linked/v1/vtex.admin@1.18.0+build123/public/_types/react',
         'vtex.render-runtime':
           'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/_types/react',
       },
@@ -143,7 +145,7 @@ describe('React type dependencies are correctly inserted', () => {
         'storecomponents.test':
           'http://storecomponents.vtexassets.com/_v/public/typings/v1/storecomponents.test@1.0.0/public/@types/storecomponents.test',
         'vtex.admin':
-          'https://current-workspace--logged-account.public-endpoint/_v/private/typings/linked/v1/vtex.admin@1.18.0+build123/public/@types/vtex.admin',
+          'https://currWorkspace--currAccount.public-endpoint/_v/private/typings/linked/v1/vtex.admin@1.18.0+build123/public/@types/vtex.admin',
         'vtex.render-runtime':
           'http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime',
       },

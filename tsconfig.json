@@ -9,9 +9,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "esModuleInterop": true,
-    "skipLibCheck": true, 
-    "jsx": "react"
+    "skipLibCheck": true,
+    "jsx": "react",
+    "importHelpers": true,
+    "declaration": true,
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.ts", "**/__tests__"]
+  "exclude": ["**/*.test.ts", "**/__tests__", "**/__mocks__"]
 }

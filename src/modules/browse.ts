@@ -1,49 +1,19 @@
-import axios from 'axios'
-import jwt from 'jsonwebtoken'
-import opn from 'opn'
-import R from 'ramda'
-import * as conf from '../conf'
-import { clusterIdDomainInfix, publicEndpoint } from '../env'
-// Doesn't seem to work with 'import', seems to return undefined for some reason ¯\_(ツ)_/¯
-const QRCode = require('qrcode-terminal') // eslint-disable-line @typescript-eslint/no-var-requires
+import QRCode from 'qrcode-terminal'
+import { SessionManager } from '../api/session/SessionManager'
+import { storeUrl } from '../api/storeUrl'
+import { switchOpen } from './featureFlag/featureFlagDecider'
 
-const isSupportRole = (role: string): boolean => role?.startsWith('vtex.support-authority')
-
-const isSupportSession = (): boolean => {
-  const token = conf.getToken()
-  const decoded = jwt.decode(token)
-  if (!decoded || typeof decoded === 'string') {
-    return false
-  }
-
-  return R.any(role => isSupportRole(role), decoded.roles as string[])
+interface BrowseOptions {
+  qr: boolean
 }
 
-const prepareSupportBrowser = async (account: string, workspace: string): Promise<string> => {
-  const token = conf.getToken()
+export default async (path: string, { qr }: BrowseOptions) => {
+  const { account, workspace } = SessionManager.getSingleton()
+  const uri = storeUrl({ account, workspace, path })
 
-  const uri = `https://${workspace}--${account}.${publicEndpoint()}/_v/private/support-login/prepare`
-  const response = await axios.get(uri, {
-    headers: {
-      'X-Vtex-Original-Credential': token,
-    },
-  })
-  return response.data.oneTimeToken
-}
-
-export default async (endpointInput, { q, qr }) => {
-  const { account, workspace } = conf.currentContext
-  let endpoint = endpointInput ?? ''
-  if (isSupportSession()) {
-    const token = await prepareSupportBrowser(account, workspace)
-    endpoint = `_v/private/support-login/login?token=${token}&returnUrl=/${endpoint}`
-  }
-  const uri = `https://${workspace}--${account}${clusterIdDomainInfix()}.${publicEndpoint()}/${endpoint}`
-
-  if (q || qr) {
+  if (qr) {
     QRCode.generate(uri, { small: true })
     return
   }
-
-  opn(uri, { wait: false })
+  switchOpen(uri, { wait: false })
 }

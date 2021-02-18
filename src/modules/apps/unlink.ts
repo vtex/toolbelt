@@ -1,9 +1,9 @@
-import { apps } from '../../clients'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import { parseArgs, validateAppAction } from './utils'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
+import log from '../../api/logger'
+import { validateAppAction } from '../../api/modules/utils'
 
-const { unlink, unlinkAll, listLinks } = apps
+const { unlink, unlinkAll, listLinks } = createAppsClient()
 
 const unlinkApp = async (app: string) => {
   ManifestValidator.validateApp(app)
@@ -43,7 +43,7 @@ const unlinkAllApps = async (): Promise<void> => {
   }
 }
 
-export default async (optionalApp: string, options) => {
+export default async (optionalApps: string[], options) => {
   const linkedApps = await listLinks()
   if (linkedApps.length === 0) {
     return log.info('No linked apps?')
@@ -53,7 +53,6 @@ export default async (optionalApp: string, options) => {
     return unlinkAllApps()
   }
 
-  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-  const appsList = [app, ...parseArgs(options._)]
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   return unlinkApps(appsList)
 }

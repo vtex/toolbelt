@@ -1,24 +1,21 @@
 import chalk from 'chalk'
-import { apps } from '../../clients'
-import { getAccount, getWorkspace } from '../../conf'
-import { UserCancelledError } from '../../errors'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import { promptConfirm } from '../prompts'
-import { parseArgs, validateAppAction } from './utils'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
+import { promptConfirm } from '../../api/modules/prompts'
+import { validateAppAction } from '../../api/modules/utils'
 
-const { uninstallApp } = apps
+const { uninstallApp } = createAppsClient()
 
-const promptAppUninstall = (appsList: string[]): Promise<void> =>
-  promptConfirm(
+const promptAppUninstall = (appsList: string[]): Promise<boolean> => {
+  const { account, workspace } = SessionManager.getSingleton()
+  return promptConfirm(
     `Are you sure you want to uninstall ${appsList.join(', ')} from account ${chalk.blue(
-      getAccount()
-    )}, workspace ${chalk.green(getWorkspace())}?`
-  ).then(answer => {
-    if (!answer) {
-      throw new UserCancelledError()
-    }
-  })
+      account
+    )}, workspace ${chalk.green(workspace)}?`
+  )
+}
 
 const uninstallApps = async (appsList: string[]): Promise<void> => {
   for (const app of appsList) {
@@ -35,16 +32,19 @@ const uninstallApps = async (appsList: string[]): Promise<void> => {
   }
 }
 
-export default async (optionalApp: string, options) => {
-  await validateAppAction('uninstall', optionalApp)
-  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-  const appsList = [app, ...parseArgs(options._)]
+export default async (optionalApps: string[], options) => {
+  const confirm = await validateAppAction('uninstall', optionalApps)
+  if (!confirm) return
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   const preConfirm = options.y || options.yes
+  let promptAnswer
 
   if (!preConfirm) {
-    await promptAppUninstall(appsList)
+    promptAnswer = await promptAppUninstall(appsList)
   }
 
-  log.debug(`Uninstalling app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
-  return uninstallApps(appsList)
+  if (promptAnswer) {
+    log.debug(`Uninstalling app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
+    return uninstallApps(appsList)
+  }
 }

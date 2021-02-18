@@ -12,22 +12,10 @@ declare global {
     content: string | Readable | Buffer | null
   }
 
-  interface BatchStream {
-    path: string
-    content: NodeJS.ReadableStream
-    byteSize: number
-  }
-
   type Manifest = AppManifest
 
   interface InstalledApp {
     app: string
-  }
-
-  interface InfraResourceVersions {
-    versions: {
-      [region: string]: string[]
-    }
   }
 
   interface IoVersions {
@@ -36,20 +24,6 @@ declare global {
     services: {
       [name: string]: string
     }
-  }
-
-  interface InfraUpdate {
-    [name: string]: {
-      latest: string
-      current: string
-    }
-  }
-
-  interface InfraVersionMap {
-    latest: {
-      [name: string]: string
-    }
-    update: InfraUpdate
   }
 
   interface File {
@@ -84,12 +58,6 @@ declare global {
     data: string
   }
 
-  interface WorkspaceResponse {
-    name: string
-    weight: number
-    production: boolean
-  }
-
   interface VersionByApp {
     location: string
     versionIdentifier: string
@@ -109,12 +77,31 @@ declare global {
     billingOptions?: string
   }
 
+  interface PriceMetric {
+    id: string
+    ranges: Range[]
+    customUrl: string
+  }
+
+  interface Price {
+    subscription?: number
+    metrics?: PriceMetric[]
+  }
+
+  interface Plan {
+    id: string
+    currency: string
+    price: Price
+  }
+
   interface BillingOptions {
-    version: string
-    free: boolean
-    policies: Policy[]
-    deactivationRoute: string
-    termsURL: string
+    version?: string
+    type?: string
+    free?: boolean
+    policies?: Policy[]
+    deactivationRoute?: string
+    termsURL?: string
+    plans?: Plan[]
   }
 
   interface Policy {

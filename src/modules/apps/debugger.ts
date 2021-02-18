@@ -1,11 +1,13 @@
 import streamToString from 'get-stream'
 import net from 'net'
 import WebSocket from 'ws'
-import { getAccount, getToken, getWorkspace } from '../../conf'
-import { region } from '../../env'
-import { ManifestEditor } from '../../lib/manifest'
-import { toMajorRange } from '../../locator'
-import log from '../../logger'
+import { cluster } from '../../api/env'
+import { Headers } from '../../lib/constants/Headers'
+import { ManifestEditor } from '../../api/manifest'
+import { SessionManager } from '../../api/session/SessionManager'
+import { versionMajor } from '../../api/locator'
+import log from '../../api/logger'
+import userAgent from '../../user-agent'
 
 const keepAliveDelayMs = 3 * 60 * 1000
 const THIRTY_SECONDS_MS = 30 * 1000
@@ -24,18 +26,18 @@ function getErrorMessage(raw: string): string {
   }
 }
 
-function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => void {
-  const options = {
-    headers: {
-      Authorization: getToken(),
-      Host: host,
-      'X-Vtex-Runtime-Api': 'true',
-    },
-  }
-
+function webSocketTunnelHandler(host: string, path: string, server: net.Server): (socket: net.Socket) => void {
   return (socket: net.Socket) => {
     socket.setKeepAlive(true, keepAliveDelayMs)
-    const ws = new WebSocket(`ws://${host}${path}`, options)
+    const ws = new WebSocket(`wss://${host}${path}`, {
+      headers: {
+        Authorization: SessionManager.getSingleton().checkAndGetToken(true),
+        Host: host,
+        'user-agent': userAgent,
+        [Headers.VTEX_RUNTIME_API]: 'true',
+        ...(cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: cluster() } : null),
+      },
+    })
 
     const interval = setInterval(ws.ping, THIRTY_SECONDS_MS)
 
@@ -57,6 +59,11 @@ function webSocketTunnelHandler(host, path: string): (socket: net.Socket) => voi
       end()
       const errMsg = getErrorMessage(await streamToString(res))
       log.warn(`Unexpected response from debugger hook (${res.statusCode}): ${errMsg}`)
+
+      if (res.statusCode === 401 || res.statusCode === 403) {
+        log.warn(`Got unauthorized error from remote debugger, finalizing local debugger...`)
+        server.close()
+      }
     })
 
     ws.on('message', data => {
@@ -98,13 +105,15 @@ export default function startDebuggerTunnel(
   if (!node && !serviceJs) {
     return
   }
-  const majorRange = toMajorRange(version)
-  const host = `${name}.${vendor}.${region()}.vtex.io`
-  const path = `/${getAccount()}/${getWorkspace()}/_debug/attach?__v=${majorRange}`
+
+  const { account, workspace } = SessionManager.getSingleton()
+  const appMajor = versionMajor(version)
+  const host = 'app.io.vtex.com'
+  const path = `/${vendor}.${name}/v${appMajor}/${account}/${workspace}/_debug/attach`
 
   return new Promise((resolve, reject) => {
     const server = net.createServer()
-    server.on('connection', webSocketTunnelHandler(host, path))
+    server.on('connection', webSocketTunnelHandler(host, path, server))
 
     server.on('error', err => {
       if (port < DEFAULT_DEBUGGER_PORT + MAX_RETRY_COUNT) {

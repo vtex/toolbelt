@@ -1,28 +1,40 @@
-import retry from 'async-retry'
+import { Builder } from '../../api/clients/IOClients/apps/Builder'
+import {
+  ChangeSizeLimitError,
+  ChangeToSend,
+  ProjectSizeLimitError,
+  ProjectUploader,
+} from '../../api/modules/apps/ProjectUploader'
+import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from '../../api/modules/utils'
+import { createFlowIssueError } from '../../api/error/utils'
+import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
+import { createInterface } from 'readline'
+import { createPathToFileObject } from '../../api/files/ProjectFilesManager'
+import { default as setup } from '../setup'
+import { fixPinnedDependencies, PinnedDeps } from '../../api/pinnedDependencies'
+import { formatNano, runYarnIfPathExists } from '../utils'
+import { ManifestEditor } from '../../api/manifest'
+import { getAppRoot } from '../../api/manifest/ManifestUtil'
+import { getIgnoredPaths, listLocalFiles } from '../../api/modules/apps/file'
+import { join, resolve as resolvePath, sep } from 'path'
+import { listenBuild } from '../../api/modules/build'
+
+import { randomBytes } from 'crypto'
+import { readFileSync } from 'fs'
+import { SessionManager } from '../../api/session/SessionManager'
+import { YarnFilesManager } from '../../api/files/YarnFilesManager'
+import authLogin, { LoginOptions } from '../auth/login'
 import chalk from 'chalk'
 import chokidar from 'chokidar'
 import debounce from 'debounce'
-import { readFileSync } from 'fs'
+import log from '../../api/logger'
 import moment from 'moment'
-import { join, resolve as resolvePath, sep } from 'path'
-import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
-import { createInterface } from 'readline'
-import { createClients } from '../../clients'
-import { getAccount, getEnvironment, getWorkspace } from '../../conf'
-import { CommandError } from '../../errors'
-import { createPathToFileObject } from '../../lib/files/ProjectFilesManager'
-import { YarnFilesManager } from '../../lib/files/YarnFilesManager'
-import { ManifestEditor } from '../../lib/manifest'
-import { fixPinnedDependencies, PinnedDeps } from '../../lib/pinnedDependencies'
-import log from '../../logger'
-import { getAppRoot } from '../../manifest'
-import { listenBuild } from '../build'
-import { default as setup } from '../setup'
-import { formatNano, runYarnIfPathExists } from '../utils'
+import retry from 'async-retry'
 import startDebuggerTunnel from './debugger'
-import { getIgnoredPaths, listLocalFiles } from './file'
-import { ChangeSizeLimitError, ChangeToSend, ProjectSizeLimitError, ProjectUploader } from './ProjectUploader'
-import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from './utils'
+import workspaceUse from '../../api/modules/workspace/use'
+import { BatchStream } from '../../api/typings/types'
+import { Messages } from '../../lib/constants/Messages'
+import { NewStickyHostError } from '../../api/error/errors'
 
 let nodeNotifier
 if (process.platform !== 'win32') {
@@ -30,10 +42,20 @@ if (process.platform !== 'win32') {
   nodeNotifier = require('node-notifier')
 }
 
-const root = getAppRoot()
+interface LinkOptions {
+  account?: string
+  workspace?: string
+  unsafe?: boolean
+  clean?: boolean
+  setup?: boolean
+  noWatch?: boolean
+}
+
 const DELETE_SIGN = chalk.red('D')
 const UPDATE_SIGN = chalk.blue('U')
+const INITIAL_LINK_CODE = 'initial_link_required'
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
+const linkID = randomBytes(8).toString('hex')
 
 const buildersToStartDebugger = ['node']
 const buildersToRunLocalYarn = ['react', 'node']
@@ -54,6 +76,7 @@ const shouldStartDebugger = (manifest: ManifestEditor) => {
 }
 
 const performInitialLink = async (
+  root: string,
   projectUploader: ProjectUploader,
   extraData: { yarnFilesManager: YarnFilesManager },
   unsafe: boolean
@@ -82,7 +105,8 @@ const performInitialLink = async (
     }
 
     try {
-      const { code } = await projectUploader.sendToLink(filesWithContent, { tsErrorsAsWarnings: unsafe })
+      log.info(`Link ID: ${linkID}`)
+      const { code } = await projectUploader.sendToLink(filesWithContent, linkID, { tsErrorsAsWarnings: unsafe })
       if (code !== 'build.accepted') {
         bail(new Error('Please, update your builder-hub to the latest version!'))
       }
@@ -94,7 +118,8 @@ const performInitialLink = async (
 
       const data = err?.response?.data
       if (data?.code === 'bad_toolbelt_version') {
-        log.error(`${data.message} To update just run ${chalk.bold.green('yarn global add vtex')}.`)
+        const errMsg = `${data.message}\n${Messages.UPDATE_TOOLBELT()}`
+        log.error(errMsg)
         process.exit(1)
       }
 
@@ -119,16 +144,18 @@ const performInitialLink = async (
 }
 
 const warnAndLinkFromStart = (
+  root: string,
   projectUploader: ProjectUploader,
   unsafe: boolean,
   extraData: { yarnFilesManager: YarnFilesManager } = { yarnFilesManager: null }
 ) => {
   log.warn('Initial link requested by builder')
-  performInitialLink(projectUploader, extraData, unsafe)
+  performInitialLink(root, projectUploader, extraData, unsafe)
   return null
 }
 
 const watchAndSendChanges = async (
+  root: string,
   appId: string,
   projectUploader: ProjectUploader,
   { yarnFilesManager }: { yarnFilesManager: YarnFilesManager },
@@ -136,15 +163,15 @@ const watchAndSendChanges = async (
 ): Promise<any> => {
   const changeQueue: ChangeToSend[] = []
 
-  const onInitialLinkRequired = e => {
-    const data = e.response && e.response.data
-    if (data?.code === 'initial_link_required') {
-      return warnAndLinkFromStart(projectUploader, unsafe, { yarnFilesManager })
+  const onInitialLinkRequired = err => {
+    const data = err.response && err.response.data
+    if (data?.code === INITIAL_LINK_CODE || err?.code === INITIAL_LINK_CODE) {
+      return warnAndLinkFromStart(root, projectUploader, unsafe, { yarnFilesManager })
     }
-    throw e
+    throw err
   }
 
-  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json']
+  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json', 'cypress.json']
   const linkedDepsPatterns = map(path => join(path, '**'), yarnFilesManager.symlinkedDepsDirs)
 
   const pathModifier = pipe(
@@ -164,13 +191,16 @@ const watchAndSendChanges = async (
 
   const sendChanges = debounce(async () => {
     try {
-      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), {
+      log.info(`Link ID: ${linkID}`)
+      return await projectUploader.sendToRelink(changeQueue.splice(0, changeQueue.length), linkID, {
         tsErrorsAsWarnings: unsafe,
       })
     } catch (err) {
+      const commandType = err instanceof NewStickyHostError ? err.command : 'link'
+
       nodeNotifier?.notify({
         title: appId,
-        message: 'Link died',
+        message: `${commandType} died`,
       })
 
       if (err instanceof ChangeSizeLimitError) {
@@ -212,9 +242,27 @@ const watchAndSendChanges = async (
   })
 }
 
-export default async options => {
+async function handlePreLinkLogin({ account, workspace }: { account?: string; workspace?: string }) {
+  const postLoginOps: LoginOptions['postLoginOps'] = ['releaseNotify']
+  if (!SessionManager.getSingleton().checkValidCredentials()) {
+    return authLogin({ account, workspace, allowUseCachedToken: true, postLoginOps })
+  }
+
+  if (account && workspace) {
+    return authLogin({ account, workspace, allowUseCachedToken: true, postLoginOps })
+  }
+
+  if (workspace) {
+    return workspaceUse(workspace)
+  }
+}
+
+export async function appLink(options: LinkOptions) {
+  await handlePreLinkLogin({ account: options.account, workspace: options.workspace })
+
   await validateAppAction('link')
-  const unsafe = !!(options.unsafe || options.u)
+  const unsafe = !!options.unsafe
+  const root = getAppRoot()
   const manifest = await ManifestEditor.getManifestEditor()
   await manifest.writeSchema()
 
@@ -224,11 +272,11 @@ export default async options => {
   }
 
   const appId = manifest.appLocator
-  const context = { account: getAccount(), workspace: getWorkspace(), environment: getEnvironment() }
-  const { builder } = createClients(context, { timeout: 60000 })
+
+  const builder = Builder.createClient({}, { timeout: 60000, retries: 3 })
   const projectUploader = ProjectUploader.getProjectUploader(appId, builder)
 
-  if (options.setup || options.s) {
+  if (options.setup) {
     await setup({ 'ignore-linked': false })
   }
   try {
@@ -241,7 +289,7 @@ export default async options => {
   // Always run yarn locally for some builders
   map(runYarnIfPathExists, buildersToRunLocalYarn)
 
-  if (options.c || options.clean) {
+  if (options.clean) {
     log.info('Requesting to clean cache in builder.')
     const { timeNano } = await builder.clean(appId)
     log.info(`Cache cleaned successfully in ${formatNano(timeNano)}`)
@@ -253,7 +301,7 @@ export default async options => {
       log.error(`App build failed. Waiting for changes...`)
     },
     // eslint-disable-next-line @typescript-eslint/camelcase
-    initial_link_required: () => warnAndLinkFromStart(projectUploader, unsafe),
+    initial_link_required: () => warnAndLinkFromStart(root, projectUploader, unsafe),
   }
 
   let debuggerStarted = false
@@ -289,9 +337,9 @@ export default async options => {
   let unlistenBuild
   const extraData = { yarnFilesManager: null }
   try {
-    const buildTrigger = performInitialLink.bind(this, projectUploader, extraData, unsafe)
+    const buildTrigger = performInitialLink.bind(this, root, projectUploader, extraData, unsafe)
     const [subject] = appId.split('@')
-    if (options.watch === false) {
+    if (options.noWatch) {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
       return
     }
@@ -308,7 +356,7 @@ export default async options => {
       }
 
       if (data.code === 'link_on_production') {
-        throw new CommandError(
+        throw createFlowIssueError(
           `Please use a dev workspace to link apps. Create one with (${chalk.blue(
             'vtex use <workspace> -rp'
           )}) to be able to link apps`
@@ -316,7 +364,8 @@ export default async options => {
       }
 
       if (data.code === 'bad_toolbelt_version') {
-        return log.error(`${data.message} To update just run ${chalk.bold.green('yarn global add vtex')}.`)
+        const errMsg = `${data.message}\n${Messages.UPDATE_TOOLBELT}`
+        return log.error(errMsg)
       }
     }
     throw e
@@ -331,5 +380,5 @@ export default async options => {
     process.exit()
   })
 
-  await watchAndSendChanges(appId, projectUploader, extraData, unsafe)
+  await watchAndSendChanges(root, appId, projectUploader, extraData, unsafe)
 }

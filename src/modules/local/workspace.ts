@@ -1,8 +1,8 @@
+import { SessionManager } from '../../api/session/SessionManager'
 import { copyToClipboard } from './utils'
-import { getWorkspace } from '../../conf'
 
 export default () => {
-  const workspace = getWorkspace()
+  const { workspace } = SessionManager.getSingleton()
   copyToClipboard(workspace)
   return console.log(workspace)
 }

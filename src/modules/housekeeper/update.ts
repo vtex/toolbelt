@@ -1,13 +1,13 @@
-import { Housekeeper, HousekeeperStatesAndUpdates } from '@vtex/api'
+import { HousekeeperStatesAndUpdates } from '@vtex/api'
 import chalk from 'chalk'
 import ora from 'ora'
 import { any, compose, difference, filter, identity, isEmpty, map, path, pluck, prop, props, union } from 'ramda'
-
-import { toMajorRange } from '../../locator'
-import log from '../../logger'
-import { isVerbose } from '../../utils'
-import { promptConfirm } from '../prompts'
-import { matchedDepsDiffTable, getIOContext, IOClientOptions } from '../utils'
+import { createHousekeeperClient } from '../../api/clients/IOClients/infra/Housekeeper'
+import { toMajorRange } from '../../api/locator'
+import log from '../../api/logger'
+import { isVerbose } from '../../api/verbose'
+import { promptConfirm } from '../../api/modules/prompts'
+import { matchedDepsDiffTable } from '../utils'
 
 const promptUpdate = (): Promise<boolean> => Promise.resolve(promptConfirm('Apply version updates?'))
 
@@ -108,7 +108,7 @@ const printUpdates = (resolvedUpdates: HousekeeperStatesAndUpdates) => {
 }
 
 export default async () => {
-  const housekeeper = new Housekeeper(getIOContext(), IOClientOptions)
+  const housekeeper = createHousekeeperClient()
   const getSpinner = ora('Getting available updates').start()
   const resolvedUpdates = await housekeeper.resolve()
   getSpinner.stop()

@@ -1,128 +1,14 @@
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
-import { diffArrays } from 'diff'
+import { diffArrays, ArrayChange } from 'diff'
 import { existsSync } from 'fs-extra'
 import { resolve as resolvePath } from 'path'
 import R from 'ramda'
-import { dummyLogger } from '../clients/dummyLogger'
-import * as conf from '../conf'
-import * as env from '../env'
-import { BuildFailError } from '../errors'
-import log from '../logger'
-import { getAppRoot } from '../manifest'
-import { logAll, onEvent } from '../sse'
-import { createTable } from '../table'
-import envTimeout from '../timeout'
-import userAgent from '../user-agent'
-import { promptConfirm } from './prompts'
-
-interface BuildListeningOptions {
-  context?: Context
-  timeout?: number
-}
-
-type BuildEvent = 'start' | 'success' | 'fail' | 'timeout' | 'logs'
-type AnyFunction = (...args: any[]) => any
-
-const allEvents: BuildEvent[] = ['start', 'success', 'fail', 'timeout', 'logs']
-
-const flowEvents: BuildEvent[] = ['start', 'success', 'fail']
+import log from '../api/logger'
+import { getAppRoot } from '../api/manifest/ManifestUtil'
+import { createTable } from '../api/table'
 
 export const yarnPath = `"${require.resolve('yarn/bin/yarn')}"`
-
-const DEFAULT_TIMEOUT = 10000
-
-export const IOClientOptions = {
-  timeout: (envTimeout || DEFAULT_TIMEOUT) as number,
-  retries: 3,
-}
-
-export const getIOContext = () => ({
-  account: conf.getAccount(),
-  authToken: conf.getToken(),
-  production: false,
-  product: '',
-  region: env.region(),
-  route: {
-    id: '',
-    params: {},
-  },
-  userAgent,
-  workspace: conf.getWorkspace(),
-  requestId: '',
-  operationId: '',
-  logger: dummyLogger,
-  platform: '',
-})
-
-const onBuildEvent = (
-  ctx: Context,
-  timeout: number,
-  appOrKey: string,
-  callback: (type: BuildEvent, message?: Message) => void
-) => {
-  const [subject] = appOrKey.split('@')
-  const unlistenLogs = logAll(ctx, log.level, subject)
-  const [unlistenStart, unlistenSuccess, unlistenFail] = flowEvents.map(type =>
-    onEvent(ctx, 'vtex.render-builder', subject, [`build.${type}`], message => callback(type, message))
-  )
-  const timer = timeout && setTimeout(() => callback('timeout'), timeout)
-  const unlistenMap: Record<BuildEvent, AnyFunction> = {
-    fail: unlistenFail,
-    logs: unlistenLogs,
-    start: unlistenStart,
-    success: unlistenSuccess,
-    timeout: () => clearTimeout(timer),
-  }
-
-  return (...types: BuildEvent[]) => {
-    types.forEach(type => {
-      unlistenMap[type]()
-    })
-  }
-}
-
-export const listenBuild = (
-  appOrKey: string,
-  triggerBuild: (unlistenBuild?: (response) => void) => Promise<any>,
-  options: BuildListeningOptions = {}
-) => {
-  return new Promise((resolve, reject) => {
-    let triggerResponse
-
-    const { context = conf.currentContext, timeout = 5000 } = options
-    const unlisten = onBuildEvent(context, timeout, appOrKey, (eventType, message) => {
-      switch (eventType) {
-        case 'start':
-          unlisten('start', 'timeout')
-          break
-        case 'success':
-        case 'timeout':
-          unlisten(...allEvents)
-          resolve(triggerResponse)
-          break
-        case 'fail':
-          unlisten(...allEvents)
-          reject(new BuildFailError(message))
-          break
-      }
-    })
-
-    const unlistenBuild = response => {
-      unlisten(...allEvents)
-      resolve(response)
-    }
-
-    triggerBuild(unlistenBuild)
-      .then(response => {
-        triggerResponse = response
-      })
-      .catch(e => {
-        unlisten(...allEvents)
-        reject(e)
-      })
-  })
-}
 
 export const formatNano = (nanoseconds: number): string =>
   `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(0)}ms`
@@ -146,22 +32,6 @@ export const runYarnIfPathExists = (relativePath: string) => {
     } catch (e) {
       log.error(`Failed to run yarn in ${chalk.green(relativePath)}`)
       throw e
-    }
-  }
-}
-
-const getSwitchAccountMessage = (previousAccount: string, currentAccount = conf.getAccount()): string => {
-  return `Now you are logged in ${chalk.blue(currentAccount)}. Do you want to return to ${chalk.blue(
-    previousAccount
-  )} account?`
-}
-
-export const switchToPreviousAccount = async (previousConf: any) => {
-  const previousAccount = previousConf.account
-  if (previousAccount !== conf.getAccount()) {
-    const canSwitchToPrevious = await promptConfirm(getSwitchAccountMessage(previousAccount))
-    if (canSwitchToPrevious) {
-      conf.saveAll(previousConf)
     }
   }
 }
@@ -190,12 +60,29 @@ const cleanVersion = (appId: string) => {
   )(appId)
 }
 
+// Return version tag
+// Example: 2.115.0-beta.somehash   -> beta
+// Example: 2.115.0                 -> latest
+export const getDistTag = (version: string) => {
+  const regex = /(?:-([0-9A-Za-z-]*))/g
+  const distTag = version.match(regex)
+  return distTag ? distTag[0].substring(1) : 'latest'
+}
+
+// Return version and tag only
+// Example: 2.115.0-beta.somehash   -> 2.115.0-beta
+// Example: 2.115.0                 -> 2.115.0
+export const getSimpleVersion = (version: string) => {
+  const regex = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+))?/g
+  return version.match(regex)[0]
+}
+
 export const matchedDepsDiffTable = (title1: string, title2: string, deps1: string[], deps2: string[]) => {
   const depsDiff = diffArrays(deps1, deps2)
   // Get deduplicated names (no version) of the changed deps.
   const depNames = [
     ...new Set(
-      R.compose<string[], any[], string[], string[], string[]>(
+      R.compose<string[] | Array<ArrayChange<string>>, any[], string[], string[], string[]>(
         R.map(k => R.head(R.split('@', k))),
         R.flatten,
         R.pluck('value'),
@@ -210,7 +97,7 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
 
   // Custom function to set the objects values.
   const setObjectValues = (obj, formatter, filterFunction) => {
-    R.compose<void, any[], any[], any[], any[]>(
+    R.compose<void | Array<ArrayChange<string>>, any[], any[], any[], any[]>(
       // eslint-disable-next-line array-callback-return
       R.map(k => {
         const index = R.head(R.split('@', k))

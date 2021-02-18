@@ -1,11 +1,9 @@
 import { path } from 'ramda'
+import { createAppsClient } from '../../../api/clients/IOClients/infra/Apps'
 
-import { apps } from '../../../clients'
+export default async (app: string, fields: string[]) => {
+  const apps = createAppsClient()
 
-const FIELDS_START_INDEX = 2
-
-export default async (app: string, _, options) => {
-  const fields = options._.slice(FIELDS_START_INDEX)
   const settingsValues = await apps
     .getAppSettings(app)
     .then(settings => (fields === null ? settings : path(fields, settings)))

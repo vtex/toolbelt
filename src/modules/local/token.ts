@@ -1,8 +1,8 @@
+import { SessionManager } from '../../api/session/SessionManager'
 import { copyToClipboard } from './utils'
-import { getToken } from '../../conf'
 
 export default () => {
-  const token = getToken()
+  const { token } = SessionManager.getSingleton()
   copyToClipboard(token)
   return console.log(token)
 }

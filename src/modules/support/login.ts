@@ -3,17 +3,20 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import jwt from 'jsonwebtoken'
 import { prop } from 'ramda'
-import { getAccount, getToken, getWorkspace, saveAccount, saveToken, saveWorkspace } from '../../conf'
-import * as env from '../../env'
-import log from '../../logger'
+import * as env from '../../api/env'
+import { Headers } from '../../lib/constants/Headers'
+import { SessionManager } from '../../api/session/SessionManager'
+import log from '../../api/logger'
 
-const getAvailableRoles = async (region: string, token: string, supportedAccount: string): Promise<string[]> => {
+const getAvailableRoles = async (token: string, supportedAccount: string): Promise<string[]> => {
+  const { account, workspace } = SessionManager.getSingleton()
   const response = await axios.get(
-    `http://support-authority.vtex.${region}.vtex.io/${getAccount()}/${getWorkspace()}/${supportedAccount}/roles`,
+    `https://app.io.vtex.com/vtex.support-authority/v0/${account}/${workspace}/${supportedAccount}/roles`,
     {
       headers: {
         Authorization: token,
-        'X-Vtex-Original-Credential': token,
+        [Headers.VTEX_ORIGINAL_CREDENTIAL]: token,
+        ...(env.cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: env.cluster() } : null),
       },
     }
   )
@@ -38,13 +41,15 @@ const promptRoles = async (roles: string[]): Promise<string> => {
   return chosen
 }
 
-const loginAsRole = async (region: string, token: string, supportedAccount: string, role: string): Promise<string> => {
+const loginAsRole = async (token: string, supportedAccount: string, role: string): Promise<string> => {
+  const { account, workspace } = SessionManager.getSingleton()
   const response = await axios.get(
-    `http://support-authority.vtex.${region}.vtex.io/${getAccount()}/${getWorkspace()}/${supportedAccount}/login/${role}`,
+    `https://app.io.vtex.com/vtex.support-authority/v0/${account}/${workspace}/${supportedAccount}/login/${role}`,
     {
       headers: {
         Authorization: token,
-        'X-Vtex-Original-Credential': token,
+        [Headers.VTEX_ORIGINAL_CREDENTIAL]: token,
+        ...(env.cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: env.cluster() } : null),
       },
     }
   )
@@ -58,9 +63,10 @@ const assertToken = (raw: string): void => {
 }
 
 const saveSupportCredentials = (account: string, token: string): void => {
-  saveAccount(account)
-  saveWorkspace('master')
-  saveToken(token)
+  const session = SessionManager.getSingleton()
+  session.DEPRECATEDchangeAccount(account)
+  session.workspaceSwitch({ targetWorkspace: 'master' })
+  session.DEPRECATEDchangeToken(token)
 }
 
 export default async (account: string) => {
@@ -68,16 +74,15 @@ export default async (account: string) => {
     log.error(`Please specify the account that will receive support. type vtex --help for more information.`)
     return
   }
-  const actualToken = getToken()
-  const region = env.region()
+  const actualToken = SessionManager.getSingleton().token
   try {
-    const roles = await getAvailableRoles(region, actualToken, account)
+    const roles = await getAvailableRoles(actualToken, account)
     if (roles.length === 0) {
       log.error('No support roles available for this account.')
       return
     }
     const role = await promptRoles(roles)
-    const newToken = await loginAsRole(region, actualToken, account, role)
+    const newToken = await loginAsRole(actualToken, account, role)
     assertToken(newToken)
     saveSupportCredentials(account, newToken)
     log.info(`Logged into ${chalk.blue(account)} with role ${role}!`)

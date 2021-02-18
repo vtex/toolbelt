@@ -1,14 +1,16 @@
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
-import { apps, billing } from '../../clients'
-import { UserCancelledError } from '../../errors'
-import { ManifestEditor, ManifestValidator } from '../../lib/manifest'
-import log from '../../logger'
-import { promptConfirm } from '../prompts'
-import { optionsFormatter, parseArgs, validateAppAction } from './utils'
+import { Billing } from '../../api/clients/IOClients/apps/Billing'
+import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
+import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
+import log from '../../api/logger'
+import { ManifestEditor, ManifestValidator } from '../../api/manifest'
+import { promptConfirm } from '../../api/modules/prompts'
+import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
+import { BillingMessages } from '../../lib/constants/BillingMessages'
 
-const { installApp } = billing
-const { installApp: legacyInstallApp } = apps
+const { installApp } = Billing.createClient()
+const { installApp: legacyInstallApp } = createAppsClient()
 
 const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
 const isForbiddenError = isError(403)
@@ -24,23 +26,43 @@ const promptPolicies = async () => {
   return promptConfirm('Do you accept all the Terms?')
 }
 
-const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
-  log.warn(
-    `${chalk.blue(app)} is a ${
-      billingOptions.free ? chalk.green('free') : chalk.red('paid')
-    } app. To install it, you need to accept the following Terms:\n\n${optionsFormatter(billingOptions)}\n`
-  )
-  const confirm = await promptPolicies()
-  if (!confirm) {
-    throw new UserCancelledError()
+const hasLicenseFile = async (name: string, version: string) => {
+  const client = createRegistryClient()
+  try {
+    await client.getAppFile(name, version, '/public/metadata/licenses/en-US.md')
+    return true
+  } catch (err) {
+    if (err.response?.status === 404) {
+      return false
+    }
+    throw err
   }
-
-  log.info('Starting to install app with accepted Terms')
-  await installApp(app, true, force)
-  log.debug('Installed after accepted terms')
 }
 
-export const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
+const licenseURL = async (app: string, termsURL?: string): Promise<string | undefined> => {
+  const [name, argVersion] = app.split('@')
+  const version = argVersion ?? 'x'
+  return (await hasLicenseFile(name, version)) ? `https://apps.vtex.com/_v/terms/${name}@${version}` : termsURL
+}
+
+const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
+  const { termsURL } = billingOptions
+  const license = await licenseURL(app, termsURL)
+  log.info(
+    isFreeApp(billingOptions) ? BillingMessages.acceptToInstallFree(app) : BillingMessages.acceptToInstallPaid(app)
+  )
+  log.info(BillingMessages.billingTable(optionsFormatter(billingOptions, app, license)))
+  const confirm = await promptPolicies()
+  if (!confirm) {
+    return
+  }
+
+  log.info(BillingMessages.INSTALL_STARTED)
+  await installApp(app, true, force)
+  log.debug(BillingMessages.INSTALL_SUCCESS)
+}
+
+const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
   for (const app of appsList) {
     ManifestValidator.validateApp(app)
     try {
@@ -74,9 +96,6 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
       }
       log.info(`Installed app ${chalk.green(app)} successfully`)
     } catch (e) {
-      if (e.name === UserCancelledError.name) {
-        throw new UserCancelledError()
-      }
       if (isNotFoundError(e)) {
         log.warn(
           `Billing app not found in current workspace. Please install it with ${chalk.green(
@@ -108,11 +127,11 @@ export const prepareInstall = async (appsList: string[], force: boolean): Promis
   }
 }
 
-export default async (optionalApp: string, options) => {
+export default async (optionalApps: string[], options) => {
   const force = options.f || options.force
-  await validateAppAction('install', optionalApp)
-  const app = optionalApp || (await ManifestEditor.getManifestEditor()).appLocator
-  const appsList = [app, ...parseArgs(options._)]
+  const confirm = await validateAppAction('install', optionalApps)
+  if (!confirm) return
+  const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
   log.debug(`Installing app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return prepareInstall(appsList, force)
 }

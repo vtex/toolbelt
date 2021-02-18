@@ -1,9 +1,8 @@
 import chalk from 'chalk'
 import { contains, values } from 'ramda'
-
-import { CommandError } from '../../errors'
-import log from '../../logger'
-import { Environment, saveEnvironment, saveCluster } from '../../conf'
+import { createFlowIssueError } from '../../api/error/utils'
+import log from '../../api/logger'
+import { Environment, saveEnvironment, saveCluster } from '../../api/conf'
 
 const envValues = values(Environment)
 
@@ -11,7 +10,9 @@ export default (name: string, value: string) => {
   switch (name) {
     case 'env':
       if (!contains(value, envValues)) {
-        throw new CommandError(`Invalid value for environment "${value}". Possible values are: ${envValues.join(', ')}`)
+        throw createFlowIssueError(
+          `Invalid value for environment "${value}". Possible values are: ${envValues.join(', ')}`
+        )
       }
       saveEnvironment(value as Environment)
       log.info(`Successfully set environment to "${value}"`)
@@ -21,6 +22,6 @@ export default (name: string, value: string) => {
       log.info(`Successfully set cluster to "${value}"`)
       break
     default:
-      throw new CommandError(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`)
+      throw createFlowIssueError(`The supported configurations are: ${chalk.blue('env')}, ${chalk.blue('cluster')}`)
   }
 }

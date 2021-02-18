@@ -2,11 +2,11 @@ import chalk from 'chalk'
 import enquirer from 'enquirer'
 import { keys, prop, reject, test } from 'ramda'
 
-import { getLogin } from '../../conf'
-import log from '../../logger'
-import { promptConfirm } from '../prompts'
+import log from '../../api/logger'
+import { promptConfirm } from '../../api/modules/prompts'
 
 import * as git from './git'
+import { SessionManager } from '../../api/session/SessionManager'
 
 const VTEX_APPS = 'vtex-apps'
 
@@ -82,7 +82,9 @@ const templates: Record<string, Template> = {
 const getTemplates = () =>
   // Return all templates if user's e-mail is `...@vtex...`.
   // Otherwise filter the VTEX internal templates.
-  test(/@vtex\./, getLogin()) ? keys(templates) : reject(x => VTEXInternalTemplates.indexOf(x) >= 0, keys(templates))
+  test(/@vtex\./, SessionManager.getSingleton().userLogged)
+    ? keys(templates)
+    : reject(x => VTEXInternalTemplates.indexOf(x) >= 0, keys(templates))
 
 const promptTemplates = async (): Promise<string> => {
   const cancel = 'Cancel'

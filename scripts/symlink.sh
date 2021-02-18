@@ -31,7 +31,7 @@ fi
 
 VTEX_BIN=$(node -e "const pkg=require('./package.json'); console.log(pkg.name);")
 VTEX_BIN_TEST="$VTEX_BIN-test"
-BINARY_PATH=$PWD/lib/cli.js 
+BINARY_PATH=$PWD/bin/run
 LINK_PATH=$GLOBAL_BIN_PATH/$VTEX_BIN_TEST
 
 mkdir -p $GLOBAL_BIN_PATH

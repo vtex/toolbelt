@@ -1,32 +1,35 @@
+import { ErrorReportSerializableObj } from '@vtex/node-error-report'
 import { randomBytes } from 'crypto'
-import { ensureFile, writeJson } from 'fs-extra'
-import { spawn } from 'child_process'
+import { ensureFileSync, writeJsonSync } from 'fs-extra'
 import { join } from 'path'
-
 import * as pkgJson from '../../../package.json'
-import { ErrorReport, ErrorCreationArguments } from '../error/ErrorReport'
+import logger from '../../api/logger'
+import { PathConstants } from '../constants/Paths'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import { Metric, MetricReport, MetricReportObj } from '../../api/metrics/MetricReport'
+import { spawnUnblockingChildProcess } from '../utils/spawnUnblockingChildProcess'
 import { ITelemetryLocalStore, TelemetryLocalStore } from './TelemetryStore'
-import { configDir } from '../../conf'
-import logger from '../../logger'
-import { Metric, MetricReport } from '../metrics/MetricReport'
+
+export interface TelemetryFile {
+  errors?: ErrorReportSerializableObj[]
+  metrics?: MetricReportObj[]
+}
 
 export class TelemetryCollector {
   private static readonly REMOTE_FLUSH_INTERVAL = 1000 * 60 * 10 // Ten minutes
-  public static readonly TELEMETRY_LOCAL_DIR = join(configDir, 'vtex', 'telemetry')
+  public static readonly TELEMETRY_LOCAL_DIR = PathConstants.TELEMETRY_FOLDER
   private static telemetryCollectorSingleton: TelemetryCollector
 
   public static getCollector() {
     if (!TelemetryCollector.telemetryCollectorSingleton) {
-      const store = new TelemetryLocalStore(`${pkgJson.name}-telemetry-store`)
+      const store = new TelemetryLocalStore(
+        join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${pkgJson.name}-telemetry-store`)
+      )
+
       TelemetryCollector.telemetryCollectorSingleton = new TelemetryCollector(store)
     }
 
     return TelemetryCollector.telemetryCollectorSingleton
-  }
-
-  public static createAndRegisterErrorReport(args: ErrorCreationArguments) {
-    const err = ErrorReport.create(args)
-    return TelemetryCollector.getCollector().registerError(err)
   }
 
   private errors: ErrorReport[]
@@ -37,13 +40,19 @@ export class TelemetryCollector {
   }
 
   public registerError(error: ErrorReport | Error | any): ErrorReport {
+    let errorReport: ErrorReport
     if (error instanceof ErrorReport) {
-      this.errors.push(error)
-      return error
+      errorReport = error
+    } else {
+      errorReport = ErrorReport.create({ originalError: error })
     }
 
-    const errorReport = ErrorReport.create({ originalError: error })
+    if (errorReport.isErrorReported()) {
+      return errorReport
+    }
+
     this.errors.push(errorReport)
+    errorReport.markErrorAsReported()
     return errorReport
   }
 
@@ -58,7 +67,7 @@ export class TelemetryCollector {
     return metricReport
   }
 
-  public async flush(forceRemoteFlush = false) {
+  public flush(forceRemoteFlush = false) {
     const shouldRemoteFlush =
       forceRemoteFlush ||
       this.errors.length > 0 ||
@@ -72,18 +81,20 @@ export class TelemetryCollector {
     this.store.setErrors([])
     this.store.setMetrics([])
 
-    const obj = {
+    const obj: TelemetryFile = {
       errors: this.errors.map(err => err.toObject()),
       metrics: this.metrics.map(metric => metric.toObject()),
     }
+
     const objFilePath = join(TelemetryCollector.TELEMETRY_LOCAL_DIR, `${randomBytes(8).toString('hex')}.json`)
     try {
-      await ensureFile(objFilePath)
-      await writeJson(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
-      spawn(process.execPath, [join(__dirname, 'TelemetryReporter.js'), this.store.storeName, objFilePath], {
-        detached: true,
-        stdio: 'ignore',
-      }).unref()
+      ensureFileSync(objFilePath)
+      writeJsonSync(objFilePath, obj) // Telemetry object should be saved in a file since it can be too large to be passed as a cli argument
+      spawnUnblockingChildProcess(process.execPath, [
+        join(__dirname, 'TelemetryReporter', 'report.js'),
+        this.store.storeFilePath,
+        objFilePath,
+      ])
     } catch (e) {
       logger.error('Error writing telemetry file. Error: ', e)
     }

@@ -1,9 +1,9 @@
 import Configstore from 'configstore'
-import { ErrorReport } from '../error/ErrorReport'
-import { MetricReport } from '../metrics/MetricReport'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import { MetricReport } from '../../api/metrics/MetricReport'
 
 export interface ITelemetryLocalStore {
-  storeName: string
+  storeFilePath: string
   getErrors: () => ErrorReport[]
   getMetrics: () => MetricReport[]
   getLastRemoteFlush: () => any
@@ -14,11 +14,11 @@ export interface ITelemetryLocalStore {
 }
 
 export class TelemetryLocalStore implements ITelemetryLocalStore {
-  public readonly storeName: string
+  public readonly storeFilePath: string
   private store: Configstore
-  constructor(storeName: string) {
-    this.storeName = storeName
-    this.store = new Configstore(storeName)
+  constructor(storeFilePath: string) {
+    this.storeFilePath = storeFilePath
+    this.store = new Configstore('', null, { configPath: storeFilePath })
   }
 
   public getErrors() {

@@ -1,8 +1,8 @@
 import R from 'ramda'
-import { createClients } from '../../clients'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
-import log from '../../logger'
+import { Builder } from '../../api/clients/IOClients/apps/Builder'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import log from '../../api/logger'
 import { tsconfigEditor } from './utils'
 
 const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: string) => {
@@ -15,7 +15,7 @@ const selectTSConfig = (tsconfigsFromBuilder: any, version: string, builder: str
 
 const getTSConfig = async () => {
   try {
-    const { builder: builderClient } = createClients({}, { retries: 2, timeout: 10000 })
+    const builderClient = Builder.createClient({}, { retries: 3, timeout: 10000 })
     log.info(`Fetching BuilderHub tsconfig`)
     return await builderClient.builderHubTsConfig()
   } catch (err) {
@@ -61,7 +61,7 @@ export const setupTSConfig = async (manifest: Manifest, warnOnNoBuilderCandidate
     log.info('Finished setting up tsconfig.json')
   } catch (err) {
     log.error('Failed setting up tsconfig.json')
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TSCONFIG_ERROR,
       originalError: err,
     }).logErrorForUser()

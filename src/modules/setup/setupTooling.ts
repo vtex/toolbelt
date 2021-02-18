@@ -2,10 +2,10 @@ import chalk from 'chalk'
 import { execSync } from 'child_process'
 import { resolve } from 'path'
 import { mergeDeepRight } from 'ramda'
-import { ErrorKinds } from '../../lib/error/ErrorKinds'
-import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
-import { default as log, default as logger } from '../../logger'
-import { getAppRoot } from '../../manifest'
+import { ErrorKinds } from '../../api/error/ErrorKinds'
+import { ErrorReport } from '../../api/error/ErrorReport'
+import { default as log, default as logger } from '../../api/logger'
+import { getAppRoot } from '../../api/manifest/ManifestUtil'
 import { yarnPath } from '../utils'
 import {
   BUILDERS_WITH_TOOLING,
@@ -45,7 +45,7 @@ function getBasePackageJson(appName: string) {
     },
     'lint-staged': {
       '*.{ts,js,tsx,jsx}': ['eslint --fix', 'prettier --write'],
-      '*.json': ['prettier --write'],
+      '*.{json,graphql,gql}': ['prettier --write'],
     },
     devDependencies: {},
   }
@@ -160,7 +160,7 @@ export function setupTooling(manifest: Manifest, buildersWithTooling = BUILDERS_
     setupBuilderTools(builders)
     logger.info('Finished setting up tooling')
   } catch (err) {
-    TelemetryCollector.createAndRegisterErrorReport({
+    ErrorReport.createAndMaybeRegisterOnTelemetry({
       kind: ErrorKinds.SETUP_TOOLING_ERROR,
       originalError: err,
     }).logErrorForUser()
