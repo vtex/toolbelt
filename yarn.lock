@@ -3619,7 +3619,22 @@ eslint-config-vtex-react@^6.3.1:
     eslint-plugin-react "^7.18.0"
     eslint-plugin-react-hooks "^2.3.0"
 
-eslint-config-vtex@^12.3.1, eslint-config-vtex@^12.3.2:
+eslint-config-vtex@12.3.1:
+  version "12.3.1"
+  resolved "https://registry.yarnpkg.com/eslint-config-vtex/-/eslint-config-vtex-12.3.1.tgz#53904b08693de8b93020ce87d7d36348d12ef2a4"
+  integrity sha512-kfSeuf7E92PPWPOyh1MEiN/E7DmOmy4uHTkaL6gvS7naCnv7w6Xl3NXRL7eM+FJT8+p7wU98IMoHXhwLKo6bGA==
+  dependencies:
+    "@typescript-eslint/eslint-plugin" "^2.17.0"
+    "@typescript-eslint/parser" "^2.17.0"
+    confusing-browser-globals "^1.0.9"
+    eslint-config-prettier "^6.9.0"
+    eslint-plugin-cypress "^2.9.0"
+    eslint-plugin-import "^2.20.0"
+    eslint-plugin-jest "^23.7.0"
+    eslint-plugin-prettier "^3.1.2"
+    eslint-plugin-vtex "^1.0.3"
+
+eslint-config-vtex@^12.3.2:
   version "12.3.2"
   resolved "https://registry.yarnpkg.com/eslint-config-vtex/-/eslint-config-vtex-12.3.2.tgz#ecc041d779c7ae1275582c693e3c0c0009bed304"
   integrity sha512-CfjOkat59dMJnimsgzqwISsZUr+MKdzS1rtOh1X+vnioV3pvlSDDnLUYfwZ6ZND/Pd+f6X42yhWmIl6XxkmeOQ==
@@ -3726,6 +3741,11 @@ eslint-plugin-react@^7.18.0:
     semver "^6.3.0"
     string.prototype.matchall "^4.0.2"
     xregexp "^4.3.0"
+
+eslint-plugin-vtex@^1.0.3:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-vtex/-/eslint-plugin-vtex-1.2.1.tgz#4cb26d5844a50250c0d65f1d1444db85fdf1c406"
+  integrity sha512-YJ07HC0vXtl2VXn0gRIutNww1uuMWmyV/8ERsLfB6AqLRwWF8+6vran84RuPXtV5u4aqhtOejw2XAn2Omtk7IA==
 
 eslint-plugin-vtex@^1.0.4:
   version "1.0.4"

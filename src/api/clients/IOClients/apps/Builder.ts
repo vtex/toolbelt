@@ -5,6 +5,7 @@ import { ErrorKinds } from '../../../error/ErrorKinds'
 import { ErrorReport } from '../../../error/ErrorReport'
 import { IOClientFactory } from '../IOClientFactory'
 import { NewStickyHostError } from '../../../error/errors'
+import { TypingsInfo, TypingsInfoResponse } from 'BuilderHub'
 
 interface StickyOptions {
   sticky?: boolean
@@ -138,8 +139,8 @@ export class Builder extends AppClient {
     return this.http.get(routes.tsConfig)
   }
 
-  public typingsInfo = async () => {
-    const res = await this.http.get(routes.typings)
+  public typingsInfo = async (): Promise<TypingsInfo> => {
+    const res = await this.http.get<TypingsInfoResponse>(routes.typings)
     return res.typingsInfo
   }
 
