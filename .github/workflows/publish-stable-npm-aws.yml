@@ -13,6 +13,9 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
           ref: ${{ github.event.client_payload.ref }}
       - name: Deploy on NPM
         run: |
