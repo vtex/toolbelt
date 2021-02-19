@@ -1,0 +1,22 @@
+name: teste
+
+on:
+  repository_dispatch:
+    types: [teste]
+
+jobs:
+  npm-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - name: Deploy on NPM
+        run: |
+          echo ${{ github.event.client_payload.ref }}
+          echo ${{ github.event.client_payload }}
+          echo ${{ github.event }}
+          echo ${{ github.event.teste }}
+          echo ${{ github.event.teste.ref }}
