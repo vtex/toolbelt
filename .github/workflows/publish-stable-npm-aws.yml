@@ -15,8 +15,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: Deploy on NPM
         run: |
-          echo ${{ github.event.client_payload.ref }}
-          echo ${{ github.event.client_payload }}
-          echo ${{ github.event }}
-          echo ${{ github.event.teste }}
-          echo ${{ github.event.teste.ref }}
+          echo "${{ github.event.client_payload.ref }}"
+          echo "${{ github.event.client_payload }}"
+          echo "${{ github.event.client_payload.testando }}"
