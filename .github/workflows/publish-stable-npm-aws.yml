@@ -13,8 +13,15 @@ jobs:
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
+          ref: ${{ github.event.client_payload.ref }}
       - name: Deploy on NPM
         run: |
           echo "${{ github.event.client_payload.ref }}"
           echo "${{ github.event.client_payload }}"
           echo "${{ github.event.client_payload.testando }}"
+          yarn install --ignore-scripts
+          yarn build
+          npm publish
+        env:
+            NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+            IS_CI: "true"
