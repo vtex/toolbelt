@@ -71,7 +71,7 @@ export const workspaceCreator: WorkspaceCreator = async ({
   }
 
   const { account, workspace, token } = clientContext ?? SessionManager.getSingleton()
-  const workspaces = createWorkspacesClient({ workspace, account, authToken: token }, { timeout: 25 })
+  const workspaces = createWorkspacesClient({ workspace, account, authToken: token }, { timeout: 25000 })
 
   if (await workspaceExists(account, targetWorkspace, workspaces)) {
     maybeLogWorkspaceAlreadyExists(targetWorkspace, logIfAlreadyExists)
