@@ -34,6 +34,6 @@ jobs:
         --data-raw '{
             "event_type": "publish-stable-npm",
             "client_payload": {
-                "ref": "${GITHUB_REF#refs/heads/}",
+                "ref": "${GITHUB_REF##*/}",
             }
         }'
