@@ -1,4 +1,4 @@
-import { AppGraphQLClient, IOContext } from '@vtex/api'
+import { IOGraphQLClient, IOContext } from '@vtex/api'
 import glob from 'globby'
 import {
   buildClientSchema,
@@ -15,31 +15,36 @@ import {
 } from 'graphql'
 import chalk from 'chalk'
 import { AxiosError } from 'axios'
-
-import { createRegistryClient } from '../../../api/clients/IOClients/infra'
-import logger from '../../../api/logger'
-import { getAppRoot } from '../../../api/manifest'
+import generate from 'apollo/lib/generate'
 import fs from 'fs'
 import path from 'path'
-import { GENERATED_GRAPHQL_DIRNAME, GRAPHQL_GLOBAL_TYPES_FILE } from '../consts'
-import generate from 'apollo/lib/generate'
+
+import { createRegistryClient } from '../../api/clients/IOClients/infra'
+import logger from '../../api/logger'
+import { getAppRoot } from '../../api/manifest'
+
+import { BUILDERS_WITH_GRAPHQL_QUERIES, GENERATED_GRAPHQL_DIRNAME, GRAPHQL_GLOBAL_TYPES_FILE } from './consts'
+import { SessionManager } from '../../api/session'
+import * as env from '../../api/env'
+import userAgent from '../../user-agent'
+import { dummyLogger } from '../../api/dummyLogger'
+import { mergeSchemas } from 'graphql-tools'
 
 // the only way to consume the GraphQL from an app is to extend
 // the `AppGraphQLClient` class, because the `this.graphql` field
 // is protected and can't be accessed outside it.
-
-class GraphQLIntrospectionClient extends AppGraphQLClient {
+class GraphQLIntrospectionClient extends IOGraphQLClient {
   constructor(appName: string, context: IOContext) {
-    super(appName, context, { timeout: 5000 })
+    super(context, {
+      baseURL: `https://${context.workspace}--${context.account}.myvtex.com/_v/private/${appName}`,
+      timeout: 5000,
+    })
   }
 
   public async introspect() {
-    const response = await this.graphql.query<IntrospectionQuery, {}>({
+    const response = await this.http.post<{ data: IntrospectionQuery }>('/graphiql/v1', {
       query: getIntrospectionQuery(),
-      variables: {},
-      throwOnError: true,
     })
-
     return response.data
   }
 }
@@ -61,7 +66,6 @@ export const getGraphQLDependencies = async (manifest: Manifest, context: IOCont
     )
     return dependenciesManifest.filter(appManifest => 'graphql' in appManifest.builders)
   } catch (err) {
-    console.log(err)
     logger.error('Failed to get dependencies GraphQL')
     logger.debug(err)
     return []
@@ -80,11 +84,10 @@ const getIntrospectionDetailedError = err => {
 const introspectDependency = (context: IOContext) => async (appName: string) => {
   try {
     const graphQLIntrospectionClient = new GraphQLIntrospectionClient(appName, context)
+
     const introspectionResult = await graphQLIntrospectionClient.introspect()
-    console.log(appName, JSON.stringify(introspectionResult))
-    return buildClientSchema(introspectionResult, { assumeValid: true })
+    return buildClientSchema(introspectionResult)
   } catch (err) {
-    console.log(err)
     logger.error(
       chalk`Could not resolve GraphQL schema for app {bold ${appName}}. ${getIntrospectionDetailedError(err)}`
     )
@@ -93,7 +96,7 @@ const introspectDependency = (context: IOContext) => async (appName: string) => 
   }
 }
 
-export const getDependenciesSchemas = async (dependenciesManifest: Manifest[], context: IOContext) => {
+const getDependenciesSchemas = async (dependenciesManifest: Manifest[], context: IOContext) => {
   return (
     await Promise.all(
       dependenciesManifest.map(app => `${app.vendor}.${app.name}@${app.version}`).map(introspectDependency(context))
@@ -173,22 +176,20 @@ function resolveImports(source: string, filePath: string): DefinitionNode[] {
   return imports.reduce<DefinitionNode[]>((acc, fp: string) => [...acc, ...getDefinitions(fp, [])], [])
 }
 
-export const removeGeneratedFiles = async (): Promise<void> => {
+const removeGeneratedFiles = async (): Promise<void> => {
   const root = getAppRoot()
   const generatedFiles = await glob(`**/${GENERATED_GRAPHQL_DIRNAME}/*`, { cwd: root })
 
   await Promise.all(generatedFiles.map(filePath => fs.promises.unlink(filePath)))
 }
 
-export const getGraphQLDocuments = async (
-  builders: string[]
-): Promise<ReadonlyArray<[DefinitionNode[], DocumentNode]>> => {
+const getGraphQLDocuments = async (builders: string[]): Promise<ReadonlyArray<[DefinitionNode[], DocumentNode]>> => {
   const graphQLFiles = await getGraphQLFiles(builders)
   if (!graphQLFiles) return []
   return generateGraphQLDocuments(graphQLFiles)
 }
 
-export const getValidGraphqlDocuments = (
+const getValidGraphqlDocuments = (
   graphQLDocuments: ReadonlyArray<[DefinitionNode[], DocumentNode]>,
   schema: GraphQLSchema
 ): ReadonlyArray<[DefinitionNode[], DocumentNode]> => {
@@ -266,7 +267,7 @@ const groupDocumentsByBuilder = (documents: ReadonlyArray<[DefinitionNode[], Doc
     }, {})
 }
 
-export const generateTypeFiles = (
+const generateTypeFiles = (
   documents: ReadonlyArray<[DefinitionNode[], DocumentNode]>,
   schema: GraphQLSchema
 ): number => {
@@ -308,7 +309,7 @@ export const generateTypeFiles = (
   }, 0)
 }
 
-export const handleEmptyGeneratedDirectory = async () => {
+const handleEmptyGeneratedDirectory = async () => {
   const root = getAppRoot()
   try {
     if ((await fs.promises.stat(path.join(root, GENERATED_GRAPHQL_DIRNAME))).isDirectory()) {
@@ -318,5 +319,66 @@ export const handleEmptyGeneratedDirectory = async () => {
     }
   } catch {
     // ignore
+  }
+}
+
+export const setupGraphql = async (manifest: Manifest, builders = BUILDERS_WITH_GRAPHQL_QUERIES) => {
+  const { account, workspace, token } = SessionManager.getSingleton()
+  const context: IOContext = {
+    account,
+    authToken: token,
+    production: false,
+    product: '',
+    region: env.region(),
+    route: {
+      id: '',
+      params: {},
+    },
+    userAgent,
+    workspace: workspace || 'master',
+    requestId: '',
+    operationId: '',
+    logger: dummyLogger,
+    platform: '',
+  }
+  const appBuilders = Object.keys(manifest.builders || {})
+
+  // we should generate these types if the app includes
+  // builders which can query GraphQL server.
+  const needGraphQLTypes = appBuilders.some(builderName => builders.includes(builderName))
+
+  if (!needGraphQLTypes || !manifest.dependencies) return
+
+  try {
+    const graphQLDocuments = await getGraphQLDocuments(builders)
+
+    if (!graphQLDocuments.length) return
+
+    const graphqlDependencies = await getGraphQLDependencies(manifest, context)
+    const dependenciesSchemas = await getDependenciesSchemas(graphqlDependencies, context)
+
+    if (!dependenciesSchemas.length) {
+      logger.warn('Could not resolve any GraphQL app schema. Aborting GraphQL types generation.')
+      return
+    }
+
+    const mergedSchemas = mergeSchemas({ schemas: dependenciesSchemas })
+
+    // remove previously generated files before generating new ones
+    await removeGeneratedFiles()
+
+    const generatedFilesCount = generateTypeFiles(graphQLDocuments, mergedSchemas)
+
+    await handleEmptyGeneratedDirectory()
+
+    if (generatedFilesCount > 0) {
+      logger.info(`Successfully generated ${generatedFilesCount} GraphQL type file(s).`)
+    } else {
+      logger.info('No GraphQL type files were generated.')
+    }
+  } catch (err) {
+    console.log(err)
+    logger.error('Failed to generate GraphQL type files')
+    logger.debug(err)
   }
 }
