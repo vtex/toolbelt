@@ -26,8 +26,14 @@ jobs:
     needs: [create-release]
     steps:
     - name: Trigger NPM publish
-      uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.REPO_GHA_PAT }}
-        repository: verasthiago/verascli
-        event-type: publish-stable-npm
+      run: |
+        curl --location --request POST 'https://api.github.com/repos/verasthiago/verascli/dispatches' \
+        --header 'Authorization: Bearer ${process.env.GITHUB_TOKEN}' \
+        --header 'Content-Type: application/json' \
+        --header 'Accept: application/vnd.github.everest-preview+json' \
+        --data-raw '{
+            "event_type": "publish-stable-npm",
+            "client_payload": {
+                "ref": "${GITHUB_REF##*/}",
+            }
+        }'
