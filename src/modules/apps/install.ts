@@ -13,6 +13,7 @@ import { switchOpen } from '../featureFlag/featureFlagDecider'
 
 const PROMPT_PLAN_CHOICES_NAME = 'billingOptionsPlanChoices'
 const BRAZILIAN_REAL_CURRENCY_CODE = 'BRL'
+const ERROR_MESSAGE_APP_CONTRACT_NOT_FOUND = 'No contract found for app'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
@@ -50,49 +51,63 @@ const licenseURL = async (app: string, termsURL?: string): Promise<string | unde
   return (await hasLicenseFile(name, version)) ? `https://apps.vtex.com/_v/terms/${name}@${version}` : termsURL
 }
 
-const buildBillingOptionsPlanChoices = ({ plans }: BillingOptions) => plans?.map(({ currency }) => currency) ?? []
+const buildBillingOptionsPlanChoices = ({ plans }: BillingOptions) =>
+  plans?.reduce<Record<string, Plan>>((choices, plan) => {
+    choices[plan.currency] = plan
+    return choices
+  }, {}) ?? {}
 
 const appStoreProductPage = (app: string) => {
   const [appName] = app.split('@')
   const [vendor, name] = appName.split('.')
-  return `https://marlon--extensions.myvtex.com/apps?salesChannel=2&textLink=${vendor}-${name}` // TODO: Update to production URL
+  return `https://apps.vtex.com/apps?salesChannel=2&textLink=${vendor}-${name}`
 }
 
 const promptCurrencyChoices = async (billingOptions: BillingOptions) => {
   const planChoices = buildBillingOptionsPlanChoices(billingOptions)
-  let [selectedCurrency] = planChoices
-  if (planChoices.length > 1) {
+  const currencyChoices = Object.keys(planChoices)
+  let [selectedCurrency] = currencyChoices
+  if (currencyChoices.length > 1) {
     const answer = await enquirer.prompt({
       name: PROMPT_PLAN_CHOICES_NAME,
       message: BillingMessages.CURRENCY_OPTIONS,
       type: 'select',
-      choices: planChoices,
+      choices: currencyChoices,
     })
     selectedCurrency = answer[PROMPT_PLAN_CHOICES_NAME]
   }
-  return selectedCurrency
+  return planChoices[selectedCurrency]
 }
 
-const handleInternationalAppInstall = async (app: string, selectedCurrency: string) => {
-  const appLink = appStoreProductPage(app)
-  log.info(BillingMessages.appCurrencyPage(selectedCurrency, appLink))
+const handleInternationalAppInstall = async (app: string, { id, currency }: Plan, force: boolean) => {
+  try {
+    await installApp(app, true, force, id)
+  } catch (e) {
+    if (!e.message?.startsWith(ERROR_MESSAGE_APP_CONTRACT_NOT_FOUND)) {
+      throw e
+    }
+    const appWebsite = appStoreProductPage(app)
+    log.info(BillingMessages.appCurrencyPage(currency, appWebsite))
 
-  const shouldOpenProductPage = await promptConfirm(BillingMessages.shouldOpenPage(), true)
-  if (shouldOpenProductPage) {
-    switchOpen(appLink, { wait: false })
+    const shouldOpenProductPage = await promptConfirm(BillingMessages.shouldOpenPage(), true)
+    if (shouldOpenProductPage) {
+      switchOpen(appWebsite, { wait: false })
+    }
   }
 }
 
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
   const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
+  let planId: string | undefined
   if (isFreeApp(billingOptions)) {
     log.info(BillingMessages.acceptToInstallFree(app))
   } else {
     log.info(BillingMessages.acceptToInstallPaid(app))
-    const selectedCurrency = await promptCurrencyChoices(billingOptions)
-    if (selectedCurrency !== BRAZILIAN_REAL_CURRENCY_CODE) {
-      return handleInternationalAppInstall(app, selectedCurrency)
+    const selectedPlan = await promptCurrencyChoices(billingOptions)
+    planId = selectedPlan.id
+    if (selectedPlan.currency !== BRAZILIAN_REAL_CURRENCY_CODE) {
+      return handleInternationalAppInstall(app, selectedPlan, force)
     }
   }
 
@@ -103,7 +118,7 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
   }
 
   log.info(BillingMessages.INSTALL_STARTED)
-  await installApp(app, true, force)
+  await installApp(app, true, force, planId)
   log.debug(BillingMessages.INSTALL_SUCCESS)
 }
 

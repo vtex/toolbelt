@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-<<<<<<< HEAD
 
+- [install] Fix app's plan message for plans without metrics.
 - `composable-commerce` as codeowners.
 
 ## [2.122.0] - 2021-02-23
@@ -52,9 +52,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 -[install] Fix app's plan message for plans without metrics.
-=======
--[install] Handle paid app installations for multiple currencies
->>>>>>> 722396fd (Refactoring international app install)
 
 ## [2.121.2] - 2021-01-13
 
