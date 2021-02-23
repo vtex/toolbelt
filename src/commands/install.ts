@@ -4,7 +4,7 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsInstall from '../modules/apps/install'
 
 export default class Install extends CustomCommand {
-  static description = 'Installs an app in the current workspace. If not specified which one, it defaults to the app in the current directory.'
+  static description = 'Installs an app on the current workspace. If not specified which one, it defaults to the app in the current directory.'
 
   static examples = ['vtex install', 'vtex install vtex.service-example@0.x', 'vtex install vtex.service-example@0.0.1']
 
