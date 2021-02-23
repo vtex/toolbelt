@@ -9,9 +9,9 @@ import OclifCommand, { flags as oclifFlags } from '@oclif/command'
 
 export abstract class CustomCommand extends OclifCommand {
   public static globalFlags = {
-    verbose: oclifFlags.boolean({ char: 'v', description: 'Show debug level logs', default: false }),
-    help: oclifFlags.help({ char: 'h' }),
-    trace: oclifFlags.boolean({ description: 'Ensure all requests to VTEX IO are traced', default: false }),
+    verbose: oclifFlags.boolean({ char: 'v', description: 'Shows debug level logs.', default: false }),
+    help: oclifFlags.help({ char: 'h', description: 'Shows this help message.' }),
+    trace: oclifFlags.boolean({ description: 'Ensures all requests to VTEX IO are traced.', default: false }),
   }
 
   getAllArgs(rawParse: ParsingToken[]) {
