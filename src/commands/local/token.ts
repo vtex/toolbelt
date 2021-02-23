@@ -2,7 +2,7 @@ import { CustomCommand } from '../../api/oclif/CustomCommand'
 import authToken from '../../modules/local/token'
 
 export default class LocalToken extends CustomCommand {
-  static description = "Show user's auth token and copy it to clipboard"
+  static description = "Prints the user's auth token and copies it to the clipboard."
 
   static examples = ['vtex local token']
 

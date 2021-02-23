@@ -3,7 +3,7 @@ import appsRelease, { releaseTypeAliases, supportedReleaseTypes, supportedTagNam
 
 export default class Release extends CustomCommand {
   static description =
-    'Bump app version, commit and push to remote. Only for git users. The first option can also be a specific valid semver version'
+    '(Only for git users.) Bumps the app version, commits, and pushes to remote the app in the current directory.'
 
   static examples = [
     'vtex release',
@@ -23,8 +23,9 @@ export default class Release extends CustomCommand {
       required: false,
       default: 'patch',
       options: [...Object.keys(releaseTypeAliases), ...supportedReleaseTypes],
+      description: 'Release type (major, minor, or patch).',
     },
-    { name: 'tagName', required: false, default: 'beta', options: supportedTagNames },
+    { name: 'tagName', required: false, default: 'beta', options: supportedTagNames, description: 'Tag name (e.g., stable, beta).' },
   ]
 
   async run() {
