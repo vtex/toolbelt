@@ -4,7 +4,7 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsPublish from '../modules/apps/publish'
 
 export default class Publish extends CustomCommand {
-  static description = 'Publishes the app in the current directory, turning it into a candidate version.'
+  static description = 'Publishes the app in the current directory as a release candidate version.'
 
   static examples = ['vtex publish']
 
