@@ -4,20 +4,20 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsDeprecate from '../modules/apps/deprecate'
 
 export default class Deprecate extends CustomCommand {
-  static description = 'Deprecate an app'
+  static description = 'Deprecates the specified app, uninstalling and downgrading it to the latest stable version in every VTEX account.'
 
   static examples = ['vtex deprecate', 'vtex deprecate vtex.service-example@0.0.1']
 
   static flags = {
     ...CustomCommand.globalFlags,
-    yes: oclifFlags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
+    yes: oclifFlags.boolean({ description: 'Answers yes to all prompts.', char: 'y', default: false }),
   }
 
   static strict = false
 
   static args = [
-    { name: 'appId', required: false },
-    { name: 'ithAppId', required: false, multiple: true },
+    { name: 'appId', required: false, description: 'Name and version of the app ({vendor}.{appname}@{x.x.x}) to deprecate.' },
+    { name: 'ithAppId', required: false, multiple: true, description: 'Names and versions of the multiple apps ({vendor}.{appname}@{x.x.x}) to deprecate.' },
   ]
 
   async run() {

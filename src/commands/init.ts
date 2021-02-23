@@ -2,7 +2,7 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsInit from '../modules/init'
 
 export default class Init extends CustomCommand {
-  static description = 'Create basic files and folders for your VTEX app'
+  static description = 'Copies starting files and folders from VTEX boilerplates into your local directories.'
 
   static examples = ['vtex init', 'vtex init project-name']
 

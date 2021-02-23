@@ -4,20 +4,20 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsUndeprecate from '../modules/apps/undeprecate'
 
 export default class Undeprecate extends CustomCommand {
-  static description = 'Undeprecate app'
+  static description = 'Reestablishes a deprecated version of an app as a stable version.'
 
   static examples = ['vtex undeprecate vtex.service-example@0.0.1']
 
   static flags = {
     ...CustomCommand.globalFlags,
-    yes: oclifFlags.boolean({ description: 'Confirm all prompts', char: 'y', default: false }),
+    yes: oclifFlags.boolean({ description: 'Answers yes to all prompts.', char: 'y', default: false }),
   }
 
   static strict = false
 
   static args = [
-    { name: 'appId', required: false },
-    { name: 'ithAppId', required: false, multiple: true },
+    { name: 'appId', required: false, description: 'Name and version of the app ({vendor}.{appname}@{x.x.x}) to undeprecate.' },
+    { name: 'ithAppId', required: false, multiple: true, description: 'Names and versions of the multiple apps ({vendor}.{appname}@{x.x.x}) to undeprecate.' },
   ]
 
   async run() {

@@ -2,7 +2,7 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsList from '../modules/apps/list'
 
 export default class List extends CustomCommand {
-  static description = 'List your installed VTEX apps'
+  static description = 'Lists the apps installed on the current workspace and account.'
 
   static examples = ['vtex list', 'vtex ls']
 

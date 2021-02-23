@@ -4,7 +4,7 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import { appLink } from '../modules/apps/link'
 
 export default class Link extends CustomCommand {
-  static description = 'Start a development session for this app'
+  static description = 'Syncs the app in the current directory with the VTEX cloud development environment.'
 
   static examples = ['vtex link -a youraccount -w yourworkspace']
 
@@ -12,21 +12,21 @@ export default class Link extends CustomCommand {
     ...CustomCommand.globalFlags,
     account: oclifFlags.string({
       char: 'a',
-      description: `Account to login before linking the app. This flag has to be paired with the '--workspace' flag.`,
+      description: `Starts a development session in the specified account. Must be paired with the '--workspace' flag.`,
       required: false,
       dependsOn: ['workspace'],
     }),
-    clean: oclifFlags.boolean({ char: 'c', description: 'Clean builder cache', default: false }),
+    clean: oclifFlags.boolean({ char: 'c', description: 'Cleans builder cache', default: false }),
     setup: oclifFlags.boolean({
       char: 's',
-      description: 'Setup typings before linking [see vtex setup --help]',
+      description: 'Sets up typing definitions before linking the app [see vtex setup --help].',
       default: false,
     }),
-    'no-watch': oclifFlags.boolean({ description: "Don't watch for file changes after initial link", default: false }),
-    unsafe: oclifFlags.boolean({ char: 'u', description: 'Allow links with Typescript errors', default: false }),
+    'no-watch': oclifFlags.boolean({ description: "Doesn't watch for file changes after the initial link.", default: false }),
+    unsafe: oclifFlags.boolean({ char: 'u', description: 'Allows linking the app despite Typescript errors.', default: false }),
     workspace: oclifFlags.string({
       char: 'w',
-      description: `Workspace to switch to before linking the app. Can be paired with the '--account' flag to change account and switch to the given workspace.`,
+      description: `Starts a development session in the specified workspace. Can be paired with the '--account' flag to switch from the current account and workspace.`,
       required: false,
     }),
   }

@@ -4,7 +4,7 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsInstall from '../modules/apps/install'
 
 export default class Install extends CustomCommand {
-  static description = 'Install an app (defaults to the app in the current directory)'
+  static description = 'Installs an app in the current workspace. If not specified which one, it defaults to the app in the current directory.'
 
   static examples = ['vtex install', 'vtex install vtex.service-example@0.x', 'vtex install vtex.service-example@0.0.1']
 
@@ -12,7 +12,7 @@ export default class Install extends CustomCommand {
     ...CustomCommand.globalFlags,
     force: oclifFlags.boolean({
       char: 'f',
-      description: 'Install app without checking for route conflicts',
+      description: 'Installs the specified app without checking for route conflicts.',
       default: false,
     }),
   }
@@ -20,8 +20,8 @@ export default class Install extends CustomCommand {
   static strict = false
 
   static args = [
-    { name: 'appId', required: false },
-    { name: 'ithAppId', required: false, multiple: true },
+    { name: 'appId', required: false, description: 'Name and version of the app ({vendor}.{appname}@{x.x.x}) to install.' },
+    { name: 'ithAppId', required: false, multiple: true, description: 'Names and versions of the multiple apps ({vendor}.{appname}@{x.x.x}) to install.' },
   ]
 
   async run() {

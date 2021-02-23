@@ -4,16 +4,16 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import { switchAccount } from '../api/modules/auth/switch'
 
 export default class Switch extends CustomCommand {
-  static description = 'Switch to another VTEX account'
+  static description = 'Switches to another VTEX account.'
 
   static examples = ['vtex switch storecomponents']
 
   static flags = {
     ...CustomCommand.globalFlags,
-    workspace: oclifFlags.string({ char: 'w', description: 'Specify login workspace' }),
+    workspace: oclifFlags.string({ char: 'w', description: 'Moves to the specified workspace.' }),
   }
 
-  static args = [{ name: 'account', required: true }]
+  static args = [{ name: 'account', required: true, description: 'Account name to log in.' }]
 
   async run() {
     const {

@@ -4,16 +4,16 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import authLogin from '../modules/auth/login'
 
 export default class Login extends CustomCommand {
-  static description = 'Log into a VTEX account'
+  static description = 'Logs in to a VTEX account.'
 
   static examples = ['vtex login', 'vtex login storecomponents']
 
   static flags = {
     ...CustomCommand.globalFlags,
-    workspace: oclifFlags.string({ char: 'w', description: 'Workspace to login into' }),
+    workspace: oclifFlags.string({ char: 'w', description: 'Logs in the specified workspace.' }),
   }
 
-  static args = [{ name: 'account', required: false }]
+  static args = [{ name: 'account', required: false, description: 'Account name to log in.' }]
 
   async run() {
     const {
