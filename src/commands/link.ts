@@ -4,7 +4,7 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import { appLink } from '../modules/apps/link'
 
 export default class Link extends CustomCommand {
-  static description = 'Syncs the app in the current directory with the VTEX cloud development environment.'
+  static description = 'Locally syncs the app in the current directory with the development workspace in use.'
 
   static examples = ['vtex link -a youraccount -w yourworkspace']
 
