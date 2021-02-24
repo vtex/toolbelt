@@ -3,10 +3,12 @@ import { flags as oclifFlags } from '@oclif/command'
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsUnlink from '../modules/apps/unlink'
 
-export default class Unlink extends CustomCommand {
-  static description = 'Unlinks an app from the current workspace. If not specified which app to unlink, it defaults to the app in the current directory.'
+import { ColorifyConstants } from '../api/constants/Colors'
 
-  static examples = ['vtex unlink', 'vtex unlink vtex.service-example@0.x']
+export default class Unlink extends CustomCommand {
+  static description = `Unlinks an app from the current ${ColorifyConstants.ID('workspace.')} If not specified which app to unlink, it defaults to the app in the current directory.`
+
+  static examples = [`${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex unlink')}`, `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex unlink')} vtex.service-example@0.x`]
 
   static flags = {
     ...CustomCommand.globalFlags,

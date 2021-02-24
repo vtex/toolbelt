@@ -3,10 +3,12 @@ import { flags as oclifFlags } from '@oclif/command'
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsDeprecate from '../modules/apps/deprecate'
 
-export default class Deprecate extends CustomCommand {
-  static description = 'Deprecates the specified app, uninstalling and downgrading it to the latest stable version in every VTEX account.'
+import { ColorifyConstants } from '../api/constants/Colors'
 
-  static examples = ['vtex deprecate', 'vtex deprecate vtex.service-example@0.0.1']
+export default class Deprecate extends CustomCommand {
+  static description = `Deprecates the specified app, uninstalling and downgrading it to the latest stable version in every ${ColorifyConstants.ID('VTEX account.')}`
+
+  static examples = [`${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex deprecate')}`, `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex deprecate')} vtex.service-example@0.0.1`]
 
   static flags = {
     ...CustomCommand.globalFlags,
@@ -16,8 +18,8 @@ export default class Deprecate extends CustomCommand {
   static strict = false
 
   static args = [
-    { name: 'appId', required: false, description: 'Name and version of the app ({vendor}.{appname}@{x.x.x}) to deprecate.' },
-    { name: 'ithAppId', required: false, multiple: true, description: 'Names and versions of the multiple apps ({vendor}.{appname}@{x.x.x}) to deprecate.' },
+    { name: 'appId', required: false, description: `Name and version of the app ${ColorifyConstants.ID('({vendor}.{appname}@{x.x.x})')} to deprecate.` },
+    { name: 'ithAppId', required: false, multiple: true, description: `Names and versions of the multiple apps ${ColorifyConstants.ID('({vendor}.{appname}@{x.x.x})')} to deprecate.` },
   ]
 
   async run() {

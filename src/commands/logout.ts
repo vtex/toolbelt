@@ -1,10 +1,12 @@
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import authLogout from '../modules/auth/logout'
 
-export default class Logout extends CustomCommand {
-  static description = 'Logs out of the current VTEX account.'
+import { ColorifyConstants } from '../api/constants/Colors'
 
-  static examples = ['vtex logout']
+export default class Logout extends CustomCommand {
+  static description = `Logs out of the current ${ColorifyConstants.ID('VTEX account')}.`
+
+  static examples = [`${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex logout')}`]
 
   static flags = {
     ...CustomCommand.globalFlags,

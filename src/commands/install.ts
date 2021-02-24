@@ -3,10 +3,12 @@ import { flags as oclifFlags } from '@oclif/command'
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsInstall from '../modules/apps/install'
 
-export default class Install extends CustomCommand {
-  static description = 'Installs an app on the current workspace. If not specified which one, it defaults to the app in the current directory.'
+import { ColorifyConstants } from '../api/constants/Colors'
 
-  static examples = ['vtex install', 'vtex install vtex.service-example@0.x', 'vtex install vtex.service-example@0.0.1']
+export default class Install extends CustomCommand {
+  static description = `Installs an app on the current ${ColorifyConstants.ID('workspace')}. If not specified which one, it defaults to the app in the current directory.`
+
+  static examples = [`${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex install')}`, `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex install')} vtex.service-example@0.x`, `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex install')} vtex.service-example@0.0.1`]
 
   static flags = {
     ...CustomCommand.globalFlags,
@@ -20,8 +22,8 @@ export default class Install extends CustomCommand {
   static strict = false
 
   static args = [
-    { name: 'appId', required: false, description: 'Name and version of the app ({vendor}.{appname}@{x.x.x}) to install.' },
-    { name: 'ithAppId', required: false, multiple: true, description: 'Names and versions of the multiple apps ({vendor}.{appname}@{x.x.x}) to install.' },
+    { name: 'appId', required: false, description: `Name and version of the app ${ColorifyConstants.ID('({vendor}.{appname}@{x.x.x})')} to install.` },
+    { name: 'ithAppId', required: false, multiple: true, description: `Names and versions of the multiple apps ${ColorifyConstants.ID('({vendor}.{appname}@{x.x.x})')} to install.` },
   ]
 
   async run() {

@@ -3,15 +3,17 @@ import { flags as oclifFlags } from '@oclif/command'
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsPublish from '../modules/apps/publish'
 
+import { ColorifyConstants } from '../api/constants/Colors'
+
 export default class Publish extends CustomCommand {
   static description = 'Publishes the app in the current directory as a release candidate version.'
 
-  static examples = ['vtex publish']
+  static examples = [`${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex publish')}`]
 
   static flags = {
     ...CustomCommand.globalFlags,
     tag: oclifFlags.string({ char: 't', description: 'Adds the specified tag to the release.' }),
-    workspace: oclifFlags.string({ char: 'w', description: 'Uses the specified workspace in the app registry.' }),
+    workspace: oclifFlags.string({ char: 'w', description: `Uses the specified ${ColorifyConstants.ID('workspace')} in the app registry.` }),
     force: oclifFlags.boolean({
       char: 'f',
       description: 'Publishes the app independently of SemVer rules.',

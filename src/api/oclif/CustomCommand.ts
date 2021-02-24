@@ -7,11 +7,13 @@ import { TraceConfig } from '../../lib/globalConfigs/traceConfig'
 import * as Parser from '@oclif/parser'
 import OclifCommand, { flags as oclifFlags } from '@oclif/command'
 
+import { ColorifyConstants } from '../../api/constants/Colors'
+
 export abstract class CustomCommand extends OclifCommand {
   public static globalFlags = {
     verbose: oclifFlags.boolean({ char: 'v', description: 'Shows debug level logs.', default: false }),
     help: oclifFlags.help({ char: 'h', description: 'Shows this help message.' }),
-    trace: oclifFlags.boolean({ description: 'Ensures all requests to VTEX IO are traced.', default: false }),
+    trace: oclifFlags.boolean({ description: `Ensures all requests to ${ColorifyConstants.ID('VTEX IO')} are traced.`, default: false }),
   }
 
   getAllArgs(rawParse: ParsingToken[]) {
