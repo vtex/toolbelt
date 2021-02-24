@@ -104,9 +104,9 @@ const promptTemplates = async (): Promise<string> => {
   return chosen
 }
 
-const promptContinue = async (repoName: string) => {
+const promptContinue = async (repoName: string, projectFolderName?: string) => {
   const proceed = await promptConfirm(
-    `You are about to create the new folder ${process.cwd()}/${repoName}. Do you want to continue?`
+    `You are about to create the new folder ${process.cwd()}/${projectFolderName ?? repoName}. Do you want to continue?`
   )
   if (!proceed) {
     log.info('Bye o/')
@@ -114,15 +114,19 @@ const promptContinue = async (repoName: string) => {
   }
 }
 
-export default async () => {
+export default async (projectFolderName?: string) => {
   log.debug('Prompting for app info')
   log.info('Hello! I will help you generate basic files and folders for your app.')
   try {
     const { repository: repo, organization: org } = templates[await promptTemplates()]
-    await promptContinue(repo)
+    await promptContinue(repo, projectFolderName)
     log.info(`Cloning ${chalk.bold.cyan(repo)} from ${chalk.bold.cyan(org)}.`)
-    await git.clone(repo, org)
-    log.info(`Run ${chalk.bold.green(`cd ${repo}`)} and ${chalk.bold.green('vtex link')} to start developing!`)
+    await git.clone(repo, org, projectFolderName)
+    log.info(
+      `Run ${chalk.bold.green(`cd ${projectFolderName ?? repo}`)} and ${chalk.bold.green(
+        'vtex link'
+      )} to start developing!`
+    )
   } catch (err) {
     log.error(err.message)
     log.debug(err)

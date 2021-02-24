@@ -12,10 +12,63 @@ const { setPackageJsonByBuilder, packageJsonEditorMock, setTarGzEmptyResponse } 
 
 const { runYarn } = jest.requireMock('../../../modules/utils')
 const { setupTypings } = require('../../../modules/setup/setupTypings')
+const { getBuilderDependencies } = require('../../../modules/setup/setupTypings')
 
 beforeEach(() => {
   jest.clearAllMocks()
   runYarn.mockReturnValue(undefined)
+})
+
+describe('Dependencies management', () => {
+  test('getBuilderDependencies', () => {
+    expect(
+      getBuilderDependencies(
+        {
+          dependencies: {},
+          peerDependencies: {},
+        },
+        {
+          builder: {
+            version: {
+              injectedDependencies: {},
+            },
+          },
+        },
+        'version',
+        'builder'
+      )
+    ).toEqual({})
+
+    expect(
+      getBuilderDependencies(
+        {
+          dependencies: { app: '3.x' },
+          peerDependencies: { app2: '1.x' },
+        },
+        {
+          builder: {
+            version: {
+              injectedDependencies: { app3: '5.x' },
+            },
+          },
+        },
+        'version',
+        'builder'
+      )
+    ).toEqual({ app: '3.x', app2: '1.x', app3: '5.x' })
+
+    expect(
+      getBuilderDependencies(
+        {
+          dependencies: { app: '3.x' },
+          peerDependencies: { app2: '1.x' },
+        },
+        {},
+        'version',
+        'builder'
+      )
+    ).toEqual({ app: '3.x', app2: '1.x' })
+  })
 })
 
 describe('React type dependencies are correctly inserted', () => {
