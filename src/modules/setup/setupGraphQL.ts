@@ -7,6 +7,7 @@ import { SessionManager } from '../../api/session'
 import * as env from '../../api/env'
 import userAgent from '../../user-agent'
 import { dummyLogger } from '../../api/dummyLogger'
+import { BUILDERS_WITH_GRAPHQL_QUERIES } from './consts'
 
 const getContext = () => {
   const { account, workspace, token } = SessionManager.getSingleton()
@@ -29,7 +30,7 @@ const getContext = () => {
   }
 }
 
-export async function setupGraphQL(manifest: Manifest, builders?: string[]) {
+export async function setupGraphQL(manifest: Manifest, builders: string[] = BUILDERS_WITH_GRAPHQL_QUERIES) {
   try {
     const context: IOContext = getContext()
 
