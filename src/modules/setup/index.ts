@@ -1,9 +1,9 @@
 import chalk from 'chalk'
 import { ManifestEditor } from '../../api'
 import logger from '../../api/logger'
-import { setupTooling } from './setupTooling'
-import { setupTSConfig } from './setupTSConfig'
-import { setupTypings } from './setupTypings'
+// import { setupTooling } from './setupTooling'
+// import { setupTSConfig } from './setupTSConfig'
+// import { setupTypings } from './setupTypings'
 import { setupGraphQL } from './setupGraphQL'
 
 interface SetupOpts {
@@ -18,9 +18,9 @@ interface SetupOpts {
 
 export default async (opts: SetupOpts) => {
   const all = opts.all || (!opts.tooling && !opts.typings && !opts.tsconfig)
-  const tooling = opts.tooling || all
+  // const tooling = opts.tooling || all
   const typings = opts.typings || all
-  const tsconfig = opts.tsconfig || all
+  // const tsconfig = opts.tsconfig || all
   const graphql = opts.graphql || all
   const ignoreLinked = opts.i || opts['ignore-linked']
 
@@ -31,18 +31,18 @@ export default async (opts: SetupOpts) => {
   }
 
   const manifest = await ManifestEditor.getManifestEditor()
-
-  if (tooling) {
-    setupTooling(manifest)
-  }
-
-  if (tsconfig) {
-    await setupTSConfig(manifest, opts.tsconfig)
-  }
-
-  if (typings) {
-    await setupTypings(manifest, ignoreLinked)
-  }
+  //
+  // if (tooling) {
+  //   setupTooling(manifest)
+  // }
+  //
+  // if (tsconfig) {
+  //   await setupTSConfig(manifest, opts.tsconfig)
+  // }
+  //
+  // if (typings) {
+  //   await setupTypings(manifest, ignoreLinked)
+  // }
 
   if (graphql) {
     await setupGraphQL(manifest)
