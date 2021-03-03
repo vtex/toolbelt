@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `stale` issues github workflow.
+
+### Added
+
 - It is now possible to specify a project folder name when using the `init` command.
 
 ### Fixed
@@ -16,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Searchs for the default_branch name for a GitHub Repo before trying to download it. We used to assume the default was always `master` but [GitHub is adoping `main`](https://github.com/github/renaming).
 
 ## [2.121.6] - 2021-02-19
+
 ### Fixed
 
 - Increase workspaces client timeout from 25ms to 2500ms
