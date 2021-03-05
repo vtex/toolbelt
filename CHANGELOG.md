@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add self package to react packages as devDependency
+
 ### Added
 
 - `stale` issues github workflow.
