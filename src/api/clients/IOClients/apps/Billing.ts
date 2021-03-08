@@ -14,10 +14,13 @@ export class Billing extends AppClient {
   public installApp = async (
     appName: string,
     termsOfUseAccepted: boolean,
-    force: boolean
+    force: boolean,
+    selectedPlanId?: string
   ): Promise<InstallResponse> => {
     const graphQLQuery = `mutation InstallApps{
-      install(appName:"${appName}", termsOfUseAccepted:${termsOfUseAccepted}, force:${force}) {
+      install(appName:"${appName}", termsOfUseAccepted:${termsOfUseAccepted}, force:${force}${
+      selectedPlanId ? `, selectedPlanId: "${selectedPlanId}"` : ''
+    }) {
         code
         billingOptions
       }
