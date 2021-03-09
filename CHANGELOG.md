@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.0-beta] - 2021-03-09
+
 ### Added
 
 - It is now possible to specify a project folder name when using the `init` command.
