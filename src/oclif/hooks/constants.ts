@@ -1,1 +1,1 @@
-export const OTHER_GROUP_ID: string = '255'
+export const OTHER_GROUP_ID = '255'

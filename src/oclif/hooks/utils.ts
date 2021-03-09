@@ -3,7 +3,7 @@ import indent from 'indent-string'
 import { COLORS } from '../../api'
 import { renderList } from '../../../node_modules/@oclif/plugin-help/lib/list'
 import RootHelp from '../../../node_modules/@oclif/plugin-help/lib/root'
-import {OTHER_GROUP_ID} from './constants'
+import { OTHER_GROUP_ID } from './constants'
 
 export interface CommandI {
   name: string
