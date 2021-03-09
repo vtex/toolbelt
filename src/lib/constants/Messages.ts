@@ -55,6 +55,17 @@ export const Messages = {
     `• If you installed using ${ColorifyConstants.COMMAND_OR_VTEX_REF(`chocolatey`)}, update running:
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco uninstall vtex`)}.
     ${ColorifyConstants.COMMAND_OR_VTEX_REF(`choco install vtex`)}.`,
+  INIT_HELLO_EXPLANATION: () => `Hello! I will help you generate basic files and folders for your app.`,
+  INIT_START_DEVELOPING: (folder: string) =>
+    `Run ${ColorifyConstants.COMMAND_OR_VTEX_REF(`cd ${folder}`)} and ${ColorifyConstants.COMMAND_OR_VTEX_REF(
+      'vtex link'
+    )} to start developing!`,
+  PROMPT_CONFIRM_NEW_FOLDER: (folder: string) =>
+    `You are about to create the new folder ${folder}. Do you want to continue?`,
+  DEBUG_DOWNLOAD_TEMPLATE_URL: (url: string) => `We will try to download the template app from this URL: ${url}`,
+  DEBUG_PROMPT_APP_INFO: () => `Prompting for app info`,
+  ERROR_COULD_NOT_DETERMINE_DEFAULT_BRANCH: (org: string, repo: string) =>
+    `We could not determine the default branch for repo ${org}/${repo}. Please try again.`,
 }
 
 export function updateMessageSwitch() {

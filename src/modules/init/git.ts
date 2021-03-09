@@ -4,6 +4,7 @@ import request from 'request'
 import unzip from 'unzip-stream'
 import axios from 'axios'
 import log from '../../api/logger'
+import { Messages } from '../../lib/constants/Messages'
 
 const urlForRepo = async (repo: string, org: string) => {
   /**
@@ -16,7 +17,7 @@ const urlForRepo = async (repo: string, org: string) => {
     return { url: `https://github.com/${org}/${repo}/archive/${branchName}.zip`, branchName }
   } catch (err) {
     log.debug(err)
-    throw new Error(`We could not determine the default branch for repo ${org}/${repo}. Please try again.`)
+    throw new Error(Messages.ERROR_COULD_NOT_DETERMINE_DEFAULT_BRANCH(org, repo))
   }
 }
 
@@ -25,7 +26,7 @@ const fetchAndUnzip = async (url: string, path: string) => pipeStreams([request(
 export const clone = async (repo: string, org: string, projectFolderName?: string) => {
   const cwd = process.cwd()
   const { url, branchName } = await urlForRepo(repo, org)
-  log.debug(`We will try to download the template app from this URL: ${url}`)
+  log.debug(Messages.DEBUG_DOWNLOAD_TEMPLATE_URL(url))
   const destPath = `${cwd}/${projectFolderName ?? repo}`
   const cloned = `${destPath}/${repo}-${branchName}`
 
