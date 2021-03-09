@@ -36,10 +36,13 @@ export function renderCommands(commandsId: Record<number, string>, groups: Comma
   body.push(help.root())
   body.push(' ')
 
-  for (const [key, value] of Object.entries(commandsId)) {
-    body.push(chalk.bold(value))
-    body.push(indent(renderCommand(groups[key !== '255' ? key : commandsGroupLength - 1], ctx), 2))
-    body.push(' ')
+  for (let [key, value] of Object.entries(commandsId)) {
+    key = key !== '255' ? key : (commandsGroupLength - 1).toString()
+    if (groups[key].length) {
+      body.push(chalk.bold(value))
+      body.push(indent(renderCommand(groups[key], ctx), 2))
+      body.push(' ')
+    }
   }
 
   return body.join('\n')
