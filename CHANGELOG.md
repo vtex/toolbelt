@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- [plugins] Disallow installations of non-working plugins
+
+### Added
+
+- [plugins] Feature flag for `PLUGINS_ALLOW_LIST`
+
 ## [3.2.1-beta] - 2021-03-09
 
 ### Fixed
