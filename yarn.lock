@@ -1222,10 +1222,10 @@
     "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
     tslib "^1"
 
-"@vtex/cli-plugin-plugins@^1.10.1":
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-plugins/-/cli-plugin-plugins-1.10.1.tgz#5e946acaaa2ba64e94f163de85d8cd0970835ac5"
-  integrity sha512-inCtn81HyPY5K2z7hHGz2mNc7T+hp304sBHY1RQrKYwpU6/uZk2cW34abt0gGxyjwwwGYNNdeVVxcd1YFkWVFA==
+"@vtex/cli-plugin-plugins@^1.10.2":
+  version "1.10.2"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-plugins/-/cli-plugin-plugins-1.10.2.tgz#8a6935e9040ca18bea2e7e1b819fa1b88c53d473"
+  integrity sha512-go6FxZjh9W1CURBULcind01dOhtUCQ/f4NfPAMmnLe4qPjjtOsM4idB9PAjbFy//0/KINJBytBpLHpRFl0p1Rw==
   dependencies:
     "@oclif/color" "^0.x"
     "@oclif/command" "^1.5.12"
