@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import enquirer from 'enquirer'
 import { compose, equals, head, path } from 'ramda'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
@@ -8,6 +9,11 @@ import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
 import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
 import { BillingMessages } from '../../lib/constants/BillingMessages'
+import { switchOpen } from '../featureFlag/featureFlagDecider'
+
+const PROMPT_PLAN_CHOICES_NAME = 'billingOptionsPlanChoices'
+const BRAZILIAN_REAL_CURRENCY_CODE = 'BRL'
+const ERROR_MESSAGE_APP_CONTRACT_NOT_FOUND = 'No contract found for app'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
@@ -45,12 +51,66 @@ const licenseURL = async (app: string, termsURL?: string): Promise<string | unde
   return (await hasLicenseFile(name, version)) ? `https://apps.vtex.com/_v/terms/${name}@${version}` : termsURL
 }
 
+const buildBillingOptionsPlanChoices = ({ plans }: BillingOptions) =>
+  plans?.reduce<Record<string, Plan>>((choices, plan) => {
+    choices[plan.currency] = plan
+    return choices
+  }, {}) ?? {}
+
+const appStoreProductPage = (app: string) => {
+  const [appName] = app.split('@')
+  const [vendor, name] = appName.split('.')
+  return `https://apps.vtex.com/apps?salesChannel=2&textLink=${vendor}-${name}`
+}
+
+const promptCurrencyChoices = async (billingOptions: BillingOptions) => {
+  const planChoices = buildBillingOptionsPlanChoices(billingOptions)
+  const currencyChoices = Object.keys(planChoices)
+  let [selectedCurrency] = currencyChoices
+  if (currencyChoices.length > 1) {
+    const answer = await enquirer.prompt({
+      name: PROMPT_PLAN_CHOICES_NAME,
+      message: BillingMessages.CURRENCY_OPTIONS,
+      type: 'select',
+      choices: currencyChoices,
+    })
+    selectedCurrency = answer[PROMPT_PLAN_CHOICES_NAME]
+  }
+  return planChoices[selectedCurrency]
+}
+
+const handleInternationalAppInstall = async (app: string, { id, currency }: Plan, force: boolean) => {
+  try {
+    await installApp(app, true, force, id)
+  } catch (e) {
+    if (!e.message?.startsWith(ERROR_MESSAGE_APP_CONTRACT_NOT_FOUND)) {
+      throw e
+    }
+    const appWebsite = appStoreProductPage(app)
+    log.info(BillingMessages.appCurrencyPage(currency, appWebsite))
+
+    const shouldOpenProductPage = await promptConfirm(BillingMessages.shouldOpenPage(), true)
+    if (shouldOpenProductPage) {
+      switchOpen(appWebsite, { wait: false })
+    }
+  }
+}
+
 const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
   const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
-  log.info(
-    isFreeApp(billingOptions) ? BillingMessages.acceptToInstallFree(app) : BillingMessages.acceptToInstallPaid(app)
-  )
+  let planId: string | undefined
+  if (isFreeApp(billingOptions)) {
+    log.info(BillingMessages.acceptToInstallFree(app))
+  } else {
+    log.info(BillingMessages.acceptToInstallPaid(app))
+    const selectedPlan = await promptCurrencyChoices(billingOptions)
+    planId = selectedPlan.id
+    if (selectedPlan.currency !== BRAZILIAN_REAL_CURRENCY_CODE) {
+      return handleInternationalAppInstall(app, selectedPlan, force)
+    }
+  }
+
   log.info(BillingMessages.billingTable(optionsFormatter(billingOptions, app, license)))
   const confirm = await promptPolicies()
   if (!confirm) {
@@ -58,7 +118,7 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
   }
 
   log.info(BillingMessages.INSTALL_STARTED)
-  await installApp(app, true, force)
+  await installApp(app, true, force, planId)
   log.debug(BillingMessages.INSTALL_SUCCESS)
 }
 

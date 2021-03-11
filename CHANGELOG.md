@@ -7,8 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
 ### Changed
 - Add self package to react packages as devDependency
+
+## [2.123.0] - 2021-03-08
+### Added
+
+- [install] Fix app's plan message for plans without metrics.
+- `composable-commerce` as codeowners.
+
+## [2.122.0] - 2021-02-23
 
 ### Added
 
