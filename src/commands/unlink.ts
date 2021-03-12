@@ -19,7 +19,7 @@ export default class Unlink extends CustomCommand {
 
   static args = [
     { name: 'appId', required: false, description: 'Name of the app to unlink.' },
-    { name: 'ithAppId', required: false, multiple: true, description: 'Names of the multiple apps to unlink.' },
+    { name: 'ithAppId', required: false, multiple: true, description: 'Names of multiple apps to unlink.' },
   ]
 
   async run() {
