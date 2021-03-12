@@ -4,29 +4,29 @@ import { CustomCommand } from '../api/oclif/CustomCommand'
 import setup from '../modules/setup'
 
 export default class Setup extends CustomCommand {
-  static description = 'Setup development enviroment'
+  static description = 'Sets up typings and tools for the current development environment.'
 
   static flags = {
     ...CustomCommand.globalFlags,
     'ignore-linked': oclifFlags.boolean({
       char: 'i',
-      description: 'Add only types from apps published',
+      description: 'Sets up types from published apps while ignoring types from linked apps.',
       default: false,
     }),
     all: oclifFlags.boolean({
-      description: 'Select all existing setup flags',
+      description: 'Sets up all available typings, configs, and tools.',
       default: false,
     }),
     typings: oclifFlags.boolean({
-      description: 'Setup GraphQL and React typings',
+      description: 'Sets up GraphQL and React typings.',
       default: false,
     }),
     tooling: oclifFlags.boolean({
-      description: 'Setup tools for applicable builders\nNode and React: Prettier, Husky and ESLint',
+      description: 'Sets up Prettier, Husky, and ESLint.',
       default: false,
     }),
     tsconfig: oclifFlags.boolean({
-      description: "Setup React and Node's TSconfig, if applicable",
+      description: 'Sets up React and Node TSconfig, if applicable.',
       default: false,
     }),
   }
