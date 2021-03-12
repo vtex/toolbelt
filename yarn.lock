@@ -1190,10 +1190,10 @@
     numbro "2.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-deploy@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deploy/-/cli-plugin-deploy-0.2.0.tgz#c13eb6084fa1253ff315438d0102dfd13e8a800e"
-  integrity sha512-DQJbgt3Mr3PwYbkfkzB2bSgZGjSjG39F+bIO94FJjuaaictIQcJjQfdfMVr4tICbJnfmzU2h9CmWhbMXXDiPNw==
+"@vtex/cli-plugin-deploy@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deploy/-/cli-plugin-deploy-0.3.0.tgz#40e842c76582e5ed8f111d1f3c460926732bfbfc"
+  integrity sha512-grXM7y54BI8VLnVJpXkspDL4Ap89ukL4gej3U+xXy5WAiHNjlAYmZrJV9ISZGUZ+c4sizlqLD5LfT45bZvqxHg==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
