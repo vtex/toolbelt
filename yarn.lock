@@ -1212,14 +1212,15 @@
     "@types/ramda" "^0.27.14"
     tslib "^1"
 
-"@vtex/cli-plugin-edition@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-edition/-/cli-plugin-edition-0.0.1.tgz#b0c7f922b9b183fa470ee251f75ae57b94596115"
-  integrity sha512-acSh3lwtOTMZs+qPlMFN+n6ADojl0RmpRAFFuc59JStAsPfMjodUl75P5aFaTw5KfjjI2JvHmaMslaHUMGDbbQ==
+"@vtex/cli-plugin-edition@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-edition/-/cli-plugin-edition-0.1.0.tgz#e1757bbaf7812aabc4aa294948e525cabc814439"
+  integrity sha512-BIqhFz8weVU7bjFYnu+blbA7S9A3Oyv3RXx0MphO9b5Gi2h3pzPZodaCE+JVCuQ1PrHE2y5FxpwW2g5tAGlZxg==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
     "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
+    ramda "^0.27.1"
     tslib "^1"
 
 "@vtex/cli-plugin-plugins@^1.10.2":
