@@ -1200,10 +1200,10 @@
     chalk "^4.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-deps@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.0.1.tgz#6e07e1951f1a02719d800b08d92b73cb94d7c417"
-  integrity sha512-T0Zm7ByLjYm78K0jquCvZc7jbhiXtorFAGphW22iiPKxs8WtUX/VNqTsx0wHJOG2H5lnL3NE7PjiG4Aavi7K+g==
+"@vtex/cli-plugin-deps@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.1.0.tgz#73d3581891a10211818729ad7d1425a9e6b86d50"
+  integrity sha512-JqcJxmjTUzNfEobyB3M8HpAwR7e+EraN+8U0WMaV3si5HvhN376J4CtqXFiHs67yXrKxqm1T+VCKiT/wXjtbSA==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
