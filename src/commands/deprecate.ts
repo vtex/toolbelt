@@ -19,7 +19,7 @@ export default class Deprecate extends CustomCommand {
 
   static args = [
     { name: 'appId', required: false, description: `Name and version of the app ${ColorifyConstants.ID('({vendor}.{appname}@{x.x.x})')} to deprecate.` },
-    { name: 'ithAppId', required: false, multiple: true, description: `Names and versions of the multiple apps ${ColorifyConstants.ID('({vendor}.{appname}@{x.x.x})')} to deprecate.` },
+    { name: 'ithAppId', required: false, multiple: true, description: `Names and versions of multiple apps ${ColorifyConstants.ID('({vendor}.{appname}@{x.x.x})')} to deprecate.` },
   ]
 
   async run() {
