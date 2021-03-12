@@ -1242,10 +1242,10 @@
     tslib "^2.0.0"
     yarn "^1.21.1"
 
-"@vtex/cli-plugin-whoami@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-whoami/-/cli-plugin-whoami-0.1.0.tgz#87c49dc1f0b4523a2eecb5d6b53c68b6e56ec83a"
-  integrity sha512-A/+fVDB7AxQ59+6z9IY45mWqjeRTlKDE1ghN3u3J5iAmovEt4PQRgxwkXatOZmyMOCLUrg5gXu0cm4DWWjKZ7Q==
+"@vtex/cli-plugin-whoami@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-whoami/-/cli-plugin-whoami-0.2.0.tgz#44fd739f671bde6fe865bf0de5a20d35f56312b6"
+  integrity sha512-w3c9qmiwr2Imt2/0jGfiPvnCjgk2M6tdI/M09AJasLd2MpEzpV/4y3MtbfhbbmZYBU2hvxgQeQA8Se9+Ww23nQ==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
