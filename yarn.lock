@@ -1251,10 +1251,10 @@
     "@oclif/config" "^1"
     tslib "^1"
 
-"@vtex/cli-plugin-workspace@^1.0.0-beta.0":
-  version "1.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-workspace/-/cli-plugin-workspace-1.0.0-beta.0.tgz#fd7558f601a231b52b553a10fb1f9f065ff7cb03"
-  integrity sha512-XAVgBoKpfZHgLYe6CNFsNMcC0te+Hn7KS7o33gyo07RjnbcmWWIYKApMJM+HUgNa8WwT6yFkOYPbb4Oh/qw1Sw==
+"@vtex/cli-plugin-workspace@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-workspace/-/cli-plugin-workspace-1.0.0.tgz#44b8dbe00acab9d44edcc7227f9e747bc6028740"
+  integrity sha512-VZAcksJnGNMIeUVW+9Hg/6CI8kdJ0eUdyQo/y3Uk/87b+n2NZNonmPlCx3OXnunqPRsncM7beOI6NbI2MEFejA==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"

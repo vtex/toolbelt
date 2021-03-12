@@ -61,7 +61,7 @@
     "@vtex/cli-plugin-edition": "^0.1.0",
     "@vtex/cli-plugin-plugins": "^1.10.2",
     "@vtex/cli-plugin-whoami": "^0.1.0",
-    "@vtex/cli-plugin-workspace": "^1.0.0-beta.0",
+    "@vtex/cli-plugin-workspace": "^1.0.0",
     "@vtex/node-error-report": "^0.0.2",
     "@vtex/toolbelt-message-renderer": "^0.0.1",
     "@yarnpkg/lockfile": "^1.1.0",
