@@ -5,7 +5,7 @@ import { ColorifyConstants } from '../api/constants/Colors'
 
 export default class Release extends CustomCommand {
   static description =
-    '(Only for git users.) Bumps the app version, commits, and pushes to remote the app in the current directory.'
+    '(Only for git users) Bumps the app version, commits, and pushes to remote the app in the current directory.'
 
   static examples = [
     `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex release')}`,
