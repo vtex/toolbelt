@@ -1180,10 +1180,10 @@
     tar-fs "^2.0.0"
     xss "^1.0.6"
 
-"@vtex/cli-plugin-abtest@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.0.5.tgz#3fb5e95f7c26be2a8c1aae0eca5eb0b49d8cc077"
-  integrity sha512-4TIlU5mgno2ye7DSR1LSenZg2mtfAZKso58qe+FIH/QSw8jQc7vOrOa8Av4gKB9zyOgLF9jtdScAellepbnqtg==
+"@vtex/cli-plugin-abtest@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.1.0.tgz#ca9efc88dba8a3a4a142434faf210c58c02ca064"
+  integrity sha512-DkmXXSb5lDFvUZfJF2Hdzc9fp2k6zeeb20GFCHuwRuMH0wUv/1nWXefhuVRgqqlcYN4AIqycRcdCrbbFLkrRXg==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
