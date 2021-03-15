@@ -6,7 +6,7 @@ import { appLink } from '../modules/apps/link'
 import { ColorifyConstants } from '../api/constants/Colors'
 
 export default class Link extends CustomCommand {
-  static description = `Locally syncs the app in the current directory with the ${ColorifyConstants.ID('development workspace')} in use.`
+  static description = `Syncs the app in the current directory with the ${ColorifyConstants.ID('development workspace')} in use.`
 
   static examples = [`${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex link')} -a youraccount -w yourworkspace`]
 
@@ -21,7 +21,7 @@ export default class Link extends CustomCommand {
     clean: oclifFlags.boolean({ char: 'c', description: 'Cleans builder cache', default: false }),
     setup: oclifFlags.boolean({
       char: 's',
-      description: `Sets up typing definitions before linking the app [see ${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex setup --help')}].`,
+      description: `Locally sets typings before linking [see ${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex setup --help')}]`,
       default: false,
     }),
     'no-watch': oclifFlags.boolean({ description: "Doesn't watch for file changes after the initial link.", default: false }),

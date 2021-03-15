@@ -10,7 +10,7 @@ export default class Setup extends CustomCommand {
     ...CustomCommand.globalFlags,
     'ignore-linked': oclifFlags.boolean({
       char: 'i',
-      description: 'Sets up types from published apps, and ignores types from linked apps.',
+      description: 'Sets up types from published apps while ignoring types from linked apps.',
       default: false,
     }),
     all: oclifFlags.boolean({
