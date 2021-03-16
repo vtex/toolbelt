@@ -392,13 +392,16 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
 }
 
 const REACT_BUILDER = 'react'
-const VTEX_ACCOUNT = 'vtex'
+const EMAIL_KEY = 'sub'
+const I_VTEX_ACCOUNT = '@vtex.com'
+const BR_VTEX_ACCOUNT = '@vtex.com.br'
 
 export const continueAfterReactTermsAndConditions = async (manifest: ManifestEditor): Promise<boolean> => {
   const session = SessionManager.getSingleton()
   const { token } = session
   const decodedToken = jwt.decode(token)
-  if (decodedToken?.[`account`] === VTEX_ACCOUNT) {
+  const userEmail = decodedToken?.[EMAIL_KEY] as string
+  if (userEmail && (userEmail.endsWith(I_VTEX_ACCOUNT) || userEmail.endsWith(BR_VTEX_ACCOUNT))) {
     return true
   }
 
