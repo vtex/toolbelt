@@ -8,7 +8,7 @@ import {
 import {
   checkBuilderHubMessage,
   showBuilderHubMessage,
-  continueAfterLinkTermsAndConditions,
+  continueAfterReactTermsAndConditions,
   validateAppAction,
 } from '../../api/modules/utils'
 import { createFlowIssueError } from '../../api/error/utils'
@@ -271,7 +271,7 @@ export async function appLink(options: LinkOptions) {
   const manifest = await ManifestEditor.getManifestEditor()
   await manifest.writeSchema()
 
-  const mustContinue = await continueAfterLinkTermsAndConditions(manifest)
+  const mustContinue = await continueAfterReactTermsAndConditions(manifest)
   if (!mustContinue) {
     return
   }

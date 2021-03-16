@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Terms and conditions message when linking a react app.
+- Terms and conditions message when linking or publishing a react app.
 
 ## [2.123.0] - 2021-03-08
 ### Added
