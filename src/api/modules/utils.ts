@@ -5,6 +5,7 @@ import Table from 'cli-table2'
 import { ArrayChange, diffArrays } from 'diff'
 import enquirer from 'enquirer'
 import { existsSync } from 'fs-extra'
+import moment from 'moment'
 import { resolve as resolvePath } from 'path'
 import R, { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
@@ -12,6 +13,7 @@ import { BillingMessages } from '../../lib/constants/BillingMessages'
 import { createAppsClient } from '../clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../clients/IOClients/infra/Registry'
 import { createWorkspacesClient } from '../clients/IOClients/infra/Workspaces'
+import { getLastLinkReactDate, getNumberOfReactLinks, saveNumberOfReactLinks } from '../conf'
 import { createFlowIssueError } from '../error/utils'
 import log from '../logger'
 import { ManifestEditor } from '../manifest'
@@ -386,4 +388,33 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
     )
   )
   return table
+}
+
+const REACT_BUILDER = 'react'
+
+export const continueAfterLinkTermsAndConditions = async (manifest: ManifestEditor): Promise<boolean> => {
+  if (!Object.keys(manifest.builders).includes(REACT_BUILDER)) {
+    return true
+  }
+  const count = getNumberOfReactLinks()
+  if (count > 1) {
+    return true
+  }
+
+  saveNumberOfReactLinks(count + 1)
+
+  const lastShowDateString = getLastLinkReactDate()
+  const lastShowDate = moment(lastShowDateString)
+  const now = moment()
+  const elapsedTime = moment.duration(now.diff(lastShowDate))
+  if (elapsedTime.asHours() < 24 && now.day === lastShowDate.day) {
+    return true
+  }
+
+  // TODO: announcement link
+  log.warn(
+    `Warning: as [announced](TODO: link pro announcement), *VTEX does not grant support for storefront projects since previous authorization is no longer a mandatory step to use the React builder*. From this point onwards, you agree to take full responsibility for the component's development and maintenance.`
+  )
+  const confirm = await promptConfirm(`Do you want to continue?`, false)
+  return confirm
 }
