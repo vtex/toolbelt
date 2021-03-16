@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Terms and conditions message when linking a react app.
+- Terms and conditions message when linking or publishing a react app.
 
 ### Added
 - `composable-commerce-sq4` as codeowners.
