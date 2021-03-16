@@ -13,7 +13,7 @@ import { BillingMessages } from '../../lib/constants/BillingMessages'
 import { createAppsClient } from '../clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../clients/IOClients/infra/Registry'
 import { createWorkspacesClient } from '../clients/IOClients/infra/Workspaces'
-import { getLastLinkReactDate, getNumberOfReactLinks, saveNumberOfReactLinks } from '../conf'
+import { getLastLinkReactDate, getNumberOfReactLinks, saveLastLinkReactDate, saveNumberOfReactLinks } from '../conf'
 import { createFlowIssueError } from '../error/utils'
 import log from '../logger'
 import { ManifestEditor } from '../manifest'
@@ -396,25 +396,34 @@ export const continueAfterLinkTermsAndConditions = async (manifest: ManifestEdit
   if (!Object.keys(manifest.builders).includes(REACT_BUILDER)) {
     return true
   }
+
   const count = getNumberOfReactLinks()
-  if (count > 1) {
+  if (count && count > 1) {
     return true
   }
-
   saveNumberOfReactLinks(count + 1)
 
-  const lastShowDateString = getLastLinkReactDate()
-  const lastShowDate = moment(lastShowDateString)
   const now = moment()
-  const elapsedTime = moment.duration(now.diff(lastShowDate))
-  if (elapsedTime.asHours() < 24 && now.day === lastShowDate.day) {
-    return true
+  const lastShowDateString = getLastLinkReactDate()
+  if (lastShowDateString) {
+    const lastShowDate = moment(lastShowDateString)
+    console.log('lastShow', lastShowDate.toISOString())
+    const elapsedTime = moment.duration(now.diff(lastShowDate))
+    if (elapsedTime.asHours() < 24 && now.day() === lastShowDate.day()) {
+      return true
+    }
   }
 
-  // TODO: announcement link
   log.warn(
-    `Warning: as [announced](TODO: link pro announcement), *VTEX does not grant support for storefront projects since previous authorization is no longer a mandatory step to use the React builder*. From this point onwards, you agree to take full responsibility for the component's development and maintenance.`
+    `${chalk.bold(
+      `⚠️  Caution: VTEX does not grant support for custom storefront projects.`
+    )} From this point onwards, you agree to take full responsibility for the component’s development and maintenance.`
   )
+
   const confirm = await promptConfirm(`Do you want to continue?`, false)
+
+  if (confirm) {
+    saveLastLinkReactDate(now.toISOString())
+  }
   return confirm
 }
