@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken'
 import axios from 'axios'
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
@@ -391,8 +392,16 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
 }
 
 const REACT_BUILDER = 'react'
+const VTEX_ACCOUNT = 'vtex'
 
 export const continueAfterReactTermsAndConditions = async (manifest: ManifestEditor): Promise<boolean> => {
+  const session = SessionManager.getSingleton()
+  const { token } = session
+  const decodedToken = jwt.decode(token)
+  if (decodedToken?.[`account`] === VTEX_ACCOUNT) {
+    return true
+  }
+
   if (!Object.keys(manifest.builders).includes(REACT_BUILDER)) {
     return true
   }
