@@ -392,7 +392,7 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
 
 const REACT_BUILDER = 'react'
 
-export const continueAfterLinkTermsAndConditions = async (manifest: ManifestEditor): Promise<boolean> => {
+export const continueAfterReactTermsAndConditions = async (manifest: ManifestEditor): Promise<boolean> => {
   if (!Object.keys(manifest.builders).includes(REACT_BUILDER)) {
     return true
   }
