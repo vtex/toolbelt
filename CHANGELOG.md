@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `composable-commerce-sq4` as codeowners.
+
+### Removed
+- `composable-commerce` as codeowners.
 ## [2.123.0] - 2021-03-08
 ### Added
 
