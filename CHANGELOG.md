@@ -6,46 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
-## [2.124.0] - 2021-03-17
 ### Added
 - Terms and conditions message when linking or publishing a react app.
-
-## [2.123.0] - 2021-03-08
-### Added
-
-- [install] Fix app's plan message for plans without metrics.
-- `composable-commerce` as codeowners.
-
-## [2.122.0] - 2021-02-23
-
-### Added
-
-- `stale` issues github workflow.
-
-### Added
-
-- It is now possible to specify a project folder name when using the `init` command.
-
-### Fixed
-
-- Searchs for the default_branch name for a GitHub Repo before trying to download it. We used to assume the default was always `master` but [GitHub is adoping `main`](https://github.com/github/renaming).
-
-## [2.121.6] - 2021-02-19
-
-### Fixed
-
-- Increase workspaces client timeout from 25ms to 2500ms
-
-## [2.121.5] - 2021-02-19
-
-### Changed
-
-- Increase workspaces client timeout to 25 seconds
-
-### Fixed
-
-- [Github Action] Enable deploy from custom branch instead of master.
 
 ## [3.3.0-beta] - 2021-03-10
 
