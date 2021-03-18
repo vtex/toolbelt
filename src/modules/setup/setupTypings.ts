@@ -128,6 +128,7 @@ export const setupTypings = async (
   const builderClient = Builder.createClient({}, { retries: 2, timeout: 10000 })
   const builders = R.keys(R.prop('builders', manifest) || {})
   const filteredBuilders = R.intersection(builders, buildersWithTypes)
+  const shouldIncludeSelfAsDevDependency = builder => ['node', 'react'].includes(builder)
 
   try {
     log.info('Fetching names of dependencies injected by BuilderHub')
@@ -141,7 +142,7 @@ export const setupTypings = async (
         builder,
         deps: {
           ...getBuilderDependencies(allDependencies, typingsData, manifest.builders[builder], builder),
-          ...(builder === 'node' ? { [appName]: appMajor } : {}),
+          ...(shouldIncludeSelfAsDevDependency(builder) ? { [appName]: appMajor } : {}),
         },
       }
     })
