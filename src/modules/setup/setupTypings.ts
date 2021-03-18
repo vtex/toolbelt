@@ -136,12 +136,15 @@ export const setupTypings = async (
       dependencies: manifest.dependencies,
       peerDependencies: manifest.peerDependencies,
     }
+
+    const shouldIncludeSelfAsDevDependency = builder => ['node', 'react'].includes(builder)
+
     const buildersWithAllDeps = filteredBuilders.map((builder: string) => {
       return {
         builder,
         deps: {
           ...getBuilderDependencies(allDependencies, typingsData, manifest.builders[builder], builder),
-          ...(builder === 'node' ? { [appName]: appMajor } : {}),
+          ...(shouldIncludeSelfAsDevDependency(builder) ? { [appName]: appMajor } : {}),
         },
       }
     })

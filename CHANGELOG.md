@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Terms and conditions message when linking or publishing a react app.
 
+
+### Changed
+- Add self package to react packages as devDependency
+
 ## [2.123.0] - 2021-03-08
 ### Added
 
