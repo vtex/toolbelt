@@ -24,7 +24,7 @@ import { ErrorReport } from '../../api/error/ErrorReport'
 import { FeatureFlag } from '../../api/modules/featureFlag'
 import { getHelpSubject, CommandI, renderCommands } from './utils'
 import * as fse from 'fs-extra'
-import path from 'path';
+import path from 'path'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -60,7 +60,7 @@ const checkLogin = async (command: string) => {
   }
 }
 
-const checkAndFixSymlink = async (options) => {
+const checkAndFixSymlink = async options => {
   try {
     require('vtex')
   } catch (err) {
@@ -68,7 +68,8 @@ const checkAndFixSymlink = async (options) => {
     try {
       await fse.symlink(options.config.root, path.join(options.config.root, 'node_modules', 'vtex'))
     } catch (err2) {
-      log.error('Failed to create symbolic link:', err2.message)
+      log.error('Failed to create symbolic link. Please run this command on Administrator mode')
+      process.exit(1)
     }
     log.info('Problem fixed. Please, run the command again')
     process.exit(1)
