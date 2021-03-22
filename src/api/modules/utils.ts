@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken'
 import axios from 'axios'
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
@@ -5,6 +6,7 @@ import Table from 'cli-table2'
 import { ArrayChange, diffArrays } from 'diff'
 import enquirer from 'enquirer'
 import { existsSync } from 'fs-extra'
+import moment from 'moment'
 import { resolve as resolvePath } from 'path'
 import R, { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
@@ -12,6 +14,7 @@ import { BillingMessages } from '../../lib/constants/BillingMessages'
 import { createAppsClient } from '../clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../clients/IOClients/infra/Registry'
 import { createWorkspacesClient } from '../clients/IOClients/infra/Workspaces'
+import { getLastLinkReactDate, getNumberOfReactLinks, saveLastLinkReactDate, saveNumberOfReactLinks } from '../conf'
 import { createFlowIssueError } from '../error/utils'
 import log from '../logger'
 import { ManifestEditor } from '../manifest'
@@ -386,4 +389,53 @@ export const matchedDepsDiffTable = (title1: string, title2: string, deps1: stri
     )
   )
   return table
+}
+
+const REACT_BUILDER = 'react'
+const EMAIL_KEY = 'sub'
+const I_VTEX_ACCOUNT = '@vtex.com'
+const BR_VTEX_ACCOUNT = '@vtex.com.br'
+
+export const continueAfterReactTermsAndConditions = async (manifest: ManifestEditor): Promise<boolean> => {
+  const session = SessionManager.getSingleton()
+  const { token } = session
+  const decodedToken = jwt.decode(token)
+  const userEmail = decodedToken?.[EMAIL_KEY] as string
+  if (userEmail && (userEmail.endsWith(I_VTEX_ACCOUNT) || userEmail.endsWith(BR_VTEX_ACCOUNT))) {
+    return true
+  }
+
+  if (!Object.keys(manifest.builders).includes(REACT_BUILDER)) {
+    return true
+  }
+
+  const count = getNumberOfReactLinks()
+  if (count && count > 1) {
+    return true
+  }
+  saveNumberOfReactLinks(count + 1)
+
+  const now = moment()
+  const lastShowDateString = getLastLinkReactDate()
+  if (lastShowDateString) {
+    const lastShowDate = moment(lastShowDateString)
+    console.log('lastShow', lastShowDate.toISOString())
+    const elapsedTime = moment.duration(now.diff(lastShowDate))
+    if (elapsedTime.asHours() < 24 && now.day() === lastShowDate.day()) {
+      return true
+    }
+  }
+
+  log.warn(
+    `${chalk.bold(
+      `⚠️  Caution: VTEX does not grant support for custom storefront projects.`
+    )} From this point onwards, you agree to take full responsibility for the component’s development and maintenance.`
+  )
+
+  const confirm = await promptConfirm(`Do you want to continue?`, false)
+
+  if (confirm) {
+    saveLastLinkReactDate(now.toISOString())
+  }
+  return confirm
 }
