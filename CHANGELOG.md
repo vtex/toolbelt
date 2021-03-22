@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `composable-commerce-sq4` as codeowners
+
 ### Changed
+
 - Add self package to react packages as devDependency
 
 ## [3.3.0-beta] - 2021-03-10
