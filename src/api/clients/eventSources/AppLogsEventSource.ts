@@ -44,7 +44,7 @@ export class AppLogsEventSource {
     this.app = app
     this.userAgent = `${userAgent}${showSeenLogs ? `#${randomBytes(8).toString('hex')}` : `#${userLogged}`}`
 
-    this.uri = `http://infra.io.vtex.com/skidder/v${AppLogsEventSource.SKIDDER_MAJOR}/${account}/${workspace}/logs/stream`
+    this.uri = `https://infra.io.vtex.com/skidder/v${AppLogsEventSource.SKIDDER_MAJOR}/${account}/${workspace}/logs/stream`
     if (app) {
       this.uri += `/${app}`
     }
