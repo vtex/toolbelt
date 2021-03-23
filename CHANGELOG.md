@@ -20,9 +20,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Terms and conditions message when linking or publishing a react app.
 - `composable-commerce-sq4` as codeowners
 
-### Fixed
-
-- [vtex lib] Fix `import x from 'vtex'` error by forcing symlink
 ### Changed
 
 - Changed logging protocol from `http` to `https`.

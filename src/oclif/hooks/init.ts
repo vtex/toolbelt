@@ -64,7 +64,7 @@ const createSymlink = async options => {
   try {
     await fse.symlink(options.config.root, path.join(options.config.root, 'node_modules', 'vtex'))
   } catch (symLinkErr) {
-    if (symLinkErr.code === "EEXIST") {
+    if (symLinkErr.code === 'EEXIST') {
       log.error(`Symbolic link already exist, there is another error that couldn't be solved`)
     } else {
       log.error('Failed to create symbolic link. Please run this command on Administrator mode')
@@ -77,7 +77,7 @@ const checkAndFixSymlink = async options => {
   try {
     require('vtex')
   } catch (requireErr) {
-    if (requireErr.code === "MODULE_NOT_FOUND") {
+    if (requireErr.code === 'MODULE_NOT_FOUND') {
       log.error('Import VTEX error, trying to autofix...')
       await createSymlink(options)
       log.info('Problem solved. Please, run the command again')
