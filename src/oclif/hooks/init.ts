@@ -60,18 +60,30 @@ const checkLogin = async (command: string) => {
   }
 }
 
+const createSymlink = async options => {
+  try {
+    await fse.symlink(options.config.root, path.join(options.config.root, 'node_modules', 'vtex'))
+  } catch (symLinkErr) {
+    if (symLinkErr.code === "EEXIST") {
+      log.error(`Symbolic link already exist, maybe there is another error that I can't solve`)
+    } else {
+      log.error('Failed to create symbolic link. Please run this command on Administrator mode')
+    }
+    process.exit(1)
+  }
+}
+
 const checkAndFixSymlink = async options => {
   try {
     require('vtex')
-  } catch (err) {
-    log.error('Import VTEX error, trying to autofix...')
-    try {
-      await fse.symlink(options.config.root, path.join(options.config.root, 'node_modules', 'vtex'))
-    } catch (err2) {
-      log.error('Failed to create symbolic link. Please run this command on Administrator mode')
-      process.exit(1)
+  } catch (requireErr) {
+    if (requireErr.code === "MODULE_NOT_FOUND") {
+      log.error('Import VTEX error, trying to autofix...')
+      await createSymlink(options)
+      log.info('Problem solved. Please, run the command again')
+    } else {
+      log.error('Unexpected behaviour with vtex package')
     }
-    log.info('Problem fixed. Please, run the command again')
     process.exit(1)
   }
   log.debug('Import VTEX OK')
