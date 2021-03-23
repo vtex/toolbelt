@@ -23,8 +23,8 @@ import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import * as fse from 'fs-extra'
 import path from 'path'
-import { CommandI, getHelpSubject, renderCommands } from './utils'
 import { sortBy, uniqBy } from 'ramda'
+import { getHelpSubject, CommandI, renderCommands } from './utils'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
