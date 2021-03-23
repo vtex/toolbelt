@@ -52,7 +52,7 @@
   "dependencies": {
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.1",
+    "@oclif/plugin-help": "^2.0.0",
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.77.0",
     "@vtex/cli-plugin-abtest": "^0.0.5",

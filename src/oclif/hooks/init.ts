@@ -5,7 +5,7 @@ import help from '@oclif/plugin-help'
 import * as Config from '@oclif/config'
 import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
 import { error } from '@oclif/errors'
-
+import { FeatureFlag } from '../../api/modules/featureFlag'
 import { envCookies } from '../../api/env'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
@@ -21,8 +21,8 @@ import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
 import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import { FeatureFlag } from '../../api/modules/featureFlag'
-import { getHelpSubject, CommandI, renderCommands } from './utils'
+import { CommandI, getHelpSubject, renderCommands } from './utils'
+import { sortBy, uniqBy } from 'ramda'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -178,34 +178,60 @@ export const onError = async (e: any) => {
 
 export default async function(options: HookKeyOrOptions<'init'>) {
   // overwrite Help#showCommandHelp to customize help formating
-  help.prototype.showCommandHelp = function(command: Config.Command) {
-    let topics = this._topics
-    topics = topics.filter(t => this.opts.all || !t.hidden)
-    const name = command.id
-    const depth = name.split(':').length
-    topics = topics.filter(t => t.name.startsWith(`${name}:`) && t.name.split(':').length === depth + 1)
-    const title = command.description && this.render(command.description).split('\n')[0]
-    if (title) console.log(`\n${title}\n`)
-    console.log(this.command(command))
-    console.log('')
-    if (topics.length > 0) {
-      console.log(this.topics(topics))
-      console.log('')
-    }
-  }
+  help.prototype.showHelp = function showHelp(_argv: string[]) {
+    const sortedTopics = () => {
+      let { topics } = this.config
 
-  help.prototype.showHelp = function(_argv: string[]) {
+      topics = topics.filter(t => this.opts.all || !t.hidden)
+      topics = sortBy((t: any) => t.name, topics)
+      topics = uniqBy((t: any) => t.name, topics)
+      return topics
+    }
+
+    const showTopicHelp = (topic: Config.Topic) => {
+      const { name } = topic
+      const depth = name.split(':').length
+      const subTopics = sortedTopics().filter(
+        t => t.name.startsWith(name + ':') && t.name.split(':').length === depth + 1
+      )
+
+      console.log(this.topic(topic))
+      if (subTopics.length > 0) {
+        console.log(this.topics(subTopics))
+        console.log('')
+      }
+    }
+
+    const showCommandHelp = (command: Config.Command) => {
+      const name = command.id
+      const depth = name.split(':').length
+
+      const subTopics = sortedTopics().filter(
+        t => t.name.startsWith(name + ':') && t.name.split(':').length === depth + 1
+      )
+
+      const title = command.description && this.render(command.description).split('\n')[0]
+      if (title) console.log(`${title}\n`)
+      console.log(this.command(command))
+      console.log('')
+
+      if (subTopics.length > 0) {
+        console.log(this.topics(subTopics))
+        console.log('')
+      }
+    }
+
     const subject = getHelpSubject(_argv)
     if (subject) {
       const command = this.config.findCommand(subject)
       if (command) {
-        this.showCommandHelp(command)
+        showCommandHelp(command)
         return
       }
 
       const topic = this.config.findTopic(subject)
       if (topic) {
-        this.showTopicHelp(topic)
+        showTopicHelp(topic)
         return
       }
 
