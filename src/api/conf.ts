@@ -29,6 +29,14 @@ export const getNextFeedbackDate = (): string => conf.get('_nextFeedbackDate')
 
 export const saveNextFeedbackDate = (date: string) => conf.set('_nextFeedbackDate', date)
 
+const REACT_LINK_MESSAGE_DISPLAY = '_lastLinkReactDate'
+export const getLastLinkReactDate = (): string => conf.get(REACT_LINK_MESSAGE_DISPLAY)
+export const saveLastLinkReactDate = (date: string) => conf.set(REACT_LINK_MESSAGE_DISPLAY, date)
+
+const REACT_LINKS_COUNTER = '_numberOfReactLinks'
+export const getNumberOfReactLinks = (): number => conf.get(REACT_LINKS_COUNTER)
+export const saveNumberOfReactLinks = (count: number) => conf.set(REACT_LINKS_COUNTER, count)
+
 const envFromProcessEnv = {
   prod: Environment.Production,
 }
