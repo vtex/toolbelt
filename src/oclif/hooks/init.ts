@@ -19,8 +19,8 @@ import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
 import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import * as fse from 'fs-extra';
-import path from 'path';
+import * as fse from 'fs-extra'
+import path from 'path'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -106,7 +106,7 @@ const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: bool
   await checkLogin(options.id)
 
   await checkAndFixSymlink(options)
-  
+
   await checkAndOpenNPSLink()
 
   if (calculateInitTime) {
