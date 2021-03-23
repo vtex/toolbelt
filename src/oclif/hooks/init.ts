@@ -65,7 +65,7 @@ const createSymlink = async options => {
     await fse.symlink(options.config.root, path.join(options.config.root, 'node_modules', 'vtex'))
   } catch (symLinkErr) {
     if (symLinkErr.code === "EEXIST") {
-      log.error(`Symbolic link already exist, maybe there is another error that I can't solve`)
+      log.error(`Symbolic link already exist, there is another error that couldn't be solved`)
     } else {
       log.error('Failed to create symbolic link. Please run this command on Administrator mode')
     }
