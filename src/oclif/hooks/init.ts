@@ -23,6 +23,8 @@ import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
 import { FeatureFlag } from '../../api/modules/featureFlag'
 import { getHelpSubject, CommandI, renderCommands } from './utils'
+import * as fse from 'fs-extra'
+import path from 'path'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -58,6 +60,35 @@ const checkLogin = async (command: string) => {
   }
 }
 
+const createSymlink = async options => {
+  try {
+    await fse.symlink(options.config.root, path.join(options.config.root, 'node_modules', 'vtex'))
+  } catch (symLinkErr) {
+    if (symLinkErr.code === 'EEXIST') {
+      log.error(`Symbolic link already exist, there is another error that couldn't be solved`)
+    } else {
+      log.error('Failed to create symbolic link. Please run this command on Administrator mode')
+    }
+    process.exit(1)
+  }
+}
+
+const checkAndFixSymlink = async options => {
+  try {
+    require('vtex')
+  } catch (requireErr) {
+    if (requireErr.code === 'MODULE_NOT_FOUND') {
+      log.error('Import VTEX error, trying to autofix...')
+      await createSymlink(options)
+      log.info('Problem solved. Please, run the command again')
+    } else {
+      log.error('Unexpected behaviour with vtex package')
+    }
+    process.exit(1)
+  }
+  log.debug('Import VTEX OK')
+}
+
 const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: boolean) => {
   const cliPreTasksStart = process.hrtime()
   CLIPreTasks.getCLIPreTasks(pkg).runTasks(options.id)
@@ -77,6 +108,8 @@ const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: bool
   log.debug(args)
 
   await checkLogin(options.id)
+
+  await checkAndFixSymlink(options)
 
   await checkAndOpenNPSLink()
 
