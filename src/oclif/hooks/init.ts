@@ -21,10 +21,10 @@ import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
 import { SSEConnectionError } from '../../api/error/errors'
 import { ErrorReport } from '../../api/error/ErrorReport'
-import { sortBy, uniqBy } from 'ramda'
-import { getHelpSubject, CommandI, renderCommands } from './utils'
 import * as fse from 'fs-extra'
 import path from 'path'
+import { CommandI, getHelpSubject, renderCommands } from './utils'
+import { sortBy, uniqBy } from 'ramda'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
