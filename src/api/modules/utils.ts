@@ -22,6 +22,7 @@ import { getAppRoot } from '../manifest/ManifestUtil'
 import { SessionManager } from '../session/SessionManager'
 import { createTable } from '../table'
 import { promptConfirm } from './prompts'
+import { reactTermsOfUse } from '../constants/Messages'
 
 const workspaceExampleName = process.env.USER || 'example'
 
@@ -426,11 +427,7 @@ export const continueAfterReactTermsAndConditions = async (manifest: ManifestEdi
     }
   }
 
-  log.warn(
-    `${chalk.bold(
-      `⚠️  Caution: VTEX does not grant support for custom storefront projects.`
-    )} From this point onwards, you agree to take full responsibility for the component’s development and maintenance.`
-  )
+  log.warn(reactTermsOfUse())
 
   const confirm = await promptConfirm(`Do you want to continue?`, false)
 
