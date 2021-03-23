@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.3.3-beta] - 2021-03-23
+
 ### Fixed
 
 - [vtex lib] Fix `import x from 'vtex'` error by forcing symlink
