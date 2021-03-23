@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- [vtex lib] Fix `import x from 'vtex'` error by forcing symlink
+
 ## [2.125.0] - 2021-03-18
 ### Added
 - `composable-commerce-sq4` as codeowners.
