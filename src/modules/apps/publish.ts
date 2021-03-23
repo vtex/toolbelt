@@ -10,7 +10,11 @@ import { listLocalFiles } from '../../api/modules/apps/file'
 import { ProjectUploader } from '../../api/modules/apps/ProjectUploader'
 import { listenBuild } from '../../api/modules/build'
 import { promptConfirm } from '../../api/modules/prompts'
-import { checkBuilderHubMessage, showBuilderHubMessage } from '../../api/modules/utils'
+import {
+  checkBuilderHubMessage,
+  continueAfterReactTermsAndConditions,
+  showBuilderHubMessage,
+} from '../../api/modules/utils'
 import { SessionManager } from '../../api/session/SessionManager'
 import * as conf from '../../api/conf'
 import { returnToPreviousAccount, switchAccount } from '../../api/modules/auth/switch'
@@ -121,6 +125,12 @@ export default async (path: string, options) => {
 
   const { account } = SessionManager.getSingleton()
   const manifest = await ManifestEditor.getManifestEditor()
+
+  const mustContinue = await continueAfterReactTermsAndConditions(manifest)
+  if (!mustContinue) {
+    process.exit(1)
+  }
+
   const versionMsg = chalk.bold.yellow(manifest.version)
   const appNameMsg = chalk.bold.yellow(`${manifest.vendor}.${manifest.name}`)
 

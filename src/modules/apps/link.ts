@@ -5,7 +5,12 @@ import {
   ProjectSizeLimitError,
   ProjectUploader,
 } from '../../api/modules/apps/ProjectUploader'
-import { checkBuilderHubMessage, showBuilderHubMessage, validateAppAction } from '../../api/modules/utils'
+import {
+  checkBuilderHubMessage,
+  showBuilderHubMessage,
+  continueAfterReactTermsAndConditions,
+  validateAppAction,
+} from '../../api/modules/utils'
 import { createFlowIssueError } from '../../api/error/utils'
 import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
@@ -265,6 +270,11 @@ export async function appLink(options: LinkOptions) {
   const root = getAppRoot()
   const manifest = await ManifestEditor.getManifestEditor()
   await manifest.writeSchema()
+
+  const mustContinue = await continueAfterReactTermsAndConditions(manifest)
+  if (!mustContinue) {
+    return
+  }
 
   const builderHubMessage = await checkBuilderHubMessage('link')
   if (!isEmpty(builderHubMessage)) {
