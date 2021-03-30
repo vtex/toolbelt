@@ -16,8 +16,8 @@
     "prepublishOnly": "bash ./scripts/publishLock.sh",
     "ci:test": "yarn test --ci",
     "ci:prettier-check": "prettier --check --config ./.prettierrc \"./src/**/*.{ts,tsx,js,jsx,json}\"",
-    "release": "yarn build && yarn oclif-dev pack --color=256 && yarn oclif-dev publish --color=256",
-    "release:win": "yarn build && yarn oclif-dev pack:win --color=256 && yarn oclif-dev publish:win --color=256"
+    "release": "yarn build && yarn oclif-dev pack && yarn oclif-dev publish",
+    "release:win": "yarn build && yarn oclif-dev pack:win && yarn oclif-dev publish:win"
   },
   "engineStrict": true,
   "engines": {
