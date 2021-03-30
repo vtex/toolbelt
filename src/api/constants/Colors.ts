@@ -1,5 +1,7 @@
 import chalk from 'chalk'
 
+chalk.enabled = true
+
 export enum COLORS {
   GREEN = '#8BC34A',
   PINK = '#FF4785',
