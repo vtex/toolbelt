@@ -3,21 +3,28 @@ import { flags as oclifFlags } from '@oclif/command'
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsUnlink from '../modules/apps/unlink'
 
-export default class Unlink extends CustomCommand {
-  static description = 'Unlink an app on the current directory or a specified one'
+import { ColorifyConstants } from '../api/constants/Colors'
 
-  static examples = ['vtex unlink', 'vtex unlink vtex.service-example@0.x']
+export default class Unlink extends CustomCommand {
+  static description = `Unlinks an app from the current ${ColorifyConstants.ID(
+    'workspace.'
+  )} If not specified which app to unlink, it defaults to the app in the current directory.`
+
+  static examples = [
+    `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex unlink')}`,
+    `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex unlink')} vtex.service-example@0.x`,
+  ]
 
   static flags = {
     ...CustomCommand.globalFlags,
-    all: oclifFlags.boolean({ char: 'a', description: 'Unlink all apps', default: false }),
+    all: oclifFlags.boolean({ char: 'a', description: 'Unlinks all apps.', default: false }),
   }
 
   static strict = false
 
   static args = [
-    { name: 'appId', required: false },
-    { name: 'ithAppId', required: false, multiple: true },
+    { name: 'appId', required: false, description: 'Name of the app to unlink.' },
+    { name: 'ithAppId', required: false, multiple: true, description: 'Names of multiple apps to unlink.' },
   ]
 
   async run() {

@@ -1194,30 +1194,30 @@
     tar-fs "^2.0.0"
     xss "^1.0.6"
 
-"@vtex/cli-plugin-abtest@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.0.5.tgz#3fb5e95f7c26be2a8c1aae0eca5eb0b49d8cc077"
-  integrity sha512-4TIlU5mgno2ye7DSR1LSenZg2mtfAZKso58qe+FIH/QSw8jQc7vOrOa8Av4gKB9zyOgLF9jtdScAellepbnqtg==
+"@vtex/cli-plugin-abtest@0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.1.1.tgz#3e82b462c0ba5f4972a588232f9458aceb162ea5"
+  integrity sha512-ySiJOOw35mFgdTxpMBKZwlv8BUaBvC2GHwXd+c3IjW0R0BTTvPIvuSM04nCe3mpPUJ/mO/9oGqhQvo5wiEkbIA==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
     numbro "2.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-deploy@^0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deploy/-/cli-plugin-deploy-0.2.0.tgz#c13eb6084fa1253ff315438d0102dfd13e8a800e"
-  integrity sha512-DQJbgt3Mr3PwYbkfkzB2bSgZGjSjG39F+bIO94FJjuaaictIQcJjQfdfMVr4tICbJnfmzU2h9CmWhbMXXDiPNw==
+"@vtex/cli-plugin-deploy@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-deploy/-/cli-plugin-deploy-0.3.1.tgz#6206b40221a11c555beb4b66ab67333328246951"
+  integrity sha512-NR04AeUSVjtG9HoHkQBJ7EzB0u/by6Or546FqmUf8/WY52ILvsFdek0MrUj80z+Yh10IuLJYR2PSwXWPSy8ByA==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
     chalk "^4.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-deps@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.0.1.tgz#6e07e1951f1a02719d800b08d92b73cb94d7c417"
-  integrity sha512-T0Zm7ByLjYm78K0jquCvZc7jbhiXtorFAGphW22iiPKxs8WtUX/VNqTsx0wHJOG2H5lnL3NE7PjiG4Aavi7K+g==
+"@vtex/cli-plugin-deps@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-deps/-/cli-plugin-deps-0.1.1.tgz#e64c8cb9e48b525721429ee151f03d9262561797"
+  integrity sha512-ViucFNwDjf6tmo6Cfa9qK5kX2o2ZlcCWBcoVRiCN+sfN10Psa8tZiXeZnP2mogfhtatQoU1RqR+NobRTxXsW1w==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
@@ -1226,20 +1226,21 @@
     "@types/ramda" "^0.27.14"
     tslib "^1"
 
-"@vtex/cli-plugin-edition@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-edition/-/cli-plugin-edition-0.0.1.tgz#b0c7f922b9b183fa470ee251f75ae57b94596115"
-  integrity sha512-acSh3lwtOTMZs+qPlMFN+n6ADojl0RmpRAFFuc59JStAsPfMjodUl75P5aFaTw5KfjjI2JvHmaMslaHUMGDbbQ==
+"@vtex/cli-plugin-edition@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-edition/-/cli-plugin-edition-0.1.1.tgz#d45fd412fc697d8ace21f2dced2b2b3106b5a99b"
+  integrity sha512-S+9YbTRHvSxIRMt7PQsctHlov+FLupP7hhdf0WUC8p+Y9lNa76GeTcvzG/SSO/EzmL9UbaCxwlseoSzMl+bDQQ==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
     "@tiagonapoli/oclif-plugin-spaced-commands" "^0.0.6"
+    ramda "^0.27.1"
     tslib "^1"
 
-"@vtex/cli-plugin-plugins@^1.10.2":
-  version "1.10.2"
-  resolved "https://registry.npmjs.org/@vtex/cli-plugin-plugins/-/cli-plugin-plugins-1.10.2.tgz#8a6935e9040ca18bea2e7e1b819fa1b88c53d473"
-  integrity sha512-go6FxZjh9W1CURBULcind01dOhtUCQ/f4NfPAMmnLe4qPjjtOsM4idB9PAjbFy//0/KINJBytBpLHpRFl0p1Rw==
+"@vtex/cli-plugin-plugins@^1.11.1":
+  version "1.11.1"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-plugins/-/cli-plugin-plugins-1.11.1.tgz#b07939743b2a15e74e5caa57857cff3133abf959"
+  integrity sha512-1Qim+Vb2eQagXr4O803O0sbmu/hODbgz8oA7KviKLuPguEJWk2QJs3M2uhlWKTpr8kEo9jKlGpmoVgUdgjwHCg==
   dependencies:
     "@oclif/color" "^0.x"
     "@oclif/command" "^1.5.12"
@@ -1255,19 +1256,19 @@
     tslib "^2.0.0"
     yarn "^1.21.1"
 
-"@vtex/cli-plugin-whoami@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-whoami/-/cli-plugin-whoami-0.1.0.tgz#87c49dc1f0b4523a2eecb5d6b53c68b6e56ec83a"
-  integrity sha512-A/+fVDB7AxQ59+6z9IY45mWqjeRTlKDE1ghN3u3J5iAmovEt4PQRgxwkXatOZmyMOCLUrg5gXu0cm4DWWjKZ7Q==
+"@vtex/cli-plugin-whoami@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-whoami/-/cli-plugin-whoami-0.2.2.tgz#d7d769ee5b225a31deb411a577d8a5124021d2b1"
+  integrity sha512-h4S+a5FibP7ribG4ZSShkGQlhi+JExBImiRT65iat/lCU2wwK3i5MXyrpEAF/jSBiVBUX6wNZHUnwCLCKf/uXw==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
     tslib "^1"
 
-"@vtex/cli-plugin-workspace@^1.0.0-beta.0":
-  version "1.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-workspace/-/cli-plugin-workspace-1.0.0-beta.0.tgz#fd7558f601a231b52b553a10fb1f9f065ff7cb03"
-  integrity sha512-XAVgBoKpfZHgLYe6CNFsNMcC0te+Hn7KS7o33gyo07RjnbcmWWIYKApMJM+HUgNa8WwT6yFkOYPbb4Oh/qw1Sw==
+"@vtex/cli-plugin-workspace@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-workspace/-/cli-plugin-workspace-1.0.1.tgz#334c113828378911a83694d61441503fa4c153d0"
+  integrity sha512-xMzxySSoj2xHANSmSulIjoKBkV9pGB/gyKA3o+zB4IQHkzvkt/whT7QDiI+siDFJc34zzVRzNOzLggKOKke5OQ==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"

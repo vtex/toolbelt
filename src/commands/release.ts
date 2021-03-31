@@ -1,16 +1,18 @@
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsRelease, { releaseTypeAliases, supportedReleaseTypes, supportedTagNames } from '../modules/release'
 
+import { ColorifyConstants } from '../api/constants/Colors'
+
 export default class Release extends CustomCommand {
   static description =
-    'Bump app version, commit and push to remote. Only for git users. The first option can also be a specific valid semver version'
+    '(Only for git users) Bumps the app version, commits, and pushes to remote the app in the current directory.'
 
   static examples = [
-    'vtex release',
-    'vtex release patch',
-    'vtex release patch beta',
-    'vtex release minor stable',
-    'vtex release pre',
+    `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex release')}`,
+    `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex release')} patch`,
+    `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex release')} patch beta`,
+    `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex release')} minor stable`,
+    `${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex release')} pre`,
   ]
 
   static flags = {
@@ -23,8 +25,9 @@ export default class Release extends CustomCommand {
       required: false,
       default: 'patch',
       options: [...Object.keys(releaseTypeAliases), ...supportedReleaseTypes],
+      description: `Release type.`,
     },
-    { name: 'tagName', required: false, default: 'beta', options: supportedTagNames },
+    { name: 'tagName', required: false, default: 'beta', options: supportedTagNames, description: `Tag name.` },
   ]
 
   async run() {

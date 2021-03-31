@@ -3,20 +3,25 @@ import { flags as oclifFlags } from '@oclif/command'
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsPublish from '../modules/apps/publish'
 
-export default class Publish extends CustomCommand {
-  static description = 'Publish the current app or a path containing an app'
+import { ColorifyConstants } from '../api/constants/Colors'
 
-  static examples = ['vtex publish']
+export default class Publish extends CustomCommand {
+  static description = 'Publishes the app in the current directory as a release candidate version.'
+
+  static examples = [`${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex publish')}`]
 
   static flags = {
     ...CustomCommand.globalFlags,
-    tag: oclifFlags.string({ char: 't', description: 'Apply a tag to the release' }),
-    workspace: oclifFlags.string({ char: 'w', description: 'Specify the workspace for the app registry' }),
+    tag: oclifFlags.string({ char: 't', description: 'Adds the specified tag to the release.' }),
+    workspace: oclifFlags.string({
+      char: 'w',
+      description: `Uses the specified ${ColorifyConstants.ID('workspace')} in the app registry.`,
+    }),
     force: oclifFlags.boolean({
       char: 'f',
-      description: 'Publish app without checking if the semver is being respected',
+      description: 'Publishes the app independently of SemVer rules.',
     }),
-    yes: oclifFlags.boolean({ char: 'y', description: 'Answer yes to confirmation prompts' }),
+    yes: oclifFlags.boolean({ char: 'y', description: 'Answers yes to all prompts.' }),
   }
 
   async run() {

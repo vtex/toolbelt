@@ -3,17 +3,22 @@ import { flags as oclifFlags } from '@oclif/command'
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import { switchAccount } from '../api/modules/auth/switch'
 
-export default class Switch extends CustomCommand {
-  static description = 'Switch to another VTEX account'
+import { ColorifyConstants } from '../api/constants/Colors'
 
-  static examples = ['vtex switch storecomponents']
+export default class Switch extends CustomCommand {
+  static description = `Switches to another ${ColorifyConstants.ID('VTEX account.')}`
+
+  static examples = [`${ColorifyConstants.COMMAND_OR_VTEX_REF('vtex switch')} storecomponents`]
 
   static flags = {
     ...CustomCommand.globalFlags,
-    workspace: oclifFlags.string({ char: 'w', description: 'Specify login workspace' }),
+    workspace: oclifFlags.string({
+      char: 'w',
+      description: `Moves to the specified ${ColorifyConstants.ID('workspace.')}`,
+    }),
   }
 
-  static args = [{ name: 'account', required: true }]
+  static args = [{ name: 'account', required: true, description: `${ColorifyConstants.ID('Account')} name to log in.` }]
 
   async run() {
     const {
