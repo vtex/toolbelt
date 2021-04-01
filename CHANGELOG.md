@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.1-beta] - 2021-04-01
+
+### Fixed
+- [hook] Change imports from node_modules to package name
 ## [3.5.0-beta] - 2021-04-01
 
 ### Changed
