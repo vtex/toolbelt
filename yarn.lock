@@ -1209,10 +1209,10 @@
     numbro "2.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-autoupdate@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-autoupdate/-/cli-plugin-autoupdate-0.0.1.tgz#1f296f2a1e8589df480be5abe3bec1831faee0db"
-  integrity sha512-bwSlCJCxtvRf7deOt116v4QKq8VdMDp+vIhVIXV9Hm+KbV/XB/6b9I5MR+IaZRqpGsNc6WeG7w+WyVIgI9v1qg==
+"@vtex/cli-plugin-autoupdate@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.npmjs.org/@vtex/cli-plugin-autoupdate/-/cli-plugin-autoupdate-0.0.2.tgz#f632d598d454632502eb02e32967bc9038d7fc74"
+  integrity sha512-PDlsThtwOdYmmmn/0cwBYpQ8J99+9h+zQFbg3kDwXYvg/EgEtT54yQUhxoSLRf2mh1Y91EKnn5r9Jh96ABnvew==
   dependencies:
     "@oclif/color" "^0.1.0"
     "@oclif/command" "^1.7.0"
