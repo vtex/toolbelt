@@ -56,7 +56,7 @@
     "@tiagonapoli/oclif-plugin-spaced-commands": "^0.0.6",
     "@vtex/api": "3.77.0",
     "@vtex/cli-plugin-abtest": "0.1.1",
-    "@vtex/cli-plugin-autoupdate": "0.0.2",
+    "@vtex/cli-plugin-autoupdate": "^0.0.2",
     "@vtex/cli-plugin-deploy": "^0.3.1",
     "@vtex/cli-plugin-deps": "^0.1.1",
     "@vtex/cli-plugin-edition": "^0.1.1",

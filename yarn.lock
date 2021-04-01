@@ -1209,7 +1209,7 @@
     numbro "2.1.0"
     tslib "^1"
 
-"@vtex/cli-plugin-autoupdate@0.0.2":
+"@vtex/cli-plugin-autoupdate@^0.0.2":
   version "0.0.2"
   resolved "https://registry.npmjs.org/@vtex/cli-plugin-autoupdate/-/cli-plugin-autoupdate-0.0.2.tgz#f632d598d454632502eb02e32967bc9038d7fc74"
   integrity sha512-PDlsThtwOdYmmmn/0cwBYpQ8J99+9h+zQFbg3kDwXYvg/EgEtT54yQUhxoSLRf2mh1Y91EKnn5r9Jh96ABnvew==
