@@ -15,9 +15,10 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
     : `Only current account sponsor (${chalk.blue(account)}) can change its edition`
   const proceed = await promptConfirm(`${reason}. Do you want to switch to account ${chalk.blue(account)}?`)
   if (!proceed) {
-    return
+    return false
   }
   await switchAccount(account, {})
+  return true
 }
 
 const tenantProvisionerApp = 'vtex.tenant-provisioner'
@@ -26,9 +27,10 @@ const promptInstallTenantProvisioner = async (account: string) => {
   log.notice(`Tenant provisioner app seems not to be installed in sponsor account ${chalk.blue(account)}.`)
   const proceed = await promptConfirm(`Do you want to install ${chalk.blue(tenantProvisionerApp)} in account ${chalk.blue(account)} now?`)
   if (!proceed) {
-    return
+    return false
   }
   await appsInstall([tenantProvisionerApp], { force: false })
+  return true
 }
 
 export default async function setEdition(edition: string, workspace?: string, autoSwitchBack = false) {
@@ -44,16 +46,20 @@ export default async function setEdition(edition: string, workspace?: string, au
   const sponsorClient = Sponsor.createClient()
   const sponsorAccount = await sponsorClient.getSponsorAccount()
 
+  let switched = false
   if (!sponsorAccount) {
     if (targetWorkspace !== 'master') {
       throw createFlowIssueError('Can only set initial edition in master workspace')
     }
-    await promptSwitchToAccount('vtex', true)
+    switched = await promptSwitchToAccount('vtex', true)
   } else {
     if (targetWorkspace === 'master') {
-      await promptWorkspaceMaster(targetWorkspace)
+      switched = await promptWorkspaceMaster(targetWorkspace)
     }
-    await promptSwitchToAccount(sponsorAccount, false)
+    switched = await promptSwitchToAccount(sponsorAccount, false)
+  }
+  if (!switched) {
+    return
   }
 
   try {
@@ -64,7 +70,10 @@ export default async function setEdition(edition: string, workspace?: string, au
       if (err.response?.status !== 404) {
         throw err
       }
-      await promptInstallTenantProvisioner(sponsorAccount)
+      const installed = await promptInstallTenantProvisioner(sponsorAccount)
+      if (!installed) {
+        throw err
+      }
       await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
     }
 
