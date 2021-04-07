@@ -1,4 +1,6 @@
 import chalk from 'chalk'
+
+import appsInstall from '../../../modules/apps/install'
 import { createFlowIssueError } from '../../error/utils'
 import { Sponsor } from '../../clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../session/SessionManager'
@@ -16,6 +18,17 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
     return
   }
   await switchAccount(account, {})
+}
+
+const tenantProvisionerApp = 'vtex.tenant-provisioner'
+
+const promptInstallTenantProvisioner = async (account: string) => {
+  log.notice(`Tenant provisioner app seems not to be installed in sponsor account ${chalk.blue(account)}.`)
+  const proceed = await promptConfirm(`Do you want to install ${chalk.blue(tenantProvisionerApp)} in account ${chalk.blue(account)} now?`)
+  if (!proceed) {
+    return
+  }
+  await appsInstall([tenantProvisionerApp], { force: false })
 }
 
 export default async function setEdition(edition: string, workspace?: string, autoSwitchBack = false) {
@@ -45,12 +58,20 @@ export default async function setEdition(edition: string, workspace?: string, au
 
   try {
     const sponsorClientForSponsorAccount = Sponsor.createClient()
-    await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
+    try {
+      await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
+    } catch (err) {
+      if (err.response?.status !== 404) {
+        throw err
+      }
+      await promptInstallTenantProvisioner(sponsorAccount)
+      await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
+    }
 
     log.info(`Successfully changed edition${workspaceNotice} of account ${chalk.blue(targetAccount)}.`)
-  } catch (ex) {
+  } catch (err) {
     log.error(`Failed to change edition of account ${chalk.blue(targetAccount)}.`)
-    throw ex
+    throw err
   } finally {
     if (autoSwitchBack) {
       await returnToPreviousAccount({ previousAccount, previousWorkspace, promptConfirmation: false })
