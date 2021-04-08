@@ -45,12 +45,19 @@ const promptInstallTenantProvisioner = async (account: string) => {
   return true
 }
 
+const isProvisionerNotInstalledError = (err: any) => {
+  const res = err.response
+  return res?.status === 404 &&
+      res.data?.source === 'Vtex.Kube.Router' &&
+      res.data?.code === 'NotFound'
+}
+
 const trySetEditionOnce = async (client: Sponsor, targetAccount: string, targetWorkspace: string, edition: string) => {
   try {
     await client.setEdition(targetAccount, targetWorkspace, edition)
     return true
   } catch (err) {
-    if (err.response?.status !== 404) {
+    if (!isProvisionerNotInstalledError(err)) {
       throw err
     }
     return false
