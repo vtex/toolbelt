@@ -54,7 +54,7 @@ export default async function setEdition(edition: string, workspace?: string, au
     switched = await promptSwitchToAccount('vtex', true)
   } else {
     if (targetWorkspace === 'master') {
-      switched = await promptWorkspaceMaster(targetWorkspace)
+      switched = await promptWorkspaceMaster(targetAccount)
     }
     switched = await promptSwitchToAccount(sponsorAccount, false)
   }
