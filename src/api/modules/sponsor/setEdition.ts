@@ -45,6 +45,18 @@ const promptInstallTenantProvisioner = async (account: string) => {
   return true
 }
 
+const trySetEdition = async (client: Sponsor, targetAccount: string, targetWorkspace: string, edition: string, noCatch: boolean = false) => {
+  try {
+    await client.setEdition(targetAccount, targetWorkspace, edition)
+    return true
+  } catch (err) {
+    if (noCatch || err.response?.status !== 404) {
+      throw err
+    }
+    return false
+  }
+}
+
 export default async function setEdition(edition: string, workspace?: string, autoSwitchBack = false) {
   const session = SessionManager.getSingleton()
   const { account: previousAccount, workspace: previousWorkspace } = session
@@ -65,17 +77,16 @@ export default async function setEdition(edition: string, workspace?: string, au
 
   try {
     const sponsorClientForSponsorAccount = Sponsor.createClient()
-    try {
-      await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
-    } catch (err) {
-      if (err.response?.status !== 404) {
-        throw err
-      }
+    let set = await trySetEdition(sponsorClientForSponsorAccount, targetAccount, targetWorkspace, edition)
+    if (!set) {
       const installed = await promptInstallTenantProvisioner(sponsorAccount)
       if (!installed) {
-        throw err
+        return
       }
-      await sponsorClientForSponsorAccount.setEdition(targetAccount, targetWorkspace, edition)
+      for (let retry = 1; !set && retry <= 3; retry++) {
+        await new Promise(resolve => setTimeout(resolve, retry * 1000))
+        set = await trySetEdition(sponsorClientForSponsorAccount, targetAccount, targetWorkspace, edition, retry == 3)
+      }
     }
 
     log.info(`Successfully changed edition${workspaceNotice} of account ${chalk.blue(targetAccount)}.`)
