@@ -21,10 +21,22 @@ const promptSwitchToAccount = async (account: string, initial: boolean) => {
   return true
 }
 
+const confirmAndSwitchEnvironment = async (sponsorAccount: string, targetAccount: string, targetWorkspace: string) => {
+  if (!sponsorAccount) {
+    if (targetWorkspace !== 'master') {
+      throw createFlowIssueError('Can only set initial edition in master workspace')
+    }
+    return await promptSwitchToAccount('vtex', true)
+  }
+
+  const workspaceIsOk = targetWorkspace !== 'master' || await promptWorkspaceMaster(targetAccount)
+  return workspaceIsOk && await promptSwitchToAccount(sponsorAccount, false)
+}
+
 const tenantProvisionerApp = 'vtex.tenant-provisioner'
 
 const promptInstallTenantProvisioner = async (account: string) => {
-  log.notice(`Tenant provisioner app seems not to be installed in sponsor account ${chalk.blue(account)}.`)
+  log.warn(`Tenant provisioner app seems not to be installed in sponsor account ${chalk.blue(account)}.`)
   const proceed = await promptConfirm(`Do you want to install ${chalk.blue(tenantProvisionerApp)} in account ${chalk.blue(account)} now?`)
   if (!proceed) {
     return false
@@ -46,18 +58,7 @@ export default async function setEdition(edition: string, workspace?: string, au
   const sponsorClient = Sponsor.createClient()
   const sponsorAccount = await sponsorClient.getSponsorAccount()
 
-  let switched = false
-  if (!sponsorAccount) {
-    if (targetWorkspace !== 'master') {
-      throw createFlowIssueError('Can only set initial edition in master workspace')
-    }
-    switched = await promptSwitchToAccount('vtex', true)
-  } else {
-    if (targetWorkspace === 'master') {
-      switched = await promptWorkspaceMaster(targetAccount)
-    }
-    switched = await promptSwitchToAccount(sponsorAccount, false)
-  }
+  const switched = await confirmAndSwitchEnvironment(sponsorAccount, targetAccount, targetWorkspace)
   if (!switched) {
     return
   }
