@@ -83,6 +83,7 @@ const trySetEdition = async (sponsorAccount: string, targetAccount: string, targ
   const workspaceNotice = targetWorkspace === 'master' ? '' : `in workspace ${chalk.blue(targetWorkspace)} `
   log.info(`Now setting edition ${chalk.blue(edition)} ${workspaceNotice}of account ${chalk.blue(targetAccount)}...`)
 
+  // Retry a couple of times since it might take some time for the installation to propagate until the route is available.
   for (let retry = 1; !success && retry <= maxSetEditionRetries; retry++) {
     await sleepSec(1.5 * retry)
 
