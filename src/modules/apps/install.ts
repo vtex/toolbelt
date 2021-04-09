@@ -7,6 +7,7 @@ import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
 import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
 import { BillingMessages } from '../../lib/constants/BillingMessages'
+import { InstallStatus } from '../../lib/constants/InstallStatus'
 
 const { installApp } = Billing.createClient()
 const { installApp: legacyInstallApp } = createAppsClient()
