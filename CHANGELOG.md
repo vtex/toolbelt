@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.5.2-beta] - 2021-04-09
+
 ### Fixed
 - [install] Treat `InstallStatus` as a variable not as a type
 ### Changed
