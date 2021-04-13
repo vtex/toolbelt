@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.126.0] - 2021-04-13
+
 ### Added
 - [vtex init] Service worker example to list of templates
 ## [2.125.3] - 2021-04-12
