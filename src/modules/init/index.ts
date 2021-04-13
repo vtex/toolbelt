@@ -77,6 +77,10 @@ const templates: Record<string, Template> = {
     repository: 'checkout-ui-settings',
     organization: VTEX_APPS,
   },
+  'service-worker-example': {
+    repository: 'service-worker-example',
+    organization: VTEX_APPS,
+  },
 }
 
 const getTemplates = () =>
