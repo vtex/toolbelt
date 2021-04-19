@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Add cli-plugin-functions for StoreFramework JAMStack
+- cli-plugin-functions for StoreFramework JAMStack
 
 ## [2.126.0] - 2021-04-13
 
