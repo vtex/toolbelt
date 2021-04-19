@@ -60,6 +60,7 @@
     "@vtex/cli-plugin-deploy": "^0.2.0",
     "@vtex/cli-plugin-deps": "^0.0.1",
     "@vtex/cli-plugin-edition": "^0.0.1",
+    "@vtex/cli-plugin-functions": "^1.1.0",
     "@vtex/cli-plugin-infra": "^0.1.0",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
     "@vtex/cli-plugin-redirects": "^0.0.2",
@@ -157,7 +158,7 @@
     "eslint-config-vtex": "12.3.1",
     "eslint-config-vtex-react": "^6.3.1",
     "jest": "24.9.0",
-    "nodemon": "^2.0.2",
+    "nodemon": "^2.0.7",
     "nodemon-notifier-cli": "https://github.com/Slessi/nodemon-notifier-cli.git",
     "prettier": "^1.19.1",
     "ts-jest": "24.2.0",
@@ -182,7 +183,8 @@
       "@vtex/cli-plugin-infra",
       "@vtex/cli-plugin-deploy",
       "@vtex/cli-plugin-whoami",
-      "@vtex/cli-plugin-url"
+      "@vtex/cli-plugin-url",
+      "@vtex/cli-plugin-functions"
     ],
     "update": {
       "node": {
