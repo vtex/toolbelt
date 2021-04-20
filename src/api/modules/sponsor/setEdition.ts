@@ -5,7 +5,7 @@ import { createFlowIssueError } from '../../error/utils'
 import { Sponsor } from '../../clients/IOClients/apps/Sponsor'
 import { SessionManager } from '../../session/SessionManager'
 import log from '../../logger'
-import { promptWorkspaceMaster } from '../utils'
+import { promptWorkspaceMaster, sleepSec } from '../utils'
 import { returnToPreviousAccount, switchAccount } from '../auth/switch'
 import { promptConfirm } from '../prompts'
 
@@ -65,8 +65,6 @@ const trySetEditionOnce = async (client: Sponsor, targetAccount: string, targetW
 }
 
 const maxSetEditionRetries = 3
-
-const sleepSec = (sec: number) => new Promise(resolve => setTimeout(resolve, sec * 1000))
 
 const trySetEdition = async (
   sponsorAccount: string,
