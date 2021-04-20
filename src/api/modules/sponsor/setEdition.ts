@@ -26,11 +26,12 @@ const confirmAndSwitchEnvironment = async (sponsorAccount: string, targetAccount
     if (targetWorkspace !== 'master') {
       throw createFlowIssueError('Can only set initial edition in master workspace')
     }
-    return await promptSwitchToAccount('vtex', true)
+    return promptSwitchToAccount('vtex', true)
   }
 
   const workspaceIsOk = targetWorkspace !== 'master' || (await promptWorkspaceMaster(targetAccount))
-  return workspaceIsOk && (await promptSwitchToAccount(sponsorAccount, false))
+  if (!workspaceIsOk) return false
+  return promptSwitchToAccount(sponsorAccount, false)
 }
 
 const tenantProvisionerApp = 'vtex.tenant-provisioner'
@@ -87,6 +88,7 @@ const trySetEdition = async (
   log.info(`Now setting edition ${chalk.blue(edition)} ${workspaceNotice}of account ${chalk.blue(targetAccount)}...`)
 
   // Retry a couple of times since it might take some time for the installation to propagate until the route is available.
+  /* eslint-disable no-await-in-loop */
   for (let retry = 1; !success && retry <= maxSetEditionRetries; retry++) {
     await sleepSec(1.5 * retry)
 
@@ -95,6 +97,7 @@ const trySetEdition = async (
         ? await trySetEditionOnce(client, targetAccount, targetWorkspace, edition)
         : await client.setEdition(targetAccount, targetWorkspace, edition).then(() => true)
   }
+  /* eslint-enable no-await-in-loop */
   return success
 }
 
