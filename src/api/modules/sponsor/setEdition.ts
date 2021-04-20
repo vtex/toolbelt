@@ -29,15 +29,17 @@ const confirmAndSwitchEnvironment = async (sponsorAccount: string, targetAccount
     return await promptSwitchToAccount('vtex', true)
   }
 
-  const workspaceIsOk = targetWorkspace !== 'master' || await promptWorkspaceMaster(targetAccount)
-  return workspaceIsOk && await promptSwitchToAccount(sponsorAccount, false)
+  const workspaceIsOk = targetWorkspace !== 'master' || (await promptWorkspaceMaster(targetAccount))
+  return workspaceIsOk && (await promptSwitchToAccount(sponsorAccount, false))
 }
 
 const tenantProvisionerApp = 'vtex.tenant-provisioner'
 
 const promptInstallTenantProvisioner = async (account: string) => {
   log.warn(`Tenant provisioner app seems not to be installed in sponsor account ${chalk.blue(account)}.`)
-  const proceed = await promptConfirm(`Do you want to install ${chalk.blue(tenantProvisionerApp)} in account ${chalk.blue(account)} now?`)
+  const proceed = await promptConfirm(
+    `Do you want to install ${chalk.blue(tenantProvisionerApp)} in account ${chalk.blue(account)} now?`
+  )
   if (!proceed) {
     return false
   }
@@ -47,9 +49,7 @@ const promptInstallTenantProvisioner = async (account: string) => {
 
 const isProvisionerNotInstalledError = (err: any) => {
   const res = err.response
-  return res?.status === 404 &&
-      res.data?.source === 'Vtex.Kube.Router' &&
-      res.data?.code === 'NotFound'
+  return res?.status === 404 && res.data?.source === 'Vtex.Kube.Router' && res.data?.code === 'NotFound'
 }
 
 const trySetEditionOnce = async (client: Sponsor, targetAccount: string, targetWorkspace: string, edition: string) => {
@@ -68,7 +68,12 @@ const maxSetEditionRetries = 3
 
 const sleepSec = (sec: number) => new Promise(resolve => setTimeout(resolve, sec * 1000))
 
-const trySetEdition = async (sponsorAccount: string, targetAccount: string, targetWorkspace: string, edition: string) => {
+const trySetEdition = async (
+  sponsorAccount: string,
+  targetAccount: string,
+  targetWorkspace: string,
+  edition: string
+) => {
   const client = Sponsor.createClient()
   let success = await trySetEditionOnce(client, targetAccount, targetWorkspace, edition)
   if (success) {
@@ -87,9 +92,10 @@ const trySetEdition = async (sponsorAccount: string, targetAccount: string, targ
   for (let retry = 1; !success && retry <= maxSetEditionRetries; retry++) {
     await sleepSec(1.5 * retry)
 
-    success = retry < maxSetEditionRetries ?
-        await trySetEditionOnce(client, targetAccount, targetWorkspace, edition) :
-        await client.setEdition(targetAccount, targetWorkspace, edition).then(() => true)
+    success =
+      retry < maxSetEditionRetries
+        ? await trySetEditionOnce(client, targetAccount, targetWorkspace, edition)
+        : await client.setEdition(targetAccount, targetWorkspace, edition).then(() => true)
   }
   return success
 }
@@ -113,7 +119,7 @@ export default async function setEdition(edition: string, workspace?: string, au
   }
 
   try {
-    if (!await trySetEdition(sponsorAccount, targetAccount, targetWorkspace, edition)) {
+    if (!(await trySetEdition(sponsorAccount, targetAccount, targetWorkspace, edition))) {
       return
     }
     log.info(`Successfully changed edition${workspaceNotice} of account ${chalk.blue(targetAccount)}.`)

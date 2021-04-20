@@ -16,7 +16,7 @@ const BRAZILIAN_REAL_CURRENCY_CODE = 'BRL'
 const ERROR_MESSAGE_APP_CONTRACT_NOT_FOUND = 'No contract found for app'
 
 const installApp = (appName: string, termsOfUseAccepted: boolean, force: boolean, selectedPlanId?: string) =>
-    Billing.createClient().installApp(appName, termsOfUseAccepted, force, selectedPlanId)
+  Billing.createClient().installApp(appName, termsOfUseAccepted, force, selectedPlanId)
 const legacyInstallApp = (descriptor: string) => createAppsClient().installApp(descriptor)
 
 const isError = (errorCode: number) => compose(equals(errorCode), path(['response', 'status']))
