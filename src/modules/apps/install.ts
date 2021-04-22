@@ -9,8 +9,9 @@ import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/module
 import { BillingMessages } from '../../lib/constants/BillingMessages'
 import { InstallStatus } from '../../lib/constants/InstallStatus'
 
-const { installApp } = Billing.createClient()
-const { installApp: legacyInstallApp } = createAppsClient()
+const installApp = (appName: string, termsOfUseAccepted: boolean, force: boolean) =>
+  Billing.createClient().installApp(appName, termsOfUseAccepted, force)
+const legacyInstallApp = (descriptor: string) => createAppsClient().installApp(descriptor)
 
 const isError = (errorCode: number) => (e: any) => e?.response?.status === errorCode
 export const isForbiddenError = isError(403)

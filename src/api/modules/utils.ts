@@ -34,6 +34,8 @@ const workspaceProductionAllowedOperatios = ['install', 'uninstall']
 const builderHubMessagesLinkTimeout = 2000 // 2 seconds
 const builderHubMessagesPublishTimeout = 10000 // 10 seconds
 
+export const sleepSec = (sec: number) => new Promise(resolve => setTimeout(resolve, sec * 1000))
+
 export const workspaceMasterMessage = `This action is ${chalk.red('not allowed')} in workspace ${chalk.green(
   'master'
 )}, please use another workspace.
