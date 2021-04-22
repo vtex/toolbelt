@@ -7,7 +7,7 @@ import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry
 import log from '../../api/logger'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
-import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
+import { isFreeApp, isSponsoredApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
 import { BillingMessages } from '../../lib/constants/BillingMessages'
 import { switchOpen } from '../featureFlag/featureFlagDecider'
 
@@ -101,7 +101,7 @@ const checkBillingOptions = async (app: string, billingOptions: BillingOptions, 
   const { termsURL } = billingOptions
   const license = await licenseURL(app, termsURL)
   let planId: string | undefined
-  if (isFreeApp(billingOptions)) {
+  if (isFreeApp(billingOptions) || isSponsoredApp(billingOptions)) {
     log.info(BillingMessages.acceptToInstallFree(app))
   } else {
     log.info(BillingMessages.acceptToInstallPaid(app))
