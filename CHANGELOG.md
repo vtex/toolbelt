@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- [install] Classify app as free if it declares no plan
+
 ## [3.6.0-beta] - 2021-04-13
 
 ### Added
