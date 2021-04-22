@@ -135,8 +135,8 @@ export const appIdFromRegistry = (app: string, majorLocator: string) => {
 }
 
 const FREE_BILLING_OPTIONS_TYPE = 'free'
-export const isFreeApp = ({ type, free }: { type?: string; free?: boolean }) =>
-  type === FREE_BILLING_OPTIONS_TYPE || free
+export const isFreeApp = ({ type, free, plans }: { type?: string; free?: boolean; plans?: Plan[] }) =>
+  type === FREE_BILLING_OPTIONS_TYPE || free || !plans || plans.length === 0
 
 type BillingInfo = {
   subscription?: number
