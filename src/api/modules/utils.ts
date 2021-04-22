@@ -138,6 +138,9 @@ const FREE_BILLING_OPTIONS_TYPE = 'free'
 export const isFreeApp = ({ type, free }: { type?: string; free?: boolean }) =>
   type === FREE_BILLING_OPTIONS_TYPE || free
 
+const SPONSORED_BILLING_OPTIONS_TYPE = 'sponsored'
+export const isSponsoredApp = ({ type }: { type?: string }) => type === SPONSORED_BILLING_OPTIONS_TYPE
+
 type BillingInfo = {
   subscription?: number
   currency?: string
