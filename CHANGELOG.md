@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- [install] Classify app as free if it declares no plan
+
 ## [2.127.1] - 2021-04-20
  - Fix `set edition` command to handle prompt cancellations
  - Add check on `set edition` command to install tenant-provisioner app in sponsor account
