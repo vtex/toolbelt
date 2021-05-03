@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+ - Update @vtex/cli-plugin-plugins
+
 ## [3.6.1-beta] - 2021-04-22
  - Fix `set edition` command to handle prompt cancellations
  - Add check on `set edition` command to install tenant-provisioner app in sponsor account
