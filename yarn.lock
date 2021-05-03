@@ -1263,10 +1263,10 @@
     ramda "^0.27.1"
     tslib "^1"
 
-"@vtex/cli-plugin-plugins@^1.11.1":
-  version "1.11.1"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-plugins/-/cli-plugin-plugins-1.11.1.tgz#b07939743b2a15e74e5caa57857cff3133abf959"
-  integrity sha512-1Qim+Vb2eQagXr4O803O0sbmu/hODbgz8oA7KviKLuPguEJWk2QJs3M2uhlWKTpr8kEo9jKlGpmoVgUdgjwHCg==
+"@vtex/cli-plugin-plugins@1.13.0":
+  version "1.13.0"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-plugins/-/cli-plugin-plugins-1.13.0.tgz#d8d8f21c6e2d50d8383a552f06c7f18e7c50fac7"
+  integrity sha512-m9bzD6SOVwk6IAEOZx6kU4fx1RA1FWXF2vBNvJCxcVxQOGS77woAzqItM/3z/luur6coho0nlYnu2kC9SvSgyg==
   dependencies:
     "@oclif/color" "^0.x"
     "@oclif/command" "^1.5.12"
