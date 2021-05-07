@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.7.0-beta] - 2021-05-03
 
+### Fixed
+
+ - Fix typo in version update message
+
 ### Changed
  - Update @vtex/cli-plugin-plugins
 
