@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.7.2-beta] - 2021-05-10
+
+### Changed
+ - Use templates as remote configs instead of hardcoded strings.
+
 ## [3.7.1-beta] - 2021-05-07
 
 ### Fixed
