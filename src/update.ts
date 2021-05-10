@@ -22,7 +22,7 @@ export function updateNotify() {
       // @ts-ignore
       isYarnGlobal: true,
       message: [
-        `There is a new Toolbelt version avaible: ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}`,
+        `A new version is available for the VTEX Toolbelt: ${chalk.dim(oldVersion)} → ${chalk.green(latestVersion)}`,
         `To update, you must use the same method you used to install. As the following example(s):`,
         ...updateMessageSwitch(),
         `Changelog: ${ColorifyConstants.URL_INTERACTIVE(changelog)}`,
