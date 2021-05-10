@@ -10,8 +10,6 @@ import * as git from './git'
 import { SessionManager } from '../../api/session/SessionManager'
 import { Messages } from '../../lib/constants/Messages'
 
-// const VTEX_APPS = 'vtex-apps'
-
 // Only show these templates for VTEX e-mail users.
 const VTEXInternalTemplates = FeatureFlag.getSingleton().getFeatureFlagInfo<string[]>('VTEXInternalTemplates')
 
