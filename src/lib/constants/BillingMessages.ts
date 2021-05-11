@@ -25,7 +25,7 @@ export const BillingMessages = {
       app
     )} app . To install it, you need to accept the app's terms.`,
   billingTable: (table: string) => `\n${table}`,
-  appCurrencyPage: (currency: string, link: string) =>
-    `To buy this app in '${currency}' currency, please go to the VTEX App Store at the following link: ${link}`,
   shouldOpenPage: () => `Would you like to open the VTEX App Store page?`,
+  getAppForInstall: (link: string) =>
+    `To install this app, you first need to get it from VTEX App Store at the following link: ${link}`,
 }
