@@ -79,6 +79,7 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
       } else {
         // eslint-disable-next-line no-await-in-loop
         const { code, billingOptions } = await installApp(app, false, force)
+        console.log(JSON.stringify({ code }, null, 2))
         switch (code) {
           case InstallStatus.OWN_REGISTRY:
             log.debug('Installed from own registry')
@@ -102,6 +103,16 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
       }
       log.info(`Installed app ${chalk.green(app)} successfully`)
     } catch (e) {
+      console.log(
+        JSON.stringify(
+          {
+            'e.message': e?.message,
+            'e.response.data': e?.response?.data,
+          },
+          null,
+          2
+        )
+      )
       if (isNotFoundError(e)) {
         log.warn(
           `Billing app not found in current workspace. Please install it with ${chalk.green(
@@ -123,6 +134,11 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
             break
           case InstallStatus.AREA_UNAVAILABLE:
             log.error('Unfortunately, app purchases are not yet available in your region')
+            break
+          case 'app_store_contract_not_found':
+            log.error(
+              `No active contract found for the app '${app}'. Get this app from VTEX App Store website to have an active contract.`
+            )
             break
           default:
             logGraphQLErrorMessage(e)
