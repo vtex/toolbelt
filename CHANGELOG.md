@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Updated
+- [vtex workspace abtest] Update plugin's version
+
 ## [2.127.3] - 2021-05-20
 
 ### Fixed

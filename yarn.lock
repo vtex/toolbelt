@@ -1308,10 +1308,10 @@
     tar-fs "^2.0.0"
     xss "^1.0.6"
 
-"@vtex/cli-plugin-abtest@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.1.2.tgz#e8b6ee6c899d87ff31cda69013b9dbb7e12f6c56"
-  integrity sha512-WUnixqpiHRIFUN36l8zjZKaYsu4h5Lx+U+jhEioTvzKJjfxK6MIEM+lENpLzR47yR+GsbQg0AqDjWkY8mG5i4A==
+"@vtex/cli-plugin-abtest@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-abtest/-/cli-plugin-abtest-0.1.4.tgz#b0c4307a51b3fed6c3da0b49508e47bf9756314b"
+  integrity sha512-r2zsIfNQB4CTZb5pZ/o8PEOOmKMwkAciG8IS7bCHsLSwTNtHiUn5XiPkIMRckxJQN475J3d3OD1y/s+/SGoJYA==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"
