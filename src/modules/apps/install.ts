@@ -1,3 +1,4 @@
+import { getVendorFromApp, validateAppAction } from '../../api/modules/utils'
 import chalk from 'chalk'
 import { compose, equals, head, path } from 'ramda'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
@@ -5,9 +6,10 @@ import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import log from '../../api/logger'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
-import { validateAppAction } from '../../api/modules/utils'
+
 import { BillingMessages } from '../../lib/constants/BillingMessages'
 import { switchOpen } from '../featureFlag/featureFlagDecider'
+import { SessionManager } from '../../api/session/SessionManager'
 
 const installApp = (appName: string, termsOfUseAccepted: boolean, force: boolean, selectedPlanId?: string) =>
   Billing.createClient().installApp(appName, termsOfUseAccepted, force, selectedPlanId)
@@ -40,7 +42,9 @@ async function handleAppStoreContractNotFoundError(app: string) {
 }
 
 function handleAccountNotSponsoredByVendorError(app: string) {
-  log.error(BillingMessages.accountNotSponsoredByVendorError(app))
+  const { account } = SessionManager.getSingleton()
+  const vendor = getVendorFromApp(app)
+  log.error(BillingMessages.accountNotSponsoredByVendorError(app, account, vendor))
 }
 
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
