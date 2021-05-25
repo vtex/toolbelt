@@ -1,19 +1,15 @@
+import { getVendorFromApp, validateAppAction } from '../../api/modules/utils'
 import chalk from 'chalk'
-import enquirer from 'enquirer'
 import { compose, equals, head, path } from 'ramda'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
-import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
 import log from '../../api/logger'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
-import { isFreeApp, isSponsoredApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
+
 import { BillingMessages } from '../../lib/constants/BillingMessages'
 import { switchOpen } from '../featureFlag/featureFlagDecider'
-
-const PROMPT_PLAN_CHOICES_NAME = 'billingOptionsPlanChoices'
-const BRAZILIAN_REAL_CURRENCY_CODE = 'BRL'
-const ERROR_MESSAGE_APP_CONTRACT_NOT_FOUND = 'No contract found for app'
+import { SessionManager } from '../../api/session/SessionManager'
 
 const installApp = (appName: string, termsOfUseAccepted: boolean, force: boolean, selectedPlanId?: string) =>
   Billing.createClient().installApp(appName, termsOfUseAccepted, force, selectedPlanId)
@@ -29,98 +25,26 @@ const logGraphQLErrorMessage = e => {
   log.error(e.message)
 }
 
-const promptPolicies = async () => {
-  return promptConfirm('Do you accept all the Terms?')
-}
-
-const hasLicenseFile = async (name: string, version: string) => {
-  const client = createRegistryClient()
-  try {
-    await client.getAppFile(name, version, '/public/metadata/licenses/en-US.md')
-    return true
-  } catch (err) {
-    if (err.response?.status === 404) {
-      return false
-    }
-    throw err
-  }
-}
-
-const licenseURL = async (app: string, termsURL?: string): Promise<string | undefined> => {
-  const [name, argVersion] = app.split('@')
-  const version = argVersion ?? 'x'
-  return (await hasLicenseFile(name, version)) ? `https://apps.vtex.com/_v/terms/${name}@${version}` : termsURL
-}
-
-const buildBillingOptionsPlanChoices = ({ plans }: BillingOptions) =>
-  plans?.reduce<Record<string, Plan>>((choices, plan) => {
-    choices[plan.currency] = plan
-    return choices
-  }, {}) ?? {}
-
 const appStoreProductPage = (app: string) => {
   const [appName] = app.split('@')
   const [vendor, name] = appName.split('.')
-  return `https://apps.vtex.com/apps?salesChannel=2&textLink=${vendor}-${name}`
+  return `https://apps.vtex.com/${vendor}-${name}/p`
 }
 
-const promptCurrencyChoices = async (billingOptions: BillingOptions) => {
-  const planChoices = buildBillingOptionsPlanChoices(billingOptions)
-  const currencyChoices = Object.keys(planChoices)
-  let [selectedCurrency] = currencyChoices
-  if (currencyChoices.length > 1) {
-    const answer = await enquirer.prompt({
-      name: PROMPT_PLAN_CHOICES_NAME,
-      message: BillingMessages.CURRENCY_OPTIONS,
-      type: 'select',
-      choices: currencyChoices,
-    })
-    selectedCurrency = answer[PROMPT_PLAN_CHOICES_NAME]
-  }
-  return planChoices[selectedCurrency]
-}
+async function handleAppStoreContractNotFoundError(app: string) {
+  const appWebsite = appStoreProductPage(app)
+  log.info(BillingMessages.getAppForInstall(appWebsite))
 
-const handleInternationalAppInstall = async (app: string, { id, currency }: Plan, force: boolean) => {
-  try {
-    await installApp(app, true, force, id)
-  } catch (e) {
-    if (!e.message?.startsWith(ERROR_MESSAGE_APP_CONTRACT_NOT_FOUND)) {
-      throw e
-    }
-    const appWebsite = appStoreProductPage(app)
-    log.info(BillingMessages.appCurrencyPage(currency, appWebsite))
-
-    const shouldOpenProductPage = await promptConfirm(BillingMessages.shouldOpenPage(), true)
-    if (shouldOpenProductPage) {
-      switchOpen(appWebsite, { wait: false })
-    }
+  const shouldOpenProductPage = await promptConfirm(BillingMessages.shouldOpenPage(), true)
+  if (shouldOpenProductPage) {
+    switchOpen(appWebsite, { wait: false })
   }
 }
 
-const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
-  const { termsURL } = billingOptions
-  const license = await licenseURL(app, termsURL)
-  let planId: string | undefined
-  if (isFreeApp(billingOptions) || isSponsoredApp(billingOptions)) {
-    log.info(BillingMessages.acceptToInstallFree(app))
-  } else {
-    log.info(BillingMessages.acceptToInstallPaid(app))
-    const selectedPlan = await promptCurrencyChoices(billingOptions)
-    planId = selectedPlan.id
-    if (selectedPlan.currency !== BRAZILIAN_REAL_CURRENCY_CODE) {
-      return handleInternationalAppInstall(app, selectedPlan, force)
-    }
-  }
-
-  log.info(BillingMessages.billingTable(optionsFormatter(billingOptions, app, license)))
-  const confirm = await promptPolicies()
-  if (!confirm) {
-    return
-  }
-
-  log.info(BillingMessages.INSTALL_STARTED)
-  await installApp(app, true, force, planId)
-  log.debug(BillingMessages.INSTALL_SUCCESS)
+function handleAccountNotSponsoredByVendorError(app: string) {
+  const { account } = SessionManager.getSingleton()
+  const vendor = getVendorFromApp(app)
+  log.error(BillingMessages.accountNotSponsoredByVendorError(app, account, vendor))
 }
 
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
@@ -133,7 +57,7 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         await legacyInstallApp(app)
       } else {
         // eslint-disable-next-line no-await-in-loop
-        const { code, billingOptions } = await installApp(app, false, force)
+        const { code } = await installApp(app, true, force)
         switch (code) {
           case 'installed_from_own_registry':
             log.debug('Installed from own registry')
@@ -146,13 +70,6 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
             break
           case 'installed_free':
             log.debug('Free app')
-            break
-          case 'check_terms':
-            if (!billingOptions) {
-              throw new Error('Failed to get billing options')
-            }
-            // eslint-disable-next-line no-await-in-loop
-            await checkBillingOptions(app, JSON.parse(billingOptions), force)
         }
       }
       log.info(`Installed app ${chalk.green(app)} successfully`)
@@ -171,13 +88,12 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         log.error(e.response.data.message)
       } else {
         switch (e.message) {
-          case 'no_buy_app_license':
-            log.error(
-              `You do not have permission to purchase apps. Please check your VTEX IO 'Buy Apps' resource access in Account Managament`
-            )
+          case 'app_store_contract_not_found':
+            // eslint-disable-next-line no-await-in-loop
+            await handleAppStoreContractNotFoundError(app)
             break
-          case 'area_unavailable':
-            log.error('Unfortunately, app purchases are not yet available in your region')
+          case 'account_not_sponsored_by_vendor':
+            handleAccountNotSponsoredByVendorError(app)
             break
           default:
             logGraphQLErrorMessage(e)
