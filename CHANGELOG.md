@@ -6,10 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.128.0] - 2021-05-25
+
 ### Changed
 - Redirect user to App Store instead of conducting purchases through toolbelt
 
-## [2.127.4] - 202105-20
+## [2.127.4] - 2021-05-20
 
 ### Updated
 - [vtex workspace abtest] Update plugin's version
