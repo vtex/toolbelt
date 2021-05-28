@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken'
 import axios from 'axios'
 import chalk from 'chalk'
 import { execSync } from 'child-process-es6-promise'
-import Table from 'cli-table2'
 import { ArrayChange, diffArrays } from 'diff'
 import enquirer from 'enquirer'
 import { existsSync } from 'fs-extra'
@@ -10,7 +9,6 @@ import moment from 'moment'
 import { resolve as resolvePath } from 'path'
 import R, { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
-import { BillingMessages } from '../../lib/constants/BillingMessages'
 import { createAppsClient } from '../clients/IOClients/infra/Apps'
 import { createRegistryClient } from '../clients/IOClients/infra/Registry'
 import { createWorkspacesClient } from '../clients/IOClients/infra/Workspaces'
@@ -138,99 +136,6 @@ export const appIdFromRegistry = (app: string, majorLocator: string) => {
 const FREE_BILLING_OPTIONS_TYPE = 'free'
 export const isFreeApp = ({ type, free }: { type?: string; free?: boolean }) =>
   type === FREE_BILLING_OPTIONS_TYPE || free
-
-type BillingInfo = {
-  subscription?: number
-  currency?: string
-  termsURL?: string
-  metrics?: Array<{
-    name: string
-    ranges: Range[]
-  }>
-}
-
-const chalkBillingTable = (table: any, { subscription, metrics, currency }: BillingInfo) => {
-  if (subscription) {
-    table.push([
-      {
-        content: BillingMessages.SUBSCRIPTION_MONTHLY,
-      },
-      {
-        content: BillingMessages.price(subscription, currency),
-      },
-    ])
-  }
-  metrics?.forEach(({ name, ranges }) => {
-    table.push([
-      {
-        content: name,
-      },
-      {
-        content: ranges.reduce<string>((text, { exclusiveFrom, multiplier }) => {
-          if (text.length > 0) {
-            text += '\n'
-          }
-          text += BillingMessages.pricePerUnit(multiplier, currency)
-          if (exclusiveFrom > 0) {
-            text += BillingMessages.forUnitsOrMore(exclusiveFrom + 1)
-          }
-          return text
-        }, ''),
-        hAlign: 'left',
-      },
-    ])
-  })
-}
-
-const billingInfoFromPolicy = ({ currency, billing: { items } }: Policy): BillingInfo => {
-  const subscription = items.reduce<number>((sum, { fixed }) => (fixed ? sum + fixed : sum), 0)
-
-  const metrics = items.reduce((metricsInfo, { calculatedByMetricUnit }) => {
-    if (calculatedByMetricUnit) {
-      const { metricName, ranges } = calculatedByMetricUnit
-      metricsInfo.push({ name: metricName, ranges })
-    }
-    return metricsInfo
-  }, [])
-  return { currency, subscription, metrics }
-}
-
-const billingInfoFromPlan = ({ currency, price: { subscription, metrics } }: Plan): BillingInfo => ({
-  currency,
-  subscription,
-  metrics: metrics?.map(({ id, ranges }) => ({ name: id, ranges })),
-})
-
-const buildBillingInfo = (plans?: Plan[], policies?: Policy[]): BillingInfo => {
-  if (plans && plans.length > 0) {
-    return billingInfoFromPlan(plans[0]) // Currenly only a single plan is supported in App Store
-  }
-  if (policies && policies.length > 0) {
-    return billingInfoFromPolicy(policies[0])
-  }
-}
-
-export function optionsFormatter(billingOptions: BillingOptions, app: string, licenseURL?: string) {
-  const { plans, policies } = billingOptions
-  /** TODO: Eliminate the need for this stray, single `cli-table2` dependency */
-  const table = new Table({
-    head: [{ content: BillingMessages.billingOptionsForApp(app), colSpan: 2 }],
-  })
-  table.push([{ content: BillingMessages.CHARGED_COLUMN }, { content: BillingMessages.PRICING_COLUMN }])
-  const billingInfo = buildBillingInfo(plans, policies)
-  if (isFreeApp(billingOptions) || !billingInfo) {
-    table.push([{ content: BillingMessages.NA }, { content: BillingMessages.FREE_APP }])
-  } else {
-    chalkBillingTable(table, billingInfo)
-  }
-  if (licenseURL && licenseURL.length > 0) {
-    table.push([
-      { content: BillingMessages.APP_STORE_TERMS_OF_SERVICE },
-      { content: BillingMessages.licenseLink(licenseURL) },
-    ])
-  }
-  return table.toString()
-}
 
 export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
   const http = axios.create({
