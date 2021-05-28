@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+ - Update @vtex/cli-plugin-plugins to ^1.13.1
+
 ## [3.7.2-beta] - 2021-05-10
 
 ### Changed
