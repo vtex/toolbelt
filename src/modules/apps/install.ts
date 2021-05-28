@@ -85,14 +85,6 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         log.error(e.response.data.message)
       } else {
         switch (e.message) {
-          case InstallStatus.USER_HAS_NO_BUY_APP_LICENSE:
-            log.error(
-              `You do not have permission to purchase apps. Please check your VTEX IO 'Buy Apps' resource access in Account Managament`
-            )
-            break
-          case InstallStatus.AREA_UNAVAILABLE:
-            log.error('Unfortunately, app purchases are not yet available in your region')
-            break
           case 'app_store_contract_not_found':
             // eslint-disable-next-line no-await-in-loop
             await handleAppStoreContractNotFoundError(app)
