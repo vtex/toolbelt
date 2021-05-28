@@ -44,6 +44,10 @@ export const isBillingApp = (app: string) => {
   return billingRegex.test(app)
 }
 
+function handleAccountNotSponsoredByVendorError(app: string) {
+  log.error(BillingMessages.accountNotSponsoredByVendorError(app))
+}
+
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
   for (const app of appsList) {
     ManifestValidator.validateApp(app)
@@ -88,6 +92,9 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
           case 'app_store_contract_not_found':
             // eslint-disable-next-line no-await-in-loop
             await handleAppStoreContractNotFoundError(app)
+            break
+          case 'account_not_sponsored_by_vendor':
+            handleAccountNotSponsoredByVendorError(app)
             break
           default:
             logGraphQLErrorMessage(e)
