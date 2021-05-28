@@ -6,6 +6,6 @@ export const BillingMessages = {
   shouldOpenPage: () => `Would you like to open the VTEX App Store page?`,
   getAppForInstall: (link: string) =>
     `To install this app, you first need to get it from VTEX App Store at the following link: ${link}`,
-  accountNotSponsoredByVendorError: (app: string) =>
-    `Cannot install app '${app}' because it has billingOptions with type 'sponsored' but this account is not sponsored by the app's vendor.`,
+  accountNotSponsoredByVendorError: (app: string, account: string, vendor: string) =>
+    `Cannot install '${app}' in account '${account}' because '${app}' is of type sponsored and '${account}' is not sponsored by '${vendor}'`,
 }

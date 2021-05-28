@@ -133,6 +133,11 @@ export const appIdFromRegistry = (app: string, majorLocator: string) => {
     .catch(handleError(app))
 }
 
+export const getVendorFromApp = (app: string) => {
+  const [vendor] = app.split('.')
+  return vendor
+}
+
 export async function checkBuilderHubMessage(cliRoute: string): Promise<any> {
   const http = axios.create({
     baseURL: `https://vtex.myvtex.com`,
