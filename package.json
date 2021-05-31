@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "3.7.2-beta",
+  "version": "3.7.3-beta",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -60,7 +60,7 @@
     "@vtex/cli-plugin-deploy": "^0.3.1",
     "@vtex/cli-plugin-deps": "^0.1.1",
     "@vtex/cli-plugin-edition": "^0.1.1",
-    "@vtex/cli-plugin-plugins": "^1.13.0",
+    "@vtex/cli-plugin-plugins": "^1.13.2",
     "@vtex/cli-plugin-whoami": "^0.2.2",
     "@vtex/cli-plugin-workspace": "^1.0.1",
     "@vtex/node-error-report": "^0.0.2",
