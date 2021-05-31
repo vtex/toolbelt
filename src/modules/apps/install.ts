@@ -93,11 +93,11 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         log.error(e.response.data.message)
       } else {
         switch (e.message) {
-          case 'app_store_contract_not_found':
+          case InstallStatus.CONTRACT_NOT_FOUND:
             // eslint-disable-next-line no-await-in-loop
             await handleAppStoreContractNotFoundError(app)
             break
-          case 'account_not_sponsored_by_vendor':
+          case InstallStatus.ACCOUNT_NOT_SPONSORED:
             handleAccountNotSponsoredByVendorError(app)
             break
           default:
