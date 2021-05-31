@@ -11,8 +11,8 @@ import { switchOpen } from '../featureFlag/featureFlagDecider'
 import { SessionManager } from '../../api/session/SessionManager'
 import { InstallStatus } from '../../lib/constants/InstallStatus'
 
-const installApp = (appName: string, termsOfUseAccepted: boolean, force: boolean, selectedPlanId?: string) =>
-  Billing.createClient().installApp(appName, termsOfUseAccepted, force, selectedPlanId)
+const installApp = (appName: string, termsOfUseAccepted: boolean, force: boolean) =>
+  Billing.createClient().installApp(appName, termsOfUseAccepted, force)
 const legacyInstallApp = (descriptor: string) => createAppsClient().installApp(descriptor)
 
 const isError = (errorCode: number) => (e: any) => e?.response?.status === errorCode
