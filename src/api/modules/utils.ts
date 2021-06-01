@@ -1,12 +1,9 @@
 import jwt from 'jsonwebtoken'
 import axios from 'axios'
 import chalk from 'chalk'
-import { execSync } from 'child-process-es6-promise'
 import { ArrayChange, diffArrays } from 'diff'
 import enquirer from 'enquirer'
-import { existsSync } from 'fs-extra'
 import moment from 'moment'
-import { resolve as resolvePath } from 'path'
 import R, { compose, concat, contains, curry, head, last, prop, propSatisfies, reduce, split, tail, __ } from 'ramda'
 import semverDiff from 'semver-diff'
 import { createAppsClient } from '../clients/IOClients/infra/Apps'
@@ -16,7 +13,6 @@ import { getLastLinkReactDate, getNumberOfReactLinks, saveLastLinkReactDate, sav
 import { createFlowIssueError } from '../error/utils'
 import log from '../logger'
 import { ManifestEditor } from '../manifest'
-import { getAppRoot } from '../manifest/ManifestUtil'
 import { SessionManager } from '../session/SessionManager'
 import { createTable } from '../table'
 import { promptConfirm } from './prompts'
@@ -187,29 +183,6 @@ export const yarnPath = `"${require.resolve('yarn/bin/yarn')}"`
 
 export const formatNano = (nanoseconds: number): string =>
   `${(nanoseconds / 1e9).toFixed(0)}s ${((nanoseconds / 1e6) % 1e3).toFixed(0)}ms`
-
-export const runYarn = (relativePath: string, force: boolean) => {
-  log.info(`Running yarn in ${chalk.green(relativePath)}`)
-  const root = getAppRoot()
-  const command = force
-    ? `${yarnPath} --force --non-interactive --ignore-engines`
-    : `${yarnPath} --non-interactive --ignore-engines`
-  execSync(command, { stdio: 'inherit', cwd: resolvePath(root, relativePath) })
-  log.info('Finished running yarn')
-}
-
-export const runYarnIfPathExists = (relativePath: string) => {
-  const root = getAppRoot()
-  const pathName = resolvePath(root, relativePath)
-  if (existsSync(pathName)) {
-    try {
-      runYarn(relativePath, false)
-    } catch (e) {
-      log.error(`Failed to run yarn in ${chalk.green(relativePath)}`)
-      throw e
-    }
-  }
-}
 
 const formatAppId = (appId: string) => {
   const [appVendor, appName] = R.split('.', appId)
