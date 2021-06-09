@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.8.0-beta] - 2021-06-09
+
 ### Removed
 - App purchases and all code related to it
 
