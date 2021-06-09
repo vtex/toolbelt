@@ -1,12 +1,14 @@
+import { getVendorFromApp, validateAppAction } from '../../api/modules/utils'
 import chalk from 'chalk'
 import { Billing } from '../../api/clients/IOClients/apps/Billing'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
-import { createRegistryClient } from '../../api/clients/IOClients/infra/Registry'
 import log from '../../api/logger'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
 import { promptConfirm } from '../../api/modules/prompts'
-import { isFreeApp, optionsFormatter, validateAppAction } from '../../api/modules/utils'
+
 import { BillingMessages } from '../../lib/constants/BillingMessages'
+import { switchOpen } from '../featureFlag/featureFlagDecider'
+import { SessionManager } from '../../api/session/SessionManager'
 import { InstallStatus } from '../../lib/constants/InstallStatus'
 
 const installApp = (appName: string, termsOfUseAccepted: boolean, force: boolean) =>
@@ -23,49 +25,31 @@ const logGraphQLErrorMessage = e => {
   log.error(e.message)
 }
 
-const promptPolicies = async () => {
-  return promptConfirm('Do you accept all the Terms?')
+const appStoreProductPage = (app: string) => {
+  const [appName] = app.split('@')
+  const [vendor, name] = appName.split('.')
+  return `https://apps.vtex.com/${vendor}-${name}/p`
 }
 
-const hasLicenseFile = async (name: string, version: string) => {
-  const client = createRegistryClient()
-  try {
-    await client.getAppFile(name, version, '/public/metadata/licenses/en-US.md')
-    return true
-  } catch (err) {
-    if (err.response?.status === 404) {
-      return false
-    }
-    throw err
+async function handleAppStoreContractNotFoundError(app: string) {
+  const appWebsite = appStoreProductPage(app)
+  log.info(BillingMessages.getAppForInstall(appWebsite))
+
+  const shouldOpenProductPage = await promptConfirm(BillingMessages.shouldOpenPage(), true)
+  if (shouldOpenProductPage) {
+    switchOpen(appWebsite, { wait: false })
   }
-}
-
-const licenseURL = async (app: string, termsURL?: string): Promise<string | undefined> => {
-  const [name, argVersion] = app.split('@')
-  const version = argVersion ?? 'x'
-  return (await hasLicenseFile(name, version)) ? `https://apps.vtex.com/_v/terms/${name}@${version}` : termsURL
-}
-
-const checkBillingOptions = async (app: string, billingOptions: BillingOptions, force: boolean) => {
-  const { termsURL } = billingOptions
-  const license = await licenseURL(app, termsURL)
-  log.info(
-    isFreeApp(billingOptions) ? BillingMessages.acceptToInstallFree(app) : BillingMessages.acceptToInstallPaid(app)
-  )
-  log.info(BillingMessages.billingTable(optionsFormatter(billingOptions, app, license)))
-  const confirm = await promptPolicies()
-  if (!confirm) {
-    return
-  }
-
-  log.info(BillingMessages.INSTALL_STARTED)
-  await installApp(app, true, force)
-  log.debug(BillingMessages.INSTALL_SUCCESS)
 }
 
 export const isBillingApp = (app: string) => {
   const billingRegex = /^vtex\.billing(@.*)?$/
   return billingRegex.test(app)
+}
+
+function handleAccountNotSponsoredByVendorError(app: string) {
+  const { account } = SessionManager.getSingleton()
+  const vendor = getVendorFromApp(app)
+  log.error(BillingMessages.accountNotSponsoredByVendorError(app, account, vendor))
 }
 
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
@@ -78,7 +62,7 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         await legacyInstallApp(app)
       } else {
         // eslint-disable-next-line no-await-in-loop
-        const { code, billingOptions } = await installApp(app, false, force)
+        const { code } = await installApp(app, true, force)
         switch (code) {
           case InstallStatus.OWN_REGISTRY:
             log.debug('Installed from own registry')
@@ -91,13 +75,6 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
             break
           case InstallStatus.FREE:
             log.debug('Free app')
-            break
-          case InstallStatus.CHECK_TERMS:
-            if (!billingOptions) {
-              throw new Error('Failed to get billing options')
-            }
-            // eslint-disable-next-line no-await-in-loop
-            await checkBillingOptions(app, JSON.parse(billingOptions), force)
         }
       }
       log.info(`Installed app ${chalk.green(app)} successfully`)
@@ -116,13 +93,12 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
         log.error(e.response.data.message)
       } else {
         switch (e.message) {
-          case InstallStatus.USER_HAS_NO_BUY_APP_LICENSE:
-            log.error(
-              `You do not have permission to purchase apps. Please check your VTEX IO 'Buy Apps' resource access in Account Managament`
-            )
+          case InstallStatus.CONTRACT_NOT_FOUND:
+            // eslint-disable-next-line no-await-in-loop
+            await handleAppStoreContractNotFoundError(app)
             break
-          case InstallStatus.AREA_UNAVAILABLE:
-            log.error('Unfortunately, app purchases are not yet available in your region')
+          case InstallStatus.ACCOUNT_NOT_SPONSORED:
+            handleAccountNotSponsoredByVendorError(app)
             break
           default:
             logGraphQLErrorMessage(e)

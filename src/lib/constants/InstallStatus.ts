@@ -10,5 +10,6 @@ export enum InstallStatus {
   USER_HAS_NO_BUY_APP_LICENSE = 'no_buy_app_license',
   USER_HAS_NO_INSTALL_APP_LICENSE = 'no_install_app_license',
   AREA_UNAVAILABLE = 'area_unavailable',
-  CONTRACT_NOT_FOUND = 'contract_not_found',
+  CONTRACT_NOT_FOUND = 'app_store_contract_not_found',
+  ACCOUNT_NOT_SPONSORED = 'account_not_sponsored_by_vendor',
 }
