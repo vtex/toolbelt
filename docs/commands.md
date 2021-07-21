@@ -1,64 +1,64 @@
 # Commands
 
-* [`vtex add APPID [ITHAPPID]`](#vtex-add-appid-ithappid)
-* [`vtex browse [PATH]`](#vtex-browse-path)
-* [`vtex config get CONFIGNAME`](#vtex-configget-configname)
-* [`vtex config reset CONFIGNAME`](#vtex-configreset-configname)
-* [`vtex config set CONFIGNAME VALUE`](#vtex-configset-configname-value)
-* [`vtex deploy [APPID]`](#vtex-deploy-appid)
-* [`vtex deprecate [APPID] [ITHAPPID]`](#vtex-deprecate-appid-ithappid)
-* [`vtex deps diff [WORKSPACE1] [WORKSPACE2]`](#vtex-depsdiff-workspace1-workspace2)
-* [`vtex deps list`](#vtex-depslist)
-* [`vtex deps update [APPID] [ITHAPPID]`](#vtex-depsupdate-appid-ithappid)
-* [`vtex edition get`](#vtex-editionget)
-* [`vtex edition set EDITION`](#vtex-editionset-edition)
-* [`vtex help [COMMAND]`](#vtex-help-command)
-* [`vtex infra install SERVICEID`](#vtex-infrainstall-serviceid)
-* [`vtex infra list [NAME]`](#vtex-infralist-name)
-* [`vtex infra update`](#vtex-infraupdate)
-* [`vtex init`](#vtex-init)
-* [`vtex install [APPID] [ITHAPPID]`](#vtex-install-appid-ithappid)
-* [`vtex lighthouse audit URL`](#vtex-lighthouseaudit-url)
-* [`vtex lighthouse show`](#vtex-lighthouseshow)
-* [`vtex link`](#vtex-link)
-* [`vtex list`](#vtex-list)
-* [`vtex local account`](#vtex-localaccount)
-* [`vtex local token`](#vtex-localtoken)
-* [`vtex local welcome`](#vtex-localwelcome)
-* [`vtex local workspace`](#vtex-localworkspace)
-* [`vtex login [ACCOUNT]`](#vtex-login-account)
-* [`vtex logout`](#vtex-logout)
-* [`vtex logs [APP]`](#vtex-logs-app)
-* [`vtex publish`](#vtex-publish)
-* [`vtex redirects delete CSVPATH`](#vtex-redirectsdelete-csvpath)
-* [`vtex redirects export CSVPATH`](#vtex-redirectsexport-csvpath)
-* [`vtex redirects import CSVPATH`](#vtex-redirectsimport-csvpath)
-* [`vtex release [RELEASETYPE] [TAGNAME]`](#vtex-release-releasetype-tagname)
-* [`vtex settings get APPNAME [FIELD]`](#vtex-settingsget-appname-field)
-* [`vtex settings set APPNAME FIELD VALUE`](#vtex-settingsset-appname-field-value)
-* [`vtex settings unset APPNAME FIELD`](#vtex-settingsunset-appname-field)
-* [`vtex setup`](#vtex-setup)
-* [`vtex support ACCOUNT`](#vtex-support-account)
-* [`vtex switch ACCOUNT`](#vtex-switch-account)
-* [`vtex test e2e`](#vtex-teste2e)
-* [`vtex test unit`](#vtex-testunit)
-* [`vtex undeprecate [APPID] [ITHAPPID]`](#vtex-undeprecate-appid-ithappid)
-* [`vtex uninstall [APPNAME] [ITHAPPNAME]`](#vtex-uninstall-appname-ithappname)
-* [`vtex unlink [APPID] [ITHAPPID]`](#vtex-unlink-appid-ithappid)
-* [`vtex update`](#vtex-update)
-* [`vtex url`](#vtex-url)
-* [`vtex whoami`](#vtex-whoami)
-* [`vtex workspace abtest finish`](#vtex-workspaceabtestfinish)
-* [`vtex workspace abtest start`](#vtex-workspaceabteststart)
-* [`vtex workspace abtest status`](#vtex-workspaceabteststatus)
-* [`vtex workspace create [WORKSPACENAME]`](#vtex-workspacecreate-workspacename)
-* [`vtex workspace delete WORKSPACE1 [ITHWORKSPACE]`](#vtex-workspacedelete-workspace1-ithworkspace)
-* [`vtex workspace info`](#vtex-workspaceinfo)
-* [`vtex workspace list`](#vtex-workspacelist)
-* [`vtex workspace promote`](#vtex-workspacepromote)
-* [`vtex workspace reset [WORKSPACENAME]`](#vtex-workspacereset-workspacename)
-* [`vtex workspace status [WORKSPACENAME]`](#vtex-workspacestatus-workspacename)
-* [`vtex workspace use WORKSPACE`](#vtex-workspaceuse-workspace)
+- [`vtex add APPID [ITHAPPID]`](#vtex-add-appid-ithappid)
+- [`vtex browse [PATH]`](#vtex-browse-path)
+- [`vtex config get CONFIGNAME`](#vtex-configget-configname)
+- [`vtex config reset CONFIGNAME`](#vtex-configreset-configname)
+- [`vtex config set CONFIGNAME VALUE`](#vtex-configset-configname-value)
+- [`vtex deploy [APPID]`](#vtex-deploy-appid)
+- [`vtex deprecate [APPID] [ITHAPPID]`](#vtex-deprecate-appid-ithappid)
+- [`vtex deps diff [WORKSPACE1] [WORKSPACE2]`](#vtex-depsdiff-workspace1-workspace2)
+- [`vtex deps list`](#vtex-depslist)
+- [`vtex deps update [APPID] [ITHAPPID]`](#vtex-depsupdate-appid-ithappid)
+- [`vtex edition get`](#vtex-editionget)
+- [`vtex edition set EDITION`](#vtex-editionset-edition)
+- [`vtex help [COMMAND]`](#vtex-help-command)
+- [`vtex infra install SERVICEID`](#vtex-infrainstall-serviceid)
+- [`vtex infra list [NAME]`](#vtex-infralist-name)
+- [`vtex infra update`](#vtex-infraupdate)
+- [`vtex init`](#vtex-init)
+- [`vtex install [APPID] [ITHAPPID]`](#vtex-install-appid-ithappid)
+- [`vtex lighthouse audit URL`](#vtex-lighthouseaudit-url)
+- [`vtex lighthouse show`](#vtex-lighthouseshow)
+- [`vtex link`](#vtex-link)
+- [`vtex list`](#vtex-list)
+- [`vtex local account`](#vtex-localaccount)
+- [`vtex local token`](#vtex-localtoken)
+- [`vtex local welcome`](#vtex-localwelcome)
+- [`vtex local workspace`](#vtex-localworkspace)
+- [`vtex login [ACCOUNT]`](#vtex-login-account)
+- [`vtex logout`](#vtex-logout)
+- [`vtex logs [APP]`](#vtex-logs-app)
+- [`vtex publish`](#vtex-publish)
+- [`vtex redirects delete CSVPATH`](#vtex-redirectsdelete-csvpath)
+- [`vtex redirects export CSVPATH`](#vtex-redirectsexport-csvpath)
+- [`vtex redirects import CSVPATH`](#vtex-redirectsimport-csvpath)
+- [`vtex release [RELEASETYPE] [TAGNAME]`](#vtex-release-releasetype-tagname)
+- [`vtex settings get APPNAME [FIELD]`](#vtex-settingsget-appname-field)
+- [`vtex settings set APPNAME FIELD VALUE`](#vtex-settingsset-appname-field-value)
+- [`vtex settings unset APPNAME FIELD`](#vtex-settingsunset-appname-field)
+- [`vtex setup`](#vtex-setup)
+- [`vtex support ACCOUNT`](#vtex-support-account)
+- [`vtex switch ACCOUNT`](#vtex-switch-account)
+- [`vtex test e2e`](#vtex-teste2e)
+- [`vtex test unit`](#vtex-testunit)
+- [`vtex undeprecate [APPID] [ITHAPPID]`](#vtex-undeprecate-appid-ithappid)
+- [`vtex uninstall [APPNAME] [ITHAPPNAME]`](#vtex-uninstall-appname-ithappname)
+- [`vtex unlink [APPID] [ITHAPPID]`](#vtex-unlink-appid-ithappid)
+- [`vtex update`](#vtex-update)
+- [`vtex url`](#vtex-url)
+- [`vtex whoami`](#vtex-whoami)
+- [`vtex workspace abtest finish`](#vtex-workspaceabtestfinish)
+- [`vtex workspace abtest start`](#vtex-workspaceabteststart)
+- [`vtex workspace abtest status`](#vtex-workspaceabteststatus)
+- [`vtex workspace create [WORKSPACENAME]`](#vtex-workspacecreate-workspacename)
+- [`vtex workspace delete WORKSPACE1 [ITHWORKSPACE]`](#vtex-workspacedelete-workspace1-ithworkspace)
+- [`vtex workspace info`](#vtex-workspaceinfo)
+- [`vtex workspace list`](#vtex-workspacelist)
+- [`vtex workspace promote`](#vtex-workspacepromote)
+- [`vtex workspace reset [WORKSPACENAME]`](#vtex-workspacereset-workspacename)
+- [`vtex workspace status [WORKSPACENAME]`](#vtex-workspacestatus-workspacename)
+- [`vtex workspace use WORKSPACE`](#vtex-workspaceuse-workspace)
 
 ## `vtex add APPID [ITHAPPID]`
 
@@ -118,7 +118,7 @@ EXAMPLES
   vtex config get cluster
 ```
 
-_See code:  [build/commands/config/get.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/config/get.ts)_
+_See code: [build/commands/config/get.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/config/get.ts)_
 
 ## `vtex config reset CONFIGNAME`
 
@@ -138,7 +138,7 @@ EXAMPLES
   vtex config reset cluster
 ```
 
-_See code:  [build/commands/config/reset.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/config/reset.ts)_
+_See code: [build/commands/config/reset.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/config/reset.ts)_
 
 ## `vtex config set CONFIGNAME VALUE`
 
@@ -158,7 +158,7 @@ EXAMPLES
   vtex config set cluster clusterValue
 ```
 
-_See code:  [build/commands/config/set.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/config/set.ts)_
+_See code: [build/commands/config/set.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/config/set.ts)_
 
 ## `vtex deploy [APPID]`
 
@@ -219,7 +219,7 @@ EXAMPLE
   vtex deps diff workspace1 workspace2
 ```
 
-_See code:  [@vtex/cli-plugin-deps](https://github.com/vtex/cli-plugin-deps/blob/v0.0.1/build/commands/deps/diff.ts)_
+_See code: [@vtex/cli-plugin-deps](https://github.com/vtex/cli-plugin-deps/blob/v0.0.1/build/commands/deps/diff.ts)_
 
 ## `vtex deps list`
 
@@ -244,7 +244,7 @@ EXAMPLES
   vtex deps ls
 ```
 
-_See code:  [@vtex/cli-plugin-deps](https://github.com/vtex/cli-plugin-deps/blob/v0.0.1/build/commands/deps/list.ts)_
+_See code: [@vtex/cli-plugin-deps](https://github.com/vtex/cli-plugin-deps/blob/v0.0.1/build/commands/deps/list.ts)_
 
 ## `vtex deps update [APPID] [ITHAPPID]`
 
@@ -264,7 +264,7 @@ EXAMPLES
   vtex deps update vtex.service-example@0.0.1
 ```
 
-_See code:  [@vtex/cli-plugin-deps](https://github.com/vtex/cli-plugin-deps/blob/v0.0.1/build/commands/deps/update.ts)_
+_See code: [@vtex/cli-plugin-deps](https://github.com/vtex/cli-plugin-deps/blob/v0.0.1/build/commands/deps/update.ts)_
 
 ## `vtex edition get`
 
@@ -283,7 +283,7 @@ EXAMPLE
   vtex edition get
 ```
 
-_See code:  [@vtex/cli-plugin-edition](https://github.com/vtex/cli-plugin-edition/blob/v0.0.1/build/commands/edition/get.ts)_
+_See code: [@vtex/cli-plugin-edition](https://github.com/vtex/cli-plugin-edition/blob/v0.0.1/build/commands/edition/get.ts)_
 
 ## `vtex edition set EDITION`
 
@@ -302,7 +302,7 @@ EXAMPLE
   vtex edition set editionName
 ```
 
-_See code:  [@vtex/cli-plugin-edition](https://github.com/vtex/cli-plugin-edition/blob/v0.0.1/build/commands/edition/set.ts)_
+_See code: [@vtex/cli-plugin-edition](https://github.com/vtex/cli-plugin-edition/blob/v0.0.1/build/commands/edition/set.ts)_
 
 ## `vtex help [COMMAND]`
 
@@ -319,7 +319,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code:  [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
 ## `vtex infra install SERVICEID`
 
@@ -339,7 +339,7 @@ EXAMPLES
   vtex infra install infra-service@0.0.1
 ```
 
-_See code:  [build/commands/infra/install.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/infra/install.ts)_
+_See code: [build/commands/infra/install.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/infra/install.ts)_
 
 ## `vtex infra list [NAME]`
 
@@ -364,7 +364,7 @@ EXAMPLES
   vtex infra ls
 ```
 
-_See code:  [build/commands/infra/list.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/infra/list.ts)_
+_See code: [build/commands/infra/list.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/infra/list.ts)_
 
 ## `vtex infra update`
 
@@ -383,7 +383,7 @@ EXAMPLE
   vtex infra update
 ```
 
-_See code:  [build/commands/infra/update.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/infra/update.ts)_
+_See code: [build/commands/infra/update.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/infra/update.ts)_
 
 ## `vtex init`
 
@@ -402,7 +402,7 @@ EXAMPLE
   vtex init
 ```
 
-_See code:  [build/commands/init.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/init.ts)_
+_See code: [build/commands/init.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/init.ts)_
 
 ## `vtex install [APPID] [ITHAPPID]`
 
@@ -424,7 +424,7 @@ EXAMPLES
   vtex install vtex.service-example@0.0.1
 ```
 
-_See code:  [build/commands/install.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/install.ts)_
+_See code: [build/commands/install.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/install.ts)_
 
 ## `vtex lighthouse audit URL`
 
@@ -448,7 +448,7 @@ EXAMPLES
   vtex lh audit my.url.com
 ```
 
-_See code:  [@vtex/cli-plugin-lighthouse](https://github.com/vtex/cli-plugin-lighthouse/blob/v0.0.3/build/commands/lighthouse/audit.ts)_
+_See code: [@vtex/cli-plugin-lighthouse](https://github.com/vtex/cli-plugin-lighthouse/blob/v0.0.3/build/commands/lighthouse/audit.ts)_
 
 ## `vtex lighthouse show`
 
@@ -477,7 +477,7 @@ EXAMPLES
   vtex lh show -a vtex.awesome-app --url=https://awesome.store.com
 ```
 
-_See code:  [@vtex/cli-plugin-lighthouse](https://github.com/vtex/cli-plugin-lighthouse/blob/v0.0.3/build/commands/lighthouse/show.ts)_
+_See code: [@vtex/cli-plugin-lighthouse](https://github.com/vtex/cli-plugin-lighthouse/blob/v0.0.3/build/commands/lighthouse/show.ts)_
 
 ## `vtex link`
 
@@ -512,7 +512,7 @@ EXAMPLE
   vtex link -a youraccount -w yourworkspace
 ```
 
-_See code:  [build/commands/link.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/link.ts)_
+_See code: [build/commands/link.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/link.ts)_
 
 ## `vtex list`
 
@@ -535,7 +535,7 @@ EXAMPLES
   vtex ls
 ```
 
-_See code:  [build/commands/list.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/list.ts)_
+_See code: [build/commands/list.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/list.ts)_
 
 ## `vtex local account`
 
@@ -554,7 +554,7 @@ EXAMPLE
   vtex local account
 ```
 
-_See code:  [build/commands/local/account.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/local/account.ts)_
+_See code: [build/commands/local/account.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/local/account.ts)_
 
 ## `vtex local token`
 
@@ -573,7 +573,7 @@ EXAMPLE
   vtex local token
 ```
 
-_See code:  [build/commands/local/token.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/local/token.ts)_
+_See code: [build/commands/local/token.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/local/token.ts)_
 
 ## `vtex local welcome`
 
@@ -596,7 +596,7 @@ EXAMPLES
   vtex local welcome
 ```
 
-_See code:  [build/commands/local/welcome.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/local/welcome.ts)_
+_See code: [build/commands/local/welcome.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/local/welcome.ts)_
 
 ## `vtex local workspace`
 
@@ -615,7 +615,7 @@ EXAMPLE
   vtex local workspace
 ```
 
-_See code:  [build/commands/local/workspace.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/local/workspace.ts)_
+_See code: [build/commands/local/workspace.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/local/workspace.ts)_
 
 ## `vtex login [ACCOUNT]`
 
@@ -636,7 +636,7 @@ EXAMPLES
   vtex login storecomponents
 ```
 
-_See code:  [build/commands/login.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/login.ts)_
+_See code: [build/commands/login.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/login.ts)_
 
 ## `vtex logout`
 
@@ -655,7 +655,7 @@ EXAMPLE
   vtex logout
 ```
 
-_See code:  [build/commands/logout.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/logout.ts)_
+_See code: [build/commands/logout.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/logout.ts)_
 
 ## `vtex logs [APP]`
 
@@ -679,7 +679,7 @@ EXAMPLES
   vtex logs appName --past
 ```
 
-_See code:  [build/commands/logs.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/logs.ts)_
+_See code: [build/commands/logs.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/logs.ts)_
 
 ## `vtex publish`
 
@@ -702,7 +702,7 @@ EXAMPLE
   vtex publish
 ```
 
-_See code:  [build/commands/publish.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/publish.ts)_
+_See code: [build/commands/publish.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/publish.ts)_
 
 ## `vtex redirects delete CSVPATH`
 
@@ -721,7 +721,7 @@ EXAMPLE
   vtex redirects delete csvPath
 ```
 
-_See code:  [@vtex/cli-plugin-redirects](https://github.com/vtex/cli-plugin-redirects/blob/v0.0.2/build/commands/redirects/delete.ts)_
+_See code: [@vtex/cli-plugin-redirects](https://github.com/vtex/cli-plugin-redirects/blob/v0.0.2/build/commands/redirects/delete.ts)_
 
 ## `vtex redirects export CSVPATH`
 
@@ -740,7 +740,7 @@ EXAMPLE
   vtex redirects export csvPath
 ```
 
-_See code:  [@vtex/cli-plugin-redirects](https://github.com/vtex/cli-plugin-redirects/blob/v0.0.2/build/commands/redirects/export.ts)_
+_See code: [@vtex/cli-plugin-redirects](https://github.com/vtex/cli-plugin-redirects/blob/v0.0.2/build/commands/redirects/export.ts)_
 
 ## `vtex redirects import CSVPATH`
 
@@ -760,7 +760,7 @@ EXAMPLE
   vtex redirects import csvPath
 ```
 
-_See code:  [@vtex/cli-plugin-redirects](https://github.com/vtex/cli-plugin-redirects/blob/v0.0.2/build/commands/redirects/import.ts)_
+_See code: [@vtex/cli-plugin-redirects](https://github.com/vtex/cli-plugin-redirects/blob/v0.0.2/build/commands/redirects/import.ts)_
 
 ## `vtex release [RELEASETYPE] [TAGNAME]`
 
@@ -774,6 +774,7 @@ OPTIONS
   -h, --help     show CLI help
   -v, --verbose  Show debug level logs
   --trace        Ensure all requests to VTEX IO are traced
+  --display-name Add the project name to the tag and release commit
 
 EXAMPLES
   vtex release
@@ -783,7 +784,7 @@ EXAMPLES
   vtex release pre
 ```
 
-_See code:  [build/commands/release.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/release.ts)_
+_See code: [build/commands/release.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/release.ts)_
 
 ## `vtex settings get APPNAME [FIELD]`
 
@@ -805,7 +806,7 @@ EXAMPLE
   vtex settings get vtex.service-example
 ```
 
-_See code:  [build/commands/settings/get.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/settings/get.ts)_
+_See code: [build/commands/settings/get.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/settings/get.ts)_
 
 ## `vtex settings set APPNAME FIELD VALUE`
 
@@ -824,7 +825,7 @@ EXAMPLE
   vtex settings set vtex.service-example fieldName fieldValue
 ```
 
-_See code:  [build/commands/settings/set.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/settings/set.ts)_
+_See code: [build/commands/settings/set.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/settings/set.ts)_
 
 ## `vtex settings unset APPNAME FIELD`
 
@@ -843,7 +844,7 @@ EXAMPLE
   vtex settings unset vtex.service-example fieldName
 ```
 
-_See code:  [build/commands/settings/unset.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/settings/unset.ts)_
+_See code: [build/commands/settings/unset.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/settings/unset.ts)_
 
 ## `vtex setup`
 
@@ -869,7 +870,7 @@ OPTIONS
   --typings            Setup GraphQL and React typings
 ```
 
-_See code:  [build/commands/setup.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/setup.ts)_
+_See code: [build/commands/setup.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/setup.ts)_
 
 ## `vtex support ACCOUNT`
 
@@ -888,7 +889,7 @@ EXAMPLE
   vtex support storecomponents
 ```
 
-_See code:  [build/commands/support.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/support.ts)_
+_See code: [build/commands/support.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/support.ts)_
 
 ## `vtex switch ACCOUNT`
 
@@ -908,7 +909,7 @@ EXAMPLE
   vtex switch storecomponents
 ```
 
-_See code:  [build/commands/switch.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/switch.ts)_
+_See code: [build/commands/switch.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/switch.ts)_
 
 ## `vtex test e2e`
 
@@ -933,7 +934,7 @@ OPTIONS
   --trace              Ensure all requests to VTEX IO are traced
 ```
 
-_See code:  [@vtex/cli-plugin-test](https://github.com/vtex/cli-plugin-test/blob/v0.0.5/build/commands/test/e2e.ts)_
+_See code: [@vtex/cli-plugin-test](https://github.com/vtex/cli-plugin-test/blob/v0.0.5/build/commands/test/e2e.ts)_
 
 ## `vtex test unit`
 
@@ -950,7 +951,7 @@ OPTIONS
   --trace        Ensure all requests to VTEX IO are traced
 ```
 
-_See code:  [@vtex/cli-plugin-test](https://github.com/vtex/cli-plugin-test/blob/v0.0.5/build/commands/test/unit.ts)_
+_See code: [@vtex/cli-plugin-test](https://github.com/vtex/cli-plugin-test/blob/v0.0.5/build/commands/test/unit.ts)_
 
 ## `vtex undeprecate [APPID] [ITHAPPID]`
 
@@ -970,7 +971,7 @@ EXAMPLE
   vtex undeprecate vtex.service-example@0.0.1
 ```
 
-_See code:  [build/commands/undeprecate.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/undeprecate.ts)_
+_See code: [build/commands/undeprecate.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/undeprecate.ts)_
 
 ## `vtex uninstall [APPNAME] [ITHAPPNAME]`
 
@@ -992,7 +993,7 @@ EXAMPLES
   vtex uninstall vtex.service-example@0.x
 ```
 
-_See code:  [build/commands/uninstall.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/uninstall.ts)_
+_See code: [build/commands/uninstall.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/uninstall.ts)_
 
 ## `vtex unlink [APPID] [ITHAPPID]`
 
@@ -1013,7 +1014,7 @@ EXAMPLES
   vtex unlink vtex.service-example@0.x
 ```
 
-_See code:  [build/commands/unlink.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/unlink.ts)_
+_See code: [build/commands/unlink.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/unlink.ts)_
 
 ## `vtex update`
 
@@ -1032,7 +1033,7 @@ EXAMPLE
   vtex update
 ```
 
-_See code:  [build/commands/update.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/update.ts)_
+_See code: [build/commands/update.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/update.ts)_
 
 ## `vtex url`
 
@@ -1051,7 +1052,7 @@ EXAMPLE
   vtex url
 ```
 
-_See code:  [build/commands/url.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/url.ts)_
+_See code: [build/commands/url.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/url.ts)_
 
 ## `vtex whoami`
 
@@ -1070,7 +1071,7 @@ EXAMPLE
   vtex whoami
 ```
 
-_See code:  [build/commands/whoami.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/whoami.ts)_
+_See code: [build/commands/whoami.ts](https://github.com/vtex/toolbelt/blob/v2.110.1/build/commands/whoami.ts)_
 
 ## `vtex workspace abtest finish`
 
@@ -1086,7 +1087,7 @@ OPTIONS
   --trace        Ensure all requests to VTEX IO are traced
 ```
 
-_See code:  [@vtex/cli-plugin-abtest](https://github.com/vtex/cli-plugin-abtest/blob/v0.0.5/build/commands/workspace/abtest/finish.ts)_
+_See code: [@vtex/cli-plugin-abtest](https://github.com/vtex/cli-plugin-abtest/blob/v0.0.5/build/commands/workspace/abtest/finish.ts)_
 
 ## `vtex workspace abtest start`
 
@@ -1102,7 +1103,7 @@ OPTIONS
   --trace        Ensure all requests to VTEX IO are traced
 ```
 
-_See code:  [@vtex/cli-plugin-abtest](https://github.com/vtex/cli-plugin-abtest/blob/v0.0.5/build/commands/workspace/abtest/start.ts)_
+_See code: [@vtex/cli-plugin-abtest](https://github.com/vtex/cli-plugin-abtest/blob/v0.0.5/build/commands/workspace/abtest/start.ts)_
 
 ## `vtex workspace abtest status`
 
@@ -1118,7 +1119,7 @@ OPTIONS
   --trace        Ensure all requests to VTEX IO are traced
 ```
 
-_See code:  [@vtex/cli-plugin-abtest](https://github.com/vtex/cli-plugin-abtest/blob/v0.0.5/build/commands/workspace/abtest/status.ts)_
+_See code: [@vtex/cli-plugin-abtest](https://github.com/vtex/cli-plugin-abtest/blob/v0.0.5/build/commands/workspace/abtest/status.ts)_
 
 ## `vtex workspace create [WORKSPACENAME]`
 
@@ -1138,7 +1139,7 @@ EXAMPLE
   vtex workspace create workspaceName
 ```
 
-_See code:  [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/create.ts)_
+_See code: [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/create.ts)_
 
 ## `vtex workspace delete WORKSPACE1 [ITHWORKSPACE]`
 
@@ -1160,7 +1161,7 @@ EXAMPLES
   vtex workspace delete workspaceName1 workspaceName2
 ```
 
-_See code:  [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/delete.ts)_
+_See code: [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/delete.ts)_
 
 ## `vtex workspace info`
 
@@ -1179,7 +1180,7 @@ EXAMPLE
   vtex workspace info
 ```
 
-_See code:  [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/info.ts)_
+_See code: [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/info.ts)_
 
 ## `vtex workspace list`
 
@@ -1202,7 +1203,7 @@ EXAMPLES
   vtex workspace ls
 ```
 
-_See code:  [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/list.ts)_
+_See code: [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/list.ts)_
 
 ## `vtex workspace promote`
 
@@ -1225,7 +1226,7 @@ EXAMPLES
   vtex promote
 ```
 
-_See code:  [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/promote.ts)_
+_See code: [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/promote.ts)_
 
 ## `vtex workspace reset [WORKSPACENAME]`
 
@@ -1247,7 +1248,7 @@ EXAMPLES
   vtex workspace reset workspaceName
 ```
 
-_See code:  [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/reset.ts)_
+_See code: [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/reset.ts)_
 
 ## `vtex workspace status [WORKSPACENAME]`
 
@@ -1266,7 +1267,7 @@ EXAMPLE
   vtex workspace status
 ```
 
-_See code:  [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/status.ts)_
+_See code: [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/status.ts)_
 
 ## `vtex workspace use WORKSPACE`
 
@@ -1291,4 +1292,4 @@ EXAMPLES
   vtex use workspaceName
 ```
 
-_See code:  [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/use.ts)_
+_See code: [@vtex/cli-plugin-workspace](https://github.com/vtex/cli-plugin-workspace/blob/v0.0.2/build/commands/workspace/use.ts)_

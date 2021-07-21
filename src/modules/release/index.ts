@@ -3,6 +3,7 @@ import { indexOf, prop } from 'ramda'
 import semver from 'semver'
 
 import log from '../../api/logger'
+import { ManifestEditor } from '../../api/manifest'
 import { ReleaseUtils } from './utils'
 
 export const releaseTypeAliases = {
@@ -59,13 +60,15 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
 
 export default async (
   releaseType = 'patch', // This arg. can also be a valid (semver) version.
-  tagName = 'beta'
+  tagName = 'beta',
+  displayName = false
 ) => {
   const utils = new ReleaseUtils()
   utils.checkGit()
   utils.checkIfInGitRepo()
   const normalizedReleaseType = prop<string>(releaseType, releaseTypeAliases) || releaseType
   const [oldVersion, newVersion] = getNewAndOldVersions(utils, normalizedReleaseType, tagName)
+  const manifest = await ManifestEditor.getManifestEditor()
 
   log.info(`Old version: ${chalk.bold(oldVersion)}`)
   log.info(`New version: ${chalk.bold.yellow(newVersion)}`)
@@ -75,7 +78,7 @@ export default async (
     .split('/')
 
   // Pachamama v2 requires that version tags start with a 'v' character.
-  const tagText = `v${newVersion}`
+  const tagText = `${displayName ? manifest.name : ''}/v${newVersion}`
   const changelogVersion = `\n\n## [${newVersion}] - ${year}-${month}-${day}`
 
   if (!(await utils.confirmRelease())) {

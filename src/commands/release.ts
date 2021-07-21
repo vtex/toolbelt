@@ -1,5 +1,6 @@
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsRelease, { releaseTypeAliases, supportedReleaseTypes, supportedTagNames } from '../modules/release'
+import { flags as oclifFlags } from '@oclif/command'
 
 export default class Release extends CustomCommand {
   static description =
@@ -15,6 +16,10 @@ export default class Release extends CustomCommand {
 
   static flags = {
     ...CustomCommand.globalFlags,
+    'display-name': oclifFlags.boolean({
+      description: 'Add the project name to the tag and release commit',
+      default: false,
+    }),
   }
 
   static args = [
@@ -30,8 +35,9 @@ export default class Release extends CustomCommand {
   async run() {
     const {
       args: { releaseType, tagName },
+      flags: { 'display-name': displayName },
     } = this.parse(Release)
 
-    await appsRelease(releaseType, tagName)
+    await appsRelease(releaseType, tagName, displayName)
   }
 }
