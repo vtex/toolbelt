@@ -78,7 +78,7 @@ export default async (
     .split('/')
 
   // Pachamama v2 requires that version tags start with a 'v' character.
-  const tagText = `${displayName ? `${manifest.name}@` : ''}v${newVersion}`
+  const tagText = `${displayName ? `${manifest.name}@` : 'v'}${newVersion}`
   const changelogVersion = `\n\n## [${newVersion}] - ${year}-${month}-${day}`
 
   if (!(await utils.confirmRelease())) {
