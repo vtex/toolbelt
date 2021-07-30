@@ -7,14 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Toolbelt Messenger Slack app client.
+- Message the #admin-apps channel every time an Admin App is published.
+
 ## [2.128.0] - 2021-05-25
 
 ### Changed
+
 - Redirect user to App Store instead of conducting purchases through toolbelt
 
 ## [2.127.4] - 2021-05-20
 
 ### Updated
+
 - [vtex workspace abtest] Update plugin's version
 
 ## [2.127.3] - 2021-05-20
@@ -26,21 +33,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.127.2] - 2021-04-22
 
 ### Fixed
+
 - [install] Handle sponsored apps as if they were free
 
 ## [2.127.1] - 2021-04-20
- - Fix `set edition` command to handle prompt cancellations
- - Add check on `set edition` command to install tenant-provisioner app in sponsor account
+
+- Fix `set edition` command to handle prompt cancellations
+- Add check on `set edition` command to install tenant-provisioner app in sponsor account
 
 ## [2.127.0] - 2021-04-19
 
 ### Added
+
 - cli-plugin-functions for StoreFramework JAMStack
 
 ## [2.126.0] - 2021-04-13
 
 ### Added
+
 - [vtex init] Service worker example to list of templates
+
 ## [2.125.3] - 2021-04-12
 
 ## [2.125.2] - 2021-04-12
@@ -56,21 +68,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [vtex lib] Fix `import x from 'vtex'` error by forcing symlink
 
 ## [2.125.0] - 2021-03-18
+
 ### Added
+
 - `composable-commerce-sq4` as codeowners.
 
 ### Removed
+
 - `composable-commerce` as codeowners.
 
 ## [2.124.0] - 2021-03-17
+
 ### Added
+
 - Terms and conditions message when linking or publishing a react app.
 
-
 ### Changed
+
 - Add self package to react packages as devDependency
 
 ## [2.123.0] - 2021-03-08
+
 ### Added
 
 - [install] Fix app's plan message for plans without metrics.
