@@ -17,6 +17,7 @@ import {
 } from '../../api/modules/utils'
 import { SessionManager } from '../../api/session/SessionManager'
 import * as conf from '../../api/conf'
+import { SlackMessenger } from '../../api/clients/slack'
 import { returnToPreviousAccount, switchAccount } from '../../api/modules/auth/switch'
 import { runYarnIfPathExists } from '../utils'
 
@@ -67,9 +68,10 @@ const publisher = (workspace = 'master') => {
     return retry(publish, retryOpts)
   }
 
-  const publishApps = async (path: string, tag: string, force: boolean): Promise<void | never> => {
+  const publishApps = async (path: string, tag: string, force: boolean) => {
     const session = SessionManager.getSingleton()
     const manifest = await ManifestEditor.getManifestEditor()
+    let success = false
 
     const builderHubMessage = await checkBuilderHubMessage('publish')
     if (builderHubMessage != null) {
@@ -84,7 +86,7 @@ const publisher = (workspace = 'master') => {
       )}?`
       const canSwitchToVendor = await promptConfirm(switchToVendorMsg)
       if (!canSwitchToVendor) {
-        return
+        return { success }
       }
       await switchAccount(manifest.vendor, {})
     }
@@ -110,11 +112,17 @@ const publisher = (workspace = 'master') => {
           `Your app documentation will be available at: ${chalk.yellowBright(`https://vtex.io/docs/app/${appId}`)}`
         )
       }
+
+      success = true
     } catch (e) {
       log.error(`Failed to publish ${appId}`)
+
+      success = false
     }
 
     await returnToPreviousAccount({ previousAccount, previousWorkspace })
+
+    return { success }
   }
 
   return { publishApp, publishApps }
@@ -123,7 +131,7 @@ const publisher = (workspace = 'master') => {
 export default async (path: string, options) => {
   log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
 
-  const { account } = SessionManager.getSingleton()
+  const { account, userLogged } = SessionManager.getSingleton()
   const manifest = await ManifestEditor.getManifestEditor()
 
   const mustContinue = await continueAfterReactTermsAndConditions(manifest)
@@ -131,8 +139,11 @@ export default async (path: string, options) => {
     process.exit(1)
   }
 
-  const versionMsg = chalk.bold.yellow(manifest.version)
-  const appNameMsg = chalk.bold.yellow(`${manifest.vendor}.${manifest.name}`)
+  const appName = `${manifest.vendor}.${manifest.name}`
+  const appVersion = manifest.version
+
+  const versionMsg = chalk.bold.yellow(appVersion)
+  const appNameMsg = chalk.bold.yellow(appName)
 
   const yesFlag = options.y || options.yes
 
@@ -167,5 +178,12 @@ export default async (path: string, options) => {
   buildersToRunLocalYarn.map(runYarnIfPathExists)
 
   const { publishApps } = publisher(workspace)
-  await publishApps(path, options.tag, force)
+  const result = await publishApps(path, options.tag, force)
+
+  // Notify the Admin team on Slack after successfully publishing an Admin App
+  if (result?.success && manifest.builderNames.includes('admin')) {
+    const messenger = new SlackMessenger()
+
+    messenger.sendNewAdminAppMessage(`${appName}@${appVersion}`, userLogged)
+  }
 }

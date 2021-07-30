@@ -27,3 +27,7 @@ export function envCookies(): string {
   const upstreamCluster = cluster()
   return upstreamCluster ? `VtexIoClusterId=${upstreamCluster}` : ''
 }
+
+export function slackBotToken() {
+  return process.env.SLACK_TOKEN ?? ''
+}
