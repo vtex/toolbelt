@@ -56,6 +56,15 @@ To install it, run:
   ```
 </details>
 
+<details>
+  <summary>Installing from executable installer on windows</summary>
+  If you are installing the toolbelt in a Windows machine, you can also do it from an executable installer, like installing any other program in Windows.
+
+  Download it from:
+
+  [Toolbelt Installer](https://vtex.io/vtexcli/install/win-x64)
+</details>
+
 # Using the CLI 
 
 After installation, run `vtex` to see our commands and what each one of them does.
