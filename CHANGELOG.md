@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.9.0-beta] - 2021-08-24
+
+### Added
+- cli-plugin-sfjsecrets for StoreFramework Jamstack
+
 ## [3.8.0-beta] - 2021-06-09
 
 ### Removed

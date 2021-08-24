@@ -61,6 +61,7 @@
     "@vtex/cli-plugin-deps": "^0.1.1",
     "@vtex/cli-plugin-edition": "^0.1.1",
     "@vtex/cli-plugin-plugins": "^1.13.2",
+    "@vtex/cli-plugin-sfjsecrets": "^0.0.4",
     "@vtex/cli-plugin-whoami": "^0.2.2",
     "@vtex/cli-plugin-workspace": "^1.0.1",
     "@vtex/node-error-report": "^0.0.2",
@@ -174,6 +175,7 @@
       "@vtex/cli-plugin-deploy",
       "@vtex/cli-plugin-whoami",
       "@vtex/cli-plugin-plugins",
+      "@vtex/cli-plugin-sfjsecrets",
       "@vtex/cli-plugin-autoupdate"
     ],
     "update": {
