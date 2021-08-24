@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.129.1-beta] - 2021-08-24
+
 ### added
 - [vtex faststore-cli] adding a new plugin called faststore-cli that facilitate linking for the faststore framework
 
