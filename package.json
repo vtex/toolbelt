@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "2.128.0",
+  "version": "2.129.1-beta",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -60,6 +60,7 @@
     "@vtex/cli-plugin-deploy": "^0.2.0",
     "@vtex/cli-plugin-deps": "^0.0.1",
     "@vtex/cli-plugin-edition": "^0.0.1",
+    "@vtex/cli-plugin-faststore": "^0.0.2",
     "@vtex/cli-plugin-functions": "^1.1.0",
     "@vtex/cli-plugin-infra": "^0.1.0",
     "@vtex/cli-plugin-lighthouse": "^0.0.3",
@@ -183,7 +184,8 @@
       "@vtex/cli-plugin-deploy",
       "@vtex/cli-plugin-whoami",
       "@vtex/cli-plugin-url",
-      "@vtex/cli-plugin-functions"
+      "@vtex/cli-plugin-functions",
+      "@vtex/cli-plugin-faststore"
     ],
     "update": {
       "node": {
