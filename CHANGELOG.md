@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.8.1-beta] - 2021-10-07
+
+### Changed
+ - Undo a remotion of a condition in ManifestUtil for OCLIF_COMPILATION
+
 ## [3.8.0-beta] - 2021-06-09
 
 ### Removed
