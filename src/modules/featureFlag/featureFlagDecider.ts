@@ -10,6 +10,12 @@ export async function switchOpen(url: string, options) {
     const { featureFlags } = await configClient.getGlobalConfig()
 
     if (featureFlags.FEATURE_FLAG_NEW_OPEN_PACKAGE) {
+      // Start of patch to work with Cypress
+      if (process.env.IN_CYPRESS) {
+        console.log(url)
+        return null
+      }
+      // End of patch to work with Cypress
       return open(url, options)
     }
     return opn(url, options)
