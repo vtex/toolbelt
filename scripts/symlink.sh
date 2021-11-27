@@ -21,18 +21,18 @@ while getopts "hr" OPT; do
   esac 
 done
 
-GLOBAL_BIN_PATH_SUFFIX=".vtex/dev/bin"
-GLOBAL_BIN_PATH="$HOME/$GLOBAL_BIN_PATH_SUFFIX"
+#GLOBAL_BIN_PATH_SUFFIX=".vtex/dev/bin"
+#GLOBAL_BIN_PATH="$HOME/$GLOBAL_BIN_PATH_SUFFIX"
 
-if ! [[ ":$PATH:" == *":$GLOBAL_BIN_PATH:"* ]]; then
-  echo -e "${RED}Your PATH is missing${RED} ${YELLOW}'\$HOME/$GLOBAL_BIN_PATH_SUFFIX'${YELLOW}${RED}, you have to add it to be able to easily test the cli.${RED}"
-  exit 1
-fi
+#if ! [[ ":$PATH:" == *":$GLOBAL_BIN_PATH:"* ]]; then
+#  echo -e "${RED}Your PATH is missing${RED} ${YELLOW}'\$HOME/$GLOBAL_BIN_PATH_SUFFIX'${YELLOW}${RED}, you have to add it to be able to easily test the cli.${RED}"
+#  exit 1
+#fi
 
 VTEX_BIN=$(node -e "const pkg=require('./package.json'); console.log(pkg.name);")
 VTEX_BIN_TEST="$VTEX_BIN-test"
 BINARY_PATH=$PWD/bin/run
-LINK_PATH=$GLOBAL_BIN_PATH/$VTEX_BIN_TEST
+LINK_PATH="/tmp/$VTEX_BIN_TEST"
 
 mkdir -p $GLOBAL_BIN_PATH
 
