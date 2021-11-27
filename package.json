@@ -6,7 +6,7 @@
   "main": "lib/api/index.js",
   "scripts": {
     "watch": "yarn build-clean && bash ./scripts/symlink.sh && yarn nodemon",
-    "cypress": "yarn build-clean && bash ./scripts/symlink.sh",
+    "cypress": "yarn && yarn build && bash ./scripts/symlink.sh",
     "format": "prettier --config ./.prettierrc --write \"./src/**/*.{ts,tsx,js,jsx,json}\"",
     "lint:node": "yarn eslint ./src --cache --ext ts --config .eslintrc",
     "format-lint": "yarn format && yarn lint:node",
