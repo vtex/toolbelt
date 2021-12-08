@@ -38,7 +38,7 @@ const templates: Record<string, Template> = {
     organization: VTEX_APPS,
   },
   'admin-example': {
-    repository: 'admin-example',
+    repository: 'admin-ui-example',
     organization: VTEX_APPS,
   },
   store: {
