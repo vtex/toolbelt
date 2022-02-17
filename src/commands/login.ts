@@ -19,6 +19,10 @@ export default class Login extends CustomCommand {
       char: 'w',
       description: `Logs in the specified ${ColorifyConstants.ID('workspace')}.`,
     }),
+    logAuthUrl: oclifFlags.string({
+      char: 'a',
+      description: `Don't open browser and prints auth url.`,
+    }),
   }
 
   static args = [
@@ -28,9 +32,9 @@ export default class Login extends CustomCommand {
   async run() {
     const {
       args: { account },
-      flags: { workspace },
+      flags: { workspace, logAuthUrl },
     } = this.parse(Login)
 
-    await authLogin({ account, workspace })
+    await authLogin({ account, workspace, logAuthUrl })
   }
 }

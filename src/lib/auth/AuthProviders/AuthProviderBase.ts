@@ -4,5 +4,5 @@ export interface LoginResult {
 }
 
 export abstract class AuthProviderBase {
-  public abstract async login(account: string, workspace: string): Promise<LoginResult>
+  public abstract async login(account: string, workspace: string, logAuthUrl: boolean): Promise<LoginResult>
 }

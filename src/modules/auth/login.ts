@@ -53,6 +53,7 @@ export interface LoginOptions {
   workspace?: string
   allowUseCachedToken?: boolean
   postLoginOps?: PostLoginOps[]
+  logAuthUrl?: boolean
 }
 
 const getTargetLogin = async ({ account: optionAccount, workspace: optionWorkspace }: LoginOptions) => {
@@ -92,7 +93,7 @@ const shouldShowAnnouncement = (target: PostLoginOps, ops: LoginOptions['postLog
 }
 
 export default async (opts: LoginOptions) => {
-  const { allowUseCachedToken = false, postLoginOps = ['all'] } = opts
+  const { allowUseCachedToken = false, postLoginOps = ['all'], logAuthUrl = false } = opts
 
   const { targetAccount, targetWorkspace } = await getTargetLogin(opts)
   const sessionManager = SessionManager.getSingleton()
@@ -100,6 +101,7 @@ export default async (opts: LoginOptions) => {
     await sessionManager.login(targetAccount, {
       targetWorkspace,
       useCachedToken: allowUseCachedToken,
+      logAuthUrl,
       workspaceCreation: {
         promptCreation: true,
         creator: workspaceCreator,

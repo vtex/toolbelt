@@ -18,6 +18,7 @@ export interface LoginInput {
   targetWorkspace?: string
   authMethod?: string
   useCachedToken?: boolean
+  logAuthUrl?: boolean
   workspaceCreation: WorkspaceCreation
 }
 
@@ -153,7 +154,7 @@ export class SessionManager implements ISessionManager {
 
   public async login(
     newAccount: string,
-    { targetWorkspace = 'master', authMethod = 'oauth', useCachedToken = true, workspaceCreation }: LoginInput
+    { targetWorkspace = 'master', authMethod = 'oauth', useCachedToken = true, logAuthUrl = false, workspaceCreation }: LoginInput
   ) {
     if (this.account !== newAccount) {
       this.state.lastAccount = this.account
@@ -165,7 +166,7 @@ export class SessionManager implements ISessionManager {
       this.state.tokenObj = cachedToken
     } else {
       // Tokens are scoped by workspace - logging into master will grant cacheability
-      const { token } = await this.authProviders[authMethod].login(newAccount, 'master')
+      const { token } = await this.authProviders[authMethod].login(newAccount, 'master', logAuthUrl)
       this.state.tokenObj = new Token(token)
       this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token)
     }

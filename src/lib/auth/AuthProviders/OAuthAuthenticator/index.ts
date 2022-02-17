@@ -3,7 +3,7 @@ import { createHash } from 'crypto'
 import isWsl from 'is-wsl'
 import jwt from 'jsonwebtoken'
 import { join } from 'path'
-import logger from '../../../../api/logger'
+import logger, { consoleLoggerLevel } from '../../../../api/logger'
 import { VTEXID } from '../../../../api/clients/IOClients/external/VTEXID'
 import { storeUrl } from '../../../../api/storeUrl'
 import { ColorifyConstants } from '../../../../api/constants/Colors'
@@ -20,7 +20,7 @@ export class OAuthAuthenticator extends AuthProviderBase {
   private static ADMIN_LOGIN_URL_PATH = '/_v/segment/admin-login/v1/login'
   private static FALLBACK_AUTH_SERVER_LOGIN_URL_PATH = '/_v/private/auth-server/v1/login'
 
-  public async login(account: string) {
+  public async login(account: string, logAuthUrl: boolean) {
     const secret = randomCryptoString(128, OAuthAuthenticator.SECRET_ALPHABET)
     const secretHash = this.hashSecret(secret)
     const vtexId = VTEXID.createClient({ account })
@@ -40,7 +40,11 @@ export class OAuthAuthenticator extends AuthProviderBase {
       loginServer.setLoginState(loginState)
 
       const url = await this.loginUrl(account, loginState)
-      switchOpen(url, { wait: false })
+      if(logAuthUrl){
+        console.log(url)
+      } else {
+        switchOpen(url, { wait: false })
+      }
 
       if (isWsl) {
         logger.warn(
