@@ -99,7 +99,7 @@
     "jsonwebtoken": "~8.5.1",
     "koa": "^2.13.0",
     "latest-version": "^4.0.0",
-    "moment": "~2.24.0",
+    "moment": "~2.29.2",
     "node-notifier": "^6.0.0",
     "numbro": "2.1.0",
     "open": "^7.3.0",
