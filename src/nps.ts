@@ -16,6 +16,12 @@ const choices = {
 export async function checkAndOpenNPSLink() {
   const nextFeedbackDateString = getNextFeedbackDate()
 
+  // Start of patch to work with Cypress
+  if (process.env.IN_CYPRESS) {
+    return
+  }
+  // End of patch to work with Cypress
+
   if (!nextFeedbackDateString) {
     // If the user is starting to use the tool, wait 1 week to ask for feedback.
     saveNextFeedbackDate(
