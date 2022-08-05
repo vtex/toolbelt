@@ -20,5 +20,6 @@ const onState = (state: PromptState) => {
 
 export const promptConfirm = async (message: string, initial = true): Promise<boolean> => {
   const { response } = await prompts([{ message, initial, type: 'confirm', name: 'response', onState }])
-  return response
+  const ci = process.env.CI ?? false
+  return ci ? 'y' : response
 }
