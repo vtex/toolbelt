@@ -1,20 +1,12 @@
-import chalk from 'chalk'
 import { createAppsClient } from '../../api/clients/IOClients/infra/Apps'
 import { ManifestEditor, ManifestValidator } from '../../api/manifest'
-import { SessionManager } from '../../api/session/SessionManager'
 import log from '../../api/logger'
-import { promptConfirm } from '../../api/modules/prompts'
 import { validateAppAction } from '../../api/modules/utils'
 
 const { uninstallApp } = createAppsClient()
 
-const promptAppUninstall = (appsList: string[]): Promise<boolean> => {
-  const { account, workspace } = SessionManager.getSingleton()
-  return promptConfirm(
-    `Are you sure you want to uninstall ${appsList.join(', ')} from account ${chalk.blue(
-      account
-    )}, workspace ${chalk.green(workspace)}?`
-  )
+const promptAppUninstall = (appsList: string[]) => {
+  return appsList
 }
 
 const uninstallApps = async (appsList: string[]): Promise<void> => {
