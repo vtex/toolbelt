@@ -14,11 +14,10 @@ const choices = {
 }
 
 export async function checkAndOpenNPSLink() {
-  const nextFeedbackDateString = getNextFeedbackDate()
-  const isCI = process.env.CI ?? false
+  // This version should avoid questions to work well on CI
+  return
 
-  // If CI env, skip the feedback always
-  if (isCI) return
+  const nextFeedbackDateString = getNextFeedbackDate()
 
   if (!nextFeedbackDateString) {
     // If the user is starting to use the tool, wait 1 week to ask for feedback.
