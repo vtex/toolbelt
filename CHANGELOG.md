@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+ - Update recommendedEdition in edition.ts to `edition-store@5.x`
+
 ## [3.0.0] - 2021-10-20
 
  - Release major 3.x as stable.
