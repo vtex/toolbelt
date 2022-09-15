@@ -6,7 +6,7 @@ import log from '../../../logger'
 import { promptConfirm } from '../../prompts'
 import { setEdition } from '../../sponsor'
 
-const recommendedEdition = 'vtex.edition-store@2.x'
+const recommendedEdition = 'vtex.edition-store@5.x'
 
 const getCurrEdition = async () => {
   const sponsor = Sponsor.createClient({ workspace: 'master' })
@@ -33,7 +33,7 @@ const promptSwitchEdition = (currEditionId: string) => {
       recommendedEdition
     )}.`
   )
-  log.warn(`For more information about editions, check ${chalk.blue('https://vtex.io/docs/concepts/edition-app/')}`)
+  log.warn(`For more information about editions, check ${chalk.blue('https://developers.vtex.com/vtex-developer-docs/docs/vtex-io-documentation-edition-app')}`)
   return promptConfirm(`Would you like to change the edition to ${chalk.blue(recommendedEdition)} now?`, false)
 }
 
