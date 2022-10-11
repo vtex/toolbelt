@@ -1209,6 +1209,15 @@
     numbro "2.1.0"
     tslib "^1"
 
+"@vtex/cli-plugin-admin@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@vtex/cli-plugin-admin/-/cli-plugin-admin-0.0.2.tgz#4f1142f2106684f0040baced9a6fe5db561614e6"
+  integrity sha512-xSaQhVbsHh4r9Li1JeFabkLu8Bn40lmwzy0VkrERQNOfCMgu7u9tloRakF5aBJXI86LGRy+weTJaEI6d+TlZ4Q==
+  dependencies:
+    "@oclif/command" "^1"
+    "@oclif/config" "^1"
+    tslib "^1"
+
 "@vtex/cli-plugin-autoupdate@^0.0.2":
   version "0.0.2"
   resolved "https://registry.npmjs.org/@vtex/cli-plugin-autoupdate/-/cli-plugin-autoupdate-0.0.2.tgz#f632d598d454632502eb02e32967bc9038d7fc74"
