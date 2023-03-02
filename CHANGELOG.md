@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Bump eventsource from 1.0.7 to 1.1.1 to fix critical vulnerability [9.3 of 10 score]
+
 ## [3.0.0] - 2021-10-20
 
  - Release major 3.x as stable.
