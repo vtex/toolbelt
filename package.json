@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "3.0.0-beta-ci.3",
+  "version": "3.0.0-beta-ci.4",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -86,7 +86,7 @@
     "detect-port": "^1.3.0",
     "diff": "~3.5.0",
     "enquirer": "~2.3.2",
-    "eventsource": "~1.0.7",
+    "eventsource": "~2.0.2",
     "extendable-error": "~0.1.5",
     "fs-extra": "~7.0.0",
     "get-stream": "~4.0.0",
