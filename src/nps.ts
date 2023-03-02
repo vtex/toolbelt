@@ -14,6 +14,9 @@ const choices = {
 }
 
 export async function checkAndOpenNPSLink() {
+  // This version should avoid questions to work well on CI
+  return
+
   const nextFeedbackDateString = getNextFeedbackDate()
 
   // Start of patch to work with Cypress
