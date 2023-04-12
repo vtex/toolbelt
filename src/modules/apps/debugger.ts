@@ -1,7 +1,6 @@
 import streamToString from 'get-stream'
 import net from 'net'
 import WebSocket from 'ws'
-import { cluster } from '../../api/env'
 import { Headers } from '../../api/constants/Headers'
 import { ManifestEditor } from '../../api/manifest'
 import { SessionManager } from '../../api/session/SessionManager'
@@ -35,7 +34,6 @@ function webSocketTunnelHandler(host: string, path: string, server: net.Server):
         Host: host,
         'user-agent': userAgent,
         [Headers.VTEX_RUNTIME_API]: 'true',
-        ...(cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: cluster() } : null),
       },
     })
 
