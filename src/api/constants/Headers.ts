@@ -7,10 +7,6 @@ export enum Headers {
   // Specify a specific pod to receive the request
   VTEX_STICKY_HOST = 'x-vtex-sticky-host',
 
-  // Specify the target cluster for the request.
-  // Works only on myvtexdev domain
-  VTEX_UPSTREAM_TARGET = 'x-vtex-upstream-target',
-
   // LinkID used by builder-hub to create logs/tracing correlation between all
   // relink/link operations related to a initial link
   VTEX_LINK_ID = 'x-vtex-bh-link-id',

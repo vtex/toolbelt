@@ -1,4 +1,3 @@
-import axios from 'axios'
 import os from 'os'
 import help from '@oclif/plugin-help'
 
@@ -6,7 +5,6 @@ import * as Config from '@oclif/config'
 import { HookKeyOrOptions } from '@oclif/config/lib/hooks'
 import { error } from '@oclif/errors'
 import { FeatureFlag } from '../../api/modules/featureFlag'
-import { envCookies } from '../../api/env'
 import { CLIPreTasks } from '../../CLIPreTasks/CLIPreTasks'
 import { TelemetryCollector } from '../../lib/telemetry/TelemetryCollector'
 import { hrTimeToMs } from '../../lib/utils/hrTimeToMs'
@@ -316,13 +314,6 @@ export default async function(options: HookKeyOrOptions<'init'>) {
 
     console.log(renderedCommands)
   }
-
-  axios.interceptors.request.use(config => {
-    if (envCookies()) {
-      config.headers.Cookie = `${envCookies()}; ${config.headers.Cookie || ''}`
-    }
-    return config
-  })
 
   process.on('unhandledRejection', onError)
 

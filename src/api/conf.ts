@@ -50,11 +50,3 @@ export const getEnvironment = (): Environment => {
 export enum Region {
   Production = 'aws-us-east-1',
 }
-
-export const saveCluster = (cluster: string) => {
-  conf.set('cluster', cluster)
-}
-
-export const getCluster = () => {
-  return conf.get('cluster') || CLUSTER_DEFAULT_VALUE
-}
