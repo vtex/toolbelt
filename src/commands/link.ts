@@ -39,6 +39,11 @@ export default class Link extends CustomCommand {
       description: 'Allows linking the app despite Typescript errors.',
       default: false,
     }),
+    'with-debugger': oclifFlags.boolean({
+      char: 'd',
+      description: 'Start the chrome debugger tunnel after the app is linked.',
+      default: false,
+    }),
     workspace: oclifFlags.string({
       char: 'w',
       description: `Starts a development session in the specified ${ColorifyConstants.ID(
@@ -54,10 +59,8 @@ export default class Link extends CustomCommand {
 
   async run() {
     const {
-      flags,
-      flags: { account, setup, clean, unsafe, workspace },
+      flags: { account, setup, clean, unsafe, workspace, 'no-watch': noWatch, 'with-debugger': withDebugger },
     } = this.parse(Link)
-    const noWatch = flags['no-watch']
-    await appLink({ account, workspace, setup, clean, unsafe, noWatch })
+    await appLink({ account, workspace, setup, clean, unsafe, noWatch, withDebugger })
   }
 }

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
  - Update `recommendedEdition` in `edition.ts to `edition-store@5.x`
+ - Make Chrome debugger an opt-in instead of a default open port.
 
 ## [3.0.0] - 2021-10-20
 

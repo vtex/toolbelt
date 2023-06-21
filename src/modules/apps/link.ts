@@ -54,6 +54,7 @@ interface LinkOptions {
   clean?: boolean
   setup?: boolean
   noWatch?: boolean
+  withDebugger?: boolean
 }
 
 const DELETE_SIGN = chalk.red('D')
@@ -317,6 +318,10 @@ export async function appLink(options: LinkOptions) {
   let debuggerStarted = false
   const onBuild = async () => {
     if (debuggerStarted) {
+      return
+    }
+    if (!options.withDebugger) {
+      log.info('Debugger flag not set. To open a chrome debugger server, link your app using the --with-debugger flag.')
       return
     }
     const startDebugger = async () => {
