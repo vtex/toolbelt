@@ -108,7 +108,7 @@ export default function startDebuggerTunnel(
 
   const { account, workspace } = SessionManager.getSingleton()
   const appMajor = versionMajor(version)
-  const host = 'app.io.vtex.com'
+  const host = 'ws.io.vtex.com'
   const path = `/${vendor}.${name}/v${appMajor}/${account}/${workspace}/_debug/attach`
 
   return new Promise((resolve, reject) => {

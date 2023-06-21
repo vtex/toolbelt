@@ -24,7 +24,7 @@ export class Runtime {
   }
 
   public async debugDotnetApp(appName: string, appVendor: string, appMajor: string, debugInst: string) {
-    const host = 'app.io.vtex.com'
+    const host = 'ws.io.vtex.com'
     const path = `/${appVendor}.${appName}/v${appMajor}/${this.account}/${this.workspace}/_debug/dotnet`
     const clusterHeader = cluster() ? { [Headers.VTEX_UPSTREAM_TARGET]: cluster() } : null
 
