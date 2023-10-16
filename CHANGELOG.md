@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+ - Websocket-based debugger tunnel;
+
 ### Changed
  - Update `recommendedEdition` in `edition.ts to `edition-store@5.x`
 
