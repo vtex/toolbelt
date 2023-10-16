@@ -54,6 +54,7 @@ interface LinkOptions {
   clean?: boolean
   setup?: boolean
   noWatch?: boolean
+  debug?: boolean
 }
 
 const DELETE_SIGN = chalk.red('D')
@@ -326,7 +327,9 @@ export async function appLink(options: LinkOptions) {
       }
       return port
     }
-    if (shouldStartDebugger(manifest)) {
+    if (options.debug && shouldStartDebugger(manifest)) {
+      // TODO: Add some sort of log here to know if devs are actually interested
+      // in this feature
       try {
         const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
         // eslint-disable-next-line require-atomic-updates

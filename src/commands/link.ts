@@ -48,6 +48,11 @@ export default class Link extends CustomCommand {
       )} flag to switch from the current ${ColorifyConstants.ID('account')} and ${ColorifyConstants.ID('workspace')}.`,
       required: false,
     }),
+    debug: oclifFlags.boolean({
+      description: `Starts a debug tunnel (alpha)`,
+      default: false,
+      required: false,
+    }),
   }
 
   static args = []
@@ -55,9 +60,9 @@ export default class Link extends CustomCommand {
   async run() {
     const {
       flags,
-      flags: { account, setup, clean, unsafe, workspace },
+      flags: { account, setup, clean, unsafe, workspace, debug },
     } = this.parse(Link)
     const noWatch = flags['no-watch']
-    await appLink({ account, workspace, setup, clean, unsafe, noWatch })
+    await appLink({ account, workspace, setup, clean, unsafe, noWatch, debug })
   }
 }
