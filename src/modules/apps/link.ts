@@ -35,7 +35,6 @@ import debounce from 'debounce'
 import log from '../../api/logger'
 import moment from 'moment'
 import retry from 'async-retry'
-import startDebuggerTunnel from './debugger'
 import workspaceUse from '../../api/modules/workspace/use'
 import { BatchStream } from '../../api/typings/types'
 import { Messages } from '../../lib/constants/Messages'
@@ -54,7 +53,6 @@ interface LinkOptions {
   clean?: boolean
   setup?: boolean
   noWatch?: boolean
-  debug?: boolean
 }
 
 const DELETE_SIGN = chalk.red('D')
@@ -315,36 +313,6 @@ export async function appLink(options: LinkOptions) {
     initial_link_required: () => warnAndLinkFromStart(root, projectUploader, unsafe),
   }
 
-  let debuggerStarted = false
-  const onBuild = async () => {
-    if (debuggerStarted) {
-      return
-    }
-    const startDebugger = async () => {
-      const port = await startDebuggerTunnel(manifest)
-      if (!port) {
-        throw new Error('Failed to start debugger.')
-      }
-      return port
-    }
-    if (options.debug && shouldStartDebugger(manifest)) {
-      // TODO: Add some sort of log here to know if devs are actually interested
-      // in this feature
-      try {
-        const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
-        // eslint-disable-next-line require-atomic-updates
-        debuggerStarted = true
-        log.info(
-          `Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue(
-            'chrome://inspect'
-          )} in Google Chrome to debug your running application.`
-        )
-      } catch (e) {
-        log.error(e.message)
-      }
-    }
-  }
-
   log.info(`Linking app ${appId}`)
 
   let unlistenBuild
@@ -356,9 +324,7 @@ export async function appLink(options: LinkOptions) {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
       return
     }
-    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(
-      prop('unlisten')
-    )
+    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onError }).then(prop('unlisten'))
   } catch (e) {
     if (e.response) {
       const { data } = e.response
