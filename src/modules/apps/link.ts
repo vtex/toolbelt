@@ -12,7 +12,7 @@ import {
   validateAppAction,
 } from '../../api/modules/utils'
 import { createFlowIssueError } from '../../api/error/utils'
-import { concat, intersection, isEmpty, map, pipe, prop } from 'ramda'
+import { concat, isEmpty, map, pipe, prop } from 'ramda'
 import { createInterface } from 'readline'
 import { createPathToFileObject } from '../../api/files/ProjectFilesManager'
 import { default as setup } from '../setup'
@@ -35,7 +35,6 @@ import debounce from 'debounce'
 import log from '../../api/logger'
 import moment from 'moment'
 import retry from 'async-retry'
-import startDebuggerTunnel from './debugger'
 import workspaceUse from '../../api/modules/workspace/use'
 import { BatchStream } from '../../api/typings/types'
 import { Messages } from '../../lib/constants/Messages'
@@ -62,22 +61,11 @@ const INITIAL_LINK_CODE = 'initial_link_required'
 const stabilityThreshold = process.platform === 'darwin' ? 100 : 200
 const linkID = randomBytes(8).toString('hex')
 
-const buildersToStartDebugger = ['node']
 const buildersToRunLocalYarn = ['react', 'node']
 const RETRY_OPTS_INITIAL_LINK = {
   retries: 2,
   minTimeout: 1000,
   factor: 2,
-}
-const RETRY_OPTS_DEBUGGER = {
-  retries: 2,
-  minTimeout: 1000,
-  factor: 2,
-}
-
-const shouldStartDebugger = (manifest: ManifestEditor) => {
-  const buildersThatWillUseDebugger = intersection(manifest.builderNames, buildersToStartDebugger)
-  return buildersThatWillUseDebugger.length > 0
 }
 
 const performInitialLink = async (
@@ -314,34 +302,6 @@ export async function appLink(options: LinkOptions) {
     initial_link_required: () => warnAndLinkFromStart(root, projectUploader, unsafe),
   }
 
-  let debuggerStarted = false
-  const onBuild = async () => {
-    if (debuggerStarted) {
-      return
-    }
-    const startDebugger = async () => {
-      const port = await startDebuggerTunnel(manifest)
-      if (!port) {
-        throw new Error('Failed to start debugger.')
-      }
-      return port
-    }
-    if (shouldStartDebugger(manifest)) {
-      try {
-        const debuggerPort = await retry(startDebugger, RETRY_OPTS_DEBUGGER)
-        // eslint-disable-next-line require-atomic-updates
-        debuggerStarted = true
-        log.info(
-          `Debugger tunnel listening on ${chalk.green(`:${debuggerPort}`)}. Go to ${chalk.blue(
-            'chrome://inspect'
-          )} in Google Chrome to debug your running application.`
-        )
-      } catch (e) {
-        log.error(e.message)
-      }
-    }
-  }
-
   log.info(`Linking app ${appId}`)
 
   let unlistenBuild
@@ -353,9 +313,7 @@ export async function appLink(options: LinkOptions) {
       await listenBuild(subject, buildTrigger, { waitCompletion: true })
       return
     }
-    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onBuild, onError }).then(
-      prop('unlisten')
-    )
+    unlistenBuild = await listenBuild(subject, buildTrigger, { waitCompletion: false, onError }).then(prop('unlisten'))
   } catch (e) {
     if (e.response) {
       const { data } = e.response
