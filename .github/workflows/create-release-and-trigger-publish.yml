@@ -28,12 +28,12 @@ jobs:
     - name: Trigger NPM publish
       uses: peter-evans/repository-dispatch@v1
       with:
-        token: ${{ secrets.REPO_GHA_PAT }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         repository: vtex/toolbelt
         event-type: publish-stable-npm
     - name: Trigger AWS publish
       uses: peter-evans/repository-dispatch@v1
       with:
-        token: ${{ secrets.REPO_GHA_PAT }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         repository: vtex/toolbelt
         event-type: publish-stable-aws
