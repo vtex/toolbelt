@@ -36,7 +36,7 @@ jobs:
       - name: Trigger publish-stable-brew
         uses: peter-evans/repository-dispatch@v1
         with:
-          token: ${{ secrets.REPO_GHA_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository: vtex/homebrew-vtex
           event-type: publish-stable-brew
   publish-failed:
