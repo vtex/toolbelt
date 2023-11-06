@@ -111,7 +111,8 @@ const publisher = (workspace = 'master') => {
         )
       }
     } catch (e) {
-      log.error(`Failed to publish ${appId}`)
+      log.error(`Failed to publish ${appId}`);
+      process.exit(1);
     }
 
     await returnToPreviousAccount({ previousAccount, previousWorkspace })

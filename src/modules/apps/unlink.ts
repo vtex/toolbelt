@@ -22,6 +22,7 @@ Make sure you typed the right app vendor, name and version.`)
         log.error(e.response.data.message)
       }
     }
+    process.exit(1);
   }
 }
 
@@ -40,6 +41,7 @@ const unlinkAllApps = async (): Promise<void> => {
     if (e?.response?.data?.message) {
       log.error(e.response.data.message)
     }
+    process.exit(1);
   }
 }
 
