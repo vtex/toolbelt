@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Allow specific builder config to override the common config for pinned dependencies
+
 ## [4.0.4] - 2023-11-03
 
 ### Fixed
