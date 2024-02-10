@@ -120,7 +120,7 @@ const publisher = (workspace = 'master') => {
   return { publishApp, publishApps }
 }
 
-export default async (path: string, options) => {
+export default async (path: string, options, pipeline: boolean) => {
   log.debug(`Starting to publish app in ${conf.getEnvironment()}`)
 
   const { account } = SessionManager.getSingleton()
@@ -136,7 +136,7 @@ export default async (path: string, options) => {
 
   const yesFlag = options.y || options.yes
 
-  if (!yesFlag) {
+  if (!pipeline && !yesFlag) {
     const confirmVersion = await promptConfirm(
       `Are you sure that you want to release version ${chalk.bold(`${versionMsg} of ${appNameMsg}?`)}`,
       false
