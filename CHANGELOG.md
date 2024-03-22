@@ -7,73 +7,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- handle OPTIONS request for CORS
+
 ## [4.0.4] - 2023-11-03
 
 ### Fixed
- - CI publishing pipeline
+
+- CI publishing pipeline
 
 ## [4.0.0] - 2023-10-30
 
 ### Removed
- - Websocket-based debugger tunnel;
+
+- Websocket-based debugger tunnel;
 
 ### Changed
- - Update `recommendedEdition` in `edition.ts to `edition-store@5.x`
+
+- Update `recommendedEdition` in `edition.ts to`<edition-store@5.x>`
 
 ## [3.0.0] - 2021-10-20
 
- - Release major 3.x as stable.
+- Release major 3.x as stable.
 
 ## [3.8.1-beta] - 2021-10-07
 
 ### Changed
- - Undo a remotion of a condition in ManifestUtil for OCLIF_COMPILATION
+
+- Undo a remotion of a condition in ManifestUtil for OCLIF_COMPILATION
 
 ## [3.8.0-beta] - 2021-06-09
 
 ### Removed
+
 - App purchases and all code related to it
 
 ## [3.7.3-beta] - 2021-05-31
 
 ### Changed
- - Update @vtex/cli-plugin-plugins to ^1.13.2
+
+- Update @vtex/cli-plugin-plugins to ^1.13.2
 
 ## [3.7.2-beta] - 2021-05-10
 
 ### Changed
- - Use templates as remote configs instead of hardcoded strings.
+
+- Use templates as remote configs instead of hardcoded strings.
 
 ## [3.7.1-beta] - 2021-05-07
 
 ### Fixed
- - Fix typo in version update message
+
+- Fix typo in version update message
 
 ## [3.7.0-beta] - 2021-05-03
 
 ### Changed
- - Update @vtex/cli-plugin-plugins
+
+- Update @vtex/cli-plugin-plugins
 
 ## [3.6.1-beta] - 2021-04-22
- - Fix `set edition` command to handle prompt cancellations
- - Add check on `set edition` command to install tenant-provisioner app in sponsor account
+
+- Fix `set edition` command to handle prompt cancellations
+- Add check on `set edition` command to install tenant-provisioner app in sponsor account
 
 ## [3.6.0-beta] - 2021-04-13
 
 ### Added
+
 - [vtex init] Service worker example to list of templates
 
 ## [3.5.2-beta] - 2021-04-09
 
 ### Fixed
+
 - [install] Treat `InstallStatus` as a variable not as a type
+
 ### Changed
+
 - [autoupdate] Update to version 0.0.2
 
 ## [3.5.1-beta] - 2021-04-01
 
 ### Fixed
+
 - [hook] Change imports from node_modules to package name
+
 ## [3.5.0-beta] - 2021-04-01
 
 ### Changed
@@ -85,6 +105,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 -[Messages] Update Plugins / Default commands message UX
+
 ## [3.3.4-beta] - 2021-03-29
 
 ### Fixed
@@ -2104,13 +2125,13 @@ I know you're excited, yeah, gimme a hug homie <3
 
 **TL;DR:** You don't need to type the sandbox name on `watch` or set the cookies anymore.
 
-# !!!
+# 
 
 **First big important note:** If you have any credentials cached, please `logout` and `login` again.
 
 **Second big important note:** Delete the previous `vtex_workspace` and `vtex_sandbox` cookies that you have setted before.
 
-# !!!
+# 
 
 - [`#58`](https://github.com/vtex/toolbelt/issues/58)
 - [`#48`](https://github.com/vtex/toolbelt/issues/48) (closed due to deprecation)
