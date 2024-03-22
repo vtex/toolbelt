@@ -134,6 +134,12 @@ export class LoginServer {
         return this.handleError(ctx, new Error('Received login callback before setting login state'))
       }
 
+      if (ctx.method.toLowerCase() === 'options') {
+        ctx.set('Access-Control-Allow-Origin', '*')
+        ctx.status = 200
+        return
+      }
+
       let body
       if (ctx.method.toLowerCase() === 'post') {
         try {
