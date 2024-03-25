@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - handle OPTIONS request for CORS
+- update `publish-stable-aws` pipeline
 
 ## [4.0.4] - 2023-11-03
 
