@@ -59,7 +59,8 @@ Valid release tags are: ${supportedTagNames.join(', ')}`)
 
 export default async (
   releaseType = 'patch', // This arg. can also be a valid (semver) version.
-  tagName = 'beta'
+  tagName = 'beta',
+  pipeline = false
 ) => {
   const utils = new ReleaseUtils()
   utils.checkGit()
@@ -78,9 +79,12 @@ export default async (
   const tagText = `v${newVersion}`
   const changelogVersion = `\n\n## [${newVersion}] - ${year}-${month}-${day}`
 
-  if (!(await utils.confirmRelease())) {
-    // Abort release.
-    return
+
+  if(!pipeline){
+    if (!(await utils.confirmRelease())) {
+      // Abort release.
+      return
+    }
   }
   log.info('Starting release...')
   try {
@@ -93,7 +97,7 @@ export default async (
     await utils.commit(tagText)
     await utils.tag(tagText)
     await utils.push(tagText)
-    await utils.postRelease()
+    if(!pipeline) await utils.postRelease();
   } catch (e) {
     log.error(`Failed to release \n${e}`)
   }

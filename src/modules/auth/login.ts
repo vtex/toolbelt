@@ -55,7 +55,7 @@ export interface LoginOptions {
   postLoginOps?: PostLoginOps[]
 }
 
-const getTargetLogin = async ({ account: optionAccount, workspace: optionWorkspace }: LoginOptions) => {
+export const getTargetLogin = async ({ account: optionAccount, workspace: optionWorkspace }: LoginOptions) => {
   const {
     account: previousAccount,
     workspace: previousWorkspace,
