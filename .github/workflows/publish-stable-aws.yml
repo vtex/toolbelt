@@ -7,6 +7,9 @@ on:
 jobs:
   aws-publish:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -15,6 +18,12 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: 'Install makensis (apt)'
         run: sudo apt update && sudo apt install -y nsis nsis-pluginapi
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_NAME }}
+          role-session-name: github-actions-from-toolbelt
+          aws-region: us-east-1
       - name: Deploy on AWS
         run: |
           yarn install --ignore-scripts
@@ -22,8 +31,6 @@ jobs:
           yarn release:win
         env:
             IS_CI: "true"
-            AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
-            AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
   publish-success:
     runs-on: ubuntu-latest
     needs: [aws-publish]
@@ -31,14 +38,14 @@ jobs:
       - name: Get deploy version
         id: deployed-version
         run: echo '::set-output name=SOURCE_TAG::$(curl https://api.github.com/repos/vtex/toolbelt/releases/latest -s | jq .tag_name -r)'
-      - name: Trigger slack notification bot [Success]
-        run: 'curl --connect-timeout 30 --retry 3 --retry-delay 120 --data "status=success&user=${{ github.actor }}&platform=AWS-S3&version=${{ steps.deployed-version.outputs.SOURCE_TAG }}" --header "token: ${{ secrets.TOOLBELT_NOTIFICATION_KEY }}" https://master--vtex.myvtex.com/_v/public/toolbelt-notification/status'
       - name: Trigger publish-stable-brew
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.REPO_GHA_PAT }}
           repository: vtex/homebrew-vtex
           event-type: publish-stable-brew
+      - name: Trigger slack notification bot [Success]
+        run: 'curl --connect-timeout 30 --retry 3 --retry-delay 120 --data "status=success&user=${{ github.actor }}&platform=AWS-S3&version=${{ steps.deployed-version.outputs.SOURCE_TAG }}" --header "token: ${{ secrets.TOOLBELT_NOTIFICATION_KEY }}" https://master--vtex.myvtex.com/_v/public/toolbelt-notification/status'
   publish-failed:
     runs-on: ubuntu-latest
     needs: [aws-publish]
