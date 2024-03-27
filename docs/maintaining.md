@@ -12,6 +12,16 @@ This document is for people working on VTEX as Toolbelt maintainers.
 
 ### Deploying a new version
 
+#### Continuous Delivery process
+
+In order to automate the delivery process detailed in this section, there is a Github Action that can be used, just need to follow the steps below:
+
+- Ensure the PR is passing the CI checks, is reviewed and approved
+- Version bump in `package.json` following [SemVer](https://semver.org/)
+- Create a new tag with the same version from previous step
+- Push the code and tags and the release actions will start the process to deploy to NPM and AWS S3
+- In the last step of the AWS release, it will open a PR to the repo responsible for the Homebrew update, [homebrew-vtex](https://github.com/vtex/homebrew-vtex), use the generated link and merge the PR to get it released in Homebrew as well.
+
 #### **NPM**
 
 The main deploy of `toolbelt` is on [NPM](https://www.npmjs.com/package/vtex). This deploy is reponsable for warning `new and deprecated versions`

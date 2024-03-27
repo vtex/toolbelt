@@ -208,17 +208,6 @@ fish
 
 ---
 
-# Releasing a new version
-
-To release a new version, follow the steps:
-
-- Ensure the PR is passing the CI checks, reviewed and approved
-- Version bump in `package.json` following [SemVer](https://semver.org/)
-- Create a new tag with the same version from previous step
-- Push the code and tags and the release actions will start the process to deploy to NPM and AWS S3
-
----
-
 # Frequently Asked Questions
 
 <details>
