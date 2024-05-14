@@ -48,8 +48,8 @@ export const fixPinnedDependencies = async (
       }
 
       const pinnedDepsForBuilder = {
-        ...pinnedDeps.builders[builder]?.[builderMajorLocator],
         ...pinnedDeps.common,
+        ...pinnedDeps.builders[builder]?.[builderMajorLocator],
       }
 
       return fixBuilderFolderPinnedDeps(appRoot, builder, pinnedDepsForBuilder)
