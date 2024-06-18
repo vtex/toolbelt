@@ -774,6 +774,7 @@ OPTIONS
   -h, --help     show CLI help
   -v, --verbose  Show debug level logs
   --trace        Ensure all requests to VTEX IO are traced
+  --display-name Add the project name to the tag and release commit
 
 EXAMPLES
   vtex release
