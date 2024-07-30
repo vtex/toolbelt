@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Pack toolbelt using nodejs 20
+- Allow specific builder config to override the common config for pinned dependencies
 
 ## [4.0.5] - 2024-03-25
 
