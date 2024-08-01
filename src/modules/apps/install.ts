@@ -53,7 +53,7 @@ function handleAccountNotSponsoredByVendorError(app: string) {
 }
 
 const prepareInstall = async (appsList: string[], force: boolean): Promise<void> => {
-  let exitWithError = false;
+  let exitWithError = false
 
   for (const app of appsList) {
     ManifestValidator.validateApp(app)
@@ -81,7 +81,7 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
       }
       log.info(`Installed app ${chalk.green(app)} successfully`)
     } catch (e) {
-      exitWithError = true;
+      exitWithError = true
       if (isNotFoundError(e)) {
         log.warn(
           `Billing app not found in current workspace. Please install it with ${chalk.green(
@@ -111,7 +111,7 @@ const prepareInstall = async (appsList: string[], force: boolean): Promise<void>
     }
   }
 
-  if (exitWithError) process.exit(1);
+  if (exitWithError) process.exit(1)
 }
 
 export default async (optionalApps: string[], options) => {
