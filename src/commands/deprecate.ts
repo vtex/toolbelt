@@ -18,6 +18,10 @@ export default class Deprecate extends CustomCommand {
   static flags = {
     ...CustomCommand.globalFlags,
     yes: oclifFlags.boolean({ description: 'Answers yes to all prompts.', char: 'y', default: false }),
+    pipeline: oclifFlags.boolean({
+      char: 'p',
+      description: `Runs the command in ${ColorifyConstants.ID('pipeline')} mode.`,
+    })
   }
 
   static strict = false
@@ -41,11 +45,11 @@ export default class Deprecate extends CustomCommand {
   async run() {
     const {
       raw,
-      flags: { yes },
+      flags: { yes, pipeline },
     } = this.parse(Deprecate)
 
     const allArgs = this.getAllArgs(raw)
 
-    await appsDeprecate(allArgs, { yes })
+    await appsDeprecate(allArgs, { yes }, pipeline)
   }
 }
