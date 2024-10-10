@@ -22,6 +22,7 @@ export class VBase extends InfraClient {
     })
   }
 
+  // Resolve a specific pages-graphql conflict
   public resolveConflict = (bucketKey: string, path: string, content: any) => {
     const data = [
       {
@@ -36,22 +37,17 @@ export class VBase extends InfraClient {
     })
   }
 
+  // List all conflicts in the pages-graphql bucket
   public getConflicts = async () => {
     return this.http.get(routes.Conflicts('vtex.pages-graphql/userData'), {
       metric: 'vbase-get-conflicts',
     })
   }
 
+  // Verify if there is at least one conlfict in the pages-graphql bucket
   public checkForConflicts = async () => {
-    let status: number
-    try {
-      const response = await this.http.get(routes.File('vtex.pages-graphql/userData', 'store/content.json'), {
-        metric: 'vbase-conflict',
-      })
-      status = response.status
-    } catch (error) {
-      status = error.response && error.response.status
-    }
-    return status === 409
+    const response = await this.getConflicts().then(res => res.data)
+
+    return response?.data?.length > 0
   }
 }
