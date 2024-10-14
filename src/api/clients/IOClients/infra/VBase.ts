@@ -48,6 +48,6 @@ export class VBase extends InfraClient {
   public checkForConflicts = async () => {
     const response = await this.getConflicts().then(res => res.data)
 
-    return response?.data?.length > 0
+    return response?.length > 0
   }
 }
