@@ -70,7 +70,7 @@ const prepareAndDeprecateApps = async (appsList: string[]): Promise<any> => {
   await returnToPreviousAccount({ previousAccount: originalAccount, previousWorkspace: originalWorkspace })
 }
 
-export default async (optionalApps: string[], options) => {
+export default async (optionalApps: string[], options, pipeline: boolean = false) => {
   const preConfirm = options.y || options.yes
 
   const { account, workspace } = SessionManager.getSingleton()
@@ -79,9 +79,12 @@ export default async (optionalApps: string[], options) => {
 
   const appsList = optionalApps.length > 0 ? optionalApps : [(await ManifestEditor.getManifestEditor()).appLocator]
 
-  if (!preConfirm && !(await promptDeprecate(appsList))) {
-    return
+  if(!pipeline){
+    if (!preConfirm && !(await promptDeprecate(appsList))) {
+      return
+    }
   }
+  
 
   log.debug(`Deprecating app${appsList.length > 1 ? 's' : ''}: ${appsList.join(', ')}`)
   return prepareAndDeprecateApps(appsList)
