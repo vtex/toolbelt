@@ -9,7 +9,7 @@
         when:
           - event: push
             source: branch
-            regex: chore/configure-docs
+            regex: main
             path:
               - "docs/**"
               - README.md
