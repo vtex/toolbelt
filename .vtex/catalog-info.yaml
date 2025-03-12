@@ -15,6 +15,6 @@ metadata:
     vtex.com/application-id: 5YP7PPID
 spec:
   lifecycle: stable
-  owner: apps
+  owner: te-0029
   type: cli
   dependsOn: []
