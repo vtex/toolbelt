@@ -48,6 +48,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Undo a remotion of a condition in ManifestUtil for OCLIF_COMPILATION
 
+### Added
+
+- `--display-name` flag to release command
+
 ## [3.8.0-beta] - 2021-06-09
 
 ### Removed
