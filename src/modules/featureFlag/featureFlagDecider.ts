@@ -9,10 +9,7 @@ import chalk from 'chalk'
 export async function switchOpen(url: string, options) {
   try {
     const configClient = ToolbeltConfig.createClient()
-    console.log(configClient.getGlobalConfig)
     const { featureFlags } = await configClient.getGlobalConfig()
-
-    console.log(featureFlags)
 
     logger.info('Your browser should open automatically. You can also use the url below.')
     logger.info(`${chalk.cyan(url)}`)
