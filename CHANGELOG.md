@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The URL is now shown as a log when opening browser windows.
+
 ## [4.1.0] - 2024-08-01
 
 ### Changed
+
 - Pack toolbelt using nodejs 20
 - Allow specific builder config to override the common config for pinned dependencies
 
@@ -2134,13 +2139,13 @@ I know you're excited, yeah, gimme a hug homie <3
 
 **TL;DR:** You don't need to type the sandbox name on `watch` or set the cookies anymore.
 
-# 
+#
 
 **First big important note:** If you have any credentials cached, please `logout` and `login` again.
 
 **Second big important note:** Delete the previous `vtex_workspace` and `vtex_sandbox` cookies that you have setted before.
 
-# 
+#
 
 - [`#58`](https://github.com/vtex/toolbelt/issues/58)
 - [`#48`](https://github.com/vtex/toolbelt/issues/48) (closed due to deprecation)
