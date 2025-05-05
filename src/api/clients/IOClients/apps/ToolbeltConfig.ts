@@ -2,13 +2,13 @@ import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import { NodeToRender } from '@vtex/toolbelt-message-renderer'
 import { IOClientFactory } from '../IOClientFactory'
 
-interface VersionCheckRes {
+export interface VersionCheckRes {
   minVersion: string
   validVersion: boolean
   message: string
 }
 
-interface GlobalConfig {
+export interface GlobalConfig {
   config: Record<string, any>
   messages: Record<string, NodeToRender>
   featureFlags: Record<string, any>
