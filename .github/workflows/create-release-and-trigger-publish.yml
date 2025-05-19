@@ -8,8 +8,27 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
-  create-release:
+  check-tag:
     runs-on: ubuntu-latest
+    outputs:
+      tag_exists: ${{ steps.check.outputs.exists }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Check if tag exists
+        id: check
+        run: |
+          if git ls-remote --tags origin | grep -q "refs/tags/${GITHUB_REF_NAME}$"; then
+            echo "::set-output name=exists::true"
+          else
+            echo "::set-output name=exists::false"
+          fi
+  create-release:
+    needs: [check-tag]
+    if: needs.check_tag.outputs.tag_exists == 'false'
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.set-output.outputs.created }}
     steps:
       - name: Create Release
         id: create_release
@@ -21,19 +40,24 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: false
           prerelease: false
+      - name: Set output
+        id: set-output
+        run: echo "created=true" >> $GITHUB_ENV
   trigger-publish:
+    needs: [check-tag, create-release]
     runs-on: ubuntu-latest
-    needs: [create-release]
+    if: needs.check-tag.outputs.tag_exists == 'true' || needs.create-release.result == 'success'
     steps:
-    - name: Trigger NPM publish
-      uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        repository: vtex/toolbelt
-        event-type: publish-stable-npm
-    - name: Trigger AWS publish
-      uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        repository: vtex/toolbelt
-        event-type: publish-stable-aws
+      # ...
+      - name: Trigger NPM publish
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: vtex/toolbelt
+          event-type: publish-stable-npm
+      - name: Trigger AWS publish
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: vtex/toolbelt
+          event-type: publish-stable-aws
