@@ -17,7 +17,7 @@ interface CustomErrorReportCreateArgs extends ErrorReportCreateArgs {
   shouldRemoteReport?: boolean
 }
 
-interface CustomErrorReportBaseConstructorArgs extends ErrorReportBaseConstructorArgs {
+export interface CustomErrorReportBaseConstructorArgs extends ErrorReportBaseConstructorArgs {
   shouldRemoteReport: boolean
 }
 
@@ -31,7 +31,7 @@ interface ErrorEnv {
 }
 
 type ErrorLogLevel = 'error' | 'debug'
-interface LogToUserOptions {
+export interface LogToUserOptions {
   coreLogLevelDefault?: ErrorLogLevel
   requestDataLogLevelDefault?: ErrorLogLevel
   logLevels?: {
