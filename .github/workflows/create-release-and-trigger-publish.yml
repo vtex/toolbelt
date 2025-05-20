@@ -44,11 +44,20 @@ jobs:
         id: set-output
         run: echo "created=true" >> $GITHUB_ENV
   trigger-publish:
-    needs: [check-tag, create-release]
+    needs: [check-tag]
     runs-on: ubuntu-latest
-    if: (needs.check-tag.outputs.tag_exists == 'true' && needs.create-release.result == 'skipped') || needs.create-release.result == 'success'
+    if: always()
     steps:
-      # ...
+      - name: Determine whether to publish
+      run: |
+        if [ "${{ needs.check-tag.outputs.tag_exists }}" == "true" ]; then
+          echo "Tag already exists. Proceeding with publish."
+        elif [ "${{ github.event_name }}" == "push" ]; then
+          echo "Release job probably ran. Proceeding with publish."
+        else
+          echo "Conditions not met. Skipping publish."
+          exit 1
+        fi
       - name: Trigger NPM publish
         uses: peter-evans/repository-dispatch@v1
         with:
