@@ -46,7 +46,7 @@ jobs:
   trigger-publish:
     needs: [check-tag, create-release]
     runs-on: ubuntu-latest
-    if: needs.check-tag.outputs.tag_exists == 'true' || needs.create-release.result == 'success'
+    if: (needs.check-tag.outputs.tag_exists == 'true' && needs.create-release.result == 'skipped') || needs.create-release.result == 'success'
     steps:
       # ...
       - name: Trigger NPM publish
