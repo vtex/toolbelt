@@ -49,7 +49,7 @@ jobs:
     if: always()
     steps:
       - name: Determine whether to publish
-      run: |
+        run: |
         if [ "${{ needs.check-tag.outputs.tag_exists }}" == "true" ]; then
           echo "Tag already exists. Proceeding with publish."
         elif [ "${{ github.event_name }}" == "push" ]; then
