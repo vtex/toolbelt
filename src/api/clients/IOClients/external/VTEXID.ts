@@ -7,7 +7,6 @@ import { switchOpen } from '../../../../modules/featureFlag/featureFlagDecider'
 export class VTEXID extends IOClient {
   private static readonly DEFAULT_TIMEOUT = 10000
   private static readonly DEFAULT_RETRIES = 2
-  private static readonly BASE_URL = 'https://vtexid.vtex.com.br'
   private static readonly API_PATH_PREFIX = '/api/vtexid'
   private static readonly TOOLBELT_API_PATH_PREFIX = `${VTEXID.API_PATH_PREFIX}/toolbelt`
   private static readonly VTEX_ID_AUTH_COOKIE = 'VtexIdClientAutCookie'
@@ -28,27 +27,27 @@ export class VTEXID extends IOClient {
       timeout: VTEXID.DEFAULT_TIMEOUT,
       retries: VTEXID.DEFAULT_RETRIES,
       ...opts,
-      baseURL: VTEXID.BASE_URL,
+      baseURL: `https://${ioContext.account}.myvtex.com`,
     })
   }
 
-  public startToolbeltLogin({ account, secretHash, loopbackUrl }: StartToolbeltLoginInput) {
+  public startToolbeltLogin({ secretHash, loopbackUrl }: StartToolbeltLoginInput) {
     const body = querystring.stringify({
       secretHash,
       loopbackUrl,
     })
 
-    return this.http.post<string>(`${VTEXID.TOOLBELT_API_PATH_PREFIX}/start?an=${account}`, body)
+    return this.http.post<string>(`${VTEXID.TOOLBELT_API_PATH_PREFIX}/start`, body)
   }
 
-  public validateToolbeltLogin({ account, state, secret, ott }: ValidateToolbeltLoginInput) {
+  public validateToolbeltLogin({ state, secret, ott }: ValidateToolbeltLoginInput) {
     const body = querystring.stringify({
       state,
       secret,
       ott,
     })
 
-    return this.http.post<{ token: string }>(`${VTEXID.TOOLBELT_API_PATH_PREFIX}/validate?an=${account}`, body)
+    return this.http.post<{ token: string }>(`${VTEXID.TOOLBELT_API_PATH_PREFIX}/validate`, body)
   }
 
   public invalidateToolbeltToken(token: string) {
@@ -61,13 +60,11 @@ export class VTEXID extends IOClient {
 }
 
 interface StartToolbeltLoginInput {
-  account: string
   secretHash: string
   loopbackUrl: string
 }
 
 interface ValidateToolbeltLoginInput {
-  account: string
   state: string
   secret: string
   ott: string
