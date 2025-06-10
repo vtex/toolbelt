@@ -158,7 +158,6 @@ export class LoginServer {
       const vtexId = VTEXID.createClient({ account: this.loginConfig.account })
       try {
         const { token } = await vtexId.validateToolbeltLogin({
-          account: this.loginConfig.account,
           secret: this.loginConfig.secret,
           ott: body.ott,
           state: this.loginState,

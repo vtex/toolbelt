@@ -32,7 +32,6 @@ export class OAuthAuthenticator extends AuthProviderBase {
 
     try {
       const loginState = await vtexId.startToolbeltLogin({
-        account,
         secretHash,
         loopbackUrl: loginServer.loginCallbackUrl,
       })
