@@ -7,8 +7,6 @@ import { SessionManager } from '../api/session/SessionManager'
 import { randomCryptoString } from '../lib/utils/randomCryptoString'
 
 export interface ChatOptions {
-  endpoint: string
-  path: string
   apiKey?: string
   sendToken?: boolean
 }
@@ -61,8 +59,8 @@ const postJson = (body: any, headers: Record<string, string> = {}): Promise<any>
     })
 
     req.on('error', reject)
-    req.setTimeout(60_000, () => {
-      req.destroy(new Error('Request timeout'))
+    req.setTimeout(5_000, () => {
+      req.destroy(new Error('Connection timeout - make sure the chat server is running'))
     })
     req.write(JSON.stringify(body))
     req.end()
@@ -70,7 +68,7 @@ const postJson = (body: any, headers: Record<string, string> = {}): Promise<any>
 }
 
 const extractAnswer = (data: any): string => {
-  const candidate = data?.answer || data?.message || data?.output || data?.text
+  const candidate = data?.answer || data?.response || data?.message || data?.output || data?.text
   if (typeof candidate === 'string') return candidate
   try {
     return JSON.stringify(data, null, 2)
@@ -79,7 +77,7 @@ const extractAnswer = (data: any): string => {
   }
 }
 
-export const runChatRepl = async ({ endpoint, path, apiKey, sendToken }: ChatOptions): Promise<void> => {
+export const runChatRepl = async ({ apiKey, sendToken }: ChatOptions): Promise<void> => {
   const session = SessionManager.getSingleton()
   const { account, workspace } = session
   const token = sendToken ? session.checkAndGetToken(false) : undefined
@@ -88,7 +86,8 @@ export const runChatRepl = async ({ endpoint, path, apiKey, sendToken }: ChatOpt
   const sessionId = randomCryptoString(16, DEFAULT_ALPHABET)
 
   // Intro
-  logger.info(`Connected to agent at ${endpoint}${path}. Type /exit to quit.`)
+  logger.info(`Starting chat session. Type /exit to quit.`)
+  logger.info(`Connecting to chat server at ${CHAT_URL}...`)
 
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true })
   const ask = (): Promise<string> => new Promise(resolve => rl.question('You> ', resolve))
@@ -116,13 +115,18 @@ export const runChatRepl = async ({ endpoint, path, apiKey, sendToken }: ChatOpt
     try {
       const headers: Record<string, string> = {}
       if (apiKey) headers.Authorization = `Bearer ${apiKey}`
+      
+      logger.info(`Sending message: ${userInput}`)
       // eslint-disable-next-line no-await-in-loop
       const res = await postJson(body, headers)
       const answer = extractAnswer(res)
       logger.info(`Agent: ${answer}`)
     } catch (err) {
-      logger.error('Chat request failed', err)
-      logger.error('Request failed. See debug logs for details.')
+      logger.error('Chat request failed:', err)
+      if (err instanceof Error) {
+        logger.error(`Error message: ${err.message}`)
+        logger.error(`Error stack: ${err.stack}`)
+      }
     }
   }
 
