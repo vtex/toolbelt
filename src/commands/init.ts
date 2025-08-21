@@ -17,13 +17,16 @@ export default class Init extends CustomCommand {
     ...CustomCommand.globalFlags,
   }
 
-  static args = [{ name: 'projectName', required: false }]
+  static args = [
+    { name: 'projectName', required: false },
+    { name: 'preselectedProject', required: false },
+  ]
 
   async run() {
     const {
-      args: { projectName },
+      args: { projectName, preselectedProject },
     } = this.parse(Init)
 
-    await appsInit(projectName)
+    await appsInit(projectName, preselectedProject)
   }
 }

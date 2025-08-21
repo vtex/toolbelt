@@ -55,12 +55,55 @@ const promptContinue = async (repoName: string, projectFolderName?: string) => {
   }
 }
 
-export default async (projectFolderName?: string) => {
+//  "VTEXInternalTemplates": [
+//         "admin-example",
+//         "admin-ui-example",
+//         "delivery-theme",
+//         "graphql-example",
+//         "masterdata-graphql-guide",
+//         "react-guide",
+//         "render-guide",
+//         "service-example",
+//         "support app",
+//         "payment-provider-example"
+// ]
+
+const getRepoSelected = (value: string) => {
+  const options = [
+    'admin-example',
+    'admin-ui-example',
+    'delivery-theme',
+    'graphql-example',
+    'masterdata-graphql-guide',
+    'react-guide',
+    'render-guide',
+    'service-example',
+    'support app',
+    'payment-provider-example',
+  ]
+
+  return options[value]
+}
+
+export default async (projectFolderName?: string, preselectedProject?: string) => {
   log.debug(Messages.DEBUG_PROMPT_APP_INFO)
   log.info(Messages.INIT_HELLO_EXPLANATION())
+
   try {
-    const { repository: repo, organization: org } = templates[await promptTemplates()]
+    let org = ''
+    let repo = ''
+
+    if (!preselectedProject) {
+      const { repository, organization } = templates[await promptTemplates()]
+
+      repo = repository
+      org = organization
+    } else {
+      repo = getRepoSelected(preselectedProject)
+    }
+
     await promptContinue(repo, projectFolderName)
+
     log.info(`Cloning ${chalk.bold.cyan(repo)} from ${chalk.bold.cyan(org)}.`)
     await git.clone(repo, org, projectFolderName)
     log.info(Messages.INIT_START_DEVELOPING(projectFolderName ?? repo))
