@@ -164,7 +164,7 @@ const watchAndSendChanges = async (
     throw err
   }
 
-  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json', 'cypress.json']
+  const defaultPatterns = ['*/**', 'manifest.json', 'policies.json', '.npmrc', 'cypress.json']
   const linkedDepsPatterns = map(path => join(path, '**'), yarnFilesManager.symlinkedDepsDirs)
 
   const pathModifier = pipe(
@@ -173,8 +173,43 @@ const watchAndSendChanges = async (
   )
 
   const pathToChange = (path: string, remove?: boolean): ChangeToSend => {
-    const content = remove ? null : readFileSync(resolvePath(root, path)).toString('base64')
-    const byteSize = remove ? 0 : Buffer.byteLength(content)
+    if (remove) {
+      return {
+        content: null,
+        byteSize: 0,
+        path: pathModifier(path),
+      }
+    }
+
+    const filePath = resolvePath(root, path)
+    let fileContent: string
+
+    // Handle .npmrc files with environment variable expansion
+    if (path.endsWith('.npmrc')) {
+      try {
+        const originalContent = readFileSync(filePath, 'utf8')
+        // Expand environment variables in .npmrc content
+        const expandedContent = originalContent.replace(/\$\{([^}]+)\}/g, (_, envVar) => {
+          const value = process.env[envVar]
+          if (value === undefined) {
+            throw new Error(`Environment variable ${envVar} is not defined`)
+          }
+          return value
+        })
+        fileContent = expandedContent
+      } catch (error) {
+        // If environment variable expansion fails, fall back to original file
+        log.warn(`Warning: Failed to expand environment variables in ${path}: ${error.message}`)
+        fileContent = readFileSync(filePath, 'utf8')
+      }
+    } else {
+      // For all other files, read as binary and convert to base64
+      fileContent = readFileSync(filePath).toString('base64')
+    }
+
+    const content = Buffer.from(fileContent, 'utf8').toString('base64')
+    const byteSize = Buffer.byteLength(content)
+
     return {
       content,
       byteSize,
