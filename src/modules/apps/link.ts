@@ -182,29 +182,35 @@ const watchAndSendChanges = async (
     }
 
     const filePath = resolvePath(root, path)
+
+    if (!path.endsWith('.npmrc')) {
+      const content = readFileSync(filePath).toString('base64')
+      const byteSize = Buffer.byteLength(content)
+      return {
+        content,
+        byteSize,
+        path: pathModifier(path),
+      }
+    }
+
     let fileContent: string
 
     // Handle .npmrc files with environment variable expansion
-    if (path.endsWith('.npmrc')) {
-      try {
-        const originalContent = readFileSync(filePath, 'utf8')
-        // Expand environment variables in .npmrc content
-        const expandedContent = originalContent.replace(/\$\{([^}]+)\}/g, (_, envVar) => {
-          const value = process.env[envVar]
-          if (value === undefined) {
-            throw new Error(`Environment variable ${envVar} is not defined`)
-          }
-          return value
-        })
-        fileContent = expandedContent
-      } catch (error) {
-        // If environment variable expansion fails, fall back to original file
-        log.warn(`Warning: Failed to expand environment variables in ${path}: ${error.message}`)
-        fileContent = readFileSync(filePath, 'utf8')
-      }
-    } else {
-      // For all other files, read as binary and convert to base64
-      fileContent = readFileSync(filePath).toString('base64')
+    try {
+      const originalContent = readFileSync(filePath, 'utf8')
+      // Expand environment variables in .npmrc content
+      const expandedContent = originalContent.replace(/\$\{([^}]+)\}/g, (_, envVar) => {
+        const value = process.env[envVar]
+        if (value === undefined) {
+          throw new Error(`Environment variable ${envVar} is not defined`)
+        }
+        return value
+      })
+      fileContent = expandedContent
+    } catch (error) {
+      // If environment variable expansion fails, fall back to original file
+      log.warn(`Warning: Failed to expand environment variables in ${path}: ${error.message}`)
+      fileContent = readFileSync(filePath, 'utf8')
     }
 
     const content = Buffer.from(fileContent, 'utf8').toString('base64')
