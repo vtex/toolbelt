@@ -16,6 +16,23 @@
           - event: push
             source: branch
 
+      - name: npm-publish-v1
+        parameters:
+          nodeVersion: "20-bookworm"
+          packManager: yarn
+          skipInstall: false
+          nodeCommands:
+            - export IS_CI=\"true\" && yarn build
+          publishViaGithubWorkflow: true
+          workflowFile: publish-npm.yml
+          workflowVersion: '{{ ref_name }}'
+        when:
+          - event: push
+            source: tag
+        notifications:
+          slack:
+            channel: cdc-deployments
+
       - name: techdocs-v1
         parameters:
           entityReference: default/component/toolbelt
