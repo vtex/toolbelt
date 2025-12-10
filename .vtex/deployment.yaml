@@ -1,7 +1,21 @@
 - name: toolbelt
+  referenceId: 5YP7PPID
   build:
     provider: dkcicd
     pipelines:
+      - name: node-ci-v2
+        parameters:
+          nodeVersion: "20-bookworm"
+          packManager: yarn
+          skipInstall: false
+          nomdeCommands:
+            - ci:prettier-check
+            - lint:node
+            - ci:test
+        when:
+          - event: push
+            source: branch
+
       - name: techdocs-v1
         parameters:
           entityReference: default/component/toolbelt
