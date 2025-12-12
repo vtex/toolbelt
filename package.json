@@ -161,7 +161,9 @@
     "typescript": "^3.8.2"
   },
   "resolutions": {
-    "stats-lite": "vtex/node-stats-lite#v2.2.1"
+    "stats-lite": "vtex/node-stats-lite#v2.2.1",
+    "is-generator-function": "1.0.10",
+    "generator-function": "2.1.0"
   },
   "oclif": {
     "commands": "./lib/commands",
