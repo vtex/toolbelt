@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Change dependency reference breaking installation via NPM
+
 ## [4.3.1]
 
 ### Fixed
