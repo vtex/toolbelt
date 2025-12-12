@@ -22,7 +22,7 @@
           packManager: yarn
           skipInstall: false
           nodeCommands:
-            - export IS_CI=\"true\" && yarn build
+            - build
           publishViaGithubWorkflow: true
           workflowFile: publish-npm.yml
           workflowVersion: '{{ ref_name }}'
