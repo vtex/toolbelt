@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "4.3.2-beta.5",
+  "version": "4.3.2-beta.6",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -162,8 +162,7 @@
   },
   "resolutions": {
     "stats-lite": "vtex/node-stats-lite#v2.2.1",
-    "is-generator-function": "1.0.10",
-    "generator-function": "2.1.0"
+    "is-generator-function": "1.0.10"
   },
   "oclif": {
     "commands": "./lib/commands",
