@@ -94,6 +94,7 @@
     "graphql": "^14.2.1",
     "indent-string": "^4.0.0",
     "is-docker": "^2.0.0",
+    "is-generator-function": "1.1.0",
     "is-wsl": "^2.1.1",
     "js-yaml": "~3.13.1",
     "jsonwebtoken": "~8.5.1",
@@ -159,6 +160,14 @@
     "ts-jest": "24.2.0",
     "ts-node": "^8.0.0",
     "typescript": "^3.8.2"
+  },
+  "resolutions": {
+    "stats-lite": "vtex/node-stats-lite#v2.2.1",
+    "is-generator-function": "1.1.0"
+  },
+  "overrides": {
+    "stats-lite": "vtex/node-stats-lite#v2.2.1",
+    "is-generator-function": "1.1.0"
   },
   "oclif": {
     "commands": "./lib/commands",
