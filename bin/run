@@ -1,10 +1,33 @@
 #!/usr/bin/env node
-
 exports.initTimeStartTime = process.hrtime()
-require('v8-compile-cache')
+
+const path = require('path')
+
+// Prefer vendored modules first so hoisted/global copies don't win.
+try {
+  const vendorNodeModules = path.join(__dirname, '..', 'lib', 'vendor', 'node_modules')
+  module.paths.unshift(vendorNodeModules)
+} catch (e) { /* ignore */ }
+
+// If we created a vendored shim, load it explicitly so require('generator-function')
+// resolves to our CJS shim before v8-compile-cache or other modules run.
+try {
+  const vendoredGenerator = path.join(__dirname, '..', 'lib', 'vendor', 'node_modules', 'generator-function')
+  // require the package entry (will load index.js) if present
+  require(vendoredGenerator)
+} catch (e) {
+  // ignore - vendored shim may not exist in local dev
+}
+
+// tolerant v8-compile-cache load (best-effort)
+try {
+  require('v8-compile-cache')
+} catch (reqErr) {
+  try { void import('v8-compile-cache') } catch (e) { /* ignore */ }
+}
 
 if (require.main === module) {
-    require('@oclif/command').run()
-        .then(require('@oclif/command/flush'))
-        .catch(require('@oclif/errors/handle'))
+  require('@oclif/command').run()
+    .then(require('@oclif/command/flush'))
+    .catch(require('@oclif/errors/handle'))
 }

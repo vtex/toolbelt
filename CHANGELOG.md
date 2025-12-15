@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Pin dependencies to functional versions to avoid breaking installation via NPM and error running the CLI on nodejs >= 20.x
+
 ## [4.3.1]
 
 ### Fixed
