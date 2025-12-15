@@ -162,7 +162,11 @@
   },
   "resolutions": {
     "stats-lite": "vtex/node-stats-lite#v2.2.1",
-    "is-generator-function": "1.0.10"
+    "is-generator-function": "1.1.0"
+  },
+  "overrides": {
+    "stats-lite": "vtex/node-stats-lite#v2.2.1",
+    "is-generator-function": "1.1.0"
   },
   "oclif": {
     "commands": "./lib/commands",
