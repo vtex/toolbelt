@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "4.3.2-beta.8",
+  "version": "4.3.2-beta.10",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -94,6 +94,7 @@
     "graphql": "^14.2.1",
     "indent-string": "^4.0.0",
     "is-docker": "^2.0.0",
+    "is-generator-function": "1.1.0",
     "is-wsl": "^2.1.1",
     "js-yaml": "~3.13.1",
     "jsonwebtoken": "~8.5.1",
