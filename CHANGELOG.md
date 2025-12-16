@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Update the dependency to a functional version for vtex/node-stats-lite
+- Update the bin/run to match the best v8 cache implementation given a nodejs version
+
 ## [4.3.1]
 
 ### Fixed
