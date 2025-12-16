@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "4.3.2-beta.12",
+  "version": "4.3.2-beta.13",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -94,7 +94,6 @@
     "graphql": "^14.2.1",
     "indent-string": "^4.0.0",
     "is-docker": "^2.0.0",
-    "is-generator-function": "1.1.0",
     "is-wsl": "^2.1.1",
     "js-yaml": "~3.13.1",
     "jsonwebtoken": "~8.5.1",
@@ -162,12 +161,10 @@
     "typescript": "^3.8.2"
   },
   "resolutions": {
-    "stats-lite": "vtex/node-stats-lite#v2.2.1",
-    "is-generator-function": "1.1.0"
+    "stats-lite": "vtex/node-stats-lite#v2.2.1"
   },
   "overrides": {
-    "stats-lite": "vtex/node-stats-lite#v2.2.1",
-    "is-generator-function": "1.1.0"
+    "stats-lite": "vtex/node-stats-lite#v2.2.1"
   },
   "oclif": {
     "commands": "./lib/commands",
