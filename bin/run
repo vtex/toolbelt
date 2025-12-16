@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 exports.initTimeStartTime = process.hrtime()
-require('v8-compile-cache')
 
 // Only use v8-compile-cache for Node.js versions below 20. It's necessary since v8-compile-cache does not compile esm modules.
 // v8 has already been improved in Node.js 20 to cache esm modules, so v8-compile-cache is not needed anymore.
