@@ -160,6 +160,12 @@
     "ts-node": "^8.0.0",
     "typescript": "^3.8.2"
   },
+  "resolutions": {
+    "stats-lite": "vtex/node-stats-lite#v2.2.1"
+  },
+  "overrides": {
+    "stats-lite": "vtex/node-stats-lite#v2.2.1"
+  },
   "oclif": {
     "commands": "./lib/commands",
     "bin": "vtex",
