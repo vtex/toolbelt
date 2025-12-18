@@ -34,6 +34,36 @@ Now, you can use the binaries in a VTEX IO App as:
 ~/.local/vtex/vtex/bin/vtex --version # or any other command
 ```
 
+### Building the tgz locally and testing it as a global installation for npm or yarn
+You can simulate a global installation for npm or yarn with your local changes. To do so, follow the following steps:
+
+1. Make sure you don't have `vtex` in your environment. Running `which vtex` should return `vtex not found`. You can also uninstall it with:
+
+```
+yarn global remove vtex  
+# or (depending on your installation)
+npm -g un vtex
+```
+
+2. Build the project locally and create a .tgz file:
+
+```
+yarn install
+yarn build
+npm pack
+```
+
+3. Install it globally using your the consumer you want to test:
+
+```
+yarn global add file:$(pwd)/vtex-4.3.2-beta.15.tgz 
+# or
+npm -g install ./vtex-4.3.2-beta.15.tgz
+```
+
+Don't forget to clean it up after testing it
+
+
 ### Adding commands
 
 The VTEX CLI uses [Ocliff](https://oclif.io/) under the hood, making it very easy to add or improve commands. Follow [this guide](https://oclif.io/docs/commands) to learn how to develop on this project.

@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "4.3.2-beta.3",
+  "version": "4.3.2",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -114,7 +114,7 @@
     "ramda-adjunct": "~2.23.0",
     "randomstring": "~1.1.5",
     "request": "~2.88.0",
-    "semver": "~7.1.1",
+    "semver": "^7.7.3",
     "semver-diff": "~2.1.0",
     "supports-hyperlinks": "^2.1.0",
     "tar": "~4.4.10",
@@ -159,6 +159,12 @@
     "ts-jest": "24.2.0",
     "ts-node": "^8.0.0",
     "typescript": "^3.8.2"
+  },
+  "resolutions": {
+    "stats-lite": "vtex/node-stats-lite#v2.2.1"
+  },
+  "overrides": {
+    "stats-lite": "vtex/node-stats-lite#v2.2.1"
   },
   "oclif": {
     "commands": "./lib/commands",
