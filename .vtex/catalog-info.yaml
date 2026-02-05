@@ -13,6 +13,7 @@ metadata:
     github.com/project-slug: vtex/toolbelt
     backstage.io/techdocs-ref: dir:../
     vtex.com/application-id: 5YP7PPID
+    vtex.com/platform-flow-id: Merch#3,CommDev#1
 spec:
   lifecycle: stable
   owner: te-0029
