@@ -6,13 +6,16 @@
       - name: node-ci-v2
         parameters:
           nodeVersion: "20-bookworm"
-          packManager: yarn
+          packageManager: yarn
           skipInstall: false
-          nomdeCommands:
+          sonarProjectName: toolbelt
+          nodeCommands:
             - ci:prettier-check
             - lint:node
             - ci:test
         when:
+          - event: pull_request
+            source: branch
           - event: push
             source: branch
 
