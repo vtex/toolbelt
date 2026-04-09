@@ -47,7 +47,22 @@ export class VTEXID extends IOClient {
       ott,
     })
 
-    return this.http.post<{ token: string }>(`${VTEXID.TOOLBELT_API_PATH_PREFIX}/validate`, body)
+    return this.http.post<{ token: string; refresh_token?: string }>(
+      `${VTEXID.TOOLBELT_API_PATH_PREFIX}/validate`,
+      body
+    )
+  }
+
+  public refreshToken(refreshToken: string) {
+    return this.http.post<{ token: string }>(
+      `${VTEXID.API_PATH_PREFIX}/refreshtoken/admin`,
+      null,
+      {
+        headers: {
+          Cookie: `vid_rt=${refreshToken}`,
+        },
+      }
+    )
   }
 
   public invalidateToolbeltToken(token: string) {

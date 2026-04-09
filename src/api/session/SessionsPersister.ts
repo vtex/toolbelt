@@ -26,6 +26,9 @@ export abstract class SessionsPersisterBase {
 
   public abstract getAccountToken(account: string): string
   public abstract saveAccountToken(account: string, token: string)
+
+  public abstract getAccountRefreshToken(account: string): string
+  public abstract saveAccountRefreshToken(account: string, refreshToken: string): void
 }
 
 export class SessionsPersister extends SessionsPersisterBase {
@@ -119,5 +122,13 @@ export class SessionsPersister extends SessionsPersisterBase {
 
   public saveAccountToken(account: string, token: string) {
     this.tokenCacheStore.set(account, token)
+  }
+
+  public getAccountRefreshToken(account: string) {
+    return this.tokenCacheStore.get(`${account}_refresh_token`)
+  }
+
+  public saveAccountRefreshToken(account: string, refreshToken: string) {
+    this.tokenCacheStore.set(`${account}_refresh_token`, refreshToken)
   }
 }

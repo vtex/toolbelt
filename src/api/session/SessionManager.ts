@@ -164,10 +164,16 @@ export class SessionManager implements ISessionManager {
     if (useCachedToken && cachedToken.isValid()) {
       this.state.tokenObj = cachedToken
     } else {
-      // Tokens are scoped by workspace - logging into master will grant cacheability
-      const { token } = await this.authProviders[authMethod].login(newAccount, 'master')
-      this.state.tokenObj = new Token(token)
-      this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token)
+      const refreshed = await this.tryRefreshToken(newAccount)
+      if (!refreshed) {
+        // Tokens are scoped by workspace - logging into master will grant cacheability
+        const { token, refreshToken } = await this.authProviders[authMethod].login(newAccount, 'master')
+        this.state.tokenObj = new Token(token)
+        this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token as string)
+        if (refreshToken) {
+          this.sessionPersister.saveAccountRefreshToken(newAccount, refreshToken)
+        }
+      }
     }
 
     this.state.account = newAccount
@@ -258,13 +264,31 @@ export class SessionManager implements ISessionManager {
     this.sessionPersister.saveLastAccount(this.state.lastAccount)
   }
 
+  private async tryRefreshToken(account: string): Promise<boolean> {
+    const storedRefreshToken = this.sessionPersister.getAccountRefreshToken(account)
+    if (!storedRefreshToken) {
+      return false
+    }
+
+    try {
+      const vtexId = VTEXID.createClient({ account })
+      const { token } = await vtexId.refreshToken(storedRefreshToken)
+      this.state.tokenObj = new Token(token)
+      this.sessionPersister.saveAccountToken(account, this.state.tokenObj.token as string)
+      return true
+    } catch (err) {
+      logger.debug(`Refresh token failed, falling back to OAuth: ${(err as Error).message}`)
+      return false
+    }
+  }
+
   private async invalidateTokens({ invalidateBrowserAuthCookie }: LogoutOptions) {
     const vtexId = VTEXID.createClient()
     try {
-      await vtexId.invalidateToolbeltToken(this.token)
+      await vtexId.invalidateToolbeltToken(this.token as string)
       logger.info('Invalidated local token')
     } catch (err) {
-      const errReport = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err })
+      const errReport = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err as Error })
       logger.error('Unable to invalidate local token')
       errReport.logErrorForUser({
         coreLogLevelDefault: 'debug',

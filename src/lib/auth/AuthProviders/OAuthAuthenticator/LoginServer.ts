@@ -39,8 +39,8 @@ export class LoginServer {
 
   private loginState?: string
 
-  private tokenPromise: Promise<string>
-  private resolveTokenPromise: (val: string) => void
+  private tokenPromise: Promise<LoginCallbackResult>
+  private resolveTokenPromise: (val: LoginCallbackResult) => void
   private rejectTokenPromise: (err: any) => void
 
   constructor(private loginConfig: LoginConfig) {
@@ -53,7 +53,7 @@ export class LoginServer {
     })
   }
 
-  get token() {
+  get token(): Promise<LoginCallbackResult> {
     return this.tokenPromise
   }
 
@@ -157,13 +157,13 @@ export class LoginServer {
 
       const vtexId = VTEXID.createClient({ account: this.loginConfig.account })
       try {
-        const { token } = await vtexId.validateToolbeltLogin({
+        const { token, refresh_token: refreshToken } = await vtexId.validateToolbeltLogin({
           secret: this.loginConfig.secret,
           ott: body.ott,
           state: this.loginState,
         })
 
-        this.resolveTokenPromise(token)
+        this.resolveTokenPromise({ token, refreshToken })
         ctx.status = 200
         ctx.set('content-type', 'text/html')
         ctx.body = SUCCESS_PAGE
@@ -188,4 +188,9 @@ export class LoginServer {
 interface LoginConfig {
   account: string
   secret: string
+}
+
+interface LoginCallbackResult {
+  token: string
+  refreshToken?: string
 }
