@@ -160,21 +160,9 @@ export class SessionManager implements ISessionManager {
       this.state.lastWorkspace = null
     }
 
-    const cachedToken = new Token(this.sessionPersister.getAccountToken(newAccount))
-    if (useCachedToken && cachedToken.isValid()) {
-      this.state.tokenObj = cachedToken
-    } else {
-      const refreshed = await this.tryRefreshToken(newAccount)
-      if (!refreshed) {
-        // Tokens are scoped by workspace - logging into master will grant cacheability
-        const { token, refreshToken } = await this.authProviders[authMethod].login(newAccount, 'master')
-        this.state.tokenObj = new Token(token)
-        this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token as string)
-        if (refreshToken) {
-          this.sessionPersister.saveAccountRefreshToken(newAccount, refreshToken)
-        }
-      }
-    }
+    const usedCached = useCachedToken && this.tryCachedToken(newAccount)
+    const refreshed = !usedCached && (await this.tryRefreshToken(newAccount))
+    if (!usedCached && !refreshed) await this.authProviderLogin(authMethod, newAccount)
 
     this.state.account = newAccount
     this.state.workspace = 'master'
@@ -272,13 +260,36 @@ export class SessionManager implements ISessionManager {
 
     try {
       const vtexId = VTEXID.createClient({ account })
-      const { token } = await vtexId.refreshToken(storedRefreshToken)
-      this.state.tokenObj = new Token(token)
-      this.sessionPersister.saveAccountToken(account, this.state.tokenObj.token as string)
+      const response = await vtexId.refreshToken(storedRefreshToken)
+      const { token, refreshToken } = response
+      this.saveTokens(account, token, refreshToken)
       return true
     } catch (err) {
       logger.debug(`Refresh token failed, falling back to OAuth: ${(err as Error).message}`)
       return false
+    }
+  }
+
+  private tryCachedToken(account: string): boolean {
+    const cachedToken = new Token(this.sessionPersister.getAccountToken(account))
+    if (cachedToken.isValid()) {
+      this.state.tokenObj = cachedToken
+      return true
+    }
+    return false
+  }
+
+  private async authProviderLogin(authMethod: string, account: string): Promise<void> {
+    // Tokens are scoped by workspace - logging into master will grant cacheability
+    const { token, refreshToken } = await this.authProviders[authMethod].login(account, 'master')
+    this.saveTokens(account, token, refreshToken)
+  }
+
+  private saveTokens(account, token: string, refreshToken: string | null) {
+    this.state.tokenObj = new Token(token)
+    this.sessionPersister.saveAccountToken(account, token)
+    if (refreshToken) {
+      this.sessionPersister.saveAccountRefreshToken(account, refreshToken)
     }
   }
 
