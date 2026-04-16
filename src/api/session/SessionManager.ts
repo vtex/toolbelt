@@ -285,7 +285,7 @@ export class SessionManager implements ISessionManager {
     this.saveTokens(account, token, refreshToken)
   }
 
-  private saveTokens(account, token: string, refreshToken: string | null) {
+  private saveTokens(account: string, token: string, refreshToken?: string): void {
     this.state.tokenObj = new Token(token)
     this.sessionPersister.saveAccountToken(account, token)
     if (refreshToken) {
