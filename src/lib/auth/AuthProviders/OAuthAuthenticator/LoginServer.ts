@@ -53,7 +53,7 @@ export class LoginServer {
     })
   }
 
-  get token(): Promise<LoginCallbackResult> {
+  get tokens(): Promise<LoginCallbackResult> {
     return this.tokenPromise
   }
 
