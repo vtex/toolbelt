@@ -18,7 +18,7 @@ export class VTEXID extends IOClient {
   private static readonly DEFAULT_RETRIES = 2
   private static readonly API_PATH_PREFIX = '/api/vtexid'
   private static readonly TOOLBELT_API_PATH_PREFIX = `${VTEXID.API_PATH_PREFIX}/toolbelt`
-  private static readonly VTEX_ID_AUTH_COOKIE = 'VtexIdClientAutCookie'
+  private static readonly VTEX_ID_AUTH_COOKIE = 'VtexIdclientAutCookie'
   private static readonly VTEX_ID_REFRESH_TOKEN_COOKIE = 'vid_rt'
 
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
@@ -85,7 +85,7 @@ export class VTEXID extends IOClient {
 
     if (token == null || newRefreshToken == null || token === '' || newRefreshToken === '') {
       throw new RefreshFailedError(
-        'Failed to refresh: Set-Cookie headers did not include both VtexIdClientAutCookie and vid_rt cookies.'
+        'Failed to refresh: Set-Cookie headers did not include both VtexIdclientAutCookie and vid_rt cookies.'
       )
     }
 

@@ -54,7 +54,7 @@ describe('VTEXID.refreshToken', () => {
       status: 200,
       headers: {
         'set-cookie': [
-          `VtexIdClientAutCookie=${jwt}; Path=/; HttpOnly`,
+          `VtexIdclientAutCookie=${jwt}; Path=/; HttpOnly`,
           `vid_rt=${encodeURIComponent(rt)}; Path=/; HttpOnly`,
         ],
       },
@@ -71,11 +71,11 @@ describe('VTEXID.refreshToken', () => {
       data: successBody(),
       status: 200,
       headers: {
-        'set-cookie': [`VtexIdClientAutCookie=only-auth; Path=/`],
+        'set-cookie': [`VtexIdclientAutCookie=only-auth; Path=/`],
       },
     } as any)
 
-    await expect(client.refreshToken('rt')).rejects.toThrow(/did not include both VtexIdClientAutCookie and vid_rt/)
+    await expect(client.refreshToken('rt')).rejects.toThrow(/did not include both VtexIdclientAutCookie and vid_rt/)
   })
 
   it('throws RefreshFailedError when status is Success but only vid_rt cookie exists', async () => {
@@ -106,7 +106,7 @@ describe('VTEXID.refreshToken', () => {
       status: 200,
       headers: {
         'set-cookie': [
-          'VtexIdClientAutCookie=auth; Path=/',
+          'VtexIdclientAutCookie=auth; Path=/',
           'vid_rt=refresh; Path=/',
         ],
       },

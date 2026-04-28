@@ -260,8 +260,7 @@ export class SessionManager implements ISessionManager {
 
     try {
       const vtexId = VTEXID.createClient({ account })
-      const response = await vtexId.refreshToken(storedRefreshToken)
-      const { token, refreshToken } = response
+      const { token, refreshToken } = await vtexId.refreshToken(storedRefreshToken)
       this.saveTokens(account, token, refreshToken)
       return true
     } catch (err) {
