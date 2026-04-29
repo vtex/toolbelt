@@ -1,6 +1,6 @@
 {
   "name": "vtex",
-  "version": "4.3.2",
+  "version": "4.4.0",
   "description": "The platform for e-commerce apps",
   "bin": "bin/run",
   "main": "lib/api/index.js",
@@ -116,6 +116,7 @@
     "request": "~2.88.0",
     "semver": "^7.7.3",
     "semver-diff": "~2.1.0",
+    "set-cookie-parser": "^3.1.0",
     "supports-hyperlinks": "^2.1.0",
     "tar": "~4.4.10",
     "tslib": "^1.0.0",

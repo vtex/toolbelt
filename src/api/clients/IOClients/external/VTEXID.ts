@@ -1,15 +1,25 @@
 import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
 import querystring from 'querystring'
+import { parseSetCookie } from 'set-cookie-parser'
 import { storeUrl } from '../../../storeUrl'
 import { IOClientFactory } from '../IOClientFactory'
 import { switchOpen } from '../../../../modules/featureFlag/featureFlagDecider'
+
+interface RefreshResponse {
+  status: string
+  userId: string | null
+  refreshAfter: string | null
+}
+
+export class RefreshFailedError extends Error {}
 
 export class VTEXID extends IOClient {
   private static readonly DEFAULT_TIMEOUT = 10000
   private static readonly DEFAULT_RETRIES = 2
   private static readonly API_PATH_PREFIX = '/api/vtexid'
   private static readonly TOOLBELT_API_PATH_PREFIX = `${VTEXID.API_PATH_PREFIX}/toolbelt`
-  private static readonly VTEX_ID_AUTH_COOKIE = 'VtexIdClientAutCookie'
+  private static readonly VTEX_ID_AUTH_COOKIE = 'VtexIdclientAutCookie'
+  private static readonly VTEX_ID_REFRESH_TOKEN_COOKIE = 'vid_rt'
 
   public static createClient(customContext: Partial<IOContext> = {}, customOptions: Partial<InstanceOptions> = {}) {
     return IOClientFactory.createClient<VTEXID>(VTEXID, customContext, customOptions, { requireAuth: false })
@@ -47,7 +57,39 @@ export class VTEXID extends IOClient {
       ott,
     })
 
-    return this.http.post<{ token: string }>(`${VTEXID.TOOLBELT_API_PATH_PREFIX}/validate`, body)
+    return this.http.post<{ token: string; refresh_token?: string }>(
+      `${VTEXID.TOOLBELT_API_PATH_PREFIX}/validate`,
+      body
+    )
+  }
+
+  public async refreshToken(refreshToken: string): Promise<{ token: string; refreshToken: string }> {
+    const { data, headers } = await this.http.postRaw<RefreshResponse>(
+      `${VTEXID.API_PATH_PREFIX}/refreshtoken/admin`,
+      null,
+      {
+        headers: {
+          Cookie: `${VTEXID.VTEX_ID_REFRESH_TOKEN_COOKIE}=${refreshToken}`,
+        },
+      }
+    )
+
+    if (data.status !== 'Success') {
+      throw new RefreshFailedError(`Failed to refresh: status ${data.status}.`)
+    }
+
+    const setCookieHeader = headers['set-cookie']
+    const cookieMap = parseSetCookie(setCookieHeader ?? [], { map: true })
+    const token = cookieMap[VTEXID.VTEX_ID_AUTH_COOKIE]?.value
+    const newRefreshToken = cookieMap[VTEXID.VTEX_ID_REFRESH_TOKEN_COOKIE]?.value
+
+    if (token == null || newRefreshToken == null || token === '' || newRefreshToken === '') {
+      throw new RefreshFailedError(
+        'Failed to refresh: Set-Cookie headers did not include both VtexIdclientAutCookie and vid_rt cookies.'
+      )
+    }
+
+    return { token, refreshToken: newRefreshToken }
   }
 
   public invalidateToolbeltToken(token: string) {

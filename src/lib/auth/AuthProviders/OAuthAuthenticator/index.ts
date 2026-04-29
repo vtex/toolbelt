@@ -59,11 +59,11 @@ export class OAuthAuthenticator extends AuthProviderBase {
         )
       }
 
-      const token = await loginServer.token
+      const { token, refreshToken } = await loginServer.tokens
       const decodedToken = jwt.decode(token)
       const login: string = decodedToken.sub
       this.closeChromeTabIfMac(loginServer.loginCallbackUrl)
-      return { login, token }
+      return { login, token, refreshToken }
     } finally {
       loginServer.close()
     }

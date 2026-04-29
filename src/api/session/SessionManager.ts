@@ -160,15 +160,9 @@ export class SessionManager implements ISessionManager {
       this.state.lastWorkspace = null
     }
 
-    const cachedToken = new Token(this.sessionPersister.getAccountToken(newAccount))
-    if (useCachedToken && cachedToken.isValid()) {
-      this.state.tokenObj = cachedToken
-    } else {
-      // Tokens are scoped by workspace - logging into master will grant cacheability
-      const { token } = await this.authProviders[authMethod].login(newAccount, 'master')
-      this.state.tokenObj = new Token(token)
-      this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token)
-    }
+    const usedCached = useCachedToken && this.tryCachedToken(newAccount)
+    const refreshed = !usedCached && (await this.tryRefreshToken(newAccount))
+    if (!usedCached && !refreshed) await this.authProviderLogin(authMethod, newAccount)
 
     this.state.account = newAccount
     this.state.workspace = 'master'
@@ -258,13 +252,53 @@ export class SessionManager implements ISessionManager {
     this.sessionPersister.saveLastAccount(this.state.lastAccount)
   }
 
+  private async tryRefreshToken(account: string): Promise<boolean> {
+    const storedRefreshToken = this.sessionPersister.getAccountRefreshToken(account)
+    if (!storedRefreshToken) {
+      return false
+    }
+
+    try {
+      const vtexId = VTEXID.createClient({ account })
+      const { token, refreshToken } = await vtexId.refreshToken(storedRefreshToken)
+      this.saveTokens(account, token, refreshToken)
+      return true
+    } catch (err) {
+      logger.debug(`Refresh token failed, falling back to OAuth: ${(err as Error).message}`)
+      return false
+    }
+  }
+
+  private tryCachedToken(account: string): boolean {
+    const cachedToken = new Token(this.sessionPersister.getAccountToken(account))
+    if (cachedToken.isValid()) {
+      this.state.tokenObj = cachedToken
+      return true
+    }
+    return false
+  }
+
+  private async authProviderLogin(authMethod: string, account: string): Promise<void> {
+    // Tokens are scoped by workspace - logging into master will grant cacheability
+    const { token, refreshToken } = await this.authProviders[authMethod].login(account, 'master')
+    this.saveTokens(account, token, refreshToken)
+  }
+
+  private saveTokens(account: string, token: string, refreshToken?: string): void {
+    this.state.tokenObj = new Token(token)
+    this.sessionPersister.saveAccountToken(account, token)
+    if (refreshToken) {
+      this.sessionPersister.saveAccountRefreshToken(account, refreshToken)
+    }
+  }
+
   private async invalidateTokens({ invalidateBrowserAuthCookie }: LogoutOptions) {
     const vtexId = VTEXID.createClient()
     try {
-      await vtexId.invalidateToolbeltToken(this.token)
+      await vtexId.invalidateToolbeltToken(this.token as string)
       logger.info('Invalidated local token')
     } catch (err) {
-      const errReport = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err })
+      const errReport = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err as Error })
       logger.error('Unable to invalidate local token')
       errReport.logErrorForUser({
         coreLogLevelDefault: 'debug',

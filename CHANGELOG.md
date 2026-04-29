@@ -7,9 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [4.4.0]
+
+### Added
+
+- Toolbelt now auto-refreshes user access tokens after 12 hours, avoiding the need to login every 24 hours.
+
 ## [4.3.2]
 
 ### Fixed
+
 - Update the dependency to a functional version for vtex/node-stats-lite
 - Update the bin/run to match the best v8 cache implementation given a nodejs version
 
