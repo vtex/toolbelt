@@ -14,6 +14,8 @@ metadata:
     backstage.io/techdocs-ref: dir:../
     vtex.com/application-id: 5YP7PPID
     vtex.com/platform-flow-id: Merch#3,CommDev#1
+    vtex.com/sdd-check-skip: 'true'
+    vtex.com/sdd-check-skip-reason: Public VTEX repo
 spec:
   lifecycle: stable
   owner: te-0029
