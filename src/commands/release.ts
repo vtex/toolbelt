@@ -1,3 +1,4 @@
+import { flags as oclifFlags } from '@oclif/command'
 import { CustomCommand } from '../api/oclif/CustomCommand'
 import appsRelease, { releaseTypeAliases, supportedReleaseTypes, supportedTagNames } from '../modules/release'
 
@@ -17,6 +18,10 @@ export default class Release extends CustomCommand {
 
   static flags = {
     ...CustomCommand.globalFlags,
+    pipeline: oclifFlags.boolean({
+      char: 'p',
+      description: `Runs the command in ${ColorifyConstants.ID('pipeline')} mode.`,
+    })
   }
 
   static args = [
@@ -32,9 +37,9 @@ export default class Release extends CustomCommand {
 
   async run() {
     const {
+      flags: { pipeline },
       args: { releaseType, tagName },
     } = this.parse(Release)
-
-    await appsRelease(releaseType, tagName)
+    await appsRelease(releaseType, tagName, pipeline)
   }
 }

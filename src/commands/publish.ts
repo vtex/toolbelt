@@ -17,6 +17,10 @@ export default class Publish extends CustomCommand {
       char: 'w',
       description: `Uses the specified ${ColorifyConstants.ID('workspace')} in the app registry.`,
     }),
+    pipeline: oclifFlags.boolean({
+      char: 'p',
+      description: `Runs the command in ${ColorifyConstants.ID('pipeline')} mode.`,
+    }),
     force: oclifFlags.boolean({
       char: 'f',
       description: 'Publishes the app independently of SemVer rules.',
@@ -27,9 +31,9 @@ export default class Publish extends CustomCommand {
   async run() {
     const {
       args: { path },
-      flags: { yes, workspace, force, tag },
+      flags: { yes, workspace, force, tag, pipeline },
     } = this.parse(Publish)
 
-    await appsPublish(path, { yes, workspace, force, tag })
+    await appsPublish(path, { yes, workspace, force, tag }, pipeline)
   }
 }

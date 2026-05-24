@@ -1,4 +1,5 @@
 import { AuthProviderBase, AuthProviders } from '../../lib/auth/AuthProviders'
+import { ApiTokenAuthenticator } from '../../lib/auth/AuthProviders/ApiTokenAuthenticator'
 import { Token } from '../../lib/auth/Token'
 import { VTEXID } from '../clients/IOClients/external/VTEXID'
 import { ErrorKinds } from '../error/ErrorKinds'
@@ -18,6 +19,14 @@ export interface LoginInput {
   targetWorkspace?: string
   authMethod?: string
   useCachedToken?: boolean
+  workspaceCreation: WorkspaceCreation
+}
+
+
+export interface PipelineLoginInput {
+  vtexApiKey?: string
+  vtexApiToken?: string
+  targetWorkspace: string
   workspaceCreation: WorkspaceCreation
 }
 
@@ -150,6 +159,37 @@ export class SessionManager implements ISessionManager {
       originalError: new Error(errMsg),
     })
   }
+
+
+  public async loginUsingPipeline(newAccount: string, { 
+    vtexApiKey,
+    targetWorkspace = 'master',
+    workspaceCreation,
+    vtexApiToken
+  }: PipelineLoginInput) {
+    if (this.account !== newAccount) {
+      this.state.lastAccount = this.account
+      this.state.lastWorkspace = null
+    }
+
+    const cachedToken = new Token(this.sessionPersister.getAccountToken(newAccount))
+
+    if (cachedToken.isValid()) {
+      this.state.tokenObj = cachedToken
+    } else {
+      const apiToken = new ApiTokenAuthenticator()
+      const token = await apiToken.login(vtexApiKey, vtexApiToken, newAccount)
+      this.state.tokenObj = new Token(token)
+      this.sessionPersister.saveAccountToken(newAccount, this.state.tokenObj.token)
+    }
+
+
+    this.state.account = newAccount
+    this.state.workspace = 'master'
+    this.saveState()
+    await this.workspaceSwitch({ targetWorkspace, workspaceCreation })
+  }
+
 
   public async login(
     newAccount: string,
