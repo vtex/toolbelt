@@ -52,6 +52,7 @@ const checkLogin = async (command: string) => {
     '--version',
     'release',
     'link',
+    'run-local',
   ]
 
   if (!SessionManager.getSingleton().checkValidCredentials() && allowedList.indexOf(command) === -1) {
@@ -111,7 +112,11 @@ const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: bool
 
   await checkAndFixSymlink(options)
 
-  await checkAndOpenNPSLink()
+  // `run-local` is fully offline; do not interrupt the dev loop with
+  // an NPS survey prompt when they just want to boot a function.
+  if (options.id !== 'run-local') {
+    await checkAndOpenNPSLink()
+  }
 
   if (calculateInitTime) {
     const initTime = process.hrtime(initTimeStartTime)
