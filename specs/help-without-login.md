@@ -39,7 +39,8 @@ fallback (e.g. reworking how feature flags are fetched/updated).
 
 2. **New helper `isHelpInvocation(commandId, argv)` in
    `src/oclif/hooks/utils.ts`** (next to `getHelpSubject`). Returns `true` when:
-   - `commandId === 'help'`, or
+   - `commandId` is `help`, `--help` or `-h` (oclif passes bare `vtex --help` /
+     `vtex -h` as the command id itself, with empty argv), or
    - `argv` contains `--help` or `-h` **before** any `--` separator.
    - `-h` / `--help` are safe to treat as help: `-h` is globally reserved for
      help in `src/api/oclif/CustomCommand.ts`, with no other usage.

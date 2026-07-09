@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import indent from 'indent-string'
-import { COLORS } from '../../api'
+import { COLORS } from '../../api/constants/Colors'
 import { renderList } from '@oclif/plugin-help/lib/list'
 import RootHelp from '@oclif/plugin-help/lib/root'
 import { OTHER_GROUP_ID } from './constants'
@@ -16,6 +16,28 @@ export function getHelpSubject(args: string[]): string | undefined {
     if (['help', '--help', '-h'].includes(arg)) continue
     return arg
   }
+}
+
+/**
+ * Detects whether the current invocation is a help request, covering every
+ * help form: `vtex help`, `vtex help <command>`, `vtex --help` / `-h` (oclif
+ * passes the bare flag as the command id itself) and `vtex <command> --help` /
+ * `-h` (`-h` is globally reserved for help in CustomCommand).
+ *
+ * Note on the `--` separator: everything after `--` is forwarded verbatim to
+ * the underlying command as positional values (consistent with
+ * `getHelpSubject` above), so `vtex cmd -- --help` must NOT be treated as a
+ * help invocation. Only flags appearing before `--` are considered.
+ */
+export function isHelpInvocation(commandId: string | undefined, argv: string[]): boolean {
+  if (commandId != null && ['help', '--help', '-h'].includes(commandId)) return true
+
+  for (const arg of argv) {
+    if (arg === '--') break
+    if (arg === '--help' || arg === '-h') return true
+  }
+
+  return false
 }
 
 function renderCommand(commands: CommandI[], ctx: any): string {
