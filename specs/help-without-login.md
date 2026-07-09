@@ -24,8 +24,12 @@ discover the proper commands to run.
 - `vtex --help` / `-h`
 - `vtex` (no args — already allowed via `undefined`)
 
-**Out of scope** — strictly the login gate only. See the tracked follow-up issue
-below for the empty-feature-flag-cache crash, which is intentionally deferred.
+**In scope (hardening)** — defensive fallback for the empty-feature-flag-cache
+crash in `showHelp` (see design decision 6). Logged-out help on clean machines
+makes this crash much more likely, so it lands in the same PR.
+
+**Out of scope** — anything beyond the login gate and the help-rendering
+fallback (e.g. reworking how feature flags are fetched/updated).
 
 ## Design decisions
 
@@ -43,12 +47,30 @@ below for the empty-feature-flag-cache crash, which is intentionally deferred.
 3. **Respect the `--` separator** when scanning args, consistent with the existing
    `getHelpSubject`, so `vtex cmd -- --help` is not treated as help.
 
-4. **Wire into `checkLogin`** — skip the login call when `isHelpInvocation(...)`
-   is `true`.
+4. **Wire into `checkLogin` via an explicit `argv` parameter.** Change the
+   signature to `checkLogin(command: string, argv: string[])` and early-return
+   when `isHelpInvocation(command, argv)` is `true`. The init hook already
+   receives the parsed args (`options.argv` in `src/oclif/hooks/init.ts`), so
+   the call site becomes `checkLogin(options.id, options.argv)`. Passing argv
+   explicitly (instead of reading `process.argv` inside `checkLogin`) keeps the
+   function testable.
 
 5. **No hidden dependency in help rendering.** `FeatureFlag.getSingleton()` reads
    a local Configstore file (no network/auth at render time), so skipping the
    login gate fully unblocks help.
+
+6. **Defensive feature-flag fallback in `showHelp`.** `showHelp` reads
+   `COMMANDS_GROUP` / `COMMANDS_GROUP_ID` from the feature-flag Configstore,
+   which is populated by a non-blocking child process
+   (`FeatureFlagUpdateChecker` → `spawnUnblockingChildProcess`). On a fresh
+   install both can be `undefined`, and `Object.keys(commandsId)` throws.
+   Guard with sensible defaults so help always renders: when either value is
+   missing, fall back to rendering all commands under a single default
+   ("Other") group. This is a small hardening change and ships in the same PR.
+
+7. **Document the `--` separator handling.** Add a short comment in
+   `src/oclif/hooks/utils.ts` (next to `isHelpInvocation` / `getHelpSubject`)
+   explaining why args after `--` are ignored, to avoid future regressions.
 
 ## Testing
 
@@ -57,20 +79,15 @@ below for the empty-feature-flag-cache crash, which is intentionally deferred.
   - `help` → true; `help deploy` → true; `deploy --help` → true;
     `deploy -h` → true; `--help` / `-h` → true
   - `deploy` → false; `deploy -- --help` → false; no args → false
-- The init hook is not unit-tested directly (heavy side effects); coverage is via
-  the pure helper.
-
-## Tracked follow-up issue (deferred, out of scope)
-
-**Issue: `vtex help` can crash on a clean machine with an empty feature-flag cache.**
-
-In `src/oclif/hooks/init.ts`, `showHelp` calls `Object.keys(commandsId)` where
-`commandsId = FeatureFlag.getSingleton().getFeatureFlagInfo('COMMANDS_GROUP_ID')`.
-The feature-flag file is populated by a **non-blocking** spawned child process
-(`FeatureFlagUpdateChecker` → `spawnUnblockingChildProcess`), so on a fresh install
-the value is `undefined` and `Object.keys(undefined)` throws. This becomes more
-likely once logged-out agents run help on clean machines.
-
-**Proposed fix (separate work):** defensively fall back to rendering all commands
-under a single default ("Other") group when `COMMANDS_GROUP` / `COMMANDS_GROUP_ID`
-are missing.
+- Unit test for the `checkLogin` early return (export `checkLogin` from
+  `init.ts` to make it testable): with
+  `SessionManager.getSingleton().checkValidCredentials()` mocked to `false` and
+  a help argv (e.g. `deploy --help`), assert `authLogin` is **not** called;
+  with a non-help, non-allowed command, assert it **is** called.
+- Integration smoke test (shell): run `node bin/run help` (and
+  `node bin/run deploy --help`) in an environment simulating no credentials
+  (isolated `HOME`/config dir with no session and an empty feature-flag cache),
+  asserting the process exits 0, renders help output, and emits no interactive
+  login prompt. This also exercises the feature-flag fallback (decision 6).
+- Beyond the above, the init hook is not unit-tested directly (heavy side
+  effects); coverage is via the pure helper and the smoke test.
