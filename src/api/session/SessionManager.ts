@@ -295,7 +295,7 @@ export class SessionManager implements ISessionManager {
   private async invalidateTokens({ invalidateBrowserAuthCookie }: LogoutOptions) {
     const vtexId = VTEXID.createClient()
     try {
-      await vtexId.invalidateToolbeltToken(this.token as string)
+      await vtexId.invalidateToolbeltToken(this.token)
       logger.info('Invalidated local token')
     } catch (err) {
       const errReport = ErrorReport.createAndMaybeRegisterOnTelemetry({ originalError: err as Error })

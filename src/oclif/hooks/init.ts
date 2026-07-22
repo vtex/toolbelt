@@ -24,7 +24,7 @@ import { ErrorReport } from '../../api/error/ErrorReport'
 import * as fse from 'fs-extra'
 import path from 'path'
 import { sortBy, uniqBy } from 'ramda'
-import { getHelpSubject, CommandI, renderCommands } from './utils'
+import { getHelpSubject, isHelpInvocation, buildCommandGroups, collectCommands, renderCommands } from './utils'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { initTimeStartTime } = require('../../../bin/run')
@@ -35,7 +35,12 @@ const logToolbeltVersion = () => {
   log.debug(`Toolbelt version: ${pkg.version}`)
 }
 
-const checkLogin = async (command: string) => {
+export const checkLogin = async (command: string, argv: string[]) => {
+  // Help invocations only render static text — never require login for them.
+  if (isHelpInvocation(command, argv)) {
+    return
+  }
+
   /**
    * Commands for which previous login is not necessary. There's some exceptions:
    * - link: It's necessary to be logged in, but there's some login logic there before running the link per se
@@ -107,7 +112,7 @@ const main = async (options?: HookKeyOrOptions<'init'>, calculateInitTime?: bool
   log.debug('node %s - %s %s', process.version, os.platform(), os.release())
   log.debug(args)
 
-  await checkLogin(options.id)
+  await checkLogin(options.id, options.argv ?? [])
 
   await checkAndFixSymlink(options)
 
@@ -271,42 +276,13 @@ export default async function(options: HookKeyOrOptions<'init'>) {
       error(`command ${subject} not found`)
     }
 
-    const commandsGroup: Record<string, number> = FeatureFlag.getSingleton().getFeatureFlagInfo<Record<string, number>>(
-      'COMMANDS_GROUP'
+    const allCommands = collectCommands(this.config.commands, this.config.topics)
+
+    const { commandsId, groups } = buildCommandGroups(
+      FeatureFlag.getSingleton().getFeatureFlagInfo<Record<string, number>>('COMMANDS_GROUP'),
+      FeatureFlag.getSingleton().getFeatureFlagInfo<Record<number, string>>('COMMANDS_GROUP_ID'),
+      allCommands
     )
-    const commandsId: Record<number, string> = FeatureFlag.getSingleton().getFeatureFlagInfo<Record<number, string>>(
-      'COMMANDS_GROUP_ID'
-    )
-    const commandsGroupLength: number = Object.keys(commandsId).length
-
-    const commands = this.config.commands
-      .filter(c => !c.id.includes(':'))
-      .map(c => {
-        return { name: c.id, description: c.description }
-      })
-    const topics = this.config.topics
-      .filter(t => !t.name.includes(':'))
-      .map(c => {
-        return { name: c.name, description: c.description }
-      })
-    const allCommands = commands.concat(topics)
-
-    const groups: CommandI[][] = Object.keys(commandsId).map(_ => [])
-
-    const cachedObject: Map<string, boolean> = new Map<string, boolean>()
-
-    allCommands.forEach((command: CommandI) => {
-      if (cachedObject.has(command.name)) return
-      cachedObject.set(command.name, true)
-
-      const commandGroupId = commandsGroup[command.name]
-
-      if (commandGroupId) {
-        groups[commandGroupId].push(command)
-      } else {
-        groups[commandsGroupLength - 1].push(command)
-      }
-    })
 
     const renderedCommands = renderCommands(commandsId, groups, {
       render: this.render,

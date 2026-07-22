@@ -39,7 +39,7 @@ export class LoginServer {
 
   private loginState?: string
 
-  private tokenPromise: Promise<LoginCallbackResult>
+  private readonly tokenPromise: Promise<LoginCallbackResult>
   private resolveTokenPromise: (val: LoginCallbackResult) => void
   private rejectTokenPromise: (err: any) => void
 
