@@ -10,7 +10,7 @@ function buildIoContext(account = 'testaccount'): IOContext {
     region: 'aws-us-east-1',
     production: false,
     product: '',
-    route: { id: '', params: {} },
+    route: { id: '', params: {}, type: 'public' },
     requestId: '',
     operationId: '',
     platform: '',
@@ -21,6 +21,12 @@ function buildIoContext(account = 'testaccount'): IOContext {
       error: jest.fn(),
       sendLog: jest.fn(),
     } as unknown) as IOContext['logger'],
+    tracer: ({
+      isTraceSampled: false,
+      startSpan: jest.fn(),
+      inject: jest.fn(),
+      fallbackSpanContext: jest.fn(),
+    } as unknown) as IOContext['tracer'],
   }
 }
 

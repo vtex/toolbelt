@@ -28,7 +28,7 @@ export abstract class CustomCommand extends OclifCommand {
     A extends {
       [name: string]: any
     }
-  >(options?: Parser.Input<F>, argv?: string[]): Parser.Output<F, A> {
+  >(options?: Parser.Input<F>, argv?: string[]) {
     const result = super.parse<F, A>(options, argv)
     TraceConfig.setupTraceConfig((result.flags as any).trace)
     return result
