@@ -1,7 +1,5 @@
 # VTEX Toolbelt
 
-[![Build Status](https://travis-ci.org/vtex/toolbelt.svg?branch=master)](https://travis-ci.org/vtex/toolbelt) [![npm version](https://img.shields.io/npm/v/vtex.svg?style=flat)](https://www.npmjs.com/package/vtex) [![Greenkeeper badge](https://badges.greenkeeper.io/vtex/toolbelt.svg)](https://greenkeeper.io/)
-
 The CLI that offers all you need to start using the VTEX IO platform efficiently.
 
 #### Summary
