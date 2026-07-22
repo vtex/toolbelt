@@ -1,4 +1,4 @@
-import type { IOContext, InstanceOptions } from '@vtex/api'
+import { IOContext, InstanceOptions } from '@vtex/api'
 import { VTEXID, RefreshFailedError } from './VTEXID'
 
 function buildIoContext(account = 'testaccount'): IOContext {
@@ -14,13 +14,13 @@ function buildIoContext(account = 'testaccount'): IOContext {
     requestId: '',
     operationId: '',
     platform: '',
-    logger: {
+    logger: ({
       debug: jest.fn(),
       info: jest.fn(),
       warn: jest.fn(),
       error: jest.fn(),
       sendLog: jest.fn(),
-    } as unknown as IOContext['logger'],
+    } as unknown) as IOContext['logger'],
   }
 }
 
@@ -29,7 +29,7 @@ function buildClient() {
 }
 
 function mockPostRaw(client: VTEXID, impl: jest.Mock) {
-  ;(client as unknown as { http: { postRaw: jest.Mock } }).http.postRaw = impl
+  ;((client as unknown) as { http: { postRaw: jest.Mock } }).http.postRaw = impl
 }
 
 function successBody() {
@@ -105,10 +105,7 @@ describe('VTEXID.refreshToken', () => {
       data: { status: 'InvalidSession', userId: null, refreshAfter: null },
       status: 200,
       headers: {
-        'set-cookie': [
-          'VtexIdclientAutCookie=auth; Path=/',
-          'vid_rt=refresh; Path=/',
-        ],
+        'set-cookie': ['VtexIdclientAutCookie=auth; Path=/', 'vid_rt=refresh; Path=/'],
       },
     } as any)
 

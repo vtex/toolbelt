@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
-import type { AuthProviderBase } from '../../lib/auth/AuthProviders'
+import { AuthProviderBase } from '../../lib/auth/AuthProviders'
 import { SessionManager } from './SessionManager'
-import type { SessionsPersisterBase } from './SessionsPersister'
+import { SessionsPersisterBase } from './SessionsPersister'
 import { VTEXID } from '../clients/IOClients/external/VTEXID'
 
 jest.mock('../clients/IOClients/external/VTEXID', () => ({
@@ -47,7 +47,7 @@ function createPersister(overrides: Partial<Record<string, jest.Mock>> = {}): Se
     getAccountRefreshToken: jest.fn(() => ''),
     saveAccountRefreshToken: jest.fn(),
   }
-  return { ...base, ...overrides } as unknown as SessionsPersisterBase
+  return ({ ...base, ...overrides } as unknown) as SessionsPersisterBase
 }
 
 const workspaceCreation = {
