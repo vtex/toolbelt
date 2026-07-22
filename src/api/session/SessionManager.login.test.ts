@@ -215,3 +215,71 @@ describe('SessionManager.login', () => {
     expect(persister.saveAccountRefreshToken).not.toHaveBeenCalled()
   })
 })
+
+describe('SessionManager.logout', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('invalidates the local token and clears persisted data', async () => {
+    const token = signJwt(3600)
+    const invalidateToolbeltToken = jest.fn().mockResolvedValue(undefined)
+    createClientMock.mockReturnValue({ invalidateToolbeltToken } as any)
+    const persister = createPersister({ getToken: jest.fn(() => token), getAccount: jest.fn(() => 'acme') })
+    const sm = new SessionManager({
+      sessionsPersister: persister,
+      authProviders: { oauth: { login: jest.fn() } as AuthProviderBase },
+    })
+
+    await sm.logout()
+
+    expect(invalidateToolbeltToken).toHaveBeenCalledWith(token)
+    expect(persister.clearData).toHaveBeenCalled()
+  })
+
+  it('invalidates the browser auth cookie when requested', async () => {
+    const token = signJwt(3600)
+    const invalidateToolbeltToken = jest.fn().mockResolvedValue(undefined)
+    createClientMock.mockReturnValue({ invalidateToolbeltToken } as any)
+    const persister = createPersister({ getToken: jest.fn(() => token), getAccount: jest.fn(() => 'acme') })
+    const sm = new SessionManager({
+      sessionsPersister: persister,
+      authProviders: { oauth: { login: jest.fn() } as AuthProviderBase },
+    })
+
+    await sm.logout({ invalidateBrowserAuthCookie: true })
+
+    expect(invalidateToolbeltToken).toHaveBeenCalledWith(token)
+    expect(VTEXID.invalidateBrowserAuthCookie).toHaveBeenCalledWith('acme')
+  })
+
+  it('swallows invalidation errors and still clears persisted data', async () => {
+    const token = signJwt(3600)
+    const invalidateToolbeltToken = jest.fn().mockRejectedValue(new Error('network'))
+    createClientMock.mockReturnValue({ invalidateToolbeltToken } as any)
+    const persister = createPersister({ getToken: jest.fn(() => token), getAccount: jest.fn(() => 'acme') })
+    const sm = new SessionManager({
+      sessionsPersister: persister,
+      authProviders: { oauth: { login: jest.fn() } as AuthProviderBase },
+    })
+
+    await sm.logout({ invalidateBrowserAuthCookie: true })
+
+    // browser cookie invalidation is skipped when token invalidation failed
+    expect(VTEXID.invalidateBrowserAuthCookie).not.toHaveBeenCalled()
+    expect(persister.clearData).toHaveBeenCalled()
+  })
+
+  it('skips token invalidation when there is no token', async () => {
+    const persister = createPersister({ getToken: jest.fn(() => '') })
+    const sm = new SessionManager({
+      sessionsPersister: persister,
+      authProviders: { oauth: { login: jest.fn() } as AuthProviderBase },
+    })
+
+    await sm.logout()
+
+    expect(createClientMock).not.toHaveBeenCalled()
+    expect(persister.clearData).toHaveBeenCalled()
+  })
+})

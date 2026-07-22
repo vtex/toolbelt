@@ -40,6 +40,63 @@ export function isHelpInvocation(commandId: string | undefined, argv: string[]):
   return false
 }
 
+/**
+ * Flattens the oclif config's commands and topics into the flat `CommandI`
+ * list used by the help output, dropping namespaced entries (those containing
+ * a `:`) so only top-level commands/topics are shown.
+ */
+export function collectCommands(
+  commands: ReadonlyArray<{ id: string; description: string }>,
+  topics: ReadonlyArray<{ name: string; description: string }>
+): CommandI[] {
+  const mappedCommands = commands
+    .filter(c => !c.id.includes(':'))
+    .map(c => ({ name: c.id, description: c.description }))
+  const mappedTopics = topics
+    .filter(t => !t.name.includes(':'))
+    .map(t => ({ name: t.name, description: t.description }))
+  return mappedCommands.concat(mappedTopics)
+}
+
+/**
+ * Buckets the CLI's commands/topics into display groups for the help output.
+ *
+ * The group metadata (`commandsGroup` maps command name -> group id, and
+ * `commandsId` maps group id -> group label) comes from a feature-flag store
+ * that is populated by a non-blocking child process. On a fresh install those
+ * values may still be undefined, so we fall back to rendering every command
+ * under a single default ("Other") group so that help always works.
+ *
+ * Commands with no known group id (or a falsy one) are placed in the last
+ * group. Duplicate command names are rendered only once.
+ */
+export function buildCommandGroups(
+  commandsGroup: Record<string, number> | undefined,
+  commandsId: Record<number, string> | undefined,
+  allCommands: CommandI[]
+): { commandsId: Record<number, string>; groups: CommandI[][] } {
+  const resolvedCommandsGroup: Record<string, number> = commandsGroup ?? {}
+  const resolvedCommandsId: Record<number, string> = commandsId ?? { [OTHER_GROUP_ID]: 'Other' }
+  const commandsGroupLength: number = Object.keys(resolvedCommandsId).length
+
+  const groups: CommandI[][] = Object.keys(resolvedCommandsId).map(() => [])
+  const seen = new Set<string>()
+
+  allCommands.forEach((command: CommandI) => {
+    if (seen.has(command.name)) return
+    seen.add(command.name)
+
+    const commandGroupId = resolvedCommandsGroup[command.name]
+    if (commandGroupId) {
+      groups[commandGroupId].push(command)
+    } else {
+      groups[commandsGroupLength - 1].push(command)
+    }
+  })
+
+  return { commandsId: resolvedCommandsId, groups }
+}
+
 function renderCommand(commands: CommandI[], ctx: any): string {
   return renderList(
     commands.map(c => [chalk.hex(COLORS.PINK)(c.name), c.description && ctx.render(c.description.split('\n')[0])]),
