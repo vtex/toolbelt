@@ -1,3 +1,7 @@
+// bin/run has import-time side effects (and uses `node:module`, which the
+// Jest resolver can't handle) and is pulled in transitively via CustomCommand.
+jest.mock('../../../../bin/run', () => ({ initTimeStartTime: [0, 0] }))
+
 import fs from 'fs'
 import os from 'os'
 import path from 'path'
