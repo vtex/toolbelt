@@ -20,7 +20,7 @@ describe('isHelpInvocation', () => {
     [undefined, [], false],
     ['link', ['--verbose'], false],
     ['login', '-h'],
-    ['login', '--help']
+    ['login', '--help'],
   ])('commandId=%p argv=%p → %p', (commandId, argv, expected) => {
     expect(isHelpInvocation(commandId, argv)).toBe(expected)
   })
