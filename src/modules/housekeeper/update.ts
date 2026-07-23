@@ -71,8 +71,8 @@ const printAppsDiff = (
 const printEditionAppsDiff = (resolvedUpdates: any) => {
   const oldState = path(['state', 'edition'], resolvedUpdates) as string[]
   const newState = difference(
-    union(oldState, path(['updates', 'editionApps', 'install'], resolvedUpdates)),
-    path(['updates', 'editionApps', 'uninstall'], resolvedUpdates)
+    union(oldState, path(['updates', 'editionApps', 'install'], resolvedUpdates) as string[]),
+    path(['updates', 'editionApps', 'uninstall'], resolvedUpdates) as string[]
   )
   const diffTable = matchedDepsDiffTable('uninstall', 'install', oldState, newState)
   if (diffTable.length === 1) {

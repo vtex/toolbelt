@@ -21,7 +21,9 @@
     {
       "files": ["*.ts"],
       "rules": {
-        "no-dupe-class-members": "off"
+        "no-dupe-class-members": "off",
+        "no-shadow": "off",
+        "@typescript-eslint/no-use-before-define": "off"
       }
     },
     {

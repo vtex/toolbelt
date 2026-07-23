@@ -1,4 +1,4 @@
-import { InstanceOptions, IOClient, IOContext } from '@vtex/api'
+import { InstanceOptions, IOClient, IOContext, IUserLandTracer } from '@vtex/api'
 import { Logger } from '@vtex/api/lib/service/logger'
 import { Headers } from '../../constants/Headers'
 import { TraceConfig } from '../../../lib/globalConfigs/traceConfig'
@@ -44,6 +44,22 @@ export class IOClientFactory {
     } as unknown) as Logger
   }
 
+  /**
+   * Toolbelt does not participate in distributed tracing, so we provide a
+   * no-op tracer whose `isTraceSampled` is false. The HttpClient tracing
+   * middleware short-circuits in that case and never invokes the other
+   * tracer methods, keeping this safe at runtime.
+   */
+  private static createDummyTracer() {
+    return ({
+      traceId: '',
+      isTraceSampled: false,
+      startSpan: noop,
+      inject: noop,
+      fallbackSpanContext: () => undefined,
+    } as unknown) as IUserLandTracer
+  }
+
   public static createIOContext(opts?: IOContextOptions): IOContext {
     const session = SessionManager.getSingleton()
     const {
@@ -64,11 +80,13 @@ export class IOClientFactory {
       route: {
         id: '',
         params: {},
+        type: 'public',
       },
       requestId: '',
       operationId: '',
       platform: '',
       logger: IOClientFactory.createDummyLogger(),
+      tracer: IOClientFactory.createDummyTracer(),
     }
   }
 

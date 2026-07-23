@@ -263,12 +263,12 @@ describe('React type dependencies are correctly inserted', () => {
     expect(packageJsonEditorMock.write).toHaveBeenCalledTimes(1)
     expect(JSON.stringify(packageJsonEditorMock.write.mock.calls[0][1], null, 2)).toMatchInlineSnapshot(`
       "{
-        \\"devDependencies\\": {
-          \\"@types/ramda\\": \\"^0.26.41\\",
-          \\"@vtex/test-tools\\": \\"^3.0.1\\",
-          \\"jest\\": \\"^25.1.0\\",
-          \\"vtex.render-runtime\\": \\"http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime\\",
-          \\"waait\\": \\"^1.0.5\\"
+        "devDependencies": {
+          "@types/ramda": "^0.26.41",
+          "@vtex/test-tools": "^3.0.1",
+          "jest": "^25.1.0",
+          "vtex.render-runtime": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.render-runtime@8.1.0/public/@types/vtex.render-runtime",
+          "waait": "^1.0.5"
         }
       }"
     `)
