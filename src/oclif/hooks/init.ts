@@ -16,6 +16,7 @@ import * as pkg from '../../../package.json'
 import * as conf from '../../api/conf'
 import { checkAndOpenNPSLink } from '../../nps'
 import { Metric } from '../../api/metrics/MetricReport'
+import { setupGlobalMetrics } from '../../api/metrics/globalMetrics'
 import authLogin from '../../modules/auth/login'
 import { MetricNames } from '../../api/metrics/MetricNames'
 import { SessionManager } from '../../api/session/SessionManager'
@@ -215,6 +216,14 @@ export const onError = async (e: any) => {
 }
 
 export default async function(options: HookKeyOrOptions<'init'>) {
+  /**
+   * Plugins may bundle their own copy of @vtex/api and build clients without going
+   * through Toolbelt's IOClientFactory (which sets this up on its own). `global.metrics`
+   * is process-wide and `setupGlobalMetrics` is idempotent, so doing it here as well
+   * covers every command — including plugin commands — at no cost.
+   */
+  setupGlobalMetrics()
+
   // overwrite Help#showCommandHelp to customize help formating
   help.prototype.showHelp = function showHelp(_argv: string[]) {
     const sortedTopics = () => {

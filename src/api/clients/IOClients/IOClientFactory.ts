@@ -4,7 +4,12 @@ import { Headers } from '../../constants/Headers'
 import { TraceConfig } from '../../../lib/globalConfigs/traceConfig'
 import userAgent from '../../../user-agent'
 import * as env from '../../env'
+import { setupGlobalMetrics } from '../../metrics/globalMetrics'
 import { SessionManager } from '../../session/SessionManager'
+
+// Must run before any @vtex/api client is instantiated: its HttpClient middlewares
+// depend on a global `metrics` accumulator that only the IO service runtime sets up.
+setupGlobalMetrics()
 
 interface IOContextOptions {
   account?: string
