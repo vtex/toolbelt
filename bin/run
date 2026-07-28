@@ -2,6 +2,16 @@
 
 exports.initTimeStartTime = process.hrtime()
 
+// @vtex/api >= 7 only initializes global.metrics inside the IO service
+// runtime (startApp). Until v7, this was a module-load side effect of
+// requiring @vtex/api, which the CLI implicitly relied on. The CLI
+// consumes HttpClient directly and never boots the service runtime, so
+// any command issuing a request with an inflightKey crashes with
+// "ReferenceError: metrics is not defined". Initialize it here, before
+// oclif dispatches any command.
+const { MetricsAccumulator } = require('@vtex/api/lib/metrics/MetricsAccumulator')
+global.metrics = global.metrics || new MetricsAccumulator()
+
 const semver = require('semver')
 
 // Load v8-compile-cache for Node.js versions below 20.
