@@ -48,7 +48,7 @@ This will release a `github tag` and trigger the `npm-publish github action`
 
 #### **AWS S3**
 
-This deploy will contain the `toolbelt standalone tarball` that is compatible with `MacOS` and `Linux`
+This deploy contains the Toolbelt standalone tarballs for Linux and native Apple Silicon macOS. The macOS target is `darwin-arm64`; `darwin-x64` is intentionally not published.
 
 Here's how you deploy on `AWS S3`: 
 
@@ -68,7 +68,7 @@ This [command](https://github.com/vtex/toolbelt/blob/ef67f52cd200ab08445684767c8
 
 #### **BREW**
 
-To deploy on brew, you should change 3 lines of [Toolbelt Formula](https://github.com/vtex/homebrew-vtex).
+To deploy on brew, you should change 3 lines of [Toolbelt Formula](https://github.com/vtex/homebrew-vtex). The formula must use the `darwin-arm64` manifest and archive so Homebrew never installs an Intel Node.js runtime on Apple Silicon.
 
 All this values can be found [here](https://tinyurl.com/yxgcuf5a). **Just make sure that was deployed first on S3**
 
