@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Publish a native `darwin-arm64` standalone CLI by default and stop publishing the Intel macOS target.
+- Detect Apple Silicon even when the installer is launched from a Rosetta-translated shell.
+
 ## [4.4.0]
 
 ### Added

@@ -31,15 +31,33 @@
         exit 1
     fi
 
-    ARCH="\$(uname -m)"
-    if [ "\$ARCH" == "x86_64" ]; then
-        ARCH=x64
-    elif [[ "\$ARCH" == arm* ]]; then
-        ARCH=arm
-    else
-        echoerr "unsupported arch: \$ARCH"
-        exit 1
+    MACHINE="\$(uname -m)"
+
+    # uname reports x86_64 when the shell itself is running under Rosetta.
+    # Detect the physical Apple Silicon host so we always install the native CLI.
+    if [ "\$OS" == "darwin" ] && [ "\$(sysctl -in sysctl.proc_translated 2>/dev/null || true)" == "1" ]; then
+        MACHINE=arm64
     fi
+
+    case "\$MACHINE" in
+        arm64|aarch64)
+            ARCH=arm64
+            ;;
+        x86_64)
+            if [ "\$OS" == "darwin" ]; then
+                echoerr "Intel macOS is not supported by the standalone VTEX CLI."
+                exit 1
+            fi
+            ARCH=x64
+            ;;
+        armv6l|armv7l)
+            ARCH=arm
+            ;;
+        *)
+            echoerr "unsupported arch: \$MACHINE"
+            exit 1
+            ;;
+    esac
         
     TAR_ARGS="xz"
     versionUrl=https://vtex-toolbelt-test.s3.us-east-2.amazonaws.com/\$OS-\$ARCH

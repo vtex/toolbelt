@@ -22,10 +22,10 @@ You can build the binaries and test it locally. You can run the commands:
 yarn build && yarn oclif-dev pack
 ```
 
-A folder named `dist` will be created with all the binaries for different OS. The command below enable to use the binaries for MacOS:
+A folder named `dist` will be created with the standalone binaries. macOS releases target Apple Silicon (`arm64`) only; an Intel macOS archive is not emitted. Use the command below to test the native macOS artifact:
 
 ```
-tar -xzf /Users/fila/Code/vtex/toolbelt/dist/vtex-v4.3.0/vtex-v4.3.0-darwin-x64.tar.gz -C ~/.local/vtex # or copy it to any other folder you want
+tar -xzf dist/vtex-v4.4.3/vtex-v4.4.3-darwin-arm64.tar.gz -C ~/.local/vtex # or copy it to any other folder you want
 ```
 
 Now, you can use the binaries in a VTEX IO App as:
@@ -80,4 +80,3 @@ We adhere to a strict pull request review workflow. Please refrain from committi
 1. Merge to master, delete your branch and **release to npm**.
 
 Please do not leave any unpublished code in master!
-
