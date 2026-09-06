@@ -55,12 +55,37 @@ const promptContinue = async (repoName: string, projectFolderName?: string) => {
   }
 }
 
-export default async (projectFolderName?: string) => {
-  log.debug(Messages.DEBUG_PROMPT_APP_INFO)
+interface InitOptions {
+  template?: string
+  list?: boolean
+  yes?: boolean
+}
+
+export default async (projectFolderName?: string, { template, list, yes }: InitOptions = {}) => {
+  if (list) {
+    log.info(Messages.INIT_LIST_TEMPLATES_HEADER())
+    getTemplates().forEach(name => log.info(`- ${name}`))
+    return
+  }
+
+  log.debug(Messages.DEBUG_PROMPT_APP_INFO())
   log.info(Messages.INIT_HELLO_EXPLANATION())
   try {
-    const { repository: repo, organization: org } = templates[await promptTemplates()]
-    await promptContinue(repo, projectFolderName)
+    let chosenTemplate: string
+    if (template) {
+      const availableTemplates = getTemplates()
+      if (!availableTemplates.includes(template)) {
+        throw new Error(Messages.ERROR_TEMPLATE_NOT_FOUND(template, availableTemplates))
+      }
+      chosenTemplate = template
+    } else {
+      chosenTemplate = await promptTemplates()
+    }
+
+    const { repository: repo, organization: org } = templates[chosenTemplate]
+    if (!yes) {
+      await promptContinue(repo, projectFolderName)
+    }
     log.info(`Cloning ${chalk.bold.cyan(repo)} from ${chalk.bold.cyan(org)}.`)
     await git.clone(repo, org, projectFolderName)
     log.info(Messages.INIT_START_DEVELOPING(projectFolderName ?? repo))

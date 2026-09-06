@@ -66,6 +66,9 @@ export const Messages = {
   DEBUG_PROMPT_APP_INFO: () => `Prompting for app info`,
   ERROR_COULD_NOT_DETERMINE_DEFAULT_BRANCH: (org: string, repo: string) =>
     `We could not determine the default branch for repo ${org}/${repo}. Please try again.`,
+  ERROR_TEMPLATE_NOT_FOUND: (name: string, availableNames: string[]) =>
+    `Template ${ColorifyConstants.ID(name)} was not found. Available templates: ${availableNames.join(', ')}.`,
+  INIT_LIST_TEMPLATES_HEADER: () => `Available templates:`,
 }
 
 export function updateMessageSwitch() {
